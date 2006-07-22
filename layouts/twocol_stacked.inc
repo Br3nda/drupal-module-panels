@@ -1,4 +1,6 @@
 <?php
+// $Id: twocol_stacked.inc,v 1.2 2006/07/22 21:59:01 merlinofchaos Exp $
+
 /**
  * implementation of hook_panels_layouts
  */

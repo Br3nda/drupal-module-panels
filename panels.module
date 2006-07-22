@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.2 2006/07/22 16:22:08 merlinofchaos Exp $
+// $Id: panels.module,v 1.3 2006/07/22 21:59:00 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -310,7 +310,7 @@ function panels_edit_form($panels) {
       panels_form_builder($form['add'][$id]);
 
       if ($conf = $function('add', $form_values['add'][$id])) {
-        $add->conf = $conf;
+        $add->configuration = $conf;
         $add->type = $id;
         $form['add']['area']['#parents'] = array('area');
         panels_form_builder($form['add']['area']);
@@ -406,11 +406,8 @@ function panels_edit_form($panels) {
       else {
         $position = 0;
       }
-      $area_record = new stdClass();
-      $area_record->type = $add->type;
-      $area_record->configuration = $add->conf;
 
-      $panels->content[$area][$position] = $area_record;
+      $panels->content[$area][$position] = $add;
       $order[] = $position;
       $form['content'][$area]['order']['#value'] = serialize($order);
     }

@@ -1,4 +1,5 @@
 <?php
+// $Id: twocol.inc,v 1.3 2006/07/22 21:59:01 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */

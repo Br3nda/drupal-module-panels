@@ -1,4 +1,5 @@
 <?php
+// $Id: threecol_33_34_33.inc,v 1.2 2006/07/22 21:59:01 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
