@@ -1,9 +1,14 @@
-/* $Id: twocol_stacked.css,v 1.2 2006/07/22 21:59:01 merlinofchaos Exp $ */
+/* $Id: twocol_stacked.css,v 1.3 2006/07/24 23:56:08 merlinofchaos Exp $ */
 
 .panel-2col-stacked { 
   /* border: 1px solid red; */ 
   overflow: hidden; 
 }
+
+.panel-2col-stacked div div { 
+  margin: .5em;
+}
+
 .panel-2col-stacked .panel-col-top,
 .panel-2col-stacked .panel-col-bottom { 
   width: 100%; 

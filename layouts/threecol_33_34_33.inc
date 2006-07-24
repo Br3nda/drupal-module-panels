@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_33_34_33.inc,v 1.2 2006/07/22 21:59:01 merlinofchaos Exp $
+// $Id: threecol_33_34_33.inc,v 1.3 2006/07/24 23:56:08 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -29,15 +29,15 @@ function theme_panels_threecol_33_34_33($id, $content) {
   $output = <<<EOT
 <div class="panel-3col-33" $idstr>
   <div class="panel-col-first">
-    $content[left]
+    <div>$content[left]</div>
   </div>
 
   <div class="panel-col">
-    $content[middle]
+    <div>$content[middle]</div>
   </div>
 
   <div class="panel-col-last">
-    $content[right]
+    <div>$content[right]</div>
   </div>
 </div>
 EOT;
