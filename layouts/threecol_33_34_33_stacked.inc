@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_33_34_33_stacked.inc,v 1.3 2006/07/24 23:56:08 merlinofchaos Exp $
+// $Id: threecol_33_34_33_stacked.inc,v 1.4 2006/07/26 16:53:40 merlinofchaos Exp $
 
 /**
  * implementation of hook_panels_layouts
@@ -7,7 +7,6 @@
 function panels_threecol_33_34_33_stacked_panels_layouts() {
   $items['threecol_33_34_33_stacked'] = array(
     'module' => 'panels',
-    'path' => 'layouts',
     'title' => t('Three column 33/34/33 stacked'),
     'icon' => 'layouts/threecol_33_34_33_stacked.png',
     'theme' => 'panels_threecol_33_34_33_stacked',

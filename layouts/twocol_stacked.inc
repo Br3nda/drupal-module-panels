@@ -1,5 +1,5 @@
 <?php
-// $Id: twocol_stacked.inc,v 1.3 2006/07/24 23:56:08 merlinofchaos Exp $
+// $Id: twocol_stacked.inc,v 1.4 2006/07/26 16:53:40 merlinofchaos Exp $
 
 /**
  * implementation of hook_panels_layouts
@@ -7,7 +7,6 @@
 function panels_twocol_stacked_panels_layouts() {
   $items['twocol_stacked'] = array(
     'module' => 'panels',
-    'path' => 'layouts',
     'title' => t('Two column stacked'),
     'icon' => 'layouts/twocol_stacked.png',
     'theme' => 'panels_twocol_stacked',
