@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_33_34_33_stacked.inc,v 1.4 2006/07/26 16:53:40 merlinofchaos Exp $
+// $Id: threecol_33_34_33_stacked.inc,v 1.5 2006/08/22 23:54:20 merlinofchaos Exp $
 
 /**
  * implementation of hook_panels_layouts
@@ -46,6 +46,7 @@ function theme_panels_threecol_33_34_33_stacked($id, $content) {
     <div>$content[bottom]</div>
   </div>
 </div>
+<br class="panel-clearer" />
 EOT;
   return $output;
 }
