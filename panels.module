@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.5 2006/08/23 00:06:12 merlinofchaos Exp $
+// $Id: panels.module,v 1.6 2006/08/27 22:31:08 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -742,7 +742,7 @@ function panels_load_includes($directory, $callback) {
   $files = system_listing('.inc$', $path, 'name', 0);
 
   foreach($files as $file) {
-    require_once($file->filename);
+    require_once('./' . $file->filename);
   }
   $output = module_invoke_all($callback);
   foreach ($files as $file) {
