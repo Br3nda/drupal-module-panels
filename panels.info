@@ -1,5 +1,5 @@
-; $Id: panels.info,v 1.1 2006/10/27 16:33:38 merlinofchaos Exp $
+; $Id: panels.info,v 1.2 2006/10/27 16:36:18 merlinofchaos Exp $
 name = Panels
-description = The panels module allows the creation of pages with flexible layouts.
+description = Create pages that are divided into areas of the page.
 version = 1.1
 
