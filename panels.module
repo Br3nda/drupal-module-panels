@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.9 2006/10/31 23:48:27 merlinofchaos Exp $
+// $Id: panels.module,v 1.10 2006/10/31 23:49:58 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -176,8 +176,8 @@ function panels_list_page() {
     $item[] = check_plain($panels->title);
     $item[] = l($panels->path, $panels->path);
     $item[] = implode(' | ', array(
-      l('edit', "admin/build/panels/edit/$panels->did"),
-      l('delete', "admin/build/panels/delete/$panels->did"),
+      l(t('Edit'), "admin/build/panels/edit/$panels->did"),
+      l(t('Delete'), "admin/build/panels/delete/$panels->did"),
     ));
     $items[] = $item;
   }
