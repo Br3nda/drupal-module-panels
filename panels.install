@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1 2006/07/22 04:36:09 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.1 2006/12/10 06:55:57 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -23,6 +23,7 @@ EOT
       );
       db_query(<<<EOT
         create table {panels_area} (
+          pid int(10) not null default 0,
           did int(10) not null default 0,
           area varchar(32),
           type varchar(32),
@@ -36,3 +37,19 @@ EOT
   }
 }
 
+function panels_uninstall() {
+  db_query("DROP TABLE IF EXISTS {panels_info}");
+  db_query("DROP TABLE IF EXISTS {panels_area}");
+}
+
+function panels_update_1() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {panels_area} ADD COLUMN pid int(10) not null default 0 FIRST");
+  $result = db_query("SELECT * FROM {panels_area}");
+  while ($area = db_fetch_object($result)) {
+    $count++;
+    $ret[] = update_sql("UPDATE {panels_area} SET pid = $count WHERE did = $area->did AND area = '$area->area' AND position = $area->position");
+  }
+  $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_area}_pid', $count)");
+  return $ret;
+}
