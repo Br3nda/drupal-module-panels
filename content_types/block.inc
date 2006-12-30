@@ -4,6 +4,7 @@
  */
 function panels_block_panels_content_types() {
   $items['block'] = array(
+    'name' => t('Block'),
     'callback' => 'panels_content_block',
     'admin' => 'panels_admin_block',
   );
@@ -22,8 +23,7 @@ function panels_content_block($conf) {
     $block->subject = check_plain($conf['override_title_text']);
   }
 
-  $output = theme('block', $block);
-  return $output;
+  return $block;
 }
 
 /** 
@@ -39,7 +39,7 @@ function panels_admin_block($op, &$arg, $arg2 = NULL) {
         $title .= ' [' . check_plain($conf['override_title_text']) . ']';
       }
       return '<strong>Block</strong>: ' . $title . ' (' . $conf['module'] . '-' . $conf['delta'] . ')';
-    case 'add button':
+    case 'add form':
       foreach (module_list() as $module) {
         $module_blocks = module_invoke($module, 'block', 'list');
         if ($module_blocks) {
@@ -57,18 +57,9 @@ function panels_admin_block($op, &$arg, $arg2 = NULL) {
         '#options' => $options,
         '#title' => t('Block'),
       );
-      $form['submit'] = array(
-        '#type' => 'button',
-        '#value' => t('Add block'),
-      );
 
-      $form['#prefix'] = '<div class="container-inline">';
-      $form['#suffix'] = '</div>';
       return $form;
     case 'add':
-      if ($_POST['op'] != t('Add block')) {
-        return;
-      }
       $form = &$arg;
       $conf = array();
       list($conf['module'], $conf['delta']) = explode('-', $form['block'], 2);

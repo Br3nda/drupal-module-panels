@@ -1,0 +1,138 @@
+div.panels-dnd-col {
+  border: 1px solid #2385c2;
+  padding: 0 0 .5em 0;
+}
+
+div.panels-dnd-col h2.label {
+  background: #2385c2;
+  color: white;
+  text-align: center;
+  font-size: 12pt;
+  margin: 0 0 .5em 0;
+}
+.panel-pane {
+  border: 1px solid #5ab5ee;
+  padding: 0;
+}
+
+.panel-pane .content {
+  margin: .5em 0 .5em 0;
+  padding: 0 .25em 0 .25em;
+  display: none; /* initially hidden */
+}
+
+.panel-pane .grabber {
+  width: 100%;
+  height: 20px;
+  cursor: move;
+  margin: 0;
+  background: #5ab5ee;
+  overflow: hidden;
+}
+
+.panel-pane .buttons {
+  float: right;
+  padding: 0;
+  margin: 0;
+}
+
+.panel-pane .buttons input {
+  margin: 0;
+  padding: 0;
+  display: inline;
+}
+
+.panel-pane .toggle {
+  float: left;
+  width: 21px;
+  height: 21px;
+  cursor: pointer;
+  background-position: 7px 7px;
+  background-repeat: no-repeat;
+  background-image: url(../images/portlet-expanded.png);
+}
+
+.panel-pane .title {
+  cursor: pointer;
+}
+
+.panel-pane-collapsible {
+  margin: 0;
+  padding: 0;
+}
+
+.panel-pane .toggle-collapsed {
+  background-image: url(../images/portlet-collapsed.png);
+}
+
+/* CSS to guide a user to a place to drop */
+.helperclass {
+  border: 1px dashed #f00;
+}
+
+.hoverclass {
+  border: 1px solid red;
+}
+
+/* CSS for an area if something can be dropped in it */
+.panels-modal-content {
+  background: #fff;
+  color: #000;
+  padding: 0;
+  margin: 2px;
+  border: 1px solid #000;
+  overflow: auto;
+  width: 600px;
+  height: 400px;
+} 
+
+.panels-modal-content .modal-title {
+  font-size: 120%;
+  font-weight: bold;
+  color: white;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.panels-modal-content .modal-header {
+  background-color: #2385c2;
+  padding: 0 .25em 0 1em;
+}
+
+.panels-modal-content .modal-header a {
+  color: white;
+  float: right;
+}
+
+.panels-modal-content .modal-content {
+  padding: 0 1em;
+}
+
+.panels-modal-content .modal-form {
+}
+
+.panels-hidden,
+.panels-js-only {
+  display: none;
+}
+
+a.close img {
+  position: relative;
+  top: 1px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Debugging CSS
+ *
+.panels-dnd {
+  border: 1px dashed #f00;
+}
+.panel-col {
+  border: 1px dashed #00f;
+}
+.panel-portlet {
+  border: 1px dashed #0f0;
+}
+ /**
+  * End of debugging CSS
+  */

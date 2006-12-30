@@ -1,0 +1,45 @@
+.layout-link {
+  float: left; 
+  padding: 1em;
+  width: 125px;
+}
+
+.layout-link img {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.layout-icon {
+  float: left;
+  margin-right: .5em;
+}
+
+.layout-icon .caption {
+  width: 90px;
+  margin-bottom: 1em;
+}
+
+.layout-container {
+  float: right;
+  padding: 0 0 0 1em;
+  margin: 0;
+  width: 50%;
+}
+
+.layout-container .form-item {
+  margin: 0;
+}
+
+.layout-container .form-submit {
+  margin-top: 1em;
+}
+
+#panels_page_choose_layout .form-radios .form-item {
+  float: left;
+  margin-right: .5em;
+}
+
+#panels_page_choose_layout .form-submit {
+  display: block;
+  clear: both;
+}

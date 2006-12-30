@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_25_50_25_stacked.inc,v 1.5 2006/08/22 23:54:20 merlinofchaos Exp $
+// $Id: threecol_25_50_25_stacked.inc,v 1.5.6.1 2006/12/30 00:07:58 merlinofchaos Exp $
 
 /**
  * implementation of hook_panels_layouts
@@ -11,7 +11,7 @@ function panels_threecol_25_50_25_stacked_panels_layouts() {
     'icon' => 'layouts/threecol_25_50_25_stacked.png',
     'theme' => 'panels_threecol_25_50_25_stacked',
     'css' => 'layouts/threecol_25_50_25_stacked.css',
-    'content areas' => array('top' => t('Top'), 'left' => t('Left side'), 'middle' => t('Middle column'), 'right' => t('Right side'), 'bottom' => t('Bottom')),
+    'panels' => array('top' => t('Top'), 'left' => t('Left side'), 'middle' => t('Middle column'), 'right' => t('Right side'), 'bottom' => t('Bottom')),
   );
 
   return $items;

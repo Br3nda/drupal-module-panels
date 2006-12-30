@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_33_34_33.inc,v 1.5 2006/08/22 23:54:20 merlinofchaos Exp $
+// $Id: threecol_33_34_33.inc,v 1.5.6.1 2006/12/30 00:07:58 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -10,7 +10,7 @@ function panels_threecol_33_34_33_panels_layouts() {
     'icon' => 'layouts/threecol_33_34_33.png',
     'theme' => 'panels_threecol_33_34_33',
     'css' => 'layouts/threecol_33_34_33.css',
-    'content areas' => array('left' => t('Left side'), 'middle' => t('Middle column'), 'right' => t('Right side')),
+    'panels' => array('left' => t('Left side'), 'middle' => t('Middle column'), 'right' => t('Right side')),
   );
 
   return $items;

@@ -9,7 +9,7 @@ function panels_threecol_25_50_25_panels_layouts() {
     'icon' => 'layouts/threecol_25_50_25.png',
     'theme' => 'panels_threecol_25_50_25',
     'css' => 'layouts/threecol_25_50_25.css',
-    'content areas' => array('left' => t('Left side'), 'middle' => t('Middle column'), 'right' => t('Right side')),
+    'panels' => array('left' => t('Left side'), 'middle' => t('Middle column'), 'right' => t('Right side')),
   );
 
   return $items;

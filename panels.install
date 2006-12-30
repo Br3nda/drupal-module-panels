@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.1 2006/12/10 06:55:57 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.2 2006/12/30 00:07:57 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -11,35 +11,41 @@ function panels_install() {
     case 'mysqli':
     default:
       db_query(<<<EOT
-        create table {panels_info} (
-          did int(10) not null default 0 primary key,
+        CREATE TABLE {panels_page} (
+          did int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
           title varchar(128),
           access varchar(128),
           path varchar(128),
-          css_id varchar(128),
-          layout varchar(32)
-        )
+          css_id varchar(128)
+        )/*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
       db_query(<<<EOT
-        create table {panels_area} (
-          pid int(10) not null default 0,
-          did int(10) not null default 0,
-          area varchar(32),
+        CREATE TABLE {panels_pane} (
+          pid int(10) NOT NULL DEFAULT 0,
+          did int(10) NOT NULL DEFAULT 0,
+          panel varchar(32),
           type varchar(32),
           configuration longtext,
           position int(5),
           key (did)
-        );
+        )/*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
-  );
+      );
+      db_query(<<<EOT
+        CREATE TABLE {panels_display} (
+          did INT(10) NOT NULL DEFAULT 0 PRIMARY KEY,
+          layout VARCHAR(32)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */
+EOT
+      );
 
   }
 }
 
 function panels_uninstall() {
-  db_query("DROP TABLE IF EXISTS {panels_info}");
-  db_query("DROP TABLE IF EXISTS {panels_area}");
+  db_query("DROP TABLE IF EXISTS {panels_display}");
+  db_query("DROP TABLE IF EXISTS {panels_pane}");
 }
 
 function panels_update_1() {
@@ -51,5 +57,26 @@ function panels_update_1() {
     $ret[] = update_sql("UPDATE {panels_area} SET pid = $count WHERE did = $area->did AND area = '$area->area' AND position = $area->position");
   }
   $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_area}_pid', $count)");
+  return $ret;
+}
+
+function panels_update_2() {
+  $ret = array();
+
+  $ret[] = update_sql("ALTER TABLE {panels_info} RENAME {panels_page}");
+  $ret[] = update_sql("ALTER TABLE {panels_area} RENAME {panels_pane}");
+  $ret[] = update_sql(<<<EOT
+    CREATE TABLE {panels_display} (
+      did INT(10) NOT NULL DEFAULT 0 PRIMARY KEY,
+      layout VARCHAR(32)
+    ) /*!40100 DEFAULT CHARACTER SET utf8 */
+EOT
+);
+  $result = db_query("SELECT did, layout FROM {panels_page}");
+  while ($display = db_fetch_object($result)) {
+    $ret = update_sql("INSERT INTO {panels_display} VALUES (%d, '%s')", $display->did, $display->layout);
+  }
+  $ret[] = update_sql("ALTER TABLE {panels_page} DROP COLUMN layout");
+  $ret[] = update_sql("ALTER TABLE {panels_pane} CHANGE area panel varchar(32)");
   return $ret;
 }

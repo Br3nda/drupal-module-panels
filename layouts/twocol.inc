@@ -1,5 +1,5 @@
 <?php
-// $Id: twocol.inc,v 1.6 2006/08/22 23:54:20 merlinofchaos Exp $
+// $Id: twocol.inc,v 1.6.6.1 2006/12/30 00:07:58 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -10,7 +10,7 @@ function panels_twocol_panels_layouts() {
     'icon' => 'layouts/twocol.png',
     'theme' => 'panels_twocol',
     'css' => 'layouts/twocol.css',
-    'content areas' => array('left' => t('Left side'), 'right' => t('Right side')),
+    'panels' => array('left' => t('Left side'), 'right' => t('Right side')),
   );
 
   return $items;

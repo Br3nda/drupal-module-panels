@@ -4,6 +4,7 @@
  */
 function panels_node_panels_content_types() {
   $items['node'] = array(
+    'name' => t('Node'),
     'callback' => 'panels_content_node',
     'admin' => 'panels_admin_node',
   );
@@ -16,8 +17,12 @@ function panels_node_panels_content_types() {
  */
 function panels_content_node($conf) {
   $node = node_load($conf['nid']);
-  $output = node_view($node, $conf['teaser'], FALSE, $conf['links']);
-  return $output;
+  $block->module = 'node';
+  $block->delta = $node->nid;
+  $block->subject = check_plain($node->title);
+  unset($node->title);
+  $block->content = node_view($node, $conf['teaser'], FALSE, $conf['links']);
+  return $block;
 }
 
 /** 
@@ -29,7 +34,7 @@ function panels_admin_node($op, &$arg, $arg2 = NULL) {
       $conf = $arg;
       $node = node_load($conf['nid']);
       return '<strong>Node</strong>: ' . check_plain($node->title);
-    case 'add button':
+    case 'add form':
       $form['nid'] = array(
         '#title' => t('Enter the title or NID of a post'),
         '#type' => 'textfield',
@@ -37,18 +42,8 @@ function panels_admin_node($op, &$arg, $arg2 = NULL) {
         '#autocomplete_path' => 'panels/node/autocomplete',
         '#weight'  => -10,
       );
-      $form['submit'] = array(
-        '#type' => 'button',
-        '#value' => t('Add post'),
-      );
-
-      $form['#prefix'] = '<div class="container-inline">';
-      $form['#suffix'] = '</div>';
       return $form;
     case 'add':
-      if ($_POST['op'] != t('Add post')) {
-        return;
-      }
       $form = &$arg;
       if (is_numeric($form['nid'])) {
         $conf = array();
