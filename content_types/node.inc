@@ -43,18 +43,27 @@ function panels_admin_node($op, &$arg, $arg2 = NULL) {
         '#weight'  => -10,
       );
       return $form;
+    case 'add validate':
+      $form_values = $arg;
+      $form = $arg2;
+      $nid = $form_values['nid'];
+      if (is_numeric($nid)) {
+        error_log($nid);
+        $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE nid = %d"), $nid));
+      }
+      else {
+        $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(title) = LOWER('%s')"), $nid));
+      }
+
+      if (!$node->nid) {
+        form_error($form['nid'], t('Unable to find "%s"', array('%s' => check_plain($nid))));
+      }
+      return;
     case 'add':
       $form = &$arg;
       if (is_numeric($form['nid'])) {
         $conf = array();
         $conf['nid'] = $form['nid'];
-      }
-      else {
-        $conf = db_fetch_array(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(title) = LOWER('%s')"), $form['nid']));
-        if (!$conf['nid']) {
-          drupal_set_message(t('Unable to find "%s"', array('%s' => check_plain($form['nid']))));
-          return;
-        }
       }
       // default to just teaser
       $conf['teaser'] = TRUE;

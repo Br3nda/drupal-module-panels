@@ -59,6 +59,7 @@ function bindResponse(data) {
     $('#modalContent .modal-content').html(data.output);
 
     // Bind forms to ajax submit.
+    $('.panels-modal-content form').unsubmit(); // be safe here.
     $('.panels-modal-content form').submit(function() {
       $(this).ajaxSubmit({
         url: '/panels/ajax/submit-form/' +  $('#panel-did').val(),
@@ -67,6 +68,41 @@ function bindResponse(data) {
         dataType: 'json'
       });
       return false;
+    });
+
+    // hack: allow collapsible textareas to work
+    $('.panels-modal-content fieldset.collapsible > legend').each(function() {
+      var fieldset = $(this.parentNode);
+      // Expand if there are errors inside
+      if ($('input.error, textarea.error, select.error', fieldset).size() > 0) {
+        fieldset.removeClass('collapsed');
+      }
+
+      // Turn the legend into a clickable link and wrap the contents of the fieldset
+      // in a div for easier animation
+      var text = this.innerHTML;
+      $(this).empty().append($('<a href="#">'+ text +'</a>').click(function() {
+        var fieldset = $(this).parents('fieldset:first')[0];
+        // Don't animate multiple times
+        if (!fieldset.animating) {
+          fieldset.animating = true;
+          Drupal.toggleFieldset(fieldset);
+        }
+        return false;
+      })).after($('<div class="fieldset-wrapper"></div>').append(fieldset.children(':not(legend)')));
+    });
+
+    // similar hack for autocomplete
+    var acdb = [];
+    $('.panels-modal-content input.autocomplete').each(function () {
+      var uri = this.value;
+      if (!acdb[uri]) {
+        acdb[uri] = new Drupal.ACDB(uri);
+      }
+      var input = $('#' + this.id.substr(0, this.id.length - 13))
+        .attr('autocomplete', 'OFF')[0];
+      $(input.form).submit(Drupal.autocompleteSubmit);
+      new Drupal.jsAC(input, acdb[uri]);
     });
   }
   else if (data.type == 'add') {
@@ -155,6 +191,7 @@ jQuery.Panels = {
       tolerance: 'intersect',
       fx: 100,
       revert: true,
+      floats: true,
       onStop: refreshObjects
     });
 

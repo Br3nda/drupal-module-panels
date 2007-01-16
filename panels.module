@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.2 2006/12/30 00:07:57 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.3 2007/01/16 05:07:14 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -361,7 +361,11 @@ function panels_edit_submit_subform($display) {
       $return->type = 'display';
       $return->output = $output;
     }
+    else if ($return->type == 'display' && !$return->output) {
+      $return->output = $output;
+    }
   }
+
   return $return;
 }
 
@@ -486,6 +490,23 @@ function panels_add_content_type_form($display, $id = NULL) {
   return $form;
 }
 
+function theme_panels_add_content_type_form($form) {
+  $form['start_form']['#suffix'] .= theme('status_messages');
+  $output = drupal_render($form);
+  return $output;
+}
+
+function panels_add_content_type_form_validate($form_id, $form_values, $form) {
+  $content_type_id = panels_session_get($form_values['did'], 'content_type');
+  $content_types = panels_get_content_types();
+  $type = $content_types[$content_type_id];
+
+  $function = $type['admin'];
+  if (function_exists($function)) {
+    $function('add validate', $form_values['configuration'], $form['configuration']);
+  }
+}
+
 function panels_add_content_type_form_submit($form_id, $form) {
   $next['form'] = 'panels_add_content_config_form';
   $next['data'] = $form;
@@ -503,8 +524,6 @@ function panels_add_content_config_form($display, $conf = NULL) {
     panels_session_set($display->did, 'conf', $conf);
   }
   
-//  $return->type = 'display'; $return->output = var_export($conf, true);
-//  print drupal_to_js($return); exit;
   $content_type_id = panels_session_get($display->did, 'content_type');
   $content_types = panels_get_content_types();
   $type = $content_types[$content_type_id];
@@ -853,6 +872,10 @@ function panels_get_content_types() {
  * In addition to panels.js.
  */
 function _panels_js_files() {
+  // while we don't use this directly some of our forms do.
+  drupal_add_js('misc/collapse.js');
+  drupal_add_js('misc/autocomplete.js');
+
   drupal_add_js(panels_get_path('js/lib/iutil.js'));
   drupal_add_js(panels_get_path('js/lib/idrag.js'));
   drupal_add_js(panels_get_path('js/lib/idrop.js'));
@@ -938,4 +961,27 @@ function theme_panels_layout_icon($id, $image, $title = NULL) {
   }
   $output .= '</div>';
   return $output;
+}
+
+/**
+ * Helper function for autocompletion of node titles.
+ * This is mostly stolen from clipper.
+ */
+function panels_node_autocomplete($string) {
+  if ($string != '') { // if there are node_types passed, we'll use those in a MySQL IN query.
+    $result = db_query_range(db_rewrite_sql('SELECT n.title, u.name FROM {node} n INNER JOIN {users} u ON u.uid = n.uid WHERE LOWER(title) LIKE LOWER("%%%s%%")'), $string, 0, 10);
+    $prefix = count($array) ? implode(', ', $array) .', ' : '';
+
+    $matches = array();
+    while ($node = db_fetch_object($result)) {
+      $n = $node->title;
+      // Commas and quotes in terms are special cases, so encode 'em.
+      if (preg_match('/,/', $node->title) || preg_match('/"/', $node->title)) {
+        $n = '"'. preg_replace('/"/', '""', $node->title) .'"';
+      }
+      $matches[$prefix . $n] = '<span class="autocomplete_title">'. check_plain($node->title) .'</span> <span class="autocomplete_user">('. t('by %user', array('%user' => check_plain($node->name))) .')</span>';
+    }
+    print drupal_to_js($matches);
+    exit();
+  }
 }

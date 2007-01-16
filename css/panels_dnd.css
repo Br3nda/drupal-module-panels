@@ -56,7 +56,7 @@ div.panels-dnd-col h2.label {
   cursor: pointer;
 }
 
-.panel-pane-collapsible {
+.panel-pane .panel-pane-collapsible {
   margin: 0;
   padding: 0;
 }
