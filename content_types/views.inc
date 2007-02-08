@@ -53,6 +53,7 @@ if (module_exists('views')) {
           $views[$view->name] = $view->name . ': ' . $view->description;
         }
 
+        views_load_cache();
         $default_views = _views_get_default_views();
         $views_status = variable_get('views_defaults', array());
         foreach ($default_views as $view) {
