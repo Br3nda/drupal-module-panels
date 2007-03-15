@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.2.7 2007/03/15 20:16:53 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.2.8 2007/03/15 22:41:42 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -18,7 +18,35 @@ function panels_help($section = '') {
  * Implementation of hook_perm()
  */
 function panels_perm() {
-  return array('create panels');
+  return array('create panels', 'access all panels');
+}
+
+/**
+ * Determine if the specified user has access to a panel.
+ */
+function panels_access($panel, $account = NULL) {
+  if (!$account) {
+    global $user;
+    $account = $user;
+  }
+
+  // Administrator privileges
+  if (user_access('access all panels', $account)) {
+    return TRUE;
+  }
+
+  // All views with an empty access setting are available to all roles.
+  if (!$panel->access) { 
+    return TRUE;
+  }
+
+  // Otherwise, check roles
+  static $roles = array();
+  if (!isset($roles[$account->uid])) {
+    $roles[$account->uid] = array_keys($account->roles);
+  }
+
+  return array_intersect($panel->access, $roles[$account->uid]);
 }
 
 /**
@@ -86,10 +114,11 @@ function panels_menu($may_cache) {
     // should steal code from Views so they can be normal, tabs,
     // etc
     while ($panels = db_fetch_object($result)) {
+      $panels->access = ($panels->access ? explode(', ', $panels->access)  : array());
       $items[] = array(
         'path' => $panels->path,
         'title' => filter_xss_admin($panels->title),
-        'access' => panels_access(unserialize($panels->access)),
+        'access' => panels_access($panels),
         'callback' => 'panels_panels_page',
         'callback arguments' => array($panels->did),
         'type' => MENU_CALLBACK
@@ -97,15 +126,6 @@ function panels_menu($may_cache) {
     }
   }
   return $items;
-}
-
-/**
- * Determine whether or not the current user has access to this
- * panels.
- */
-function panels_access($access) {
-  // for now
-  return TRUE;
 }
 
 /**
@@ -363,6 +383,20 @@ function panels_edit_form($panels) {
     '#description' => t('The CSS ID to apply to this page'),
   );
 
+  $rids = array();
+  $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
+  while ($obj = db_fetch_object($result)) {
+    $rids[$obj->rid] = $obj->name;
+  }
+
+  $form['info']['access'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Access'),
+    '#default_value' => $panels->access,
+    '#options' => $rids,
+    '#description' => t('Only the checked roles will be able to see this panel in any form; if no roles are checked, access will not be restricted.'),
+  );
+
   $form['info']['path'] = array(
     '#type' => 'textfield',
     '#default_value' => $panels->path,
@@ -560,6 +594,7 @@ function panels_edit_form_submit($form_id, $form_values) {
     }
     $panels->content[$area] = $array;
   }
+  $panels->access = array_keys(array_filter($panels->access));
   panels_save_panels($panels);
   drupal_set_message(t('The panels has been saved.'));
   return 'admin/build/panels';
@@ -645,6 +680,8 @@ function panels_load_panels($did) {
     return NULL;
   }
   $panels->content = array();
+  $panels->access = ($panels->access ? explode(', ', $panels->access) : array());
+
   $result = db_query("SELECT * FROM {panels_area} WHERE did = %d ORDER BY area, position", $did);
   while ($area = db_fetch_object($result)) {
     $area->configuration = unserialize($area->configuration);
@@ -654,6 +691,7 @@ function panels_load_panels($did) {
 }
 
 function panels_save_panels($panels) {
+  $panels->access = implode(', ', $panels->access);
   if ($panels->did) {
     db_query("UPDATE {panels_info} SET title = '%s', access = '%s', path = '%s', css_id = '%s', layout = '%s' WHERE did = %d", $panels->title, $panels->access, $panels->path, $panels->css_id, $panels->layout, $panels->did);
     db_query("DELETE FROM {panels_area} WHERE did = %d", $panels->did);
