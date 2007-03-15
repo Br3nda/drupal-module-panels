@@ -17,3 +17,4 @@ Panels 4.7.x-dev
   o #86630: Add option to retain title on Views.
   o #110449: Respect Views access settings. Requires Views 1.6 to work.
   o #100793: Respect Node access settings.
+  o #125440: Missing args broke Views by sending NULLs when it shouldn't send anything.
