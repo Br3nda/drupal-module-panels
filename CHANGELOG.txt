@@ -1,3 +1,4 @@
 Panels 4.7.x-dev
 
   o #120919 (by grugnog) empty content caused array error
+  o #84204 (by drewish, et al) make tables install UTF-8.
