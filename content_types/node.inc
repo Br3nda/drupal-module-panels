@@ -16,6 +16,9 @@ function panels_node_panels_content_types() {
  */
 function panels_content_node($conf) {
   $node = node_load($conf['nid']);
+  if ($conf['suppress_title']) {
+    $node->title='';
+  }
   $output = node_view($node, $conf['teaser'], FALSE, $conf['links']);
   return $output;
 }
@@ -82,6 +85,12 @@ function panels_admin_node($op, &$arg, $arg2 = NULL) {
         '#title' => t('Display links'),
         '#description' => t('Check here to display the links with the post.')
       );
+       $form['suppress_title'] = array(
+         '#type' => 'checkbox',
+         '#default_value' => $conf['suppress_title'],
+         '#title' => t('Suppress node title'),
+         '#description' => t('Check here to suppress the node title.')
+       );
 
       return $form;
     case 'validate':
