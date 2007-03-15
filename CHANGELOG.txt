@@ -11,3 +11,4 @@ Panels 4.7.x-dev
   o #117581 (by pearcec) Allow node types to suppress their title.
   o #89174 (by amatan) fix PHP 5 referencing error.
   o #93355 (by redsky) PGSQL table support
+  o #119841: Force page title in case menu title has been changed
