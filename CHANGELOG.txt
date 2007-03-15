@@ -1,3 +1,4 @@
 Panels 5.x-dev
 
   o #120919 (by grugnog) empty content caused array error
+  o #102572 (by yched, harriska2, cbutera, et al) -- missing views_load_cache when using views and panels together
