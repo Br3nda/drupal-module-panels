@@ -1,0 +1,3 @@
+Panels 5.x-dev
+
+  o #120919 (by grugnog) empty content caused array error
