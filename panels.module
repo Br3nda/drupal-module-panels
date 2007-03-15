@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.6.2.1 2007/03/15 18:09:12 merlinofchaos Exp $
+// $Id: panels.module,v 1.6.2.2 2007/03/15 18:52:53 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -656,6 +656,8 @@ function panels_save_panels($panels) {
   }
   else {
     $panels->did = db_next_id("{panels_info_id}");
+    // Put this in the form so modules can utilize the did of a new panel.
+    $GLOBALS['form_values']['did'] = $panels->did;
     db_query("INSERT INTO {panels_info} (did, title, access, path, css_id, layout) VALUES (%d, '%s', '%s', '%s', '%s', '%s')", $panels->did, $panels->title, $panels->access, $panels->path, $panels->css_id, $panels->layout);
   }
   foreach ($panels->content as $area => $info) {
