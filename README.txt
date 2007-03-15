@@ -20,3 +20,7 @@ structure, just add your changes to your style.css instead.
 If you're having problems with IE and your panels falling below your sidebars,
 try setting the width of the main panel area (example, .panel-2col-stacked) to
 98%.
+
+If you need to check if the current page is a panels page in your theme
+(for example if you want to hide some existing sidebars in your theme on
+these pages) then you can use the panels_is_panels_page() function.
