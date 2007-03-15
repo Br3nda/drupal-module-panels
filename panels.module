@@ -1,15 +1,17 @@
 <?php
-// $Id: panels.module,v 1.10 2006/10/31 23:49:58 merlinofchaos Exp $
+// $Id: panels.module,v 1.6.2.1 2007/03/15 18:09:12 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
  */
 function panels_help($section = '') {
   switch ($section) {
-    case 'admin/build/panels':
-    case 'admin/build/panels/list':
+    case 'admin/modules#description':
+      return t('The panels module allows the creation of pages with flexible layouts.');
+    case 'admin/panels':
+    case 'admin/panels/list':
       return t('<p>You may peruse a list of your current panels layouts and edit them, or click add to create a new page.</p>');
-    case 'admin/build/panels/add':
+    case 'admin/panels/add':
       return t('<p>Choose a layout for your new page from the list below.</p>');
   }
 }
@@ -28,53 +30,51 @@ function panels_menu($may_cache) {
   if ($may_cache) {
     $access = user_access('create panels');
     $items[] = array(
-      'path' => 'admin/build/panels',
-      'title' => t('Panels'),
+      'path' => 'admin/panels',
+      'title' => t('panels'),
       'access' => $access,    
       'callback' => 'panels_list_page',
-      'description' => t('Create pages on your site that are 2 or 3 columns'),
     );
     $items[] = array(
-      'path' => 'admin/build/panels/list',
-      'title' => t('List'),
+      'path' => 'admin/panels/list',
+      'title' => t('list'),
       'access' => $access,    
       'callback' => 'panels_list_page',
       'weight' => -10,
       'type' => MENU_DEFAULT_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panels/add',
-      'title' => t('Add'),
+      'path' => 'admin/panels/add',
+      'title' => t('add'),
       'access' => $access,    
       'callback' => 'panels_add_page',
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panels/add/layout',
-      'title' => t('Add'),
+      'path' => 'admin/panels/add/layout',
+      'title' => t('add'),
       'access' => $access,    
       'callback' => 'panels_add_layout_page',
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panels/edit',
-      'title' => t('Edit panels'),
+      'path' => 'admin/panels/edit',
+      'title' => t('edit panels'),
       'access' => $access,    
       'callback' => 'panels_edit_page',
       'type' => MENU_CALLBACK,
     );
     $items[] = array(
-      'path' => 'admin/build/panels/delete',
-      'title' => t('Delete panels'),
+      'path' => 'admin/panels/delete',
+      'title' => t('delete panels'),
       'access' => $access,    
-      'callback' => 'drupal_get_form',
-      'callback arguments' => array('panels_delete_confirm'),
+      'callback' => 'panels_delete_page',
       'type' => MENU_CALLBACK,
     );
 
     $items[] = array(
       'path' => 'panels/node/autocomplete',
-      'title' => t('Autocomplete node'),
+      'title' => t('autocomplete node'),
       'callback' => 'panels_node_autocomplete',
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK
@@ -176,8 +176,8 @@ function panels_list_page() {
     $item[] = check_plain($panels->title);
     $item[] = l($panels->path, $panels->path);
     $item[] = implode(' | ', array(
-      l(t('Edit'), "admin/build/panels/edit/$panels->did"),
-      l(t('Delete'), "admin/build/panels/delete/$panels->did"),
+      l('edit', "admin/panels/edit/$panels->did"),
+      l('delete', "admin/panels/delete/$panels->did"),
     ));
     $items[] = $item;
   }
@@ -193,17 +193,17 @@ function panels_list_page() {
 /*
  * Provide a form to confirm deletion of a panel page.
  */
-function panels_delete_confirm($did = '') {
+function panels_delete_page($did = '') {
   $panels = panels_load_panels($did);
 
   if (!$panels) {
-    drupal_goto('admin/build/panels');
+    return 'admin/panels';
   }
 
   $form['did'] = array('#type' => 'value', '#value' => $panels->did);
-  return confirm_form( $form,
+  return confirm_form('panels_delete_confirm', $form,
     t('Are you sure you want to delete %title?', array('%title' => $panels->title)),
-    $_GET['destination'] ? $_GET['destination'] : 'admin/build/panels',
+    $_GET['destination'] ? $_GET['destination'] : 'admin/panels',
     t('This action cannot be undone.'),
     t('Delete'), t('Cancel')
   );
@@ -215,7 +215,7 @@ function panels_delete_confirm($did = '') {
 function panels_delete_confirm_submit($formid, $form) {
   if ($form['confirm']) {
     panels_delete_panels((object) $form);
-    drupal_goto('admin/build/panels');
+    drupal_goto('admin/panels');
   }
 }
 
@@ -224,7 +224,7 @@ function panels_delete_confirm_submit($formid, $form) {
  */
 function panels_add_page($layout = NULL) {
   $layouts = panels_get_layouts();
-  drupal_add_css(drupal_get_path('module', 'panels') . '/panels_admin.css');
+  theme_add_style(drupal_get_path('module', 'panels') . '/panels_admin.css');
   if (!$layout) {
     foreach ($layouts as $id => $layout) {
       if (!$default_id) {
@@ -242,7 +242,7 @@ function panels_add_page($layout = NULL) {
   }
 
   $panels->layout = $layout;
-  return drupal_get_form('panels_edit_form', $panels);
+  return panels_edit_form($panels);
 }
 
 function theme_panels_add_image($title, $id, $image) {
@@ -259,14 +259,13 @@ function panels_edit_page($did = NULL) {
   if (!$did || !($panels = panels_load_panels($did))) {
     return drupal_not_found();
   }
-  return drupal_get_form('panels_edit_form', $panels);
+  return panels_edit_form($panels);
 }
 
 /**
  * shortcut to ease the syntax of the various form builder tricks we use.
  */
 function panels_form_builder(&$form, $form_id = 'panels_edit_form') {
-  $form['#post'] = $_POST;
   $form = form_builder($form_id, $form);
 }
 
@@ -274,7 +273,7 @@ function panels_form_builder(&$form, $form_id = 'panels_edit_form') {
  * Edit an already loaded panels.
  */
 function panels_edit_form($panels) {
-  drupal_add_css(drupal_get_path('module', 'panels') . '/panels_admin.css');
+  theme_add_style(drupal_get_path('module', 'panels') . '/panels_admin.css');
   $layouts = panels_get_layouts();
   $layout = $layouts[$panels->layout];
 
@@ -471,7 +470,7 @@ function panels_edit_form($panels) {
     '#value' => t('Save'),
   );  
 
-  return $form;
+  return drupal_get_form('panels_edit_form', $form);
 }
 
 /**
@@ -483,7 +482,7 @@ function theme_panels_edit_form($form) {
 
   $content_types = panels_get_content_types();
 
-  $output .= drupal_render($form['info']);
+  $output .= form_render($form['info']);
   foreach ($layout['content areas'] as $area => $title) {
     $order = unserialize($form['content'][$area]['order']['#value']);
     if (!$order) {
@@ -511,11 +510,11 @@ function theme_panels_edit_form($form) {
           $conf = $function('save', $conf_form);
           $fieldset = array(
             '#title' => t('Configure'), 
-            '#children' => drupal_render($form['content'][$area][$id]['configuration']), 
+            '#children' => form_render($form['content'][$area][$id]['configuration']), 
             '#collapsible' => true, 
             '#collapsed' => true
           );
-          $buttons = drupal_render($form['content'][$area][$id]['buttons']);
+          $buttons = form_render($form['content'][$area][$id]['buttons']);
           $area_content .= $buttons . '&nbsp;' . $function('list', $conf) . 
             theme('fieldset', $fieldset)  /* . '<br />' */;
         }
@@ -526,7 +525,7 @@ function theme_panels_edit_form($form) {
 
   $output .= panels_get_layout($layout, $content);
 
-  $output .= drupal_render($form);
+  $output .= form_render($form);
   return $output;
 }
 
@@ -559,7 +558,7 @@ function panels_edit_form_submit($form_id, $form_values) {
   }
   panels_save_panels($panels);
   drupal_set_message(t('The panels has been saved.'));
-  return 'admin/build/panels';
+  return 'admin/panels';
 }
 
 /**
@@ -641,6 +640,7 @@ function panels_load_panels($did) {
   if (!$panels) {
     return NULL;
   }
+  $panels->content = array();
   $result = db_query("SELECT * FROM {panels_area} WHERE did = %d ORDER BY area, position", $did);
   while ($area = db_fetch_object($result)) {
     $area->configuration = unserialize($area->configuration);
@@ -666,13 +666,13 @@ function panels_save_panels($panels) {
       }
     }
   }
-  menu_rebuild();
+  cache_clear_all('menu:', TRUE);
 }
 
 function panels_delete_panels($panels) {
   db_query("DELETE FROM {panels_info} WHERE did = %d", $panels->did);
   db_query("DELETE FROM {panels_area} WHERE did = %d", $panels->did);
-  menu_rebuild();
+  cache_clear_all('menu:', TRUE);
 }
 // ---------------------------------------------------------------------------
 // panels page
@@ -711,10 +711,10 @@ function panels_get_layout($layout, $content) {
 
   if ($output) {
     if (file_exists(path_to_theme() . '/' . $layout['css'])) {
-      drupal_add_css(path_to_theme() . '/' . $layout['css']);
+      theme_add_style(path_to_theme() . '/' . $layout['css']);
     }
     else {
-      drupal_add_css(drupal_get_path('module', $layout['module']) . '/' . $layout['css']);
+      theme_add_style(drupal_get_path('module', $layout['module']) . '/' . $layout['css']);
     }
   }
   return $output;
@@ -740,7 +740,7 @@ function panels_print_layout($id, $content) {
 function panels_load_includes($directory, $callback) {
   // Load all our module 'on behalfs'.
   $path = drupal_get_path('module', 'panels') . '/' . $directory;
-  $files = drupal_system_listing('.inc$', $path, 'name', 0);
+  $files = system_listing('.inc$', $path, 'name', 0);
 
   foreach($files as $file) {
     require_once('./' . $file->filename);
