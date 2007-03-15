@@ -18,3 +18,4 @@ Panels 5.x-dev
   o Can now set role-based access control on panels
   o #86630: Add option to retain title on Views.
   o #110449: Respect Views access settings. Requires Views 1.6 to work.
+  o #100793: Respect Node access settings.
