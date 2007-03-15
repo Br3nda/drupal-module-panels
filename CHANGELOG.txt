@@ -12,3 +12,4 @@ Panels 5.x-dev
   o #81949 (by RobRoy) fixed another problem with arrays and empty panels
   o #117581 (by pearcec) Allow node types to suppress their title.
   o #89174 (by amatan) fix PHP 5 referencing error.
+  o #93355 (by redsky) PGSQL table support
