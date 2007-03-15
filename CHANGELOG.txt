@@ -17,3 +17,4 @@ Panels 5.x-dev
   o #108616 (by joel_guesclin) Change 2col stacked CSS to be more resilient in IE.
   o Can now set role-based access control on panels
   o #86630: Add option to retain title on Views.
+  o #110449: Respect Views access settings. Requires Views 1.6 to work.

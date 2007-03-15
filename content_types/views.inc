@@ -19,6 +19,10 @@ if (module_exists('views')) {
   function panels_content_views($conf) {
     $view = views_get_view($conf['view']);
     if ($view) {
+      if (function_exists('views_access') && !views_access($view)) {
+        return NULL;
+      }
+
       $arguments = explode('/', $_GET['q']);
       $args = $conf['args'];
       
