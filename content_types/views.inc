@@ -1,6 +1,6 @@
 <?php
 // Only valid if views module loaded.
-if (module_exists('views')) {
+if (module_exist('views')) {
   /**
    * Callback function to supply a list of content types.
    */
@@ -33,8 +33,19 @@ if (module_exists('views')) {
         $view->url = $conf['url'];
       }
 
-      $output = views_build_view($conf['type'], $view, $args, intval($conf['pager_id']), intval($conf['nodes_per_page']));
+      $content = views_build_view($conf['type'], $view, $args, intval($conf['pager_id']), intval($conf['nodes_per_page']));
+
+      $title = $conf['show_title'] ? views_get_title($view, $conf['type']) : NULL;
+      $output = theme('panels_content_views', $content, $title);
     }
+    return $output;
+  }
+
+  function theme_panels_content_views($content, $title) {
+    if ($title) {
+      $output .= '<h2 class="title">' . $title . '</h2>';
+    }
+    $output .= $content;
     return $output;
   }
 
@@ -136,6 +147,13 @@ if (module_exists('views')) {
           '#title' => t('Override URL'),
           '#size' => 12,
           '#description' => t('If this is set, override the View URL; this can sometimes be useful to set to the panel URL'),
+        );
+
+        $form['show_title'] = array(
+          '#type' => 'checkbox',
+          '#default_value' => $conf['show_title'],
+          '#title' => t('Display view title'),
+          '#description' => t('If checked, the title of the view will be displayed.'),
         );
 
         return $form;
