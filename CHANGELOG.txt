@@ -12,3 +12,4 @@ Panels 4.7.x-dev
   o #89174 (by amatan) fix PHP 5 referencing error.
   o #93355 (by redsky) PGSQL table support
   o #119841: Force page title in case menu title has been changed
+  o #108616 (by joel_guesclin) Change 2col stacked CSS to be more resilient in IE.
