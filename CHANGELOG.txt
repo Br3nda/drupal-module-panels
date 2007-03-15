@@ -5,3 +5,4 @@ Panels 5.x-dev
   o #84204 (by drewish, et al) make tables install UTF-8.
   o #110771 (by Robrecht Jacques) Save panel did on creation allowing modules to interact with it
   o #111646 (by Robrecht Jacques) uninstall hook
+  o #114772 (by Tobias Maier) allow custom content to specify CSS Info
