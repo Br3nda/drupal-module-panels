@@ -30,7 +30,7 @@ if (module_exists('views')) {
         $args = str_replace("%$id", $arg, $args);
       }
 
-      $args = preg_replace('/\%\d/', '', $args);
+      $args = preg_replace('/\\/%\d/', '', $args);
       $args = $args ? explode('/', $args) : array();
 
       if ($conf['url']) {
