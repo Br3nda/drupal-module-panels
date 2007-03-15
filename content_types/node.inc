@@ -16,9 +16,14 @@ function panels_node_panels_content_types() {
  */
 function panels_content_node($conf) {
   $node = node_load($conf['nid']);
-  if ($conf['suppress_title']) { 
-    $node->title=''; 
+  if (!node_access('view', $node)) {
+    return;
   }
+
+  if ($conf['suppress_title']) { 
+    $node->title = ''; 
+  }
+
   $output = node_view($node, $conf['teaser'], FALSE, $conf['links']);
   return $output;
 }
