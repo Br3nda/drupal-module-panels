@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.6.2.2 2007/03/15 18:52:53 merlinofchaos Exp $
+// $Id: panels.module,v 1.6.2.3 2007/03/15 19:16:28 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -679,6 +679,20 @@ function panels_delete_panels($panels) {
 // ---------------------------------------------------------------------------
 // panels page
 
+/**
+ * Returns TRUE if the current page contains a panels layout.
+ * This can be checked in a theme to hide existing sidebars on panel pages, for example.
+ *
+ * @param $set (optional) used internally to set the page status
+ */
+function panels_is_panels_page($set_panels = NULL) {
+  static $is_panels;
+  if ($set_panels == TRUE) {
+    $is_panels = $set_panels;
+  }
+  return $is_panels;
+}
+
 function panels_panels_page($did) {
   $panels = panels_load_panels($did);
   if (!$panels) {
@@ -694,6 +708,7 @@ function panels_panels_page($did) {
     return drupal_not_found();
   }
 
+  panels_is_panels_page(TRUE);
   $content_types = panels_get_content_types();
 
   foreach ($panels->content as $location => $list) {
