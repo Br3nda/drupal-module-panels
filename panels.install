@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1 2006/07/22 04:36:09 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.4.1 2007/03/15 18:21:29 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -18,7 +18,7 @@ function panels_install() {
           path varchar(128),
           css_id varchar(128),
           layout varchar(32)
-        )
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
       db_query(<<<EOT
@@ -29,10 +29,15 @@ EOT
           configuration longtext,
           position int(5),
           key (did)
-        );
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
   );
-
   }
 }
 
+/**
+ * Update the tables to UTF-8
+ */
+function panels_update_1() {
+  return _system_update_utf8(array('panels_info', 'panels_area'));
+}
