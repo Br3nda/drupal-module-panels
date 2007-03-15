@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.6.2.5 2007/03/15 19:28:46 merlinofchaos Exp $
+// $Id: panels.module,v 1.6.2.6 2007/03/15 19:44:13 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -289,7 +289,10 @@ function panels_edit_form($panels) {
     '#description' => t('Select an area to add content to, then select a type of content and click the appropriate button. The content will be added.'),
   );
 
-  $default_radio = array_shift(array_keys($layout['content areas']));
+  // Drop the array keys into a temporary in order to protect references.
+  $temp = array_keys($layout['content areas']);
+  $default_radio = array_shift($temp);
+
   $form['add']['area'] = array(
     '#type' => 'radios',
     '#title' => t('Area'),
