@@ -6,4 +6,5 @@ Panels 4.7.x-dev
   o #114772 (by Tobias Maier) allow custom content to specify CSS Info
   o #120913 (by Grugnog2) provide panels_is_panel_page() function for context
   o #118954 (by slantview) respect block visibility settings
+  o #110461 (by Robrecht Jacques) fixed improper use of drupal_goto on delete submit
 
