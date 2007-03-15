@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.4.1 2007/03/15 18:21:29 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.4.2 2007/03/15 19:06:44 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -32,6 +32,20 @@ EOT
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
   );
+  }
+}
+
+/**
+ * Uninstall the panels tables
+ */
+function panels_uninstall() {
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+    case 'mysql':
+    case 'mysqli':
+    default:
+      db_query("DROP TABLE {panels_info}");
+      db_query("DROP TABLE {panels_area}");
   }
 }
 
