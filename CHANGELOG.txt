@@ -1,3 +1,6 @@
+Panels 4.7.x-dev
+  o Block visibility code used improper array_merge, causing silly errors.
+
 Panels 4.7.x-1.1
   o #120919 (by Grugnog2) empty content caused array error
   o #84204 (by drewish, et al) make tables install UTF-8.
