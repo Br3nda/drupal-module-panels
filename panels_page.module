@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.1 2006/12/30 00:07:57 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.2 2007/03/19 21:49:27 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -56,21 +56,6 @@ function panels_page_menu($may_cache) {
       'callback' => 'panels_page_add_layout_page',
       'type' => MENU_LOCAL_TASK,
     );
-    $items[] = array(
-      'path' => 'admin/build/panel-page/edit',
-      'title' => t('Edit panel page'),
-      'access' => $access,    
-      'callback' => 'panels_page_edit_page',
-      'type' => MENU_CALLBACK,
-    );
-    $items[] = array(
-      'path' => 'admin/build/panel-page/delete',
-      'title' => t('Delete panel page'),
-      'access' => $access,    
-      'callback' => 'drupal_get_form',
-      'callback arguments' => array('panels_page_delete_confirm'),
-      'type' => MENU_CALLBACK,
-    );
 
     // load panels from database
     $result = db_query("SELECT * FROM {panels_page}");
@@ -89,6 +74,78 @@ function panels_page_menu($may_cache) {
       $items[] = $item;
     }
   }
+  else {
+    if (arg(0) == 'admin' &&
+        arg(1) == 'build' &&
+        arg(2) == 'panel-page' &&
+        is_numeric(arg(3))) {
+      $page = panels_page_load(arg(3));
+      if ($page) {
+        $items[] = array(
+          'path' => 'admin/build/panel-page/' . arg(3),
+          'title' => t('View'),
+          'access' => $access,    
+          'callback' => 'panels_page_view_page',
+          'callback arguments' => array(arg(3)),
+          'weight' => -10,
+          'type' => MENU_CALLBACK,
+        );
+        $items[] = array(
+          'path' => 'admin/build/panel-page/' . arg(3) . '/view',
+          'title' => t('View'),
+          'access' => $access,    
+          'callback' => 'panels_page_view_page',
+          'callback arguments' => array(arg(3)),
+          'weight' => -10,
+          'type' => MENU_DEFAULT_LOCAL_TASK,
+        );
+        $items[] = array(
+          'path' => 'admin/build/panel-page/' . arg(3) . '/edit',
+          'title' => t('Edit'),
+          'access' => $access,    
+          'callback' => 'panels_page_edit',
+          'callback arguments' => array($page),
+          'weight' => -5,
+          'type' => MENU_LOCAL_TASK,
+        );
+        $items[] = array(
+          'path' => 'admin/build/panel-page/' . arg(3) . '/edit/general',
+          'title' => t('General'),
+          'access' => $access,    
+          'callback' => 'panels_page_edit',
+          'callback arguments' => array($page),
+          'weight' => -5,
+          'type' => MENU_DEFAULT_LOCAL_TASK,
+        );
+        $items[] = array(
+          'path' => 'admin/build/panel-page/' . arg(3) . '/edit/layout',
+          'title' => t('Layout'),
+          'access' => $access,    
+          'callback' => 'panels_page_edit_layout',
+          'callback arguments' => array($page),
+          'weight' => -3,
+          'type' => MENU_LOCAL_TASK,
+        );
+        $items[] = array(
+          'path' => 'admin/build/panel-page/' . arg(3) . '/edit/content',
+          'title' => t('Content'),
+          'access' => $access,    
+          'callback' => 'panels_page_edit_content',
+          'callback arguments' => array($page),
+          'weight' => -1,
+          'type' => MENU_LOCAL_TASK,
+        );
+        $items[] = array(
+          'path' => 'admin/build/panel-page/' . arg(3) . '/delete',
+          'title' => t('Delete panel page'),
+          'access' => $access,    
+          'callback' => 'drupal_get_form',
+          'callback arguments' => array('panels_page_delete_confirm', $page),
+          'type' => MENU_CALLBACK,
+        );
+      }
+    }
+  }
   return $items;
 }
 
@@ -99,28 +156,6 @@ function panels_page_menu($may_cache) {
 function panels_page_access($access) {
   // for now
   return TRUE;
-}
-
-// ---------------------------------------------------------------------------
-// session handling stuff for to ease our form.
-//
-// We're not re-using the ones from panels because those key off of $did and
-// that's not the same as our $pid and may not in fact exist yet when we're
-// adding a new panel.
-
-function panels_page_session_set($pid, $var, $value) {
-  $_SESSION['panels_page'][$pid][$var] = $value;
-}
-
-function panels_page_session_get($pid, $var) {
-  return $_SESSION['panels_page'][$pid][$var];
-}
-
-function panels_page_session_reset($pid) {
-  unset($_SESSION['panels_page'][$pid]);
-  if (!$_SESSION['panels_page']) {
-    unset($_SESSION['panels_page']);
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -138,8 +173,8 @@ function panels_page_list_page() {
     $item[] = check_plain($layouts[$panel_page->layout]['title']);
     $item[] = l($panel_page->path, $panel_page->path);
     $item[] = implode(' | ', array(
-      l(t('Edit'), "admin/build/panel-page/edit/$panel_page->did"),
-      l(t('Delete'), "admin/build/panel-page/delete/$panel_page->did"),
+      l(t('Edit'), "admin/build/panel-page/$panel_page->did/edit"),
+      l(t('Delete'), "admin/build/panel-page/$panel_page->did/delete"),
     ));
     $items[] = $item;
   }
@@ -156,13 +191,7 @@ function panels_page_list_page() {
 /*
  * Provide a form to confirm deletion of a panel page.
  */
-function panels_page_delete_confirm($pid = '') {
-  $panel_page = panels_page_load($pid);
-
-  if (!$panel_page) {
-    drupal_goto('admin/build/panel-page');
-  }
-
+function panels_page_delete_confirm($panel_page) {
   $form['pid'] = array('#type' => 'value', '#value' => $panel_page->pid);
   $form['did'] = array('#type' => 'value', '#value' => $panel_page->did);
   return confirm_form( $form,
@@ -182,7 +211,6 @@ function panels_page_delete_confirm_submit($formid, $form) {
     // TODO: Is this necessary or did we feed it the location already?
     return 'admin/build/panel-page';
   }
-  panels_page_session_reset($form['pid']);
 }
 
 /**
@@ -202,12 +230,6 @@ function panels_page_add_page($layout = NULL) {
     return drupal_not_found();
   }
 
-  // If this is not a $_POST, this must be a new panel. Reset any old data
-  // we might have lying around.
-  if (!$_POST) {
-    panels_page_session_reset('new');
-  }
-
   $panel_page->display->did = 'new';
   $panel_page->display->layout = $layout;
   $panel_page->pid = 'new';
@@ -215,74 +237,13 @@ function panels_page_add_page($layout = NULL) {
   return panels_page_edit($panel_page);
 }
 
-/**
- * Handle the edit panel-page page
- */
-function panels_page_edit_page($pid = NULL) {
-  if (!$pid) {
-    return drupal_not_found();
-  }
-
-  // Pull one out of the session if it exists so we don't have to load the
-  // panel page.
-  $panel_page = panels_page_session_get($pid, 'panel_page');
-  if (!$panel_page) {
-    $panel_page = panels_page_load($pid);
-  }
-
-  if (!$panel_page) {
-    return drupal_not_found();
-  }
-
-  return panels_page_edit($panel_page);
-}
 
 /**
  * Edit a panel page. Called from both the add and edit points to provide
  * for common flow.
  */
 function panels_page_edit($panel_page) {
-  $page = panels_page_session_get($panel_page->pid, 'panel_page');
-  // If we're already working on a form, load the existing one.
-  if (!$page) {
-    panels_page_session_set($panel_page->pid, 'panel_page', $panel_page);
-  }
-  else {
-    $panel_page = $page;
-  }
-
-  // Yes, we're bad people and look right at post. So far I'm liking this
-  // method for being relatively straightforward for independent forms
-  // on a page.
-  $form_id = $_POST['form_id'];
-  $op = $_POST['op'];
-
-  if (!$form_id || substr($form_id, 0, 7) != 'panels_') {
-    $form_id = 'panels_page_edit_form';
-  }
-
-  $output = panels_page_form($form_id, $panel_page);
-
-  // If a button told us to go somewhere else, let's do it.
-  if ($form = panels_get('panels_page_next')) {
-    // refresh in case the panel was changed
-    $panel_page = panels_page_session_get($panel_page->pid, 'panel_page');
-    $output = panels_page_form($form, $panel_page);
-    if ($form == 'panels_edit_display') {
-      print theme('page', $output, false);
-      return;
-    }
-  }
-  return $output;
-}
-
-function panels_page_form($form_id, $panel_page) {
-  // we need a little somethin' extra for the panel display editor.
-  if ($form_id == 'panels_edit_display') {
-    panels_page_session_set('current_pid', 'current_pid', $panel_page->pid);
-    return panels_edit($panel_page->display, 'panels_page_edit_display_submit');
-  }
-  return drupal_get_form($form_id, $panel_page);
+  return drupal_get_form('panels_page_edit_form', $panel_page);
 }
 
 /**
@@ -300,6 +261,11 @@ function panels_page_edit_form($panel_page) {
     '#value' => $panel_page->pid,
   );
 
+  $form['panel_page'] = array(
+    '#type' => 'value', 
+    '#value' => $panel_page
+  );
+
   $form['layout'] = array(
     '#type' => 'fieldset',
     '#prefix' => '<div class="layout-container">',
@@ -314,6 +280,12 @@ function panels_page_edit_form($panel_page) {
     '#title' => t('Page settings'),
   );
 
+  $form['layout'] = array(
+    '#type' => 'fieldset',
+    '#prefix' => '<div class="layout-container">',
+    '#suffix' => '</div>',
+    '#title' => t('Layout'),
+  );
 
   $form['layout']['layout-icon'] = array(
     '#value' => panels_print_layout_icon($panel_page->display->layout, $layout),
@@ -325,16 +297,27 @@ function panels_page_edit_form($panel_page) {
     '#size' => 40,
     '#value' => $layout['title'],
   );
+  $content = '<dl class="content-list">';
+  
+  foreach ($layout['panels'] as $panel_id => $title) {
+    $content .= "<dt>$title</dt><dd>";
+    if ($panel_page->display->panels[$panel_id]) {
+      $content .= '<ol>';
+      foreach ($panel_page->display->panels[$panel_id] as $pid) {
+        $content .= '<li>' . panels_get_pane_title($panel_page->display->content[$pid]) . '</li>';
+      }
+      $content .= '</ol>';
+    }
+    else {
+      $content .= t('Empty');      
+    }
+    $content .= '</dd>';
+  }
+  $content .= '</dl>';
 
-  $form['layout']['change'] = array(
-    '#type' => 'button',
-    '#value' => t('Change layout'),
-  );  
-
-  $form['layout']['edit'] = array(
-    '#type' => 'button',
-    '#value' => t('Edit content'),
-  );  
+  $form['layout']['layout-content'] = array(
+    '#value' => $content,
+  );
 
   $form['info']['title'] = array(
     '#type' => 'textfield',
@@ -358,47 +341,22 @@ function panels_page_edit_form($panel_page) {
     '#default_value' => $panel_page->path,
     '#title' => t('Path'),
     '#description' => t('The URL path to give this page, i.e, path/to/page'),
+    '#required' => TRUE,
   );
 
+  $label = ($panel_page->pid == 'new') ? t('Next') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save'),
-  );  
-
-  $form['cancel'] = array(
-    '#type' => 'button',
-    '#value' => t('Cancel'),
+    '#value' => $label,
   );  
 
   return $form;
 }
 
+/**
+ * Validate a panel page edit form
+ */
 function panels_page_edit_form_validate($form_id, $form_values, $form) {
-  // copy important data back to our stored panel.
-  if ($form_values['op'] != t('Save')) {
-    if ($form_values['op'] == t('Cancel')) {
-      panels_page_session_reset($form_values['pid']);
-      drupal_goto('admin/build/panel-page');
-    }
-    $panel_page = panels_page_session_get($form_values['pid'], 'panel_page');
-
-    $panel_page->title  = $form_values['title'];
-    $panel_page->css_id = $form_values['css_id'];
-    $panel_page->path  = $form_values['path'];
-    
-    panels_page_session_set($panel_page->pid, 'panel_page', $panel_page);
-
-    if ($form_values['op'] == t('Change layout')) {
-      panels_set('panels_page_next', 'panels_page_choose_layout');
-    }
-
-    if ($form_values['op'] == t('Edit content')) {
-      panels_session_reset($panel_page->display->did);
-      panels_set('panels_page_next', 'panels_edit_display');
-    }
-    return;
-  }
-
   if (!$form_values['path']) {
     form_error($form['info']['path'], t('Path is required.'));
   }
@@ -410,136 +368,39 @@ function panels_page_edit_form_validate($form_id, $form_values, $form) {
   }
 }
 
+/**
+ * Process submission of the panel page edit form
+ */
 function panels_page_edit_form_submit($form_id, $form_values) {
-  // copy important data back to our stored panel.
-  $panel_page = panels_page_session_get($form_values['pid'], 'panel_page');
+  $panel_page = $form_values['panel_page'];
 
   $panel_page->title  = $form_values['title'];
   $panel_page->css_id = $form_values['css_id'];
   $panel_page->path  = $form_values['path'];
-  
-  panels_page_session_set($panel_page->pid, 'panel_page', $panel_page);
-  panels_page_save($panel_page);
 
-  // use from form values because pid may have changed in saving if 'new'.
-  panels_page_session_reset($form_values['pid']);
-  drupal_set_message(t('Your panel page has been saved.'));
-  return 'admin/build/panel-page';
-}
-
-function panels_page_choose_layout($panel_page) {
-  $layouts = panels_get_layouts();
-
-  foreach ($layouts as $id => $layout) {
-    $options[$id] = panels_print_layout_icon($id, $layout, check_plain($layout['title']));
-  }
-  $form['layout'] = array(
-    '#type' => 'radios',
-    '#title' => t('Choose layout'),
-    '#options' => $options,
-    '#default_value' => $panel_page->display->layout,
-  );
-  $form['did'] = array('#type' => 'value', '#value' => $panel_page->did);
-
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Next'),
-  );
-  return $form;
-}
-
-function panels_page_choose_layout_submit($form_id, $form_values) {
-  panels_page_session_set($form_values['did'], 'new_layout', $form_values['layout']);
-  panels_set('panels_page_next', 'panels_page_change_layout');
-  return FALSE;
-}
-
-function panels_page_change_layout($panel_page) {
-  $new_layout_id = panels_page_session_get($panel_page->did, 'new_layout');
-
-  $layouts = panels_get_layouts();
-  $new_layout = $layouts[$new_layout_id];
-
-  $options = $new_layout['panels'];
-  $keys = array_keys($options);
-  $default = $options[0];
-
-  $old_layout = $layouts[$panel_page->display->layout];
-
-  $form['old'] = array(
-    '#tree' => true,
-  );
-
-  $form['pid'] = array('#type' => 'value', '#value' => $panel_page->pid);
-
-  foreach ($panel_page->display->panels as $id => $content) {
-    $form['old'][$id] = array(
-      '#type' => 'select',
-      '#title' => t('Move content in @layout to', array('@layout' => $old_layout['panels'][$id])),
-      '#options' => $options,
-      '#default_value' => array_key_exists($id, $options) ? $id : $default,
-    );
-  }
-
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
-  $form['cancel'] = array(
-    '#type' => 'submit',
-    '#value' => t('Cancel'),
-  );
-  return $form;
-}
-
-function panels_page_change_layout_submit($form_id, $form_values) {
-  if ($form_values['op'] == t('Save')) {
-    $panel_page = panels_page_session_get($form_values['pid'], 'panel_page');
-    $new_layout_id = panels_page_session_get($panel_page->did, 'new_layout');
-
-    foreach ($form_values['old'] as $id => $new_id) {
-      $content[$new_id] = (array) $content[$new_id] + $panel_page->display->panels[$id];
-      foreach($content[$new_id] as $pid) {
-        $panel_page->display->content[$pid]->panel = $new_id;
-      }
-    }
-
-    $panel_page->display->panels = $content;
-    $panel_page->display->layout = $new_layout_id;
-
-    // save it back to our session.
-    panels_page_session_set($panel_page->pid, 'panel_page', $panel_page);
-  }
-
-  panels_set('panels_page_next', 'panels_page_edit_form');
-  return FALSE;
-}
-
-function panels_page_edit_display_submit($form_id, $form_values) {
-  // Find our panel page
-  if ($form_values['op'] != t('Cancel')) {
-    $pid = panels_page_session_get('current_pid', 'current_pid');
-    $panel_page = panels_page_session_get($pid, 'panel_page');
-    panels_page_session_reset('current_pid');
-
-    // Find the display we were editing
-    $panel_page->display = panels_session_get($panel_page->did, 'display');
-
-    // and save our new panel page to session.
-    panels_page_session_set($pid, 'panel_page', $panel_page);
-
-    drupal_set_message(t('Your panel page layout has been updated, but changes will not be saved until you click Save on this page.'));
+  if ($panel_page->pid == 'new') {
+    panels_page_save($panel_page);
+    return "admin/build/panel-page/$panel_page->pid/content";
   }
   else {
-    drupal_set_message(t('Changes to your layout have not been saved.'));
+    drupal_set_message(t('Your changes have been saved.'));
+    panels_page_save($panel_page);
+    return "admin/build/panel-page/$panel_page->pid/edit/content";
   }
+}
 
-  // Reset the memory of the display
-  panels_session_reset($panel_page->did);
+/**
+ * Pass through to the panels layout editor.
+ */
+function panels_page_edit_layout($panel_page) {
+  return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->did/edit");
+}
 
-  // and go back to our form.
-  panels_set('panels_page_next', 'panels_page_edit_form');
-  return FALSE;
+/**
+ * Pass through to the panels content editor.
+ */
+function panels_page_edit_content($panel_page) {
+  return panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->did/edit");
 }
 
 // ---------------------------------------------------------------------------
@@ -570,30 +431,6 @@ function panels_page_view_page($pid) {
   }
   $output = panels_get_layout($layout, $content);
   return $output;
-}
-
-/**
- * Helper function for autocompletion of node titles.
- * This is mostly stolen from clipper.
- * TODO: This belongs in node.inc
- */
-function panels_page_node_autocomplete($string) {
-  if ($string != '') { // if there are node_types passed, we'll use those in a MySQL IN query.
-    $result = db_query_range(db_rewrite_sql('SELECT n.title, u.name FROM {node} n INNER JOIN {users} u ON u.uid = n.uid WHERE LOWER(title) LIKE LOWER("%%%s%%")'), $string, 0, 10);
-    $prefix = count($array) ? implode(', ', $array) .', ' : '';
-
-    $matches = array();
-    while ($node = db_fetch_object($result)) {
-      $n = $node->title;
-      // Commas and quotes in terms are special cases, so encode 'em.
-      if (preg_match('/,/', $node->title) || preg_match('/"/', $node->title)) {
-        $n = '"'. preg_replace('/"/', '""', $node->title) .'"';
-      }
-      $matches[$prefix . $n] = '<span class="autocomplete_title">'. check_plain($node->title) .'</span> <span class="autocomplete_user">('. t('by %user', array('%user' => check_plain($node->name))) .')</span>';
-    }
-    print drupal_to_js($matches);
-    exit();
-  }
 }
 
 // ---------------------------------------------------------------------------

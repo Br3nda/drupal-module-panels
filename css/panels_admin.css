@@ -9,16 +9,14 @@
   margin-right: auto;
 }
 
-.layout-icon {
-  float: left;
-  margin-right: .5em;
-}
+/* general style for the layout-icon */
 
 .layout-icon .caption {
   width: 90px;
   margin-bottom: 1em;
 }
 
+/* styles for the basic panel-page edit page */
 .layout-container {
   float: right;
   padding: 0 0 0 1em;
@@ -34,12 +32,49 @@
   margin-top: 1em;
 }
 
-#panels_page_choose_layout .form-radios .form-item {
+.layout-container .layout-icon {
+  float: right;
+  margin-left: .5em;
+}
+
+.content-list ol {
+  padding-left: 0;
+  list-style-position: inside;
+}
+
+.content-list dt {
+  font-weight: bold;
+}
+
+.content-list dd {
+  margin-left: 2em;
+}
+
+/* styles for the choose layout page */
+#panels-choose-layout .form-radios .form-item {
   float: left;
   margin-right: .5em;
 }
 
-#panels_page_choose_layout .form-submit {
+#panels-choose-layout .form-radios .form-item .layout-icon {
+  float: none;
+}
+
+#panels-choose-layout .form-radios .form-item .option {
+  width: 50px;
   display: block;
-  clear: both;
+  text-align: center; 
+}
+
+#panels-choose-layout .form-submit {
+  clear: left;
+}
+
+.change-layout-display .layout-icon {
+  float: left;
+}
+
+.change-layout-display > img {
+  padding: 25px 25px 25px 0;
+  float: left;
 }

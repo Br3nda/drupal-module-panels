@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.3 2007/01/16 05:07:14 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.4 2007/03/19 21:49:27 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -93,15 +93,6 @@ function panels_set_blank(&$form) {
 }
 
 /**
- * shortcut to ease the syntax of the various form builder tricks we use.
- */
-function panels_edit($display, $submit = NULL) {
-  $output = drupal_get_form('panels_edit_display', $display, $submit);
-  $hidden = theme('panels_hidden');
-  return $output . $hidden;
-}
-
-/**
  * This is separate because it must be outside the <form> to work, and
  * everything in the form theme is inside the form.
  */
@@ -165,7 +156,10 @@ function panels_get($var) {
 // ---------------------------------------------------------------------------
 // panels display editing
 
-function panels_edit_display($display, $submit = NULL) {
+/**
+ * 
+ */
+function panels_edit($display, $destination) {
   $did = $display->did;
   if (!$did) {
     $display->did = $did = 'new';
@@ -178,7 +172,7 @@ function panels_edit_display($display, $submit = NULL) {
     panels_session_reset($did);
     panels_session_set($did, 'display', $display);
     // We may be re-editing an already edited display, meaning it might have
-    // non-existent panes. We have to set our counter to the highest pane.
+    // non-existant panes. We have to set our counter to the highest pane.
     foreach (array_keys((array) $display->content) as $id) {
       if (substr($id, 0, 4) == 'new-') {
         $value = intval(substr($id, 4));
@@ -192,6 +186,12 @@ function panels_edit_display($display, $submit = NULL) {
     }
   }
 
+  $output = drupal_get_form('panels_edit_display', $display, $destination);
+  $hidden = theme('panels_hidden');
+  return $output . $hidden;
+}
+
+function panels_edit_display($display, $destination) {
   $form['did'] = array(
     '#type' => 'hidden',
     '#value' => $display->did,
@@ -207,7 +207,15 @@ function panels_edit_display($display, $submit = NULL) {
   $layout = $layouts[$display->layout];
   $content_types = panels_get_content_types();
 
-  $form['#panels_display'] = $display;
+  $form['panels_display'] = array(
+    '#type' => 'value',
+    '#value' => $display
+  );
+
+  $form['destination'] = array(
+    '#type' => 'value',
+    '#value' => $destination
+  );
 
   $form['button']['#tree'] = TRUE;
   foreach ($display->content as $pid => $panel) {
@@ -224,7 +232,7 @@ function panels_edit_display($display, $submit = NULL) {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
-    '#attributes' => array('id' => 'panels-dnd-save'),
+    '#id' => 'panels-dnd-save',
   );  
   $form['cancel'] = array(
     '#type' => 'submit',
@@ -239,13 +247,13 @@ function panels_edit_display($display, $submit = NULL) {
   $form['hide']['hide-all'] = array(
     '#type' => 'submit',
     '#value' => t('Hide all'),
-    '#attributes' => array('id' => 'panels-hide-all'),
+    '#id' => 'panels-hide-all',
   );  
 
   $form['hide']['show-all'] = array(
     '#type' => 'submit',
     '#value' => t('Show all'),
-    '#attributes' => array('id' => 'panels-show-all'),
+    '#id' => 'panels-show-all',
   );  
   
   if ($submit) {
@@ -258,7 +266,7 @@ function panels_edit_display($display, $submit = NULL) {
 function theme_panels_edit_display($form) {
   _panels_js_files();
   $layouts = panels_get_layouts();
-  $display = $form['#panels_display'];
+  $display = $form['panels_display']['#value'];
   $layout = $layouts[$display->layout];
 
   $content_types = panels_get_content_types();
@@ -276,6 +284,17 @@ function theme_panels_edit_display($form) {
   $output .= theme('panels_dnd', panels_get_layout($layout, $content));
   return $output;
 }
+
+function panels_edit_display_submit($form_id, $form_values) {
+  drupal_set_message(t('Panel content has been updated.'));
+  $display = $form_values['panels_display'];
+  panels_session_reset($display->did);
+  panels_save_display($display);
+  return $form_values['destination'];
+}
+
+// ------------------------------------------------------------------
+// Functions to provide information about a panel or part of a panel.
 
 function panels_get_pane_content($pane) {
   $content_types = panels_get_content_types();
@@ -984,4 +1003,133 @@ function panels_node_autocomplete($string) {
     print drupal_to_js($matches);
     exit();
   }
+}
+
+// TEMP -- this needs to get sorted into the code properly
+/**
+ * Shortcut to the panels layout editor
+ */
+function panels_edit_layout($display, $finish, $destination) {
+  return drupal_get_form('panels_choose_layout', $display, $finish, $destination);
+}
+/**
+ * Form to change the layout of a display.
+ */
+function panels_choose_layout($display, $finish, $destination) {
+  $layouts = panels_get_layouts();
+
+  foreach ($layouts as $id => $layout) {
+    $options[$id] = panels_print_layout_icon($id, $layout, check_plain($layout['title']));
+  }
+  $form['layout'] = array(
+    '#type' => 'radios',
+    '#title' => t('Choose layout'),
+    '#options' => $options,
+    '#default_value' => $display->layout,
+  );
+
+  $form['clearer'] = array(
+    '#value' => '<div style="clear: both;"></div>',
+  );
+
+  $form['variables'] = array(
+    '#type' => 'value',
+    '#value' => array($display, $finish, $destination),
+  );
+
+  if ($_POST['op'] && $_POST['op'] != t('Back') && $display->content) {
+    $form['#post'] = $_POST;
+    $form = form_builder('panels_choose_layout', $form);
+    unset($form['#post']);
+    $form['layout']['#type'] = 'hidden';
+    panels_change_layout($form, $display, $form['layout']['#value']);
+  }
+
+  if (($_POST['op'] && $_POST['op'] != t('Back')) || !$display->content) {
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => $finish,
+    );
+  }
+  else { 
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Next'),
+    );
+  }
+  
+  $form['#token'] = FALSE; // no token please
+  return $form;
+}
+
+function panels_choose_layout_submit($form_id, $form_values) {
+  list($display, $finish, $destination) = $form_values['variables'];
+  $new_layout_id = $form_values['layout'];
+  if ($form_values['op'] == $finish) {
+    foreach ($form_values['old'] as $id => $new_id) {
+      $content[$new_id] = (array) $content[$new_id] + $display->panels[$id];
+      foreach($content[$new_id] as $pid) {
+        $display->content[$pid]->panel = $new_id;
+      }
+    }
+
+    $display->panels = $content;
+    $display->layout = $new_layout_id;
+
+    // save it back to our session.
+    panels_save_display($display);
+    return $destination;
+  }
+
+  return FALSE;
+}
+
+function panels_change_layout(&$form, $display, $new_layout_id) {
+  $layouts = panels_get_layouts();
+  $new_layout = $layouts[$new_layout_id];
+
+  $options = $new_layout['panels'];
+  $keys = array_keys($options);
+  $default = $options[0];
+
+  $old_layout = $layouts[$display->layout];
+
+  $form['container'] = array(
+    '#prefix' => '<div class="change-layout-display">',
+    '#suffix' => '</div>',
+  );
+
+  $form['container']['old_layout'] = array(
+    '#value' => panels_print_layout_icon($display->layout, $old_layout, check_plain($old_layout['title'])),
+  );
+  
+  $form['container']['right_arrow'] = array(
+    '#value' => theme('image', drupal_get_path('module', 'panels') . '/images/go-right.png'),
+  );
+  $form['container']['new_layout'] = array(
+    '#value' => panels_print_layout_icon($new_layout_id, $new_layout, check_plain($new_layout['title'])),
+  );
+
+  $form['container-clearer'] = array(
+    '#value' => '<div style="clear: both;"></div>',
+  );
+
+  $form['old'] = array(
+    '#tree' => true,
+  );
+
+  foreach ($display->panels as $id => $content) {
+    $form['old'][$id] = array(
+      '#type' => 'select',
+      '#title' => t('Move content in @layout to', array('@layout' => $old_layout['panels'][$id])),
+      '#options' => $options,
+      '#default_value' => array_key_exists($id, $options) ? $id : $default,
+    );
+  }
+
+  $form['back'] = array(
+    '#type' => 'submit',
+    '#value' => t('Back'),
+  );
+  return $form;
 }
