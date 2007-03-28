@@ -21,6 +21,9 @@ function panels_views_panels_content_types() {
 function panels_content_views($conf) {
   $view = views_get_view($conf['view']);
   if ($view) {
+    if (function_exists('views_access') && !views_access($view)) {
+      return NULL;
+    }
     $arguments = explode('/', $_GET['q']);
     $args = $conf['args'];
     
@@ -28,7 +31,7 @@ function panels_content_views($conf) {
       $args = str_replace("%$id", $arg, $args);
     }
 
-    $args = preg_replace('/\%\d/', '', $args);
+    $args = preg_replace('/\\/%\d/', '', $args);
     $args = $args ? explode('/', $args) : array();
 
     if ($conf['url']) {
@@ -37,7 +40,7 @@ function panels_content_views($conf) {
 
     $block->module = 'views';
     $block->delta = $view->name;
-    $block->subject = filter_xss_admin(views_get_title($view, 'block'));
+    $block->subject = $conf['show_title'] ? filter_xss_admin(views_get_title($view, 'block')) : NULL;
     $block->content = views_build_view($conf['type'], $view, $args, intval($conf['pager_id']), intval($conf['nodes_per_page']));
   }
   return $block;
@@ -133,6 +136,13 @@ function panels_admin_views($op, &$arg, $arg2 = NULL) {
         '#title' => t('Override URL'),
         '#size' => 12,
         '#description' => t('If this is set, override the View URL; this can sometimes be useful to set to the panel URL'),
+      );
+
+      $form['show_title'] = array(
+        '#type' => 'checkbox',
+        '#default_value' => $conf['show_title'],
+        '#title' => t('Display view title'),
+        '#description' => t('If checked, the title of the view will be displayed.'),
       );
 
       return $form;
