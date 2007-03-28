@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.4 2007/03/19 21:49:27 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.5 2007/03/28 21:55:01 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -81,15 +81,6 @@ function panels_add_button($image, $name, $text, $class) {
     '#default_value' => $name,
     '#class' => $class,
   );
-}
-
-/**
- * Set a button to a blank image -- used for placeholders when buttons are
- * not relevant but just removing it would be visually unappealing.
- */
-function panels_set_blank(&$form) {
-  $form['#type'] = 'markup';
-  $form['#value'] = theme('image', panels_get_path('images/blank.gif'));
 }
 
 /**
@@ -203,8 +194,7 @@ function panels_edit_display($display, $destination) {
     '#id' => 'panel-op',
   );
 
-  $layouts = panels_get_layouts();
-  $layout = $layouts[$display->layout];
+  $layout = panels_get_layouts($display->layout);
   $content_types = panels_get_content_types();
 
   $form['panels_display'] = array(
@@ -265,9 +255,8 @@ function panels_edit_display($display, $destination) {
 
 function theme_panels_edit_display($form) {
   _panels_js_files();
-  $layouts = panels_get_layouts();
   $display = $form['panels_display']['#value'];
-  $layout = $layouts[$display->layout];
+  $layout = panels_get_layouts($display->layout);
 
   $content_types = panels_get_content_types();
 
@@ -281,7 +270,7 @@ function theme_panels_edit_display($form) {
     $content[$panel_id] = theme('panels_panel_dnd', $content[$panel_id], $panel_id, $title);
   }
   $output .= drupal_render($form);
-  $output .= theme('panels_dnd', panels_get_layout($layout, $content));
+  $output .= theme('panels_dnd', panels_render_layout($layout, $content));
   return $output;
 }
 
@@ -389,8 +378,7 @@ function panels_edit_submit_subform($display) {
 }
 
 function panels_save_display_form($display, $post) {
-  $layouts = panels_get_layouts();
-  $layout = $layouts[$display->layout];
+  $layout = panels_get_layouts($display->layout);
 
   // we're copying the content because content that doesn't appear in $post
   // was deleted.
@@ -431,11 +419,12 @@ function panels_add_content_form($display) {
 
   $form['start_form'] = array('#value' => '<div class="modal-form">');
 
+  $type_keys = array_keys($content_types);
   $form['type'] = array(
     '#type' => 'radios',
     '#title' => t('Content type'),
     '#options' => $options,
-    '#default_value' => array_shift(array_keys($content_types)),
+    '#default_value' => array_shift($type_keys),
   );
 
   $form['end_form'] = array('#value' => '</div>');
@@ -561,8 +550,7 @@ function panels_add_content_config_form($display, $conf = NULL) {
     '#value' => $content_type_id,
   );
 
-  $layouts = panels_get_layouts();
-  $layout = $layouts[$display->layout];
+  $layout = panels_get_layouts($display->layout);
   $default_radio = array_shift(array_keys($layout['panels']));
 
   $form['panel'] = array(
@@ -818,19 +806,18 @@ function panels_delete_display($display) {
  * panel display.
  */
 function panels_print_layout($id, $content) {
-  $layouts = panels_get_layouts();
-  $layout = $layouts[$id];
+  $layout = panels_get_layouts($id);
   if (!$layout) {
     return;
   }
   
-  return panels_get_layout($layout, $content);
+  return panels_render_layout($layout, $content);
 }
 
 /**
  * Given a full layout structure and a content array, render a panel display.
  */
-function panels_get_layout($layout, $content) {
+function panels_render_layout($layout, $content) {
   $output = theme($layout['theme'], check_plain($layout['css_id']), $content);
 
   if ($output) {
@@ -848,11 +835,10 @@ function panels_get_layout($layout, $content) {
 // ---------------------------------------------------------------------------
 // panels data loading
 
-function panels_load_includes($directory, $callback) {
+function panels_load_includes($directory, $callback, $file = NULL) {
   // Load all our module 'on behalfs'.
   $path = panels_get_path($directory);
-
-  $files = drupal_system_listing('.inc$', $path, 'name', 0);
+  $files = drupal_system_listing("$file" . '.inc$', $path, 'name', 0);
   foreach($files as $file) {
     require_once('./' . $file->filename);
   }
@@ -869,10 +855,28 @@ function panels_load_includes($directory, $callback) {
   return $output;
 }
 
-function panels_get_layouts() {
-  static $layouts = NULL;
-  if (!$layouts) {
-    $layouts = panels_load_includes('layouts', 'panels_layouts');
+function panels_get_layout($layout) {
+  return panels_get_layouts($layout);
+}
+
+function panels_get_layouts($layout = NULL) {
+  static $layouts = array();
+  static $all_layouts = FALSE;
+
+  if (!$all_layouts) {
+    if (!$layout) {
+      $layouts = panels_load_includes('layouts', 'panels_layouts');
+      $all_layouts = TRUE;
+    }
+    else if (!array_key_exists($layouts, $layout)) {
+      $temp_layouts = panels_load_includes('layouts', 'panels_layouts', $layout);
+      if (isset($temp_layouts[$layout])) {
+        $layouts[$layout] = $temp_layouts[$layout];
+      }
+    }
+  }
+  if ($layout) {
+    return isset($layouts[$layout]) ? $layouts[$layout] : NULL;
   }
   return $layouts;
 }
@@ -1085,14 +1089,13 @@ function panels_choose_layout_submit($form_id, $form_values) {
 }
 
 function panels_change_layout(&$form, $display, $new_layout_id) {
-  $layouts = panels_get_layouts();
-  $new_layout = $layouts[$new_layout_id];
+  $new_layout = panels_get_layout($new_layout_id);
 
   $options = $new_layout['panels'];
   $keys = array_keys($options);
   $default = $options[0];
 
-  $old_layout = $layouts[$display->layout];
+  $old_layout = panels_get_layout($display->layout);
 
   $form['container'] = array(
     '#prefix' => '<div class="change-layout-display">',

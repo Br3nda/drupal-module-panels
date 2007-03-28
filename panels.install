@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.2 2006/12/30 00:07:57 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.3 2007/03/28 21:55:01 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -12,14 +12,25 @@ function panels_install() {
     default:
       db_query(<<<EOT
         CREATE TABLE {panels_page} (
-          did int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
+          pid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
+          did int(10),
           title varchar(128),
           access varchar(128),
           path varchar(128),
-          css_id varchar(128)
+          css_id varchar(128),
+          KEY path (path)
         )/*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
+
+      db_query(<<<EOT
+        CREATE TABLE {panels_display} (
+          did INT(10) NOT NULL DEFAULT 0 PRIMARY KEY,
+          layout VARCHAR(32)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */
+EOT
+      );
+
       db_query(<<<EOT
         CREATE TABLE {panels_pane} (
           pid int(10) NOT NULL DEFAULT 0,
@@ -32,20 +43,13 @@ EOT
         )/*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
-      db_query(<<<EOT
-        CREATE TABLE {panels_display} (
-          did INT(10) NOT NULL DEFAULT 0 PRIMARY KEY,
-          layout VARCHAR(32)
-        ) /*!40100 DEFAULT CHARACTER SET utf8 */
-EOT
-      );
-
   }
 }
 
 function panels_uninstall() {
   db_query("DROP TABLE IF EXISTS {panels_display}");
   db_query("DROP TABLE IF EXISTS {panels_pane}");
+  db_query("DROP TABLE IF EXISTS {panels_page}");
 }
 
 function panels_update_1() {
