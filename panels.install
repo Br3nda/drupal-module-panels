@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.3 2007/03/28 21:55:01 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.4 2007/03/28 22:33:08 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -40,7 +40,7 @@ EOT
           configuration longtext,
           position int(5),
           key (did)
-        )/*!40100 DEFAULT CHARACTER SET utf8 */
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
   }
@@ -52,23 +52,34 @@ function panels_uninstall() {
   db_query("DROP TABLE IF EXISTS {panels_page}");
 }
 
+/**
+ * Update the tables to UTF-8
+ */
 function panels_update_1() {
-  $ret = array();
-  $ret[] = update_sql("ALTER TABLE {panels_area} ADD COLUMN pid int(10) not null default 0 FIRST");
-  $result = db_query("SELECT * FROM {panels_area}");
-  while ($area = db_fetch_object($result)) {
-    $count++;
-    $ret[] = update_sql("UPDATE {panels_area} SET pid = $count WHERE did = $area->did AND area = '$area->area' AND position = $area->position");
-  }
-  $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_area}_pid', $count)");
-  return $ret;
+  return _system_update_utf8(array('panels_info', 'panels_area'));
 }
 
-function panels_update_2() {
-  $ret = array();
 
+function panels_update_1000() {
+  $ret = array();
   $ret[] = update_sql("ALTER TABLE {panels_info} RENAME {panels_page}");
+  $ret[] = update_sql("ALTER TABLE {panels_page} CHANGE COLUMN did pid int(10) NOT NULL DEFAULT 0;");
+  $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN did int(10) NOT NULL DEFAULT 0 AFTER pid");
+  $ret[] = update_sql("UPDATE {panels_page} SET did = pid");
+  
+  $max_pid = db_fetch_result(db_query("SELECT MAX(pid) FROM {panels_page}"));
+  $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_page}_pid', $max_pid)");
+
   $ret[] = update_sql("ALTER TABLE {panels_area} RENAME {panels_pane}");
+  $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN did int(10) NOT NULL DEFAULT 0 FIRST");
+  $ret[] = update_sql("ALTER TABLE {panels_pane} CHANGE area panel varchar(32)");
+  $result = db_query("SELECT * FROM {panels_pane}");
+  while ($pane = db_fetch_object($result)) {
+    $count++;
+    $ret[] = update_sql("UPDATE {panels_pane} SET pid = $count WHERE did = $pane->did AND pane = '$pane->pane' AND position = $pane->position");
+  }
+  $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_pane}_pid', $count)");
+
   $ret[] = update_sql(<<<EOT
     CREATE TABLE {panels_display} (
       did INT(10) NOT NULL DEFAULT 0 PRIMARY KEY,
@@ -77,10 +88,14 @@ function panels_update_2() {
 EOT
 );
   $result = db_query("SELECT did, layout FROM {panels_page}");
+  $max_did = 0;
   while ($display = db_fetch_object($result)) {
     $ret = update_sql("INSERT INTO {panels_display} VALUES (%d, '%s')", $display->did, $display->layout);
+    if ($display->did > $max_did) { 
+      $max_did = $display->did;
+    }
   }
   $ret[] = update_sql("ALTER TABLE {panels_page} DROP COLUMN layout");
-  $ret[] = update_sql("ALTER TABLE {panels_pane} CHANGE area panel varchar(32)");
+  $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_display}_did', $count)");
   return $ret;
 }
