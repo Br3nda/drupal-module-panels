@@ -5,10 +5,11 @@
 function panels_custom_panels_content_types() {
   $items['custom'] = array(
     'name' => t('Custom'),
-    'callback' => 'panels_content_custom',
-    'admin' => 'panels_admin_custom',
-    // this is so simple we don't use the add form
-    'no_add' => true,
+    'content_types' => 'panels_admin_content_types_custom',
+    'render callback' => 'panels_content_custom',
+    'add callback' => 'panels_admin_edit_custom',
+    'edit callback' => 'panels_admin_edit_custom',
+    'title callback' => 'panels_admin_title_custom',
   );
   return $items;
 }
@@ -36,58 +37,67 @@ function theme_panels_custom_content($content, $id, $class) {
   return $output;
 }
 
-/** 
- * Callback to perform administrative functions on the content block
+/**
+ * Return all content types available.
  */
-function panels_admin_custom($op, &$arg, $arg2 = NULL) {
-  switch ($op) {
-    case 'list':
-      $conf = $arg;
-      return '<strong>Custom</strong>';
-    case 'add form':
-      return NULL;
-    case 'add':
-      return $arg;
-    case 'edit':
-      $conf = &$arg;
-      $form['title'] = array(
-        '#type' => 'textfield',
-        '#default_value' => $conf['title'],
-        '#title' => t('Title'),
-      );
-      $form['body'] = array(
-        '#title' => t('Body'),
-        '#type' => 'textarea',
-        '#default_value' => $conf['body'],
-      );
-      $arg2[] = 'format';
-      $form['format'] = filter_form($conf['format'], 1, $arg2);
-
-      $form['css_id'] = array(
-        '#type' => 'textfield',
-        '#default_value' => $conf['css_id'],
-        '#title' => t('CSS ID'),
-        '#description' => t('CSS ID of this custom content.'),
-        '#weight' => 2,
-        '#size' => 15,
-      );
-      $form['css_class'] = array(
-        '#type' => 'textfield',
-        '#default_value' => $conf['css_class'],
-        '#title' => t('CSS class'),
-        '#description' => t('CSS class of this custom content.'),
-        '#weight' => 2,
-        '#size' => 15,
-      );
-
-      return $form;
-    case 'validate':
-      // This one has nothing to validate.
-      $form = &$arg;
-      return;
-    case 'save':
-      // For this one, the form values go directly into the config.
-      $form = &$arg;
-      return $form;
-  }
+function panels_admin_content_types_custom() {
+  return array(
+    'custom' => array(
+      'title' => t('Custom content'),
+      'icon' => 'custom.png',
+      'description' => t('Create a completely custom piece of HTML content.'),
+    ),
+  );
 }
+
+/**
+ * Returns an edit form for the custom type.
+ */
+function panels_admin_edit_custom($conf, $parents) {
+  if (!is_array($conf)) {
+    $conf = array('title' => '', 'body' => '', 'css_id' => '', 'css_class' => '');
+  }
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['title'],
+    '#title' => t('Title'),
+  );
+  $form['body'] = array(
+    '#title' => t('Body'),
+    '#type' => 'textarea',
+    '#default_value' => $conf['body'],
+  );
+  $parents[] = 'format';
+  $form['format'] = filter_form($conf['format'], 1, $parents);
+
+  $form['css_id'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['css_id'],
+    '#title' => t('CSS ID'),
+    '#description' => t('CSS ID of this custom content.'),
+    '#weight' => 2,
+    '#size' => 15,
+  );
+  $form['css_class'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['css_class'],
+    '#title' => t('CSS class'),
+    '#description' => t('CSS class of this custom content.'),
+    '#weight' => 2,
+    '#size' => 15,
+  );
+
+  return $form;
+}
+
+/**
+ * Returns the administrative title for a type.
+ */
+function panels_admin_title_custom($conf) {
+  $output = t('Custom');
+  if ($conf['title']) {
+    $output .= " (" . filter_xss_admin($conf['title']) . ")";
+  }
+  return $output;
+}
+

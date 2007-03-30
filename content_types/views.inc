@@ -7,8 +7,12 @@ function panels_views_panels_content_types() {
     // Only valid if views module loaded.
     $items['views'] = array(
       'name' => t('View'),
-      'callback' => 'panels_content_views',
-      'admin' => 'panels_admin_views',
+      'content_types' => 'panels_admin_content_types_views',
+      'render callback' => 'panels_content_views',
+      'add callback' => 'panels_admin_add_views',
+      'edit callback' => 'panels_admin_edit_views',
+      'title callback' => 'panels_admin_title_views',
+      'validate callback' => 'panels_admin_validate_views',
     );
     return $items;
   }
@@ -40,120 +44,129 @@ function panels_content_views($conf) {
 
     $block->module = 'views';
     $block->delta = $view->name;
-    $block->subject = $conf['show_title'] ? filter_xss_admin(views_get_title($view, 'block')) : NULL;
+    $view_type = $conf['type'] == 'embed' ? 'page' : $conf['type'];
+    $block->subject = $conf['show_title'] ? filter_xss_admin(views_get_title($view, $view_type)) : NULL;
     $block->content = views_build_view($conf['type'], $view, $args, intval($conf['pager_id']), intval($conf['nodes_per_page']));
   }
   return $block;
 }
-
-/** 
- * Callback to perform administrative functions on the content views
+/**
+ * Return all content types available.
  */
-function panels_admin_views($op, &$arg, $arg2 = NULL) {
-  switch ($op) {
-    case 'list':
-      $conf = $arg;
-      $view = views_get_view($conf['view']);
-      return '<strong>View</strong>: ' . $view->name;
-    case 'add form':
-      $result = db_query("SELECT name, description FROM {view_view}");
-      while ($view = db_fetch_object($result)) {
-        $views[$view->name] = $view->name . ': ' . $view->description;
-      }
+function panels_admin_content_types_views() {
+  $types = array();
 
-      views_load_cache();
-      $default_views = _views_get_default_views();
-      $views_status = variable_get('views_defaults', array());
-      foreach ($default_views as $view) {
-        if (!$views[$view->name] && 
-          ($views_status[$view->name] == 'enabled' || (!$views_status[$view->name] && !$view->disabled))) {
-          $views[$view->name] = check_plain($view->name . ': ' . $view->description);
-        }
-      }
-
-      ksort($views);
-
-      $form['view'] = array(
-        '#type' => 'select',
-        '#options' => $views,
-        '#title' => t('Choose a view from the views module'),
-      );
-
-      return $form;
-    case 'add':
-      $conf = $arg;
-      $view = views_get_view($conf['view']);
-      if ($view->page) {
-        $conf['type'] = 'page';
-        $conf['nodes_per_page'] = $view->nodes_per_page;
-      }
-      else {
-        $conf['type'] = 'block';
-        $conf['nodes_per_page'] = $view->nodes_per_block;
-      }
-      $conf['pager_id'] = 0;
-      return $conf;
-    case 'edit':
-      $conf = &$arg;
-      $form['view'] = array(
-        '#type' => 'hidden',
-        '#default_value' => $conf['view'],
-      );
-      $form['type'] = array(
-        '#type' => 'select',
-        '#default_value' => $conf['type'],
-        '#title' => t('View type'),
-        '#description' => t('Select which type of the view to display.'),
-        '#options' => array('page' => t('Page'), 'block' => t('Block'), 'embed' => t('Embedded')),
-      );
-      $form['pager_id'] = array(
-        '#type' => 'textfield',
-        '#default_value' => $conf['pager_id'],
-        '#title' => t('Pager ID'),
-        '#size' => 4,
-        '#description' => t('Select the numeric pager ID to use, or 0 to not have use paging. Select "1" if you aren\'t sure what this means'),
-      );
-
-      $form['nodes_per_page'] = array(
-        '#type' => 'textfield',
-        '#default_value' => $conf['nodes_per_page'],
-        '#title' => t('Posts to Display'),
-        '#size' => 4,
-        '#description' => t('Select the number of posts to display, or 0 to display all results.'),
-      );
-
-      $form['args'] = array(
-        '#type' => 'textfield',
-        '#default_value' => $conf['args'],
-        '#title' => t('View arguments'),
-        '#size' => 12,
-        '#description' => t('Arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You can use %0, %1, %2, etc, to use arguments from the actual URL. For example, if your panel URL is foo/bar, and someone hits foo/bar/5 use %2 to get the 5.'),
-      );
-
-      $form['url'] = array(
-        '#type' => 'textfield',
-        '#default_value' => $conf['url'],
-        '#title' => t('Override URL'),
-        '#size' => 12,
-        '#description' => t('If this is set, override the View URL; this can sometimes be useful to set to the panel URL'),
-      );
-
-      $form['show_title'] = array(
-        '#type' => 'checkbox',
-        '#default_value' => $conf['show_title'],
-        '#title' => t('Display view title'),
-        '#description' => t('If checked, the title of the view will be displayed.'),
-      );
-
-      return $form;
-    case 'validate':
-      // This one has nothing to validate.
-      $form_values = &$arg;
-      $form = $arg2;
-      return;
-    case 'save':
-      // For this one, the form values go directly into the config.
-      $form = &$arg;
-      return $form;
+  $result = db_query("SELECT * FROM {view_view}");
+  while ($view = db_fetch_object($result)) {
+    $title = views_get_title($view, 'admin');
+    $types[$view->name] = array(
+      'title' => strip_tags($title ? $title : $view->name),
+      'icon' => 'views.png',
+      'description' => filter_xss_admin($view->description),
+    );
   }
+
+  views_load_cache();
+  $default_views = _views_get_default_views();
+  $views_status = variable_get('views_defaults', array());
+  foreach ($default_views as $view) {
+    if (!$views[$view->name] && 
+      ($views_status[$view->name] == 'enabled' || (!$views_status[$view->name] && !$view->disabled))) {
+      $title = views_get_title($view, 'admin');
+      $types[$view->name] = array(
+        'title' => strip_tags($title ? $title : $view->name),
+        'icon' => 'views.png',
+        'description' => filter_xss_admin($view->description),
+      );
+    }
+  }
+  return $types;
+}
+
+/**
+ * Returns the form for a new view.
+ */
+function panels_admin_add_views($id) {
+  $conf = array();
+  $view = views_get_view($id);
+  if (!$view) { 
+    return;
+  }
+  $conf['view'] = $id;
+  if ($view->page) {
+    $conf['type'] = 'page';
+    $conf['nodes_per_page'] = $view->nodes_per_page;
+  }
+  else {
+    $conf['type'] = 'block';
+    $conf['nodes_per_page'] = $view->nodes_per_block;
+  }
+  $conf['type'] = 'embed';
+  $conf['pager_id'] = 0;
+  return panels_admin_edit_views($conf);
+}
+
+/**
+ * Returns an edit form for a block.
+ */
+function panels_admin_edit_views($conf) {
+  $form['view'] = array(
+    '#type' => 'value',
+    '#default_value' => $conf['view'],
+  );
+  $form['type'] = array(
+    '#type' => 'select',
+    '#default_value' => $conf['type'],
+    '#title' => t('View type'),
+    '#description' => t('Select which type of the view to display.'),
+    '#options' => array('page' => t('Page'), 'block' => t('Block'), 'embed' => t('Embedded')),
+  );
+  $form['pager_id'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['pager_id'],
+    '#title' => t('Pager ID'),
+    '#size' => 4,
+    '#description' => t('Select the numeric pager ID to use, or 0 to not have use paging. Select "1" if you aren\'t sure what this means'),
+  );
+
+  $form['nodes_per_page'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['nodes_per_page'],
+    '#title' => t('Posts to Display'),
+    '#size' => 4,
+    '#description' => t('Select the number of posts to display, or 0 to display all results.'),
+  );
+
+  $form['args'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['args'],
+    '#title' => t('View arguments'),
+    '#size' => 12,
+    '#description' => t('Arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You can use %0, %1, %2, etc, to use arguments from the actual URL. For example, if your panel URL is foo/bar, and someone hits foo/bar/5 use %2 to get the 5.'),
+  );
+
+  $form['url'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['url'],
+    '#title' => t('Override URL'),
+    '#size' => 12,
+    '#description' => t('If this is set, override the View URL; this can sometimes be useful to set to the panel URL'),
+  );
+
+  $form['show_title'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $conf['show_title'],
+    '#title' => t('Display view title'),
+    '#description' => t('If checked, the title of the view will be displayed.'),
+  );
+  return $form;
+}
+
+/**
+ * Returns the administrative title for a type.
+ */
+function panels_admin_title_views($conf) {
+  $view = views_get_view($conf['view']);
+  $title = views_get_title($view, 'admin');
+  return $title ? $title : $view->name;
 }

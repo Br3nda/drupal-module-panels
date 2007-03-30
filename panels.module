@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.5 2007/03/28 21:55:01 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.6 2007/03/30 05:49:07 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -17,11 +17,31 @@ function panels_menu($may_cache) {
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK
     );
-
     $items[] = array(
       'path' => 'panels/ajax',
       'title' => t('ajax'),
       'callback' => 'panels_ajax',
+      'access' => user_access('access content'),
+      'type' => MENU_CALLBACK
+    );
+    $items[] = array(
+      'path' => 'panels/ajax/add-content',
+      'title' => t('ajax'),
+      'callback' => 'panels_ajax_add_content',
+      'access' => user_access('access content'),
+      'type' => MENU_CALLBACK
+    );
+    $items[] = array(
+      'path' => 'panels/ajax/add-config',
+      'title' => t('ajax'),
+      'callback' => 'panels_ajax_add_config',
+      'access' => user_access('access content'),
+      'type' => MENU_CALLBACK
+    );
+    $items[] = array(
+      'path' => 'panels/ajax/configure',
+      'title' => t('ajax'),
+      'callback' => 'panels_ajax_configure',
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK
     );
@@ -73,13 +93,14 @@ function panels_imagebutton_value() {
 /**
  * Add a single button to a form.
  */
-function panels_add_button($image, $name, $text, $class) {
+function panels_add_button($image, $name, $text, $class, $id = NULL) {
   return array(
     '#type' => 'panels_imagebutton',
     '#image' => panels_get_path('images/' . $image, true),
     '#title' => $text,
     '#default_value' => $name,
     '#class' => $class,
+    '#id' => $id,
   );
 }
 
@@ -156,7 +177,7 @@ function panels_edit($display, $destination) {
     $display->did = $did = 'new';
   }
 
-  if (is_object($saved = panels_session_get($did, 'display'))) {
+  if (!empty($_POST) && is_object($saved = panels_session_get($did, 'display'))) {
     $display = $saved;
   }
   else {
@@ -194,9 +215,6 @@ function panels_edit_display($display, $destination) {
     '#id' => 'panel-op',
   );
 
-  $layout = panels_get_layouts($display->layout);
-  $content_types = panels_get_content_types();
-
   $form['panels_display'] = array(
     '#type' => 'value',
     '#value' => $display
@@ -210,15 +228,14 @@ function panels_edit_display($display, $destination) {
   $form['button']['#tree'] = TRUE;
   foreach ($display->content as $pid => $panel) {
     $form['button'][$pid]['#tree'] = TRUE;
-    $form['button'][$pid]['configure'] = panels_add_button('config.png', t('Configure'), t('Configure this pane'), 'pane-configure');
-    $form['button'][$pid]['delete'] = panels_add_button('user-trash.png', t('Delete'), t('Remove this pane'), 'pane-delete');
+    $form['button'][$pid]['configure'] = panels_add_button('wrench.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
+    $form['button'][$pid]['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');
   }
 
-  $form['add-content'] = array(
-    '#type' => 'button',
-    '#value' => t('Add content'),
-    '#attributes' => array('class' => 'panels-add-block'),
-  );
+  $layout = panels_get_layout($display->layout);
+  foreach ($layout['panels'] as $id => $name) {
+    $form['panels'][$id]['add'] = panels_add_button('add.gif', t('Add content'), t('Add content to this panel'), 'pane-add', "pane-add-$id");
+  }
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
@@ -256,9 +273,7 @@ function panels_edit_display($display, $destination) {
 function theme_panels_edit_display($form) {
   _panels_js_files();
   $display = $form['panels_display']['#value'];
-  $layout = panels_get_layouts($display->layout);
-
-  $content_types = panels_get_content_types();
+  $layout = panels_get_layout($display->layout);
 
   foreach ($layout['panels'] as $panel_id => $title) {
     foreach ((array) $display->panels[$panel_id] as $pid) {
@@ -267,7 +282,7 @@ function theme_panels_edit_display($form) {
       $buttons .= drupal_render($form['button'][$pid]['delete']);
       $content[$pane->panel] .= panels_show_pane($pane, $buttons);
     }
-    $content[$panel_id] = theme('panels_panel_dnd', $content[$panel_id], $panel_id, $title);
+    $content[$panel_id] = theme('panels_panel_dnd', $content[$panel_id], $panel_id, $title, drupal_render($form['panels'][$panel_id]['add']));
   }
   $output .= drupal_render($form);
   $output .= theme('panels_dnd', panels_render_layout($layout, $content));
@@ -275,31 +290,94 @@ function theme_panels_edit_display($form) {
 }
 
 function panels_edit_display_submit($form_id, $form_values) {
-  drupal_set_message(t('Panel content has been updated.'));
   $display = $form_values['panels_display'];
+  if ($form_values['op'] == t('Save')) {
+    drupal_set_message(t('Panel content has been updated.'));
+    panels_save_display($display);
+  }
+
   panels_session_reset($display->did);
-  panels_save_display($display);
   return $form_values['destination'];
+}
+
+// ------------------------------------------------------------------
+// Functions to provide information about a content type
+
+function panels_ct_function($type, $name) {
+  if (is_object($type)) {
+    $content_type = $type;
+  }
+  else {
+    $content_type = panels_get_content_type($type);
+  }
+
+  $function = $content_type[$name];
+  if (function_exists($function)) {
+    return $function; 
+  }
+}  
+
+function panels_ct_get_content($type, $conf) {
+  if ($function = panels_ct_function($type, 'render callback')) {
+    return $function($conf); 
+  }
+}
+
+function panels_ct_get_title($type, $conf) {
+  if ($function = panels_ct_function($type, 'title callback')) {
+    return $function($conf); 
+  }
+}
+
+function panels_ct_get_add_form($type, $id, $parents) {
+  if ($function = panels_ct_function($type, 'add callback')) {
+    return $function($id, $parents); 
+  }
+}
+
+function panels_ct_get_edit_form($type, $conf, $parents) {
+  if ($function = panels_ct_function($type, 'edit callback')) {
+    return $function($conf, $parents); 
+  }
+}
+
+function panels_ct_validate_form($type, $form, $form_values) {
+  if ($function = panels_ct_function($type, 'validate callback')) {
+    return $function($form, $form_values); 
+  }
+}
+
+function panels_ct_get_types($type) {
+  if (is_array($type)) {
+    $content_type = $type;
+  }
+  else {
+    $content_type = panels_get_content_type($type);
+  }
+
+  $function = $content_type['content_types'];
+  if (is_array($function)) {
+    return $function;
+  }
+
+  if (function_exists($function)) {
+    return $function($conf); 
+  }
 }
 
 // ------------------------------------------------------------------
 // Functions to provide information about a panel or part of a panel.
 
 function panels_get_pane_content($pane) {
-  $content_types = panels_get_content_types();
-
-  $function = $content_types[$pane->type]['callback'];
-  if (function_exists($function)) {
-    return $function($pane->configuration); 
-  }
+  return panels_ct_get_content($pane->type, $pane->configuration);
 }
 
 function panels_get_pane_title($pane) {
-  $content_types = panels_get_content_types();
-  $function = $content_types[$pane->type]['admin'];
-  if (function_exists($function)) {
-    return $function('list', $pane->configuration); 
-  }
+  return panels_ct_get_title($pane->type, $pane->configuration);
+}
+
+function panels_get_pane_edit_form($pane, $parents) {
+  return panels_ct_get_edit_form($pane->type, $pane->configuration, $parents);
 }
 
 function panels_show_pane($pane, $buttons, $skin = TRUE) {
@@ -326,23 +404,9 @@ function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
         panels_save_display_form($display, $_POST);
       }
       break;
-    case 'add-content':
-      if ((is_numeric($did) || $did == 'new') && $display = panels_session_get($did, 'display')) {
-        $output->output = drupal_get_form('panels_add_content_form', $display);
-        $output->type = 'display';
-        $output->title = t('Choose type');
-      }
-      break;
     case 'submit-form':
       if ((is_numeric($did) || $did == 'new') && $display = panels_session_get($did, 'display')) {
         $output = panels_edit_submit_subform($display);
-      }
-      break;
-    case 'configure':
-      if ((is_numeric($did) || $did == 'new') && $display = panels_session_get($did, 'display')) {
-        $text = drupal_get_form('panels_edit_pane_config_form', $display, $pid);
-        $output = panels_get('return');
-        $output->output = $text;
       }
       break;
   }      
@@ -351,9 +415,66 @@ function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
   exit;
 }
 
+function panels_ajax_add_content($did = NULL, $panel_id = NULL) {
+  if ((is_numeric($did) || $did == 'new') && $display = panels_session_get($did, 'display')) {
+    $layout = panels_get_layout($display->layout);
+    if ($layout && array_key_exists($panel_id, $layout['panels'])) {
+      $output->output = panels_add_content($display, $panel_id);
+      $output->type = 'display';
+      $output->title = t('Add content to !s', array('!s' => $layout['panels'][$panel_id]));
+    }
+    else {
+      panels_ajax_invalid_input();
+    }
+  }
+  print drupal_to_js($output);
+  exit;
+}
+
+function panels_ajax_add_config($did = NULL, $pid = NULL) {
+  if ((is_numeric($did) || $did == 'new') && $display = panels_session_get($did, 'display')) {
+    list($content_type_id, $panel_id, $type) = explode('-', $pid, 3);
+    $conf = panels_ct_get_add_form($content_type_id, $type, array('configuration'));
+    $types = panels_ct_get_types($content_type_id);
+    $title = $types[$type]['title'];
+
+    panels_session_set($display->did, 'add_config', array($content_type_id, $conf, $panel_id, $title));
+
+    $text = drupal_get_form('panels_add_content_config_form', $display, $content_type_id, $conf, $panel_id, $title);
+    $output = panels_get('return');
+    $output->output = $text;
+  }      
+  print drupal_to_js($output);
+  exit;
+}
+
+function panels_ajax_invalid_input() {
+  $output->output = t('The input was invalid');
+  $output->type = 'display';
+  $output->title = t('Error');
+  print drupal_to_js($output);
+  exit;
+}
+
+function panels_ajax_configure($did = NULL, $pid = NULL) {
+  if ((is_numeric($did) || $did == 'new') && $display = panels_session_get($did, 'display')) {
+    $text = drupal_get_form('panels_edit_pane_config_form', $display, $pid);
+    $output = panels_get('return');
+    $output->output = $text;
+  }
+  print drupal_to_js($output);
+  exit;
+}
+ 
 function panels_edit_submit_subform($display) {
+  $valid_forms = array('panels_add_content_config_form', 'panels_edit_pane_config_form');
+  $form_id = $_POST['form_id'];
+  if (!in_array($form_id, $valid_forms)) {
+    return panels_ajax_invalid_input();
+  }
+
   // TODO: protect form_id to make sure it can only get panels forms.
-  $output = drupal_get_form($_POST['form_id'], $display);
+  $output = drupal_get_form($form_id, $display);
 
   $next = panels_get('next');
 
@@ -374,11 +495,14 @@ function panels_edit_submit_subform($display) {
     }
   }
 
+  if ($return->type == 'display') {
+    $return->output = theme('status_messages') . $return->output;
+  }
   return $return;
 }
 
 function panels_save_display_form($display, $post) {
-  $layout = panels_get_layouts($display->layout);
+  $layout = panels_get_layout($display->layout);
 
   // we're copying the content because content that doesn't appear in $post
   // was deleted.
@@ -402,141 +526,53 @@ function panels_save_display_form($display, $post) {
 // ---------------------------------------------------------------------------
 // panels sub-forms
 
-function panels_add_content_form($display) {
+function panels_add_content($display, $panel_id) {
   $return->type = 'display';
   $return->title = t('Choose type');
   panels_set('return', $return);
 
   $content_types = panels_get_content_types();
+
   foreach ($content_types as $id => $type) {
-    $options[$id] = $type['name'];
+    $form[$id]['#tree'] = TRUE;
+    $types = panels_ct_get_types($type);
+    if (is_array($types)) {
+      foreach ($types as $content_id => $info) {
+        if (isset($info['icon'])) {
+          $icon = $info['icon'];
+          if (isset($info['path'])) {
+            $path = $info['path'];
+          }
+          else {
+            $path = panels_get_path("content_types/$id");
+          }
+        }
+        else {
+          $icon = 'no-icon.png';
+          $path = panels_get_path('images');
+        }
+        $title = filter_xss_admin($info['title']);
+        if (isset($info['description'])) {
+          $description = $info['description'];
+        }
+        else {
+          $description = $title;
+        }
+        $output .= '<div class="content-type-button">';
+        $link_text = theme('image', $path . '/' . $icon, $description, $description);
+        $output .= l($link_text, 'javascript: void()', array('class' => 'panels-modal-add-config', 'id' => $id . '-' . $panel_id . '-' . $content_id), NULL, NULL, NULL, TRUE);
+        $output .= $title;
+        $output .= '</div>';
+      }
+    }
   }
-
-  $form['did'] = array(
-    '#type' => 'value',
-    '#value' => $display->did,
-  );
-
-  $form['start_form'] = array('#value' => '<div class="modal-form">');
-
-  $type_keys = array_keys($content_types);
-  $form['type'] = array(
-    '#type' => 'radios',
-    '#title' => t('Content type'),
-    '#options' => $options,
-    '#default_value' => array_shift($type_keys),
-  );
-
-  $form['end_form'] = array('#value' => '</div>');
-
-  $form['next'] = array(
-    '#type' => 'submit',
-    '#value' => t('Next'),
-    '#attributes' => array('class' => 'panel-submit-form'),
-  );
-
-  return $form;
-}
-
-function panels_add_content_form_submit($form_id, $form) {
-  $id = $form['type'];
-  panels_session_set($form['did'], 'content_type', $id);
-  
-  $content_types = panels_get_content_types();
-  $type = $content_types[$id];
-
-  if ($type['no_add']) {
-    // if a content type is simple enough we can go straight to the
-    // configure screen.
-    $next['form'] = 'panels_add_content_config_form';
-  }
-  else {
-    $next['form'] = 'panels_add_content_type_form';
-    $next['data'] = $id;
-  }
-
-  panels_set('next', $next);
-  return FALSE;
-}
-
-function panels_add_content_type_form($display, $id = NULL) {
-  if ($id === NULL) {
-    $id = panels_session_get($display->did, 'content_type');
-  }
-  else {
-    panels_session_set($display->did, 'content_type', $id);
-  }
-
-  // set up title & info for AJAX display.
-  $return->type = 'display';
-  $return->title = t('Add !s', array('!s' => $id));
-  panels_set('return', $return);
-
-  $content_types = panels_get_content_types();
-  $type = $content_types[$id];
-
-  $form['did'] = array(
-    '#type' => 'value',
-    '#value' => $display->did,
-  );
-
-  $form['start_form'] = array('#value' => '<div class="modal-form">');
-
-  $function = $type['admin'];
-  if (function_exists($function)) {
-    $form['configuration'] = $function('add form', $dummy); 
-    $form['configuration']['#tree'] = true;
-  }
-
-  $form['end_form'] = array('#value' => '</div>');
-
-  $form['next'] = array(
-    '#type' => 'submit',
-    '#value' => t('Next'),
-  );
-
-  return $form;
-}
-
-function theme_panels_add_content_type_form($form) {
-  $form['start_form']['#suffix'] .= theme('status_messages');
-  $output = drupal_render($form);
   return $output;
 }
 
-function panels_add_content_type_form_validate($form_id, $form_values, $form) {
-  $content_type_id = panels_session_get($form_values['did'], 'content_type');
-  $content_types = panels_get_content_types();
-  $type = $content_types[$content_type_id];
-
-  $function = $type['admin'];
-  if (function_exists($function)) {
-    $function('add validate', $form_values['configuration'], $form['configuration']);
+function panels_add_content_config_form($display, $content_type_id = NULL, $conf = NULL, $panel_id = NULL, $title = NULL) {
+  if (empty($content_type_id)) {
+    list($content_type_id, $conf, $panel_id, $title) = panels_session_get($display->did, 'add_config');
   }
-}
-
-function panels_add_content_type_form_submit($form_id, $form) {
-  $next['form'] = 'panels_add_content_config_form';
-  $next['data'] = $form;
-
-  global $debug;
-  panels_set('next', $next);
-  return FALSE;
-}
-
-function panels_add_content_config_form($display, $conf = NULL) {
-  if ($conf === NULL) {
-    $conf = panels_session_get($display->did, 'conf');
-  }
-  else {
-    panels_session_set($display->did, 'conf', $conf);
-  }
-  
-  $content_type_id = panels_session_get($display->did, 'content_type');
-  $content_types = panels_get_content_types();
-  $type = $content_types[$content_type_id];
-
-  $function = $type['admin'];
 
   $form['start_form'] = array('#value' => '<div class="modal-form">');
 
@@ -550,27 +586,13 @@ function panels_add_content_config_form($display, $conf = NULL) {
     '#value' => $content_type_id,
   );
 
-  $layout = panels_get_layouts($display->layout);
-  $default_radio = array_shift(array_keys($layout['panels']));
-
   $form['panel'] = array(
-    '#prefix' => '<div class="container-inline">',
-    '#suffix' => '</div>',
-    '#type' => 'radios',
-    '#title' => t('Panel'),
-    '#options' => $layout['panels'],
-    '#default_value' => $default_radio,
+    '#type' => 'value',
+    '#value' => $panel_id,
   );
 
-  if (function_exists($function)) {
-    $panel = $function('add', $conf['configuration']);
-    $return->title = t('Configure !s', array('!s' => $function('list', $panel)));
-    $form['configuration'] = $function('edit', $panel);
-    $form['configuration']['#tree'] = true;
-  }
-
-  $return->type = 'display';
-  panels_set('return', $return);
+  $form['configuration'] = $conf;
+  $form['configuration']['#tree'] = TRUE;
   
   $form['end_form'] = array('#value' => '</div>');
 
@@ -578,7 +600,15 @@ function panels_add_content_config_form($display, $conf = NULL) {
     '#type' => 'submit',
     '#value' => t('Add pane'),
   );
+
+  $return->type = 'display';
+  $return->title = t('Configure !s', array('!s' => $title));
+  panels_set('return', $return);
   return $form;
+}
+
+function panels_add_content_config_form_validate($form_id, $form_values, $form) {
+  panels_ct_validate_form($form_values['type'], $form['configuration'], $form_values['configuration']);
 }
 
 function panels_add_content_config_form_submit($form_id, $form) {
@@ -597,10 +627,10 @@ function panels_add_content_config_form_submit($form_id, $form) {
   $return->id = $form['pid'];
 
   // we need to fake the buttons a little.
-  $buttons['configure'] = panels_add_button('config.png', t('Configure'), t('Configure this pane'), 'pane-configure');
+  $buttons['configure'] = panels_add_button('wrench.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
   $buttons['configure']['#parents'] = array('button', $form['pid'], 'configure');
 
-  $buttons['delete'] = panels_add_button('user-trash.png', t('Delete'), t('Remove this pane'), 'pane-delete');
+  $buttons['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');
   $buttons['delete']['#parents'] = array('button', $form['pid'], 'delete');
   
   $buttons = form_builder('dummy', $buttons);
@@ -620,11 +650,6 @@ function panels_edit_pane_config_form($display, $pid = NULL) {
 
   $pane = $display->content[$pid];
 
-  $content_types = panels_get_content_types();
-  $type = $content_types[$pane->type];
-
-  $function = $type['admin'];
-
   $form['start_form'] = array('#value' => '<div class="modal-form">');
 
   $form['did'] = array(
@@ -642,11 +667,9 @@ function panels_edit_pane_config_form($display, $pid = NULL) {
     '#value' => $content_type_id,
   );
 
-  if (function_exists($function)) {
-    $return->title = t('Configure !s', array('!s' => $function('list', $pane->configuration)));
-    $form['configuration'] = $function('edit', $pane->configuration);
-    $form['configuration']['#tree'] = true;
-  }
+  $return->title = t('Configure !s', array('!s' => panels_get_pane_title($pane)));
+  $form['configuration'] = panels_get_pane_edit_form($pane, array('configuration'));
+  $form['configuration']['#tree'] = true;
 
   $return->type = 'display';
   panels_set('return', $return);
@@ -689,10 +712,7 @@ function panels_edit_display_validate($form_id, $form_values, $form) {
   foreach ($form_values['content'] as $area => $content) {
     foreach ($content as $id => $item) {
       if (is_numeric($id)) {
-        $function = $content_types[$item['type']]['admin'];
-        if (function_exists($function)) {
-          $function('validate', $item['configuration'], $form['content'][$area][$id]['configuration']);
-        }
+        panels_ct_validate($item['type'], $item['configuration'], $form['content'][$area][$id]['configuration']);
       }
     }
   }
@@ -806,7 +826,7 @@ function panels_delete_display($display) {
  * panel display.
  */
 function panels_print_layout($id, $content) {
-  $layout = panels_get_layouts($id);
+  $layout = panels_get_layout($id);
   if (!$layout) {
     return;
   }
@@ -868,7 +888,7 @@ function panels_get_layouts($layout = NULL) {
       $layouts = panels_load_includes('layouts', 'panels_layouts');
       $all_layouts = TRUE;
     }
-    else if (!array_key_exists($layouts, $layout)) {
+    else if (!array_key_exists($layout, $layouts)) {
       $temp_layouts = panels_load_includes('layouts', 'panels_layouts', $layout);
       if (isset($temp_layouts[$layout])) {
         $layouts[$layout] = $temp_layouts[$layout];
@@ -881,10 +901,28 @@ function panels_get_layouts($layout = NULL) {
   return $layouts;
 }
 
-function panels_get_content_types() {
-  static $content_types = NULL;
-  if (!$content_types) {
-    $content_types = panels_load_includes('content_types', 'panels_content_types');
+function panels_get_content_type($content_type) {
+  return panels_get_content_types($content_type);
+}
+
+function panels_get_content_types($content_type = NULL) {
+  static $content_types = array();
+  static $all_content_types = FALSE;
+
+  if (!$all_content_types) {
+    if (!$content_type) {
+      $content_types = panels_load_includes('content_types', 'panels_content_types');
+      $all_content_types = TRUE;
+    }
+    else if (!array_key_exists($content_type, $content_types)) {
+      $temp_content_types = panels_load_includes('content_types', 'panels_content_types', $content_type);
+      if (isset($temp_content_types[$content_type])) {
+        $content_types[$content_type] = $temp_content_types[$content_type];
+      }
+    }
+  }
+  if ($content_type) {
+    return isset($content_types[$content_type]) ? $content_types[$content_type] : NULL;
   }
   return $content_types;
 }
@@ -919,8 +957,8 @@ function theme_panels_dnd($content) {
   return $output;
 }
 
-function theme_panels_panel_dnd($content, $area, $label) {
-  return "<div class=\"panels-dnd-col\" id=\"panel-pane-$area\"><h2 class=\"label\">$label</h2>$content</div>";
+function theme_panels_panel_dnd($content, $area, $label, $footer) {
+  return "<div class=\"panels-dnd-col\" id=\"panel-pane-$area\">$footer<h2 class=\"label\">$label</h2>$content</div>";
 }
 
 function theme_panels_pane_dnd($block, $id, $label, $buttons = NULL) {

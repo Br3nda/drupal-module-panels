@@ -9,7 +9,13 @@ div.panels-dnd-col h2.label {
   text-align: center;
   font-size: 12pt;
   margin: 0 0 .5em 0;
+  padding-right: 16px;
 }
+
+div.panels-dnd-col .pane-add {
+  float: left;
+}
+
 .panel-pane {
   border: 1px solid #5ab5ee;
   padding: 0;
@@ -40,6 +46,10 @@ div.panels-dnd-col h2.label {
   margin: 0;
   padding: 0;
   display: inline;
+}
+
+.panel-pane .buttons input.pane-delete {
+  margin: 0 2px 1px 1px;
 }
 
 .panel-pane .toggle {
@@ -81,9 +91,7 @@ div.panels-dnd-col h2.label {
   padding: 0;
   margin: 2px;
   border: 1px solid #000;
-  overflow: auto;
   width: 600px;
-  height: 400px;
 } 
 
 .panels-modal-content .modal-title {
@@ -106,6 +114,9 @@ div.panels-dnd-col h2.label {
 
 .panels-modal-content .modal-content {
   padding: 0 1em;
+  overflow: auto;
+  width: 575px;
+  height: 400px;
 }
 
 .panels-modal-content .modal-form {
@@ -119,6 +130,23 @@ div.panels-dnd-col h2.label {
 a.close img {
   position: relative;
   top: 1px;
+}
+
+.content-type-button {
+  float: left;
+  width: 90px;
+  height: 110px;
+  font-size: 8pt;
+  line-height: 1em;
+  text-align: center;
+}
+
+.content-type-button img {
+  border: 2px solid white;
+}
+
+.content-type-button img:hover {
+  border: 2px solid blue;
 }
 
 /* ---------------------------------------------------------------------------

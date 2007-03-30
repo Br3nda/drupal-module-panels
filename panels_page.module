@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.3 2007/03/28 21:55:01 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.4 2007/03/30 05:49:07 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -164,7 +164,7 @@ function panels_page_access($panel_page, $account = NULL) {
   }
 
   // All views with an empty access setting are available to all roles.
-  if (!$panel_page->access) { 
+  if (!$panel_page->access || !is_array($panel_page->access)) { 
     return TRUE;
   }
 
@@ -447,7 +447,7 @@ function panels_page_view_page($pid) {
     return drupal_not_found();
   }
 
-  $layout = panels_get_layouts($panel_page->display->layout);
+  $layout = panels_get_layout($panel_page->display->layout);
   $layout['css_id'] = $panel_page->css_id;
   
   if (!$layout) {
@@ -457,6 +457,7 @@ function panels_page_view_page($pid) {
 
   $content_types = panels_get_content_types();
 
+  // TODO: This should be panels_render_display
   foreach ($panel_page->display->content as $pid => $pane) {
     $function = $content_types[$pane->type]['callback'];
     if (function_exists($function)) {

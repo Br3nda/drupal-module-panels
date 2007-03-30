@@ -5,8 +5,12 @@
 function panels_block_panels_content_types() {
   $items['block'] = array(
     'name' => t('Block'),
-    'callback' => 'panels_content_block',
-    'admin' => 'panels_admin_block',
+    'content_types' => 'panels_admin_content_types_block',
+    'render callback' => 'panels_content_block',
+    'add callback' => 'panels_admin_add_block',
+    'edit callback' => 'panels_admin_edit_block',
+    'title callback' => 'panels_admin_title_block',
+    //'validate callback' => 'panels_admin_validate_block',
   );
   return $items;
 }
@@ -43,77 +47,70 @@ function panels_content_block($conf) {
   }
 }
 
-/** 
- * Callback to perform administrative functions on the content block
+/**
+ * Return all content types available.
  */
-function panels_admin_block($op, &$arg, $arg2 = NULL) {
-  switch ($op) {
-    case 'list':
-      $conf = $arg;
-      $block = module_invoke($conf['module'], 'block', 'list');
-      $title = $block[$conf['delta']]['info'];
-      if ($conf['override_title']) {
-        $title .= ' [' . check_plain($conf['override_title_text']) . ']';
+function panels_admin_content_types_block() {
+  $types = array();
+  foreach (module_list() as $module) {
+    $module_blocks = module_invoke($module, 'block', 'list');
+    if ($module_blocks) {
+      foreach ($module_blocks as $delta => $block) {
+        // strip_tags used because it goes through check_plain and that
+        // just looks bad.
+        $types["$module-$delta"] = array(
+          'title' => strip_tags($block['info']),
+          'icon' => 'block.png',
+          // Do we want to create some default icons here?
+        );
       }
-      return '<strong>Block</strong>: ' . $title . ' (' . $conf['module'] . '-' . $conf['delta'] . ')';
-    case 'add form':
-      foreach (module_list() as $module) {
-        $module_blocks = module_invoke($module, 'block', 'list');
-        if ($module_blocks) {
-          $array = array();
-          foreach ($module_blocks as $delta => $block) {
-            // strip_tags used because it goes through check_plain and that
-            // just looks bad.
-            $array["$module-$delta"] = strip_tags($block['info']);
-          }
-          $options[$module] = $array;
-        }
-      }
-      $form['block'] = array(
-        '#type' => 'select',
-        '#options' => $options,
-        '#title' => t('Block'),
-      );
-
-      return $form;
-    case 'add':
-      $form = &$arg;
-      $conf = array();
-      list($conf['module'], $conf['delta']) = explode('-', $form['block'], 2);
-      // take the data given to us and return a fully formed $area object.
-      return $conf;
-    case 'edit':
-      $conf = &$arg;
-      $form['module'] = array(
-        '#type' => 'hidden',
-        '#default_value' => $conf['module'],
-      );
-      $form['delta'] = array(
-        '#type' => 'hidden',
-        '#default_value' => $conf['delta'],
-      );
-      $form['override_title'] = array(
-        '#type' => 'checkbox',
-        '#default_value' => $conf['override_title'],
-        '#title' => t('Override title'),
-        '#description' => t('If checked, the block title will be overridden with the override title text.')
-      );
-      $form['override_title_text'] = array(
-        '#type' => 'textfield',
-        '#default_value' => $conf['override_title_text'],
-        '#title' => t('Override title text'),
-        '#size' => 15,
-      );
-
-      return $form;
-    case 'validate':
-      // This one has nothing to validate.
-      $form_values = &$arg;
-      $form = $arg2;
-      return;
-    case 'save':
-      // For this one, the form values go directly into the config.
-      $form = &$arg;
-      return $form;
+    }
   }
+  return $types;
+}
+
+/**
+ * Returns the form for a new block.
+ */
+function panels_admin_add_block($id) {
+  $conf = array();
+  list($conf['module'], $conf['delta']) = explode('-', $id, 2);
+  return panels_admin_edit_block($conf);
+}
+
+/**
+ * Returns an edit form for a block.
+ */
+function panels_admin_edit_block($conf) {
+  $form['module'] = array(
+    '#type' => 'value',
+    '#value' => $conf['module'],
+  );
+  $form['delta'] = array(
+    '#type' => 'value',
+    '#value' => $conf['delta'],
+  );
+  $form['override_title'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $conf['override_title'],
+    '#title' => t('Override title'),
+    '#description' => t('If checked, the block title will be overridden with the override title text.')
+  );
+  $form['override_title_text'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['override_title_text'],
+    '#title' => t('Override title text'),
+    '#size' => 15,
+  );
+
+  return $form;
+}
+
+/**
+ * Returns the administrative title for a type.
+ */
+function panels_admin_title_block($conf) {
+  $block = module_invoke($conf['module'], 'block', 'list');
+  $title = filter_xss_admin($block[$conf['delta']]['info']);
+  return $title;
 }
