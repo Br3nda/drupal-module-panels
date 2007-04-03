@@ -19,7 +19,8 @@ modules
 panels page
     o panels page 'default' panels
     o allow panel-page to use $arg/$node/$node-type/$user substitution like Views
-    o allow setting to not display blocks
+    o allow panel-page to do menu item & tab like Views.
+    X allow setting to not display blocks
 
 content types
     X Remove all calls to the 'admin' callback
@@ -56,6 +57,8 @@ panels API
     X Allow panels_edit_display to restrict available content to a preprepared list
     X Use cache instead of putting everything in $_SESSION
     X create panels_render_display() (or panels_display_render)
+    o Allow API to accept context
+    o Allow API to accept arguments
 
 General:
     o CSS class/id name cleanup and unification.

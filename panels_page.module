@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.6 2007/04/03 00:52:23 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.7 2007/04/03 18:30:11 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -287,8 +287,8 @@ function panels_page_list_page() {
     $item[] = check_plain($layouts[$panel_page->layout]['title']);
     $item[] = l($panel_page->path, $panel_page->path);
     $item[] = implode(' | ', array(
-      l(t('Edit'), "admin/build/panel-page/$panel_page->did/edit"),
-      l(t('Delete'), "admin/build/panel-page/$panel_page->did/delete"),
+      l(t('Edit'), "admin/build/panel-page/$panel_page->pid/edit"),
+      l(t('Delete'), "admin/build/panel-page/$panel_page->pid/delete"),
     ));
     $items[] = $item;
   }
@@ -520,7 +520,7 @@ function panels_page_edit_form_submit($form_id, $form_values) {
  * Pass through to the panels layout editor.
  */
 function panels_page_edit_layout($panel_page) {
-  return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->did/edit");
+  return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->pid/edit");
 }
 
 /**
@@ -547,7 +547,7 @@ function panels_page_edit_content($panel_page) {
       }
     }
   }
-  return panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->did/edit", $content_types);
+  return panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->pid/edit", $content_types);
 }
 
 // ---------------------------------------------------------------------------
