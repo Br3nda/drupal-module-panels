@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.4 2007/03/30 05:49:07 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.5 2007/04/03 00:29:24 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -47,6 +47,14 @@ function panels_page_menu($may_cache) {
       'title' => t('Add'),
       'access' => $access,    
       'callback' => 'panels_page_add_page',
+      'type' => MENU_LOCAL_TASK,
+    );
+    $items[] = array(
+      'path' => 'admin/build/panel-page/settings',
+      'title' => t('Settings'),
+      'access' => $access,    
+      'callback' => 'drupal_get_form',
+      'callback arguments' => array('panels_page_settings'),
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
@@ -182,6 +190,90 @@ function panels_page_access($panel_page, $account = NULL) {
 // panel page administrative pages
 
 /**
+ * Settings for panel pages
+ */
+function panels_page_settings() {
+  $content_types = panels_get_content_types();
+  $default_types = variable_get('panels_page_default', NULL);
+  if (!isset($default_types)) {
+    $default_types = array('block' => TRUE, 'views' => TRUE, 'other' => TRUE);
+    $skip = TRUE;
+  }
+
+  foreach ($content_types as $id => $info) {
+    if (empty($info['single'])) {
+      $default_options[$id] = t('New @s', array('@s' => $info['name']));
+    }
+  }
+
+  $default_options['other'] = t('New content of other types');
+  $form['panels_page_default'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('New content behavior'),
+    '#description' => t('Select the default behavior of new content added to the system. If checked, new content will automatically be immediately available to be added to Panels pages. If not checked, new content will not be available until specifically allowed here.'),
+    '#options' => $default_options,
+    '#default_value' => array_keys(array_filter($default_types)),
+  );
+  
+  if ($skip) {
+    $form['markup'] = array('#value' => t('<p>Click Submit to be presented with a complete list of available content types set to the defaults you selected.</p>'));
+    $form['skip'] = array('#type' => 'value', '#value' => TRUE);
+  }
+  else {
+    // Rebuild the entire list, setting appropriately from defaults. Give
+    // each type its own checkboxes set unless it's 'single' in which
+    // case it can go into our fake other set.
+    $available_content_types = panels_get_available_content_types();
+    $allowed_content_types = variable_get('panels_page_allowed_types', array());
+    
+    foreach ($available_content_types as $id => $types) {
+      foreach ($types as $type => $info) {
+        $key = $id . '-' . $type;
+        $checkboxes = empty($content_types[$id]['single']) ? $id : 'other';
+        $options[$checkboxes][$key] = $info['title'];
+        if (!isset($allowed_content_types[$key])) {
+          $allowed[$checkboxes][$key] = isset($default_types[$id]) ? $default_types[$id] : $default_types['other'];
+        }
+        else {
+          $allowed[$checkboxes][$key] = $allowed_content_types[$key];
+        }
+      }
+    }
+
+    $form['content_types'] = array('#tree' => TRUE);
+    // cheat a bit
+    $content_types['other'] = array('name' => t('Other'));
+    foreach ($allowed as $id => $keys) {
+      $form['content_types'][$id] = array(
+        '#prefix' => '<div class="panels-page-type-container">',
+        '#suffix' => '</div>',
+        '#type' => 'checkboxes',
+        '#title' => t('Allowed @s content', array('@s' => $content_types[$id]['name'])),
+        '#options' => $options[$id],
+        '#default_value' => array_keys(array_filter($keys)),
+      );
+    }
+  }
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+
+  drupal_add_css(drupal_get_path('module', 'panels_page') . '/css/panels_page.css');
+  return $form;
+}
+
+function panels_page_settings_submit($form_id, $form_values) {
+  variable_set('panels_page_default', $form_values['panels_page_default']);
+  if (!$form_values['skip']) {
+    // merge the broken apart array neatly back together
+    variable_set('panels_page_allowed_types', call_user_func_array('array_merge', $form_values['content_types']));
+  }
+  drupal_set_message(t('Your changes have been saved.'));
+}
+
+/**
  * Provide a list of panels, with links to edit or delete them.
  */
 function panels_page_list_page() {
@@ -272,8 +364,6 @@ function panels_page_edit($panel_page) {
 function panels_page_edit_form($panel_page) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
   $layout = panels_get_layouts($panel_page->display->layout);
-
-  $content_types = panels_get_content_types();
 
   $form['pid'] = array(
     '#type' => 'value',
@@ -435,7 +525,27 @@ function panels_page_edit_layout($panel_page) {
  * Pass through to the panels content editor.
  */
 function panels_page_edit_content($panel_page) {
-  return panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->did/edit");
+  $content_types = panels_get_available_content_types();
+  $default_types = variable_get('panels_page_defaults', array());
+  $allowed_types = variable_get('panels_page_allowed_types', array());
+
+  // By default, if they haven't gone and done the initial setup here,
+  // let all 'other' types (which will be all types) be available.
+  if (!isset($default_types['other'])) {
+    $default_types['other'] = TRUE;
+  }
+  foreach ($content_types as $id => $types) {
+    foreach ($types as $type => $info) {
+      $key = $id . '-' . $type;
+      if (!isset($allowed_types[$key])) {
+        $allowed_types[$key] = isset($default_types[$id]) ? $default_types[$id] : $default_types['other'];
+      }
+      if (!$allowed_types[$key]) {
+        unset($content_types[$id][$type]);
+      }
+    }
+  }
+  return panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->did/edit", $content_types);
 }
 
 // ---------------------------------------------------------------------------
@@ -446,25 +556,14 @@ function panels_page_view_page($pid) {
   if (!$panel_page) {
     return drupal_not_found();
   }
-
-  $layout = panels_get_layout($panel_page->display->layout);
-  $layout['css_id'] = $panel_page->css_id;
   
-  if (!$layout) {
+  $output = panels_render_display($panel_page->display, $panel_page->css_id);
+  // set title afterward to ensure title is retained.
+  if ($output == NULL) {
     watchdog('panels', t('Unable to find requested layout %s', array('%s' => check_plain($panel_page->display->layout))));
     return drupal_not_found();
   }
 
-  $content_types = panels_get_content_types();
-
-  // TODO: This should be panels_render_display
-  foreach ($panel_page->display->content as $pid => $pane) {
-    $function = $content_types[$pane->type]['callback'];
-    if (function_exists($function)) {
-      $content[$pane->panel] .= theme('block', $function($pane->configuration));
-    }
-  }
-  $output = panels_render_layout($layout, $content);
   drupal_set_title(filter_xss_admin($panel_page->title));
   return $output;
 }

@@ -149,6 +149,17 @@ a.close img {
   border: 2px solid blue;
 }
 
+.panels-modal-content .modal-content .panels-throbber-wrapper {
+  width: 575px;
+  height: 400px;
+  text-align: center;
+  vertical-align: center;
+}
+
+.panels-modal-content .modal-content .panels-throbber-wrapper img {
+  margin-top: 160px;
+}
+
 /* ---------------------------------------------------------------------------
  * Debugging CSS
  *

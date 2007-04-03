@@ -5,6 +5,7 @@
 function panels_custom_panels_content_types() {
   $items['custom'] = array(
     'name' => t('Custom'),
+    'single' => TRUE,
     'content_types' => 'panels_admin_content_types_custom',
     'render callback' => 'panels_content_custom',
     'add callback' => 'panels_admin_edit_custom',

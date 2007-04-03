@@ -7,21 +7,24 @@ ajax/js
     o Change show/hide to use AJAX.
     o Remove drag & drop; add move left/move right buttons
     o Add permission checking to all the ajax functions
-    o Break up panels_ajax into separate entry areas
+    o Break up panels_ajax into separate entry areas [mostly done]
     o ensure complete degradability
-    o Loading animation for panels-modal
+    X Loading animation for panels-modal
     X Make the titlebar outside of the overflow in the modal
 
 modules
     o panels node
     o mini-panel
+
+panels page
     o panels page 'default' panels
     o allow panel-page to use $arg/$node/$node-type/$user substitution like Views
+    o allow setting to not display blocks
 
 content types
     X Remove all calls to the 'admin' callback
     X Make panels_get_content_type() like using for layout
-    o Translate views to new content format
+    X Translate views to new content format
     X Translate node to new content format
     X Translate custom to new content format
     o Allow content types to be aware of panel context.
@@ -43,15 +46,16 @@ icons
     X Change configure icon
     X Change remove pane icon
     X Find add content icon
+    o Create icons for content types
 
 panels API
     X Change add content to be per panel
     X Make Cancel actually cancel
     X Wrap calls to existing callbacks
     X Make a function to simply get the IDs of all content-types
-    o Allow panels_edit_display to restrict available content to a preprepared list
-    o Use cache instead of putting everything in $_SESSION
-    o create panels_render_display() (or panels_display_render)
+    X Allow panels_edit_display to restrict available content to a preprepared list
+    X Use cache instead of putting everything in $_SESSION
+    X create panels_render_display() (or panels_display_render)
 
 General:
     o CSS class/id name cleanup and unification.

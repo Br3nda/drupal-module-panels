@@ -15,22 +15,6 @@ $(document).ready(function () {
     });
     return false;
   });
-  $('.panels-add-block').click(function() {
-    // show the empty dialog right away.
-    $('#panels-modal').modalContent({
-        opacity: '.40', 
-        background: '#fff'
-      }
-    );
-    $.ajax({
-      type: "POST",
-      url: "/panels/ajax/add-content/" + $('#panel-did').val(),
-      global: true,
-      success: bindResponse,
-      dataType: 'json'
-    });
-    return false;
-  });
 
   $('.pane-add').click(function() {
     id = $(this)[0].id.replace('pane-add-', '');
@@ -40,6 +24,7 @@ $(document).ready(function () {
         background: '#fff'
       }
     );
+    $('#modalContent .modal-content').html($('div#panels-throbber').html());
     $.ajax({
       type: "POST",
       url: "/panels/ajax/add-content/" + $('#panel-did').val() + '/' + id,
@@ -166,6 +151,7 @@ function bindConfigure(o) {
         background: '#fff'
       }
     );
+    $('#modalContent .modal-content').html($('div#panels-throbber').html());
     $.ajax({
       type: "POST",
       url: "/panels/ajax/configure/" + $('#panel-did').val() + '/' + id,

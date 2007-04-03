@@ -5,6 +5,7 @@
 function panels_node_panels_content_types() {
   $items['node'] = array(
     'name' => t('Node'),
+    'single' => TRUE, // only provides a single content type
     'content_types' => 'panels_admin_content_types_node',
     'render callback' => 'panels_content_node',
     'add callback' => 'panels_admin_add_node',
