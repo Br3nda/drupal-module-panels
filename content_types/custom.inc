@@ -4,7 +4,8 @@
  */
 function panels_custom_panels_content_types() {
   $items['custom'] = array(
-    'name' => t('Custom'),
+    'title' => t('Custom'),
+    'weight' => -10,
     'single' => TRUE,
     'content_types' => 'panels_admin_content_types_custom',
     'render callback' => 'panels_content_custom',

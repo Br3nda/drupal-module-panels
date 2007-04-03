@@ -4,7 +4,7 @@
  */
 function panels_block_panels_content_types() {
   $items['block'] = array(
-    'name' => t('Block'),
+    'title' => t('Block'),
     'content_types' => 'panels_admin_content_types_block',
     'render callback' => 'panels_content_block',
     'add callback' => 'panels_admin_add_block',
@@ -66,6 +66,7 @@ function panels_admin_content_types_block() {
       }
     }
   }
+  uasort($types, 'panels_title_sort');
   return $types;
 }
 

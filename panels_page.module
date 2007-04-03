@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.5 2007/04/03 00:29:24 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.6 2007/04/03 00:52:23 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -202,7 +202,7 @@ function panels_page_settings() {
 
   foreach ($content_types as $id => $info) {
     if (empty($info['single'])) {
-      $default_options[$id] = t('New @s', array('@s' => $info['name']));
+      $default_options[$id] = t('New @s', array('@s' => $info['title']));
     }
   }
 
@@ -242,16 +242,18 @@ function panels_page_settings() {
 
     $form['content_types'] = array('#tree' => TRUE);
     // cheat a bit
-    $content_types['other'] = array('name' => t('Other'));
-    foreach ($allowed as $id => $keys) {
-      $form['content_types'][$id] = array(
-        '#prefix' => '<div class="panels-page-type-container">',
-        '#suffix' => '</div>',
-        '#type' => 'checkboxes',
-        '#title' => t('Allowed @s content', array('@s' => $content_types[$id]['name'])),
-        '#options' => $options[$id],
-        '#default_value' => array_keys(array_filter($keys)),
-      );
+    $content_types['other'] = array('title' => t('Other'), 'weight' => 10);
+    foreach ($content_types as $id => $info) {
+      if (isset($allowed[$id])) {
+        $form['content_types'][$id] = array(
+          '#prefix' => '<div class="panels-page-type-container">',
+          '#suffix' => '</div>',
+          '#type' => 'checkboxes',
+          '#title' => t('Allowed @s content', array('@s' => $info['title'])),
+          '#options' => $options[$id],
+          '#default_value' => array_keys(array_filter($allowed[$id])),
+        );
+      }
     }
   }
 

@@ -6,7 +6,7 @@ function panels_views_panels_content_types() {
   if (module_exists('views')) {
     // Only valid if views module loaded.
     $items['views'] = array(
-      'name' => t('View'),
+      'title' => t('View'),
       'content_types' => 'panels_admin_content_types_views',
       'render callback' => 'panels_content_views',
       'add callback' => 'panels_admin_add_views',
@@ -80,6 +80,7 @@ function panels_admin_content_types_views() {
       );
     }
   }
+  uasort($types, 'panels_title_sort');
   return $types;
 }
 

@@ -4,7 +4,8 @@
  */
 function panels_node_panels_content_types() {
   $items['node'] = array(
-    'name' => t('Node'),
+    'title' => t('Node'),
+    'weight' => -10,
     'single' => TRUE, // only provides a single content type
     'content_types' => 'panels_admin_content_types_node',
     'render callback' => 'panels_content_node',
