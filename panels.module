@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.8 2007/04/03 00:52:23 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.9 2007/04/03 18:46:38 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -1254,7 +1254,7 @@ function panels_title_sort($a, $b) {
     if ($a['title'] < $b['title']) {
       return -1;
     }
-    else if ($a['title'] > $b['title']) {
+    else if (drupal_strtolower($a['title']) > drupal_strtolower($b['title'])) {
       return 1;
     }
     else {
