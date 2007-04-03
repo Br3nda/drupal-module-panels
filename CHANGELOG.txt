@@ -1,4 +1,4 @@
-Panels 4.7.x-dev
+Panels 4.7.x-1.2
   o Block visibility code used improper array_merge, causing silly errors.
 
 Panels 4.7.x-1.1
