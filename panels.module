@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.9 2007/04/03 18:46:38 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.10 2007/04/03 19:58:06 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -439,9 +439,9 @@ function panels_ct_function($type, $name) {
   }
 }  
 
-function panels_ct_get_content($type, $conf) {
+function panels_ct_get_content($type, $conf, $args, $context, $incoming_content) {
   if ($function = panels_ct_function($type, 'render callback')) {
-    return $function($conf); 
+    return $function($conf, $args, $context, $incoming_content); 
   }
 }
 
@@ -491,13 +491,25 @@ function panels_ct_get_types($type) {
  * Get an array of all available content types that can be fed into the
  * display editor for the add content list.
  */
-function panels_get_available_content_types() {
+function panels_get_available_content_types($context = NULL, $has_content = FALSE) {
   $content_types = panels_get_content_types();
   uasort($content_types, 'panels_title_sort');
   $available = array();
 
   foreach ($content_types as $id => $type) {
-    $available[$id] = panels_ct_get_types($type);
+    // exclude items that require content if we're saying we don't
+    // provide it.
+    if (!empty($type['requires content']) && !$has_content) {
+      continue;
+    }
+
+    // Check to see if the content type can be used in this context.
+    if (!isset($type['required context']) || 
+        (is_array($type['required_context']) &&
+           in_array($context, $type['required_context'])) ||
+        ($type['required_context'] == $context)) {
+      $available[$id] = panels_ct_get_types($type);
+    }
   }
   return $available;
 }
@@ -505,8 +517,15 @@ function panels_get_available_content_types() {
 // ------------------------------------------------------------------
 // Functions to provide information about a panel or part of a panel.
 
-function panels_get_pane_content($pane) {
-  return panels_ct_get_content($pane->type, $pane->configuration);
+function panels_get_pane_content($pane, $args = array(), $context = NULL, $incoming_content = '') {
+  if (!$context) {
+    $context = new panels_context;
+  }
+  if (!$incoming_content === '') {
+    $incoming_content = t('Incoming content will be displayed here.');
+  }
+
+  return panels_ct_get_content($pane->type, $pane->configuration, $args, $context, $incoming_content);
 }
 
 function panels_get_pane_title($pane) {
@@ -871,7 +890,6 @@ function panels_save_display_form($display, $post) {
 
 /* TODO: Integrate this back in */
 function panels_edit_display_validate($form_id, $form_values, $form) {
-  $content_types = panels_get_content_types();
   foreach ($form_values['content'] as $area => $content) {
     foreach ($content as $id => $item) {
       if (is_numeric($id)) {
@@ -1000,8 +1018,8 @@ function panels_print_layout($id, $content) {
 /**
  * Given a full layout structure and a content array, render a panel display.
  */
-function panels_render_layout($layout, $content) {
-  $output = theme($layout['theme'], check_plain($layout['css_id']), $content);
+function panels_render_layout($layout, $content, $css_id = NULL) {
+  $output = theme($layout['theme'], check_plain($css_id), $content);
 
   if ($output) {
     if (file_exists(path_to_theme() . '/' . $layout['css'])) {
@@ -1014,28 +1032,41 @@ function panels_render_layout($layout, $content) {
   return $output;
 }
 
+class panels_context {
+  var $type = NULL;
+  var $data = NULL;
+
+  function panels_context($type = 'none', $data = NULL) {
+    $this->type = $type;
+    $this->data = $data;
+  }
+}
+
 /**
  * Render a display by loading the content into an appropriate
- * array and then passing through to panels_render_layout.
+ * array and then passing through to panels_render_layout. 
+ *
+ * if $incoming_content is NULL, default content will be applied. Use 
+ * an empty string to indicate no content.
  */
-function panels_render_display($display, $css_id = NULL) {
+function panels_render_display($display, $args = array(), $context = NULL, $incoming_content = '', $css_id = NULL) {
+  if (!$context) {
+    $context = new panels_context();
+  }
+
   $layout = panels_get_layout($display->layout);
   
   if (!$layout) {
     return NULL;
   }
 
-  if ($css_id) {
-    $layout['css_id'] = $css_id;
-  }
-
   foreach ($display->content as $pid => $pane) {
-    if ($result = panels_get_pane_content($pane)) {
+    if ($result = panels_get_pane_content($pane, $args, $context, $incoming_content)) {
       $content[$pane->panel] .= theme('block', $result);
     }
   }
 
-  $output = panels_render_layout($layout, $content);
+  $output = panels_render_layout($layout, $content, $context, $incoming_content, $css_id);
   return $output;
 }
 

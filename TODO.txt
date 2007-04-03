@@ -28,8 +28,8 @@ content types
     X Translate views to new content format
     X Translate node to new content format
     X Translate custom to new content format
-    o Allow content types to be aware of panel context.
-    o Allow content types to include or exclude themselves based upon context.
+    X Allow content types to be aware of panel context.
+    X Allow content types to include or exclude themselves based upon context.
     o Figure out a way for blocks to easily have per-block icons
     o Get all 'block' settings into blocks.
     X sort blocks in content type list
@@ -57,8 +57,9 @@ panels API
     X Allow panels_edit_display to restrict available content to a preprepared list
     X Use cache instead of putting everything in $_SESSION
     X create panels_render_display() (or panels_display_render)
-    o Allow API to accept context
-    o Allow API to accept arguments
+    X Allow API to accept context
+    X Allow API to accept content
+    X Allow API to accept arguments
 
 General:
     o CSS class/id name cleanup and unification.

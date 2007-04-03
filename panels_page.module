@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.7 2007/04/03 18:30:11 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.8 2007/04/03 19:58:06 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -559,7 +559,10 @@ function panels_page_view_page($pid) {
     return drupal_not_found();
   }
   
-  $output = panels_render_display($panel_page->display, $panel_page->css_id);
+  $args = func_get_args();
+  array_shift($args); // remove the pid.
+
+  $output = panels_render_display($panel_page->display, $args, NULL, NULL, $panel_page->css_id);
   // set title afterward to ensure title is retained.
   if ($output == NULL) {
     watchdog('panels', t('Unable to find requested layout %s', array('%s' => check_plain($panel_page->display->layout))));

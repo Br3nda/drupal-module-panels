@@ -22,14 +22,14 @@ function panels_views_panels_content_types() {
  * Output function for the 'views' content type. Outputs a views
  * based on the module and delta supplied in the configuration.
  */
-function panels_content_views($conf) {
+function panels_content_views($conf, $args) {
   $view = views_get_view($conf['view']);
   if ($view) {
     if (function_exists('views_access') && !views_access($view)) {
       return NULL;
     }
     $arguments = explode('/', $_GET['q']);
-    $args = $conf['args'];
+    $args = array_merge((array) $args, $conf['args']);
     
     foreach ($arguments as $id => $arg) {
       $args = str_replace("%$id", $arg, $args);
