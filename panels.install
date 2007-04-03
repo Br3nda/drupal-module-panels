@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.4.3 2007/03/15 19:59:28 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.4.4 2007/04/03 16:36:05 merlinofchaos Exp $
 
 /**
  * Install the panels tables
