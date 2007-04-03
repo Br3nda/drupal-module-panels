@@ -31,9 +31,9 @@ content types
     o Allow content types to include or exclude themselves based upon context.
     o Figure out a way for blocks to easily have per-block icons
     o Get all 'block' settings into blocks.
-    o sort blocks in content type list
-    o sort views in content type list
-    o add weight so custom and node will float up
+    X sort blocks in content type list
+    X sort views in content type list
+    X add weight so custom and node will float up
     o make forms fit a bit better
     o Allow display to have 'arguments' that can be passed on to Views
       more fluidly
