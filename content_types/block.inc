@@ -91,19 +91,24 @@ function panels_admin_edit_block($conf) {
     '#type' => 'value',
     '#value' => $conf['delta'],
   );
+  $form['aligner_start'] = array(
+    '#value' => '<div class="option-text-aligner">',
+  );
   $form['override_title'] = array(
     '#type' => 'checkbox',
     '#default_value' => $conf['override_title'],
     '#title' => t('Override title'),
-    '#description' => t('If checked, the block title will be overridden with the override title text.')
+    '#id' => 'override-title-checkbox',
   );
   $form['override_title_text'] = array(
     '#type' => 'textfield',
     '#default_value' => $conf['override_title_text'],
-    '#title' => t('Override title text'),
-    '#size' => 15,
+    '#size' => 35,
+    '#id' => 'override-title-textfield',
   );
-
+  $form['aligner_stop'] = array(
+    '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
+  );
   return $form;
 }
 

@@ -49,8 +49,37 @@ $(document).ready(function () {
   });
   bindConfigure($(document));
   bindDelete($(document));
-
+  if ($('#override-title-checkbox').size()) {
+    bindCheckbox();
+    clickTitleCheckbox();
+    clickPagerCheckbox();
+  }
 });
+
+function bindCheckbox() {
+  $('#override-title-checkbox').change(); // unset any existing
+  $('#override-title-checkbox').change(clickTitleCheckbox);
+  $('#use-pager-checkbox').change(); // unset any existing
+  $('#use-pager-checkbox').change(clickPagerCheckbox);
+}
+
+function clickTitleCheckbox() {
+  if ($('#override-title-checkbox').attr('checked')) {
+    $('#override-title-textfield').attr('disabled', false);
+  }
+  else {
+    $('#override-title-textfield').attr('disabled', true);
+  }
+}
+
+function clickPagerCheckbox() {
+  if ($('#use-pager-checkbox').attr('checked')) {
+    $('#use-pager-textfield').attr('disabled', false);
+  }
+  else {
+    $('#use-pager-textfield').attr('disabled', true);
+  }
+}
 
 function bindResponse(data) {
   // On success, append the returned HTML to the panel's element.
@@ -87,6 +116,12 @@ function bindResponse(data) {
       });
       return false;
     });
+
+    if ($('#override-title-checkbox').size()) {
+      bindCheckbox();
+      clickTitleCheckbox();
+      clickPagerCheckbox();
+    }
 
     // hack: allow collapsible textareas to work
     $('.panels-modal-content fieldset.collapsible > legend').each(function() {

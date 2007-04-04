@@ -35,10 +35,11 @@ content types
     X sort blocks in content type list
     X sort views in content type list
     X add weight so custom and node will float up
-    o make forms fit a bit better
-    o Allow display to have 'arguments' that can be passed on to Views
+    X make forms fit a bit better
+    X Allow display to have 'arguments' that can be passed on to Views
       more fluidly
-    o unify title overriding.
+    X give views.inc setting to NOT use arguments.
+    X unify title overriding.
 
 layouts
     o Fix the div div problem in all layouts

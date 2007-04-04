@@ -160,6 +160,46 @@ a.close img {
   margin-top: 160px;
 }
 
+/** modal forms CSS **/
+.panels-modal-content .form-item label {
+  width: 8em;
+  float: left;
+}
+
+.panels-modal-content .form-item label.option {
+  width: auto;
+  float: none;
+}
+
+.panels-modal-content .form-item .description .tips {
+  margin-left: 2em;
+}
+
+.panels-modal-content .modal-form .no-float * {
+  float: none;
+}
+
+.panels-modal-content .modal-form .no-float label  {
+  width: auto;
+}
+
+#edit-configuration-nid {
+  clear: left;
+}
+
+.option-text-aligner .form-item {
+  float: left;
+  padding: 0 1em 0 0;
+  margin: 0;
+}
+
+.option-text-aligner {
+  clear: both;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
 /* ---------------------------------------------------------------------------
  * Debugging CSS
  *

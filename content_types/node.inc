@@ -30,8 +30,11 @@ function panels_content_node($conf) {
   $block->module = 'node';
   $block->delta = $node->nid;
 
-  if (!empty($conf['suppress_title'])) {
+  if (empty($conf['override_title'])) {
     $block->subject = check_plain($node->title);
+  }
+  else {
+    $block->subject = filter_xss_admin($conf['override_title_text']);
   }
   unset($node->title);
   $block->content = node_view($node, $conf['teaser'], FALSE, $conf['links']);
@@ -58,6 +61,8 @@ function panels_admin_add_node($id) {
   $conf = array();
   $form = panels_admin_edit_node($conf);
   $form['nid'] = array(
+    '#prefix' => '<div class="no-float">',
+    '#suffix' => '</div>',
     '#title' => t('Enter the title or NID of a post'),
     '#type' => 'textfield',
     '#maxlength' => 512,
@@ -76,6 +81,24 @@ function panels_admin_edit_node($conf) {
     '#type' => 'value',
     '#default_value' => $conf['nid'],
   );
+  $form['aligner_start'] = array(
+    '#value' => '<div class="option-text-aligner">',
+  );
+  $form['override_title'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $conf['override_title'],
+    '#title' => t('Override title'),
+    '#id' => 'override-title-checkbox',
+  );
+  $form['override_title_text'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['override_title_text'],
+    '#size' => 35,
+    '#id' => 'override-title-textfield',
+  );
+  $form['aligner_stop'] = array(
+    '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
+  );
   $form['teaser'] = array(
     '#title' => t('Teaser'),
     '#type' => 'checkbox',
@@ -87,12 +110,6 @@ function panels_admin_edit_node($conf) {
     '#default_value' => $conf['links'],
     '#title' => t('Display links'),
     '#description' => t('Check here to display the links with the post.')
-  );
-  $form['suppress_title'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => $conf['suppress_title'],
-    '#title' => t('Suppress node title'),
-    '#description' => t('Check here to suppress the node title.')
   );
 
   return $form;
@@ -127,85 +144,5 @@ function panels_admin_title_node($conf) {
   $node = node_load($conf['nid']);
   if ($node) {
     return check_plain($node->title);
-  }
-}
-
-/** 
- * Callback to perform administrative functions on the content block
- */
-function panels_admin_node($op, &$arg, $arg2 = NULL) {
-  switch ($op) {
-    case 'list':
-      $conf = $arg;
-      $node = node_load($conf['nid']);
-      return '<strong>Node</strong>: ' . check_plain($node->title);
-    case 'add form':
-      $form['nid'] = array(
-        '#title' => t('Enter the title or NID of a post'),
-        '#type' => 'textfield',
-        '#maxlength' => 512,
-        '#autocomplete_path' => 'panels/node/autocomplete',
-        '#weight'  => -10,
-      );
-      return $form;
-    case 'add validate':
-      $form_values = $arg;
-      $form = $arg2;
-      $nid = $form_values['nid'];
-      if (is_numeric($nid)) {
-        error_log($nid);
-        $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE nid = %d"), $nid));
-      }
-      else {
-        $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(title) = LOWER('%s')"), $nid));
-      }
-
-      if (!$node->nid) {
-        form_error($form['nid'], t('Unable to find "%s"', array('%s' => check_plain($nid))));
-      }
-      return;
-    case 'add':
-      $form = &$arg;
-      if (is_numeric($form['nid'])) {
-        $conf = array();
-        $conf['nid'] = $form['nid'];
-      }
-      // default to just teaser
-      $conf['teaser'] = TRUE;
-      return $conf;
-    case 'edit':
-      $conf = &$arg;
-      $form['nid'] = array(
-        '#type' => 'hidden',
-        '#default_value' => $conf['nid'],
-      );
-      $form['teaser'] = array(
-        '#title' => t('Teaser'),
-        '#type' => 'checkbox',
-        '#default_value' => $conf['teaser'],
-        '#description' => t('Check here to show only the node teaser'),
-      );
-      $form['links'] = array(
-        '#type' => 'checkbox',
-        '#default_value' => $conf['links'],
-        '#title' => t('Display links'),
-        '#description' => t('Check here to display the links with the post.')
-      );
-      $form['suppress_title'] = array(
-        '#type' => 'checkbox',
-        '#default_value' => $conf['suppress_title'],
-        '#title' => t('Suppress node title'),
-        '#description' => t('Check here to suppress the node title.')
-      );
-
-      return $form;
-    case 'validate':
-      // This one has nothing to validate.
-      $form = &$arg;
-      return;
-    case 'save':
-      // For this one, the form values go directly into the config.
-      $form = &$arg;
-      return $form;
   }
 }
