@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.8 2007/04/03 19:58:06 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.9 2007/04/05 23:28:34 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -66,95 +66,85 @@ function panels_page_menu($may_cache) {
     );
 
     // load panels from database
-    $result = db_query("SELECT * FROM {panels_page}");
+    $result = db_query("SELECT pid, path, access FROM {panels_page}");
     // FIXME: Fow now we're making these all callbacks, but we
     // should steal code from Views so they can be normal, tabs,
     // etc
     while ($panel_page = db_fetch_object($result)) {
-      $item = array(
-        'path' => $panel_page->path,
-        'title' => filter_xss_admin($panel_page->title),
-        'access' => panels_page_access($panel_page),
-        'callback' => 'panels_page_view_page',
-        'callback arguments' => array($panel_page->pid),
-        'type' => MENU_CALLBACK
-      );
-      $items[] = $item;
-    }
-  }
-  else {
-    if (arg(0) == 'admin' &&
-        arg(1) == 'build' &&
-        arg(2) == 'panel-page' &&
-        is_numeric(arg(3))) {
-      $page = panels_page_load(arg(3));
-      if ($page) {
-        $items[] = array(
-          'path' => 'admin/build/panel-page/' . arg(3),
-          'title' => t('View'),
-          'access' => $access,    
-          'callback' => 'panels_page_view_page',
-          'callback arguments' => array(arg(3)),
-          'weight' => -10,
-          'type' => MENU_CALLBACK,
-        );
-        $items[] = array(
-          'path' => 'admin/build/panel-page/' . arg(3) . '/view',
-          'title' => t('View'),
-          'access' => $access,    
-          'callback' => 'panels_page_view_page',
-          'callback arguments' => array(arg(3)),
-          'weight' => -10,
-          'type' => MENU_DEFAULT_LOCAL_TASK,
-        );
-        $items[] = array(
-          'path' => 'admin/build/panel-page/' . arg(3) . '/edit',
-          'title' => t('Edit'),
-          'access' => $access,    
-          'callback' => 'panels_page_edit',
-          'callback arguments' => array($page),
-          'weight' => -5,
-          'type' => MENU_LOCAL_TASK,
-        );
-        $items[] = array(
-          'path' => 'admin/build/panel-page/' . arg(3) . '/edit/general',
-          'title' => t('General'),
-          'access' => $access,    
-          'callback' => 'panels_page_edit',
-          'callback arguments' => array($page),
-          'weight' => -5,
-          'type' => MENU_DEFAULT_LOCAL_TASK,
-        );
-        $items[] = array(
-          'path' => 'admin/build/panel-page/' . arg(3) . '/edit/layout',
-          'title' => t('Layout'),
-          'access' => $access,    
-          'callback' => 'panels_page_edit_layout',
-          'callback arguments' => array($page),
-          'weight' => -3,
-          'type' => MENU_LOCAL_TASK,
-        );
-        $items[] = array(
-          'path' => 'admin/build/panel-page/' . arg(3) . '/edit/content',
-          'title' => t('Content'),
-          'access' => $access,    
-          'callback' => 'panels_page_edit_content',
-          'callback arguments' => array($page),
-          'weight' => -1,
-          'type' => MENU_LOCAL_TASK,
-        );
-        $items[] = array(
-          'path' => 'admin/build/panel-page/' . arg(3) . '/delete',
-          'title' => t('Delete panel page'),
-          'access' => $access,    
-          'callback' => 'drupal_get_form',
-          'callback arguments' => array('panels_page_delete_confirm', $page),
-          'type' => MENU_CALLBACK,
-        );
-      }
+      $panel_page->access = ($panel_page->access ? explode(', ', $panel_page->access) : array());
+      panels_page_menu_items($items, $panel_page->path, $panel_page);
+      panels_page_menu_items($items, 'admin/build/panel-page/' . $panel_page->pid, $panel_page);
     }
   }
   return $items;
+}
+
+function panels_page_menu_items(&$items, $base, $page) {
+  $view_access = panels_page_access($page);
+  $access = user_access('create panel-pages');
+
+  $items[] = array(
+    'path' => $base,
+    'title' => t('View'),
+    'access' => $view_access,    
+    'callback' => 'panels_page_view_page',
+    'callback arguments' => array($page->pid),
+    'weight' => -10,
+    'type' => MENU_CALLBACK,
+  );
+  $items[] = array(
+    'path' => $base . '/view',
+    'title' => t('View'),
+    'access' => $view_access,    
+    'callback' => 'panels_page_view_page',
+    'callback arguments' => array($page->pid),
+    'weight' => -10,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  $items[] = array(
+    'path' => $base . '/edit',
+    'title' => t('Edit'),
+    'access' => $access,    
+    'callback' => 'panels_page_edit',
+    'callback arguments' => array($page->pid),
+    'weight' => -5,
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items[] = array(
+    'path' => $base . '/edit/general',
+    'title' => t('General'),
+    'access' => $access,    
+    'callback' => 'panels_page_edit',
+    'callback arguments' => array($page->pid),
+    'weight' => -5,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  $items[] = array(
+    'path' => $base . '/edit/layout',
+    'title' => t('Layout'),
+    'access' => $access,    
+    'callback' => 'panels_page_edit_layout',
+    'callback arguments' => array($page->pid),
+    'weight' => -3,
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items[] = array(
+    'path' => $base . '/edit/content',
+    'title' => t('Content'),
+    'access' => $access,    
+    'callback' => 'panels_page_edit_content',
+    'callback arguments' => array($page->pid),
+    'weight' => -1,
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items[] = array(
+    'path' => $base . '/delete',
+    'title' => t('Delete panel page'),
+    'access' => $access,    
+    'callback' => 'drupal_get_form',
+    'callback arguments' => array('panels_page_delete_confirm', $page->pid),
+    'type' => MENU_CALLBACK,
+  );
 }
 
 /**
@@ -306,6 +296,9 @@ function panels_page_list_page() {
  * Provide a form to confirm deletion of a panel page.
  */
 function panels_page_delete_confirm($panel_page) {
+  if (!is_object($panel_page)) {
+    $panel_page = panels_page_load($panel_page);
+  }
   $form['pid'] = array('#type' => 'value', '#value' => $panel_page->pid);
   $form['did'] = array('#type' => 'value', '#value' => $panel_page->did);
   return confirm_form( $form,
@@ -344,7 +337,7 @@ function panels_page_add_page($layout = NULL) {
     return drupal_not_found();
   }
 
-  $panel_page->display->did = 'new';
+  $panel_page->display = panels_new_display();
   $panel_page->display->layout = $layout;
   $panel_page->pid = 'new';
   $panel_page->did = 'new';
@@ -357,6 +350,9 @@ function panels_page_add_page($layout = NULL) {
  * for common flow.
  */
 function panels_page_edit($panel_page) {
+  if (!is_object($panel_page)) {
+    $panel_page = panels_page_load($panel_page);
+  }
   return drupal_get_form('panels_page_edit_form', $panel_page);
 }
 
@@ -520,6 +516,9 @@ function panels_page_edit_form_submit($form_id, $form_values) {
  * Pass through to the panels layout editor.
  */
 function panels_page_edit_layout($panel_page) {
+  if (!is_object($panel_page)) {
+    $panel_page = panels_page_load($panel_page);
+  }
   return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->pid/edit");
 }
 
@@ -527,6 +526,9 @@ function panels_page_edit_layout($panel_page) {
  * Pass through to the panels content editor.
  */
 function panels_page_edit_content($panel_page) {
+  if (!is_object($panel_page)) {
+    $panel_page = panels_page_load($panel_page);
+  }
   $content_types = panels_get_available_content_types();
   $default_types = variable_get('panels_page_defaults', array());
   $allowed_types = variable_get('panels_page_allowed_types', array());
@@ -553,16 +555,22 @@ function panels_page_edit_content($panel_page) {
 // ---------------------------------------------------------------------------
 // view panels page
 
-function panels_page_view_page($pid) {
-  $panel_page = panels_page_load($pid);
+function panels_page_view_page($panel_page) {
+  if (!is_object($panel_page)) {
+    $panel_page = panels_page_load($panel_page);
+  }
+
   if (!$panel_page) {
     return drupal_not_found();
   }
   
-  $args = func_get_args();
-  array_shift($args); // remove the pid.
+  $panel_page->display->args = func_get_args();
+  array_shift($panel_page->display->args); // remove the pid.
 
-  $output = panels_render_display($panel_page->display, $args, NULL, NULL, $panel_page->css_id);
+  $panel_page->display->css_id = $panel_page->css_id;
+
+  $output = panels_render_display($panel_page->display);
+
   // set title afterward to ensure title is retained.
   if ($output == NULL) {
     watchdog('panels', t('Unable to find requested layout %s', array('%s' => check_plain($panel_page->display->layout))));
@@ -580,15 +588,18 @@ function panels_page_view_page($pid) {
  * Load a panel page and its associated display
  */
 function panels_page_load($pid) {
-  $panel_page = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE pid = %d", $pid));
-  if (!$panel_page) {
-    return;
+  static $cache = array();
+  if (!array_key_exists($pid, $cache)) {
+    $cache[$pid] = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE pid = %d", $pid));
+    if (!$cache[$pid]) {
+      return;
+    }
+
+    $cache[$pid]->access = ($cache[$pid]->access ? explode(', ', $cache[$pid]->access) : array());
+
+    $cache[$pid]->display = panels_load_display($cache[$pid]->did);
   }
-
-  $panels->access = ($panels->access ? explode(', ', $panels->access) : array());
-
-  $panel_page->display = panels_load_display($panel_page->did);
-  return $panel_page;
+  return $cache[$pid];
 }
 
 /**

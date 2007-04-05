@@ -85,51 +85,6 @@ Drupal.Panels.bindCheckBox = function(checkbox, gadget) {
   clickCheckBox();
 }
 
-$(document).ready(function () {
-  // Show javascript only items.
-  $('span.panels-js-only').css('display', 'inline');
-
-  // add .panel-portlet to all draggable blocks
-  $('div.panel-pane').addClass('panel-portlet');
-
-  // make columns sortable
-  $('div.panels-display').Sortable({
-    accept: 'panel-portlet',
-    handle: 'div.grabber',
-    helperclass: 'helperclass',
-    hgverclass: 'hoverclass',
-    tolerance: 'intersect',
-    fx: 100,
-    revert: true,
-    floats: true
-  });
-
-  $('div.panel-portlet').each(Drupal.Panels.bindPortlet);
-
-  $('#panels-dnd-save').click(function() {
-    serial = $.SortSerialize();
-    save = $('#panels-dnd-save').val();
-    $.ajax({
-      type: "POST",
-      url: "/panels/ajax/save-display/" + $('#panel-did').val(),
-      data: serial.hash,
-      global: true,
-      success: function() {
-        $('#panel-op').val(save);
-        $('#panels-edit-display')[0].submit();
-      }
-    });
-    return false;
-  });
-
-  // Bind buttons.
-  $('.pane-add').click(Drupal.Panels.clickAdd);
-  $('#panels-hide-all').click(Drupal.Panels.clickHideAll);
-  $('#panels-show-all').click(Drupal.Panels.clickShowAll);
-  Drupal.Panels.bindClickConfigure($(document));
-  Drupal.Panels.bindClickDelete($(document));
-});
-
 Drupal.Panels.Subform = {};
 
 /** Basic submit on a subform **/
@@ -261,3 +216,50 @@ Drupal.Panels.bindPortlet = function() {
     content.hide();
   }
 }
+
+Drupal.Panels.autoAttach = function() {
+  // Show javascript only items.
+  $('span.panels-js-only').css('display', 'inline');
+
+  // add .panel-portlet to all draggable blocks
+  $('div.panel-pane').addClass('panel-portlet');
+
+  // make columns sortable
+  $('div.panels-display').Sortable({
+    accept: 'panel-portlet',
+    handle: 'div.grabber',
+    helperclass: 'helperclass',
+    hgverclass: 'hoverclass',
+    tolerance: 'intersect',
+    fx: 100,
+    revert: true,
+    floats: true
+  });
+
+  $('div.panel-portlet').each(Drupal.Panels.bindPortlet);
+
+  $('#panels-dnd-save').click(function() {
+    serial = $.SortSerialize();
+    save = $('#panels-dnd-save').val();
+    $.ajax({
+      type: "POST",
+      url: "/panels/ajax/save-display/" + $('#panel-did').val(),
+      data: serial.hash,
+      global: true,
+      success: function() {
+        $('#panel-op').val(save);
+        $('#panels-edit-display')[0].submit();
+      }
+    });
+    return false;
+  });
+
+  // Bind buttons.
+  $('.pane-add').click(Drupal.Panels.clickAdd);
+  $('#panels-hide-all').click(Drupal.Panels.clickHideAll);
+  $('#panels-show-all').click(Drupal.Panels.clickShowAll);
+  Drupal.Panels.bindClickConfigure($(document));
+  Drupal.Panels.bindClickDelete($(document));
+}
+
+$(document).ready(Drupal.Panels.autoAttach);

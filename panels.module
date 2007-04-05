@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.11 2007/04/05 00:31:14 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.12 2007/04/05 23:28:34 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -141,7 +141,7 @@ function panels_get($var) {
 // panels display editing
 
 /**
- * 
+ * Main API entry point to edit a panel display.
  */
 function panels_edit($display, $destination, $content_types = NULL) {
   $did = $display->did;
@@ -919,8 +919,32 @@ function panels_move_delete(&$array, &$position) {
 // ---------------------------------------------------------------------------
 // panels database functions
 
-function panels_load_display($did) {
-  $display = db_fetch_object(db_query("SELECT * FROM {panels_display} WHERE did = %d", $did));
+class panels_display {
+  var $args = array();
+  var $incoming_content = NULL;
+  var $context = NULL;
+  var $css_id = NULL;
+
+  function panels_display($context = NULL) {
+    if (!isset($context)) {
+      $this->context = new panels_context();
+    }
+  }
+}
+
+function panels_new_display($context = NULL) {
+  $display = new panels_display($context);
+  $display->did = 'new';
+  return $display;
+}
+
+function panels_load_display($did, $context = NULL) {
+  $display = new panels_display($context);
+
+  $obj = db_fetch_array(db_query("SELECT * FROM {panels_display} WHERE did = %d", $did));
+  foreach ($obj as $key => $value) {
+    $display->$key = $value;
+  }
   if (!$display) {
     return NULL;
   }
@@ -1010,6 +1034,24 @@ class panels_context {
   }
 }
 
+function panels_sanitize_display(&$display) {
+  if (!isset($display->args)) {
+    $display->args = array();
+  }
+
+  if (!isset($display->incoming_content)) {
+    $display->incoming_content = NULL;
+  }
+
+  if (!isset($display->context)) {
+    $display->context = new panels_context();
+  }
+
+  if (!isset($display->css_id)) {
+    $display->css_id = NULL;
+  }
+}
+
 /**
  * Render a display by loading the content into an appropriate
  * array and then passing through to panels_render_layout. 
@@ -1017,24 +1059,22 @@ class panels_context {
  * if $incoming_content is NULL, default content will be applied. Use 
  * an empty string to indicate no content.
  */
-function panels_render_display($display, $args = array(), $context = NULL, $incoming_content = '', $css_id = NULL) {
-  if (!$context) {
-    $context = new panels_context();
-  }
-
+function panels_render_display(&$display) {
   $layout = panels_get_layout($display->layout);
   
   if (!$layout) {
     return NULL;
   }
 
+  panels_sanitize_display($display);
+
   foreach ($display->content as $pid => $pane) {
-    if ($result = panels_get_pane_content($pane, $args, $context, $incoming_content)) {
+    if ($result = panels_get_pane_content($pane, $display->args, $display->context, $display->incoming_content)) {
       $content[$pane->panel] .= theme('block', $result);
     }
   }
 
-  $output = panels_render_layout($layout, $content, $context, $incoming_content, $css_id);
+  $output = panels_render_layout($layout, $content, $display->css_id);
   return $output;
 }
 

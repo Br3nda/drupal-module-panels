@@ -131,6 +131,10 @@ a.close {
   color: white;
 }
 
+a.close:hover {
+  text-decoration: none;
+}
+
 a.close img {
   position: relative;
   top: 1px;

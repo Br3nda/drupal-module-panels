@@ -20,6 +20,7 @@ panels page
     o panels page 'default' panels
     o allow panel-page to use $arg/$node/$node-type/$user substitution like Views
     o allow panel-page to do menu item & tab like Views.
+    X provide 'edit' tab for panels pages
     X allow setting to not display blocks
 
 content types
@@ -61,6 +62,7 @@ panels API
     X Allow API to accept context
     X Allow API to accept content
     X Allow API to accept arguments
+    o Provide method to directly edit/configure an individual content block if viewer has permissions
 
 General:
     o CSS class/id name cleanup and unification.
