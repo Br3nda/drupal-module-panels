@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.10 2007/04/03 19:58:06 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.11 2007/04/05 00:31:14 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -102,38 +102,6 @@ function panels_add_button($image, $name, $text, $class, $id = NULL) {
     '#class' => $class,
     '#id' => $id,
   );
-}
-
-/**
- * This is separate because it must be outside the <form> to work, and
- * everything in the form theme is inside the form.
- */
-function theme_panels_hidden() {
-  // TODO: Move this to a theme function.
-  $close_text = t('Close Window');
-  $close_image = theme('image', panels_get_path('images/close.gif'), t('Close window'), t('Close window'));
-  $throbber_image = theme('image', panels_get_path('images/throbber.gif'), t('Loading...'), t('Loading'));
-  $output = <<<EOF
-<div class="panels-hidden">\n
-  <div id="panels-modal">\n
-    <div class="panels-modal-content">\n
-       <div class="modal-header">\n
-         <a class="close" href="#">$close_text $close_image</a>\n
-         <span class="modal-title">&nbsp;</span>\n
-       </div>\n
-       <div class="modal-content">\n
-       </div>\n
-    </div>\n
-  </div>\n
-  <div id="panels-throbber">\n
-    <div class="panels-throbber-wrapper">
-      $throbber_image\n
-    </div>
-  </div>\n
-</div>\n
-EOF;
-
-  return $output;
 }
 
 // ---------------------------------------------------------------------------
@@ -638,7 +606,7 @@ function panels_add_content($cache, $panel_id) {
         $output .= '<div class="content-type-button">';
         $link_text = theme('image', $path . '/' . $icon, $description, $description);
         $output .= l($link_text, 'javascript: void()', array('class' => 'panels-modal-add-config', 'id' => $id . '-' . $panel_id . '-' . $content_id), NULL, NULL, NULL, TRUE);
-        $output .= $title;
+        $output .= "<div>$title</div>";
         $output .= '</div>';
       }
     }
@@ -1176,7 +1144,7 @@ function theme_panels_dnd($content) {
 }
 
 function theme_panels_panel_dnd($content, $area, $label, $footer) {
-  return "<div class=\"panels-dnd-col\" id=\"panel-pane-$area\">$footer<h2 class=\"label\">$label</h2>$content</div>";
+  return "<div class=\"panels-display\" id=\"panel-pane-$area\">$footer<h2 class=\"label\">$label</h2>$content</div>";
 }
 
 function theme_panels_pane_dnd($block, $id, $label, $buttons = NULL) {
@@ -1239,6 +1207,38 @@ function theme_panels_layout_icon($id, $image, $title = NULL) {
     $output .= '<div class="caption">' . $title . '</div>';
   }
   $output .= '</div>';
+  return $output;
+}
+
+/**
+ * This is separate because it must be outside the <form> to work, and
+ * everything in the form theme is inside the form.
+ */
+function theme_panels_hidden() {
+  // TODO: Move this to a theme function.
+  $close_text = t('Close Window');
+  $close_image = theme('image', panels_get_path('images/close.gif'), t('Close window'), t('Close window'));
+  $throbber_image = theme('image', panels_get_path('images/throbber.gif'), t('Loading...'), t('Loading'));
+  $output = <<<EOF
+<div class="panels-hidden">\n
+  <div id="panels-modal">\n
+    <div class="panels-modal-content">\n
+       <div class="modal-header">\n
+         <a class="close" href="#">$close_text $close_image</a>\n
+         <span class="modal-title">&nbsp;</span>\n
+       </div>\n
+       <div class="modal-content">\n
+       </div>\n
+    </div>\n
+  </div>\n
+  <div id="panels-throbber">\n
+    <div class="panels-throbber-wrapper">
+      $throbber_image\n
+    </div>
+  </div>\n
+</div>\n
+EOF;
+
   return $output;
 }
 
