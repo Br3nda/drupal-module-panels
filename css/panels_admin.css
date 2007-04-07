@@ -24,6 +24,10 @@
   width: 50%;
 }
 
+.layout-container fieldset {
+  margin-top: 0;
+}
+
 .layout-container .form-item {
   margin: 0;
 }
