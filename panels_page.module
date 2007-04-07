@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.9 2007/04/05 23:28:34 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.10 2007/04/07 18:47:11 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -503,7 +503,7 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   if ($panel_page->pid == 'new') {
     panels_page_save($panel_page);
     $GLOBALS['form_values']['pid'] = $panel_page->pid;
-    return "admin/build/panel-page/$panel_page->pid/content";
+    return "admin/build/panel-page/$panel_page->pid/edit/content";
   }
   else {
     drupal_set_message(t('Your changes have been saved.'));
@@ -652,6 +652,8 @@ function panels_page_save(&$panel_page) {
         $display->did
     );
   }
+
+  menu_rebuild();
   return $panel_page->pid;
 }
 

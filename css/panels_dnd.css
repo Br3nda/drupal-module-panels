@@ -1,6 +1,7 @@
 div.panels-display {
   border: 1px solid #2385c2;
   padding: 0 0 .5em 0;
+  background: white;
 }
 
 div.panels-display h2.label {
@@ -14,11 +15,13 @@ div.panels-display h2.label {
 
 div.panels-display .pane-add {
   float: left;
+  margin: 0;
 }
 
 .panel-pane {
   border: 1px solid #5ab5ee;
   padding: 0;
+  background: white;
 }
 
 .panel-pane .content {
@@ -33,7 +36,11 @@ div.panels-display .pane-add {
   cursor: move;
   margin: 0;
   background: #5ab5ee;
-  overflow: hidden;
+  overflow: hidden; 
+}
+
+.panel-pane .grabber .text {
+  margin-left: 3px;
 }
 
 .panel-pane .buttons {
@@ -81,7 +88,7 @@ div.panels-display .pane-add {
 }
 
 .hoverclass {
-  border: 1px solid red;
+  border: 1px solid red !important;
 }
 
 /* CSS for an area if something can be dropped in it */

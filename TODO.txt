@@ -4,8 +4,8 @@ This is a brief list of the things that may still need to be done. No guarantee
 of them ever getting done.
 
 ajax/js
-    o Change show/hide to use AJAX.
-    o Remove drag & drop; add move left/move right buttons
+    SKIPPED Change show/hide to use AJAX. 
+    X Write my own drag & drop
     o Add permission checking to all the ajax functions
     o Break up panels_ajax into separate entry areas [mostly done]
     o ensure complete degradability

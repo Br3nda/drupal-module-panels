@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.12 2007/04/05 23:28:34 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.13 2007/04/07 18:47:11 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -199,6 +199,15 @@ function panels_edit_display($display, $destination) {
   foreach ($layout['panels'] as $id => $name) {
     $form['panels'][$id]['add'] = panels_add_button('add.gif', t('Add content'), t('Add content to this panel'), 'pane-add', "pane-add-$id");
   }
+
+  $form['panel'] = array('#tree' => TRUE);
+  $form['panel']['pane'] = array('#tree' => TRUE);
+  foreach ($layout['panels'] as $panel_id => $title) {
+    $form['panel']['pane'][$panel_id] = array(
+      '#type' => 'hidden',
+      '#default_value' => implode(',', (array) $display->panels[$panel_id]),
+    );
+  }
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
@@ -210,7 +219,7 @@ function panels_edit_display($display, $destination) {
   );  
 
   $form['hide'] = array(
-    '#prefix' => '<span class="panels-js-only">',
+    '#prefix' => '<span id="panels-js-only">',
     '#suffix' => '</span>',
   );
 
@@ -241,9 +250,10 @@ function theme_panels_edit_display($form) {
   foreach ($layout['panels'] as $panel_id => $title) {
     foreach ((array) $display->panels[$panel_id] as $pid) {
       $pane = $display->content[$pid];
+      $left_buttons = NULL;
       $buttons = drupal_render($form['button'][$pid]['configure']);
       $buttons .= drupal_render($form['button'][$pid]['delete']);
-      $content[$pane->panel] .= panels_show_pane($pane, $buttons);
+      $content[$pane->panel] .= panels_show_pane($pane, $left_buttons, $buttons);
     }
     $content[$panel_id] = theme('panels_panel_dnd', $content[$panel_id], $panel_id, $title, drupal_render($form['panels'][$panel_id]['add']));
   }
@@ -255,6 +265,22 @@ function theme_panels_edit_display($form) {
 function panels_edit_display_submit($form_id, $form_values) {
   $display = $form_values['panels_display'];
   if ($form_values['op'] == t('Save')) {
+    $old_content = $display->content;
+    $display->content = array();
+
+    foreach ($form_values['panel']['pane'] as $panel_id => $panes) {
+      $display->panels[$panel_id] = array();
+      if ($panes) {
+        $pids = explode(',', $panes);
+        foreach ($pids as $pid) {
+          if ($old_content[$pid]) {
+            $display->panels[$panel_id][] = $pid;
+            $old_content[$pid]->panel = $panel_id;
+            $display->content[$pid] = $old_content[$pid];
+          }
+        }
+      }
+    }
     drupal_set_message(t('Panel content has been updated.'));
     panels_save_display($display);
   }
@@ -504,11 +530,11 @@ function panels_get_pane_edit_form($pane, $parents) {
   return panels_ct_get_edit_form($pane->type, $pane->configuration, $parents);
 }
 
-function panels_show_pane($pane, $buttons, $skin = TRUE) {
+function panels_show_pane($pane, $left_buttons, $buttons, $skin = TRUE) {
   $block = panels_get_pane_content($pane);
   $title = panels_get_pane_title($pane);
 
-  $output = theme('panels_pane_dnd', $block, $pane->pid, $title, $buttons);
+  $output = theme('panels_pane_dnd', $block, $pane->pid, $title, $left_buttons, $buttons);
   if ($skin) {
     $output = '<div class="panel-pane" id="panel-pane-' . $pane->pid . '">' . $output . '</div>';
   }
@@ -543,11 +569,6 @@ function panels_ajax_render($output = NULL, $title = NULL) {
  */
 function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
   switch ($op) {
-    case 'save-display':
-      if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
-        panels_save_display_form($cache->display, $_POST);
-      }
-      break;
     case 'submit-form':
       if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
         $output = panels_edit_submit_subform($cache->display);
@@ -704,7 +725,7 @@ function panels_add_content_config_form_submit($form_id, $form) {
   $buttons['delete']['#parents'] = array('button', $form['pid'], 'delete');
   
   $buttons = form_builder('dummy', $buttons);
-  $return->output = panels_show_pane($cache->display->content[$form['pid']], drupal_render($buttons));
+  $return->output = panels_show_pane($cache->display->content[$form['pid']], NULL, drupal_render($buttons));
 
   panels_set('return', $return);
   return FALSE;
@@ -823,35 +844,6 @@ function panels_edit_submit_subform($display) {
   }
   return $return;
 }
-
-function panels_save_display_form($display, $post) {
-  $layout = panels_get_layout($display->layout);
-
-  // we're copying the content because content that doesn't appear in $post
-  // was deleted.
-  $old_content = $display->content;
-  $display->content = array();
-
-  foreach ($layout['panels'] as $panel_id => $title) {
-    $panes = array();
-    foreach ((array) $post["panel-pane-$panel_id"] as $pane) {
-      $pid = substr($pane, 11);
-      $panes[] = $pid;
-      $old_content[$pid]->panel = $panel_id;
-      $display->content[$pid] = $old_content[$pid];
-    }
-    $display->panels[$panel_id] = $panes;
-  }
-  $cache = panels_cache_get($display->did);
-  $cache->display = $display;
-  panels_cache_set($display->did, $cache);
-  exit;
-}
-
-// ---------------------------------------------------------------------------
-// panels sub-forms
-
-
 
 // End of ajax functions
 // ---------------------
@@ -1163,10 +1155,6 @@ function _panels_js_files() {
   drupal_add_js('misc/collapse.js');
   drupal_add_js('misc/autocomplete.js');
 
-  drupal_add_js(panels_get_path('js/lib/iutil.js'));
-  drupal_add_js(panels_get_path('js/lib/idrag.js'));
-  drupal_add_js(panels_get_path('js/lib/idrop.js'));
-  drupal_add_js(panels_get_path('js/lib/isortables.js'));
   drupal_add_js(panels_get_path('js/lib/dimensions.js'));
   drupal_add_js(panels_get_path('js/lib/mc.js'));
   drupal_add_js(panels_get_path('js/lib/form.js'));
@@ -1187,7 +1175,7 @@ function theme_panels_panel_dnd($content, $area, $label, $footer) {
   return "<div class=\"panels-display\" id=\"panel-pane-$area\">$footer<h2 class=\"label\">$label</h2>$content</div>";
 }
 
-function theme_panels_pane_dnd($block, $id, $label, $buttons = NULL) {
+function theme_panels_pane_dnd($block, $id, $label, $left_buttons = NULL, $buttons = NULL) {
   if (!$block->subject) {
     $block->subject = t('No title');
   }
@@ -1196,7 +1184,10 @@ function theme_panels_pane_dnd($block, $id, $label, $buttons = NULL) {
   if ($buttons) {
     $output .= "<span class='buttons'>$buttons</span>";
   }
-  $output .= "$label</div>";
+  if ($left_buttons) {
+    $output .= "<span class='left_buttons'>$left_buttons</span>";
+  }
+  $output .= "<span class=\"text\">$label</span></div>";
   $output .= '<div class="panel-pane-collapsible">';
   $output .= theme('panels_pane', $block);
   $output .= '</div>';
