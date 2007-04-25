@@ -586,6 +586,7 @@ Drupal.Panels.attachPane = function(parent) {
 
   Drupal.Panels.bindClickConfigure();
   Drupal.Panels.bindClickDelete();
+  Drupal.Panels.Draggable.savePositions();
 }
 
 Drupal.Panels.autoAttach = function() {

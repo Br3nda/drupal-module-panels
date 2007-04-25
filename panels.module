@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.13 2007/04/07 18:47:11 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.14 2007/04/25 06:58:36 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -804,7 +804,7 @@ function panels_edit_pane_config_form_submit($form_id, $form) {
     $block->subject = t('No title');
   }
 
-  $return->output = theme('panels_pane', $block);
+  $return->output = theme('panels_pane', $block, $cache->display);
 
   panels_set('return', $return);
   return FALSE;
@@ -849,6 +849,7 @@ function panels_edit_submit_subform($display) {
 // ---------------------
 
 /* TODO: Integrate this back in */
+/*
 function panels_edit_display_validate($form_id, $form_values, $form) {
   foreach ($form_values['content'] as $area => $content) {
     foreach ($content as $id => $item) {
@@ -858,7 +859,7 @@ function panels_edit_display_validate($form_id, $form_values, $form) {
     }
   }
 }
-
+*/
 /**
  * move an item in an array to the top
  */
@@ -941,6 +942,7 @@ function panels_load_display($did, $context = NULL) {
     return NULL;
   }
   $result = db_query("SELECT * FROM {panels_pane} WHERE did = %d ORDER BY panel, position", $did);
+  $display->panels = $display->content = array();
   while ($pane = db_fetch_object($result)) {
     $pane->configuration = unserialize($pane->configuration);
     $display->panels[$pane->panel][] = $pane->pid;
@@ -1062,7 +1064,10 @@ function panels_render_display(&$display) {
 
   foreach ($display->content as $pid => $pane) {
     if ($result = panels_get_pane_content($pane, $display->args, $display->context, $display->incoming_content)) {
-      $content[$pane->panel] .= theme('block', $result);
+      if (!empty($content[$pane->panel])) {
+        $content[$pane->panel] .= theme('panels_separator', $display);
+      }
+      $content[$pane->panel] .= theme('panels_pane', $result, $display); 
     }
   }
 
@@ -1189,15 +1194,26 @@ function theme_panels_pane_dnd($block, $id, $label, $left_buttons = NULL, $butto
   }
   $output .= "<span class=\"text\">$label</span></div>";
   $output .= '<div class="panel-pane-collapsible">';
-  $output .= theme('panels_pane', $block);
+  $output .= theme('panels_pane_collapsible', $block);
   $output .= '</div>';
   return $output;
 }
 
-function theme_panels_pane($block) {
-  $output .= '<h2 class="title">' . $block->subject . '</h2>';
-  $output .= '<div class="content">' . $block->content . '</div>';
+function theme_panels_pane($block, $display) {
+  $output = '<div class="panel-pane">';
+  $output .= theme('block', $block);
+  $output .= '</div>';
   return $output;
+}
+
+function theme_panels_pane_collapsible($block) {
+  $output .= '<h2 class="title">' . $block->subject . '</h2>';
+  $output .= '<div class="content">' . filter_xss_admin($block->content) . '</div>';
+  return $output;
+}
+
+function theme_panels_separator($display) {
+  return '<div class="panel-separator"></div>';
 }
 
 /**
