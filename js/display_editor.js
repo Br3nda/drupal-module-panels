@@ -225,12 +225,16 @@ Drupal.Panels.Draggable = {
   current_pad: null,
 
   mouseOffset: { x: 0, y: 0 },
+  windowOffset: { x: 0, y: 0 },
+  // original settings to be restored
+  original: {},
 
   hoverclass: 'hoverclass',
   helperclass: 'helperclass',
   accept: 'div.panels-display',
   handle: 'div.grabber',
   draggable: 'div.panel-portlet',
+  main: 'div#panels-dnd-main',
 
   // part of the id to remove to get just the number
   draggableId: 'panel-pane-',
@@ -384,6 +388,7 @@ Drupal.Panels.Draggable = {
   }
 }
 
+
 Drupal.Panels.DraggableHandler = function() {
   var draggable = Drupal.Panels.Draggable;
 
@@ -404,6 +409,7 @@ Drupal.Panels.DraggableHandler = function() {
   }
 
   getPosition = function(e) {   
+    /*
     if (document.defaultView && document.defaultView.getComputedStyle) {
       var css = document.defaultView.getComputedStyle(e, null);
       return { 
@@ -411,7 +417,7 @@ Drupal.Panels.DraggableHandler = function() {
         y: parseInt(css.getPropertyValue('top'))
       };
     }
-    
+    */
     var left = 0;
     var top  = 0;
 
@@ -427,14 +433,70 @@ Drupal.Panels.DraggableHandler = function() {
     return { x:left, y:top };
   }
 
+  /**
+  * Retrieve the coordinates of the given event relative to the center
+  * of the widget.
+  *
+  * @param event
+  *  A mouse-related DOM event.
+  * @param reference
+  *  A DOM element whose position we want to transform the mouse coordinates to.
+  * @return
+  *  A hash containing keys 'x' and 'y'.
+  */
+  getRelativePos = function(event, reference) {
+    var x, y;
+    event = event || window.event;
+    var el = event.target || event.srcElement;
+    if (!window.opera && typeof event.offsetX != 'undefined') {
+      // Use offset coordinates and find common offsetParent
+      var pos = { x: event.offsetX, y: event.offsetY };
+      // Send the coordinates upwards through the offsetParent chain.
+      var e = el;
+      while (e) {
+        e.mouseX = pos.x;
+        e.mouseY = pos.y;
+        pos.x += e.offsetLeft;
+        pos.y += e.offsetTop;
+        e = e.offsetParent;
+      }
+      // Look for the coordinates starting from the reference element.
+      var e = reference;
+      var offset = { x: 0, y: 0 }
+      while (e) {
+        if (typeof e.mouseX != 'undefined') {
+          x = e.mouseX - offset.x;
+          y = e.mouseY - offset.y;
+          break;
+        }
+        offset.x += e.offsetLeft;
+        offset.y += e.offsetTop;
+        e = e.offsetParent;
+      }
+      // Reset stored coordinates
+      e = el;
+      while (e) {
+        e.mouseX = undefined;
+        e.mouseY = undefined;
+        e = e.offsetParent;
+      }
+    }
+    else {
+      // Use absolute coordinates
+      var pos = this.getPosition(reference);
+      x = event.pageX  - pos.x;
+      y = event.pageY - pos.y;
+    }
+    // Subtract distance to middle
+    return { x: x, y: y };
+  }
+
   mouseUp = function(e) {
     draggable.dropzones = [];
     if (draggable.current_pad) {
       $(draggable.object).insertAfter($(draggable.current_pad.obj));
     }
-    $(draggable.object).css({
-      position: 'static', width: 'auto', left: 'auto', top: 'auto'
-    });
+    $(draggable.object).css(draggable.original);
     if (draggable.current_dropzone) {
       draggable.unsetDropZone();
     }
@@ -460,26 +522,43 @@ Drupal.Panels.DraggableHandler = function() {
     draggable.calculateDropZones();
     draggable.object = $(this).parent(draggable.draggable).get(0);
 
-    var width = Math.min($(this).innerWidth(), draggable.maxWidth);
-    $(draggable.object).css({
-      position: 'absolute',
-      'z-index': 100,
-      width: width + 'px'
-    });
+    draggable.original = {
+      position: $(draggable.object).css('position'),
+      width: 'auto',
+      left: $(draggable.object).css('left'),
+      top: $(draggable.object).css('top'),
+      'z-index': $(draggable.object).css('z-index'),
+      'margin-bottom': $(draggable.object).css('margin-bottom')
+    };
 
-    var position = getPosition(draggable.object);
+    var width = Math.min($(draggable.object).innerWidth(), draggable.maxWidth);
+    $(draggable.object).css({
+      position: 'relative',
+      'z-index': 100,
+      width: width + 'px',
+      'margin-bottom': (-1 * parseInt($(draggable.object).innerHeight())) + 'px'
+    })
+//      .css('margin-bottom', (-1 * parseInt($(draggable.object).innerHeight())) + 'px')
+      .prependTo($(draggable.main));
+
+//    var position = getPosition(draggable.object);
     var mousePos = getMousePos(e);
+    var reference = $(draggable.main).get(0);
+    var windowOffset = getRelativePos(e, reference);
 
     // This is stored so we can move with it.
-    draggable.mouseOffset = getMouseOffset(draggable.object, position, mousePos);
+    draggable.mouseOffset = getMouseOffset(draggable.object, windowOffset, mousePos);
 
+/*
     if (draggable.mouseOffset.x > width) {
       position.x += draggable.mouseOffset.x - (width / 2);
       draggable.mouseOffset.x = (width / 2);
     }
+*/
 
-    draggable.object.style.top = position.y + 'px';
-    draggable.object.style.left = position.x + 'px';
+
+    draggable.object.style.top = windowOffset.y + 'px';
+    draggable.object.style.left = windowOffset.x + 'px';
     $('body').unmouseup().unmousemove().mouseup(mouseUp).mousemove(mouseMove);
 
     draggable.findDropZone(mousePos.x, mousePos.y);

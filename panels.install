@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.4 2007/03/28 22:33:08 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.5 2007/04/25 04:06:42 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -67,7 +67,7 @@ function panels_update_1000() {
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN did int(10) NOT NULL DEFAULT 0 AFTER pid");
   $ret[] = update_sql("UPDATE {panels_page} SET did = pid");
   
-  $max_pid = db_fetch_result(db_query("SELECT MAX(pid) FROM {panels_page}"));
+  $max_pid = db_result(db_query("SELECT MAX(pid) FROM {panels_page}"));
   $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_page}_pid', $max_pid)");
 
   $ret[] = update_sql("ALTER TABLE {panels_area} RENAME {panels_pane}");
