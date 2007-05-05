@@ -65,6 +65,7 @@ Drupal.Panels.bindClickDelete = function(o) {
     if (confirm('Remove this pane?')) {
       var id = $(this)[0].id.replace('edit-button-', '').replace('-delete', '');
       $('#panel-pane-' + id).remove();
+      Drupal.Panels.Draggable.savePositions();
     }
     return false;
   });
