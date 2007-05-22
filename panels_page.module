@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.10 2007/04/07 18:47:11 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.11 2007/05/22 18:51:45 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -549,7 +549,7 @@ function panels_page_edit_content($panel_page) {
       }
     }
   }
-  return panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->pid/edit", $content_types);
+  print theme('page', panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->pid/edit", $content_types), FALSE);
 }
 
 // ---------------------------------------------------------------------------
