@@ -24,8 +24,14 @@
   width: 50%;
 }
 
-.layout-container fieldset {
+.panels-page-info-container {
+  padding-right: 1em;
+}
+
+.layout-container fieldset,
+.panels-page-info-container fieldset {
   margin-top: 0;
+  width: 98%;
 }
 
 .layout-container .form-item {
@@ -82,3 +88,9 @@
   padding: 25px 25px 25px 0;
   float: left;
 }
+
+#panels-edit-display .panel-pane,
+#panels-edit-display .helperclass {
+  margin: .5em;
+}
+

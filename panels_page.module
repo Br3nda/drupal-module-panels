@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.11 2007/05/22 18:51:45 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.12 2007/05/22 22:08:00 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -399,10 +399,7 @@ function panels_page_edit_form($panel_page) {
   );
 
   $form['layout']['layout-display'] = array(
-    '#type' => 'textfield',
-    '#disabled' => true,
-    '#size' => 40,
-    '#value' => $layout['title'],
+    '#value' => check_plain($layout['title']),
   );
   $content = '<dl class="content-list">';
   
@@ -428,7 +425,7 @@ function panels_page_edit_form($panel_page) {
 
   $form['info']['title'] = array(
     '#type' => 'textfield',
-    '#size' => 40,
+    '#size' => 35,
     '#default_value' => $panel_page->title,
     '#title' => t('Page title'),
     '#description' => t('The page title for this panels layout'),
@@ -436,7 +433,7 @@ function panels_page_edit_form($panel_page) {
 
   $form['info']['css_id'] = array(
     '#type' => 'textfield',
-    '#size' => 40,
+    '#size' => 35,
     '#default_value' => $panel_page->css_id,
     '#title' => t('CSS ID'),
     '#description' => t('The CSS ID to apply to this page'),
@@ -444,7 +441,7 @@ function panels_page_edit_form($panel_page) {
 
   $form['info']['path'] = array(
     '#type' => 'textfield',
-    '#size' => 40,
+    '#size' => 35,
     '#default_value' => $panel_page->path,
     '#title' => t('Path'),
     '#description' => t('The URL path to give this page, i.e, path/to/page'),

@@ -231,6 +231,7 @@ Drupal.Panels.Draggable = {
   // Where the object is
   mouseOffset: { x: 0, y: 0 },
   windowOffset: { x: 0, y: 0 },
+  offsetDivHeight: 0,
 
   // original settings to be restored
   original: {},
@@ -473,11 +474,12 @@ Drupal.Panels.DraggableHandler = function() {
 
   mouseMove = function(e) {
     var mousePos = getMousePos(e);
-
-    draggable.object.style.top = mousePos.y - draggable.mouseOffset.y + 'px';
-    draggable.object.style.left = mousePos.x - draggable.mouseOffset.x  + 'px';
-  
     draggable.findDropZone(mousePos.x, mousePos.y);
+
+    var windowMoved = parseInt(draggable.offsetDivHeight - $(draggable.main).innerHeight());
+
+    draggable.object.style.top = mousePos.y - draggable.mouseOffset.y + windowMoved + 'px';
+    draggable.object.style.left = mousePos.x - draggable.mouseOffset.x  + 'px';  
   }
 
   mouseDown = function(e) {
@@ -498,12 +500,22 @@ Drupal.Panels.DraggableHandler = function() {
       left: $(draggable.object).css('left'),
       top: $(draggable.object).css('top'),
       'z-index': $(draggable.object).css('z-index'),
-      'margin-bottom': $(draggable.object).css('margin-bottom')
+      'margin-bottom': $(draggable.object).css('margin-bottom'),
+      'margin-top': $(draggable.object).css('margin-top'),
+      'margin-left': $(draggable.object).css('margin-left'),
+      'margin-right': $(draggable.object).css('margin-right'),
+      'padding-bottom': $(draggable.object).css('padding-bottom'),
+      'padding-top': $(draggable.object).css('padding-top'),
+      'padding-left': $(draggable.object).css('padding-left'),
+      'padding-right': $(draggable.object).css('padding-right')
     };
 
     var mousePos = getMousePos(e);
     var originalPos = $(draggable.object).offset();
     var width = Math.min($(draggable.object).innerWidth(), draggable.maxWidth);
+
+    draggable.offsetDivHeight = $(draggable.main).innerHeight();
+    draggable.findDropZone(mousePos.x, mousePos.y);
 
     // Make the draggable relative, get it out of the way and make it
     // invisible.
@@ -511,9 +523,16 @@ Drupal.Panels.DraggableHandler = function() {
       position: 'relative',
       'z-index': 100,
       width: width + 'px',
-      'margin-bottom': (-1 * parseInt($(draggable.object).innerHeight())) + 'px'
+      'margin-bottom': (-1 * parseInt($(draggable.object).outerHeight())) + 'px',
+      'margin-top': 0,
+      'margin-left': 0,
+      'margin-right': (-1 * parseInt($(draggable.object).outerWidth())) + 'px',
+      'padding-bottom': 0,
+      'padding-top': 0,
+      'padding-left': 0,
+      'padding-right': 0
     })
-      .prependTo($(draggable.main));
+      .insertAfter($(draggable.main));
     var newPos = $(draggable.object).offset();
 
     var windowOffset = { left: originalPos.left - newPos.left, top: originalPos.top - newPos.top }
@@ -529,13 +548,13 @@ Drupal.Panels.DraggableHandler = function() {
 
     // This is stored so we can move with it.
     draggable.mouseOffset = { x: mousePos.x - windowOffset.left, y: mousePos.y - windowOffset.top};
+    draggable.offsetDivHeight = $(draggable.main).innerHeight();
 
     draggable.object.style.top = windowOffset.top + 'px';
     draggable.object.style.left = windowOffset.left + 'px';
     $('body').unmouseup().unmousemove().mouseup(mouseUp).mousemove(mouseMove);
 
     draggable.calculateDropZones(mousePos, e);
-    draggable.findDropZone(mousePos.x, mousePos.y);
     return false;
   }
 
