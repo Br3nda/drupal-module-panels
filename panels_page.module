@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.12 2007/05/22 22:08:00 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.13 2007/05/22 22:56:17 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -448,6 +448,13 @@ function panels_page_edit_form($panel_page) {
     '#required' => TRUE,
   );
 
+  $form['info']['no_blocks'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $panel_page->no_blocks,
+    '#title' => t('Disable Drupal blocks/regions'),
+    '#description' => t('Check this to have the panel page disable all regions displayed in the theme.'),
+  );
+
   $rids = array();
   $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
   while ($obj = db_fetch_object($result)) {
@@ -494,6 +501,7 @@ function panels_page_edit_form_submit($form_id, $form_values) {
 
   $panel_page->title  = $form_values['title'];
   $panel_page->css_id = $form_values['css_id'];
+  $panel_page->no_blocks = $form_values['no_blocks'];
   $panel_page->path  = $form_values['path'];
   $panel_page->access = array_keys(array_filter($form_values['access']));
 
@@ -575,7 +583,12 @@ function panels_page_view_page($panel_page) {
   }
 
   drupal_set_title(filter_xss_admin($panel_page->title));
-  return $output;
+  if ($panel_page->no_blocks) {
+    print theme('page', $output, FALSE);
+  }
+  else {
+    return $output;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -612,12 +625,14 @@ function panels_page_save(&$panel_page) {
       "title = '%s', " .
       "access = '%s', " .
       "path = '%s', " .
-      "css_id = '%s' " .
+      "css_id = '%s', " .
+      "no_blocks = %d " .
       "WHERE pid = %d", 
         $panel_page->title, 
         $panel_page->access, 
         $panel_page->path, 
         $panel_page->css_id, 
+        $panel_page->no_blocks, 
       $panel_page->pid
     );
   }
@@ -631,6 +646,7 @@ function panels_page_save(&$panel_page) {
         "access, " .
         "path, " .
         "css_id, " .
+        "no_blocks, " .
         "did " .
       ") " .
       "VALUES (" .
@@ -640,12 +656,14 @@ function panels_page_save(&$panel_page) {
         "'%s', " .
         "'%s', " .
         "%d " .
+        "%d " .
       ")",
         $panel_page->pid, 
         $panel_page->title, 
         $panel_page->access, 
         $panel_page->path, 
         $panel_page->css_id, 
+        $panel_page->no_blocks, 
         $display->did
     );
   }

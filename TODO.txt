@@ -43,7 +43,7 @@ content types
     X unify title overriding.
 
 layouts
-    o Fix the div div problem in all layouts
+    X Fix the div div problem in all layouts
 
 icons
     X Change configure icon
