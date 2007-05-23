@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.13 2007/05/22 22:56:17 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.14 2007/05/23 00:14:24 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -66,32 +66,38 @@ function panels_page_menu($may_cache) {
     );
 
     // load panels from database
-    $result = db_query("SELECT pid, path, access FROM {panels_page}");
+    $result = db_query("SELECT * FROM {panels_page}");
     // FIXME: Fow now we're making these all callbacks, but we
     // should steal code from Views so they can be normal, tabs,
     // etc
     while ($panel_page = db_fetch_object($result)) {
       $panel_page->access = ($panel_page->access ? explode(', ', $panel_page->access) : array());
-      panels_page_menu_items($items, $panel_page->path, $panel_page);
-      panels_page_menu_items($items, 'admin/build/panel-page/' . $panel_page->pid, $panel_page);
+      panels_page_menu_items($items, $panel_page->path, $panel_page, FALSE);
+      panels_page_menu_items($items, 'admin/build/panel-page/' . $panel_page->pid, $panel_page, TRUE);
     }
   }
   return $items;
 }
 
-function panels_page_menu_items(&$items, $base, $page) {
+function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
   $view_access = panels_page_access($page);
   $access = user_access('create panel-pages');
 
-  $items[] = array(
-    'path' => $base,
-    'title' => t('View'),
-    'access' => $view_access,    
-    'callback' => 'panels_page_view_page',
-    'callback arguments' => array($page->pid),
-    'weight' => -10,
-    'type' => MENU_CALLBACK,
-  );
+  if ($basic) {
+    $items[] = array(
+      'path' => $base,
+      'title' => t('View'),
+      'access' => $view_access,    
+      'callback' => 'panels_page_view_page',
+      'callback arguments' => array($page->pid),
+      'weight' => -10,
+      'type' => MENU_CALLBACK,
+    );
+  }
+  else {
+    _panels_page_create_menu_item($items, $page, $base, $view_access);
+  }
+
   $items[] = array(
     'path' => $base . '/view',
     'title' => t('View'),
@@ -145,6 +151,96 @@ function panels_page_menu_items(&$items, $base, $page) {
     'callback arguments' => array('panels_page_delete_confirm', $page->pid),
     'type' => MENU_CALLBACK,
   );
+}
+
+// This stuff is lifted pretty much directly from Views.
+
+/**
+ * Helper function to add a menu item for a panel.
+ */
+
+function panels_page_get_title($panel_page, $context = 'page') {
+  if ($context == 'menu-parent' && $panel_page->menu_parent_title) {
+    return $panel_page->menu_parent_title;
+  }
+
+  if (in_array($context, array('menu', 'menu-parent')) && $panel_page->menu_title) {
+    return $panel_page->menu_title;
+  }
+  
+  if ($panel_page->title) {
+    return $panel_page->title;
+  }
+
+  return t('No title');
+}
+
+function _panels_page_create_menu_item(&$items, $panel_page, $path, $access, $local_task_type = MENU_NORMAL_ITEM, $args = array()) {
+  $title = filter_xss_admin(panels_page_get_title($panel_page, 'menu'));
+  $type = _panels_page_menu_type($panel_page);
+  if ($type == MENU_LOCAL_TASK || $type == MENU_DEFAULT_LOCAL_TASK) {
+    $weight = $panel_page->menu_tab_weight;
+  }
+
+  $items[] = _panels_page_menu_item($path, $title, $panel_page, $args, $access, $type, $weight);
+
+  if ($type == MENU_DEFAULT_LOCAL_TASK && dirname($path) && dirname($path) != '.') {
+    switch ($panel_page->menu_tab_default_parent_type) {
+      case 'tab':
+        $parent_type = MENU_LOCAL_TASK;
+        break;
+      case 'normal':
+        $parent_type = MENU_NORMAL_ITEM;
+        break;
+      default:
+      case 'existing':
+        $parent_type = 0;
+        break;
+    }
+    if ($parent_type) {
+      $title = filter_xss_admin(panels_page_get_title($panel_page, 'menu-parent'));
+      $weight = $panel_page->menu_parent_tab_weight;
+      $items[] = _panels_page_menu_item(dirname($path), $title, $panel_page, $args, $access, $parent_type, $weight);
+    }
+  }
+}
+
+/**
+ * Helper function to create a menu item for a panel.
+ */
+function _panels_page_menu_item($path, $title, $panel_page, $args, $access, $type, $weight = NULL) {
+  $retval = array('path' => $path,
+    'title' => $title,
+    'callback' => 'panels_page_view_page',
+    'callback arguments' => array($panel_page->pid),
+    'access' => user_access('access content') && $access,
+    'type' => $type,
+  );
+  if ($weight !== NULL) {
+    $retval['weight'] = $weight;
+  }
+  return $retval;
+}
+
+/**
+ * Determine what menu type a panel needs to use.
+ */
+function _panels_page_menu_type($panel_page) {
+  if ($panel_page->menu) {
+    if ($panel_page->menu_tab_default) {
+      $type = MENU_DEFAULT_LOCAL_TASK;
+    }
+    else if ($panel_page->menu_tab) {
+      $type = MENU_LOCAL_TASK;
+    }
+    else {
+      $type = MENU_NORMAL_ITEM;
+    }
+  }
+  else {
+    $type = MENU_CALLBACK;
+  }
+  return $type;
 }
 
 /**
@@ -273,7 +369,7 @@ function panels_page_list_page() {
   $result = db_query("SELECT p.*, d.layout FROM {panels_page} p INNER JOIN {panels_display} d ON p.did = d.did ORDER BY p.title");
   while ($panel_page = db_fetch_object($result)) {
     $item = array();
-    $item[] = check_plain($panel_page->title ? $panel_page->title : t('No title'));
+    $item[] = check_plain(panels_page_get_title($panel_page));
     $item[] = check_plain($layouts[$panel_page->layout]['title']);
     $item[] = l($panel_page->path, $panel_page->path);
     $item[] = implode(' | ', array(
@@ -302,7 +398,7 @@ function panels_page_delete_confirm($panel_page) {
   $form['pid'] = array('#type' => 'value', '#value' => $panel_page->pid);
   $form['did'] = array('#type' => 'value', '#value' => $panel_page->did);
   return confirm_form( $form,
-    t('Are you sure you want to delete "@title"?', array('@title' => $panel_page->title)),
+    t('Are you sure you want to delete "@title"?', array('@title' => panels_page_get_title($panel_page))),
     $_GET['destination'] ? $_GET['destination'] : 'admin/build/panel-page',
     t('This action cannot be undone.'),
     t('Delete'), t('Cancel')
@@ -373,32 +469,36 @@ function panels_page_edit_form($panel_page) {
     '#value' => $panel_page
   );
 
-  $form['layout'] = array(
-    '#type' => 'fieldset',
+  $form['right'] = array(
     '#prefix' => '<div class="layout-container">',
     '#suffix' => '</div>',
+  );
+
+  $form['left'] = array(
+    '#prefix' => '<div class="panel-page-info-container">',
+    '#suffix' => '</div>',
+  );
+
+  $form['right']['layout'] = array(
+    '#type' => 'fieldset',
     '#title' => t('Layout'),
   );
 
-  $form['info'] = array(
+  $form['left']['info'] = array(
     '#type' => 'fieldset',
-    '#prefix' => '<div class="panel-page-info-container">',
-    '#suffix' => '</div>',
     '#title' => t('Page settings'),
   );
 
-  $form['layout'] = array(
+  $form['right']['layout'] = array(
     '#type' => 'fieldset',
-    '#prefix' => '<div class="layout-container">',
-    '#suffix' => '</div>',
     '#title' => t('Layout'),
   );
 
-  $form['layout']['layout-icon'] = array(
+  $form['right']['layout']['layout-icon'] = array(
     '#value' => panels_print_layout_icon($panel_page->display->layout, $layout),
   );
 
-  $form['layout']['layout-display'] = array(
+  $form['right']['layout']['layout-display'] = array(
     '#value' => check_plain($layout['title']),
   );
   $content = '<dl class="content-list">';
@@ -419,11 +519,11 @@ function panels_page_edit_form($panel_page) {
   }
   $content .= '</dl>';
 
-  $form['layout']['layout-content'] = array(
+  $form['right']['layout']['layout-content'] = array(
     '#value' => $content,
   );
 
-  $form['info']['title'] = array(
+  $form['left']['info']['title'] = array(
     '#type' => 'textfield',
     '#size' => 35,
     '#default_value' => $panel_page->title,
@@ -431,7 +531,7 @@ function panels_page_edit_form($panel_page) {
     '#description' => t('The page title for this panels layout'),
   );
 
-  $form['info']['css_id'] = array(
+  $form['left']['info']['css_id'] = array(
     '#type' => 'textfield',
     '#size' => 35,
     '#default_value' => $panel_page->css_id,
@@ -439,7 +539,7 @@ function panels_page_edit_form($panel_page) {
     '#description' => t('The CSS ID to apply to this page'),
   );
 
-  $form['info']['path'] = array(
+  $form['left']['info']['path'] = array(
     '#type' => 'textfield',
     '#size' => 35,
     '#default_value' => $panel_page->path,
@@ -448,11 +548,95 @@ function panels_page_edit_form($panel_page) {
     '#required' => TRUE,
   );
 
-  $form['info']['no_blocks'] = array(
+  $form['left']['info']['no_blocks'] = array(
     '#type' => 'checkbox',
     '#default_value' => $panel_page->no_blocks,
     '#title' => t('Disable Drupal blocks/regions'),
     '#description' => t('Check this to have the panel page disable all regions displayed in the theme.'),
+  );
+
+  $form['left']['menu-info'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => FALSE,
+    '#title' => t('Menu'),
+  );
+
+  $form['left']['menu-info']['menu'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Provide Menu'),
+    '#return_value' => 1,
+    '#default_value' => $panel_page->menu,
+    '#description' => t('If checked this panel be given a menu entry in the Drupal menu system. If not checked the data in this group will be ignored.'),
+  );
+
+  $form['left']['menu-info']['menu_tab'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Provide Menu as Tab'),
+    '#return_value' => 1,
+    '#default_value' => $panel_page->menu_tab,
+    '#description' => t("If checked this panel's menu entry will be provided as a tab rather than in the main menu system."),
+  );
+
+  $form['left']['menu-info']['menu_tab_weight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Tab Weight'),
+    '#default_value' => $panel_page->menu_tab_weight,
+    '#width' => 10,
+    '#size' => 20,
+    '#description' => t('If this is a menu tab, select the weight; lower numbers will be further to the left.'),
+  );
+
+  $form['left']['menu-info']['menu_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Menu Title'),
+    '#default_value' => $panel_page->menu_title,
+    '#size' => 35,
+    '#maxlength' => 255,
+    '#description' => t('Enter the title to use for the menu entry or tab. If blank, the page title will be used.'),
+  );
+
+  $form['left']['menu-info']['default-tab'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Default Menu Tab'),
+  );
+
+  $form['left']['menu-info']['default-tab']['menu_tab_default'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Make Default Menu Tab'),
+    '#return_value' => 1,
+    '#default_value' => $panel_page->menu_tab_default,
+    '#description' => t("If checked this panel's menu entry will be provided as a tab, and will be the default tab for that URL path. For example, if the URL is 'tracker/all' and it is set as the default menu tab, it will be put into the menu as 'tracker' and 'tracker/all' will be the default tab. The following settings allow you to customize the parent item, for example 'tracker'. For tabs to work properly, one tab in the group must be set as the default."),
+  );
+
+  $form['left']['menu-info']['default-tab']['menu_tab_default_parent_type'] = array(
+    '#type' => 'select',
+    '#title' => t('Parent Menu Item Type'),
+    '#default_value' => $panel_page->menu_tab_default_parent_type,
+    '#options' => array(
+      'tab' => t("Tab"),
+      'normal' => t("Normal menu item"),
+      'existing' => t("Already exists (don't create)"),
+    ),
+    '#description' => t("Select type of parent item to use for this default menu tab. You can either specify the parent should be a tab (the default), a normal menu item, or to use the menu item that already exists at the specified URL. For example, if the URL for the default tab is 'tracker/all', then 'tracker' would already have to be a valid menu item to use this final choice."),
+  );
+
+  $form['left']['menu-info']['default-tab']['menu_parent_tab_weight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Tab Weight'),
+    '#default_value' => $panel_page->menu_parent_tab_weight,
+    '#width' => 10,
+    '#description' => t('If the parent menu item is a tab, select the weight; lower numbers will be further to the left.'),
+  );
+
+  $form['left']['menu-info']['default-tab']['menu_parent_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Parent Menu Item Title'),
+    '#default_value' => $panel_page->menu_parent_title,
+    '#size' => 35,
+    '#maxlength' => 255,
+    '#description' => t('If the Parent Menu Item is being defined by this panel (if you set the %type_field to either %tab or %menu), you can specify its title here.  If blank, the menu title will be used if that is defined, or the page title if not.', array('%type_field' => t('Parent Menu Item Type'), '%tab' => t('Tab'), '%menu' => t('Normal menu item'))),
   );
 
   $rids = array();
@@ -461,7 +645,7 @@ function panels_page_edit_form($panel_page) {
     $rids[$obj->rid] = $obj->name;
   }
 
-  $form['info']['access'] = array(
+  $form['left']['info']['access'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Access'),
     '#default_value' => $panel_page->access,
@@ -483,12 +667,12 @@ function panels_page_edit_form($panel_page) {
  */
 function panels_page_edit_form_validate($form_id, $form_values, $form) {
   if (!$form_values['path']) {
-    form_error($form['info']['path'], t('Path is required.'));
+    form_error($form['left']['info']['path'], t('Path is required.'));
   }
   else {
     $result = db_result(db_query("SELECT pid FROM {panels_page} WHERE path = '%s' AND pid <> %d", $form_values['path'], $form_values['pid']));
     if ($result) {
-      form_error($form['info']['path'], t('Path may not be the same as another panel page path.'));
+      form_error($form['left']['info']['path'], t('Path may not be the same as another panel page path.'));
     }
   }
 }
@@ -502,6 +686,15 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   $panel_page->title  = $form_values['title'];
   $panel_page->css_id = $form_values['css_id'];
   $panel_page->no_blocks = $form_values['no_blocks'];
+  $panel_page->menu = $form_values['menu'];
+  $panel_page->menu_tab = $form_values['menu_tab'];
+  $panel_page->menu_tab_weight = $form_values['menu_tab_weight'];
+  $panel_page->menu_title = $form_values['menu_title'];
+  $panel_page->menu_tab_default = $form_values['menu_tab_default'];
+  $panel_page->menu_tab_default_parent_type = $form_values['menu_tab_default_parent_type'];
+  $panel_page->menu_parent_title = $form_values['menu_parent_title'];
+  $panel_page->menu_parent_tab_weight = $form_values['menu_parent_tab_weight'];
+
   $panel_page->path  = $form_values['path'];
   $panel_page->access = array_keys(array_filter($form_values['access']));
 
@@ -582,7 +775,7 @@ function panels_page_view_page($panel_page) {
     return drupal_not_found();
   }
 
-  drupal_set_title(filter_xss_admin($panel_page->title));
+  drupal_set_title(filter_xss_admin(panels_page_get_title($panel_page)));
   if ($panel_page->no_blocks) {
     print theme('page', $output, FALSE);
   }
@@ -626,13 +819,29 @@ function panels_page_save(&$panel_page) {
       "access = '%s', " .
       "path = '%s', " .
       "css_id = '%s', " .
-      "no_blocks = %d " .
+      "no_blocks = %d, " .
+      "menu = %d, " .
+      "menu_tab = %d, " .
+      "menu_tab_weight = %d, " .
+      "menu_title = '%s', " .
+      "menu_tab_default = %d, " .
+      "menu_tab_default_parent_type = '%s', " .
+      "menu_parent_title = '%s', " .
+      "menu_parent_tab_weight = %d " .
       "WHERE pid = %d", 
         $panel_page->title, 
         $panel_page->access, 
         $panel_page->path, 
         $panel_page->css_id, 
         $panel_page->no_blocks, 
+        $panel_page->menu,
+        $panel_page->menu_tab,
+        $panel_page->menu_tab_weight,
+        $panel_page->menu_title,
+        $panel_page->menu_tab_default,
+        $panel_page->menu_tab_default_parent_type,
+        $panel_page->menu_parent_title,
+        $panel_page->menu_parent_tab_weight,
       $panel_page->pid
     );
   }
@@ -647,6 +856,14 @@ function panels_page_save(&$panel_page) {
         "path, " .
         "css_id, " .
         "no_blocks, " .
+        "menu, " .
+        "menu_tab, " .
+        "menu_tab_weight, " .
+        "menu_title, " .
+        "menu_tab_default, " .
+        "menu_tab_default_parent_type, " .
+        "menu_parent_title, " .
+        "menu_parent_tab_weight, " .
         "did " .
       ") " .
       "VALUES (" .
@@ -655,7 +872,15 @@ function panels_page_save(&$panel_page) {
         "'%s', " .
         "'%s', " .
         "'%s', " .
-        "%d " .
+        "%d, " .
+        "%d, " .
+        "%d, " .
+        "%d, " .
+        "'%s', " .
+        "%d, " .
+        "'%s', " .
+        "'%s', " .
+        "%d, " .
         "%d " .
       ")",
         $panel_page->pid, 
@@ -664,6 +889,14 @@ function panels_page_save(&$panel_page) {
         $panel_page->path, 
         $panel_page->css_id, 
         $panel_page->no_blocks, 
+        $panel_page->menu,
+        $panel_page->menu_tab,
+        $panel_page->menu_tab_weight,
+        $panel_page->menu_title,
+        $panel_page->menu_tab_default,
+        $panel_page->menu_tab_default_parent_type,
+        $panel_page->menu_parent_title,
+        $panel_page->menu_parent_tab_weight,
         $display->did
     );
   }
@@ -679,3 +912,4 @@ function panels_page_delete($panel_page) {
   db_query("DELETE FROM {panels_page} WHERE pid = %d", $panel_page->pid);
   return panels_delete_display($panel_page->did);
 }
+
