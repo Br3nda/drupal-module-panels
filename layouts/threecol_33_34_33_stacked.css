@@ -1,4 +1,4 @@
-/* $Id: threecol_33_34_33_stacked.css,v 1.4.6.1 2007/05/22 22:08:01 merlinofchaos Exp $ */
+/* $Id: threecol_33_34_33_stacked.css,v 1.4.6.2 2007/05/29 16:18:38 merlinofchaos Exp $ */
 
 .panel-3col-33-stacked { 
   overflow: hidden; 
@@ -11,7 +11,7 @@
 }
 
 .panel-3col-33-stacked .panel-col-top .inside {
-  margin-bottom: .5em;
+  margin-bottom: 1em;
 }
 
 .panel-3col-33-stacked .panel-col-first { 
@@ -19,8 +19,8 @@
   width: 33%; 
 }
 
-.panel-3col-33-stacked .panel-col .inside { 
-  margin: 0 .5em 1em .5em;
+.panel-3col-33-stacked .panel-col-first .inside { 
+  margin: 0 .5em 1em .0;
 }
 
 .panel-3col-33-stacked .panel-col { 

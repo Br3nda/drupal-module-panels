@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.14 2007/04/25 06:58:36 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.15 2007/05/29 16:18:38 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -191,7 +191,7 @@ function panels_edit_display($display, $destination) {
   $form['button']['#tree'] = TRUE;
   foreach ($display->content as $pid => $panel) {
     $form['button'][$pid]['#tree'] = TRUE;
-    $form['button'][$pid]['configure'] = panels_add_button('wrench.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
+    $form['button'][$pid]['configure'] = panels_add_button('configure.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
     $form['button'][$pid]['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');
   }
 
@@ -246,6 +246,7 @@ function theme_panels_edit_display($form) {
   _panels_js_files();
   $display = $form['panels_display']['#value'];
   $layout = panels_get_layout($display->layout);
+  $save_buttons = drupal_render($form['submit']) . drupal_render($form['cancel']);
 
   foreach ($layout['panels'] as $panel_id => $title) {
     foreach ((array) $display->panels[$panel_id] as $pid) {
@@ -259,6 +260,7 @@ function theme_panels_edit_display($form) {
   }
   $output .= drupal_render($form);
   $output .= theme('panels_dnd', panels_render_layout($layout, $content));
+  $output .= $save_buttons;
   return $output;
 }
 
@@ -718,7 +720,7 @@ function panels_add_content_config_form_submit($form_id, $form) {
   $return->id = $form['pid'];
 
   // we need to fake the buttons a little.
-  $buttons['configure'] = panels_add_button('wrench.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
+  $buttons['configure'] = panels_add_button('configure.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
   $buttons['configure']['#parents'] = array('button', $form['pid'], 'configure');
 
   $buttons['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');

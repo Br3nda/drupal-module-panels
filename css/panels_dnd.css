@@ -1,27 +1,36 @@
+#panels-dnd-main {
+  margin: 0.5em 0;
+}
+
 div.panels-display {
-  border: 1px solid #2385c2;
+  border: 1px dashed #3D9CD7;
   padding: 0 0 .5em 0;
-  background: white;
+  background: #D4EBF9;
 }
 
 div.panels-display h2.label {
-  background: #2385c2;
-  color: white;
+  background: transparent;
+  color: #3D9CD7;
   text-align: center;
-  font-size: 12pt;
+  font-size: 11pt;
   margin: 0 0 .5em 0;
   padding-right: 16px;
 }
 
 div.panels-display .pane-add {
   float: left;
-  margin: 0;
+  margin: 2px;
+  background: #999;
+  border: 1px solid #fff;
 }
 
 .panel-pane {
-  border: 1px solid #5ab5ee;
-  padding: 0;
-  background: white;
+  padding: 0em;
+  background: #ffffff;
+  border-top: 1px solid #78BAE3;
+  border-right: 1px solid #2B6D96;
+  border-bottom: 1px solid #2B6D96;
+  border-left: 1px solid #78BAE3;
 }
 
 .panel-pane .content {
@@ -34,13 +43,25 @@ div.panels-display .pane-add {
   width: 100%;
   height: 20px;
   cursor: move;
-  margin: 0;
-  background: #5ab5ee;
+  margin: 0 0 0.5em 0;
+  color: #fff;
+  background: #3D9CD7;
   overflow: hidden; 
+}
+
+.panel-pane .grabber:hover {
+  color: #fff;
+  background: #2F78A5;
+}
+
+.panel-pane .grabber:active {
+  color: #fff;
+  background: red;
 }
 
 .panel-pane .grabber .text {
   margin-left: 3px;
+  font-size: 90%;
 }
 
 .panel-pane .buttons {
@@ -55,8 +76,8 @@ div.panels-display .pane-add {
   display: inline;
 }
 
-.panel-pane .buttons input.pane-delete {
-  margin: 0 2px 1px 1px;
+.panel-pane .buttons input.pane-delete, .panel-pane .buttons input.pane-configure {
+  margin: 2px 1px;
 }
 
 .panel-pane .toggle {
@@ -70,6 +91,7 @@ div.panels-display .pane-add {
 }
 
 .panel-pane .title {
+  font-size:125%;
   cursor: pointer;
 }
 
