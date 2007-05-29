@@ -190,8 +190,6 @@ a.close img {
 .panels-modal-content .modal-content .panels-throbber-wrapper {
   width: 575px;
   height: 400px;
-  text-align: center;
-  vertical-align: center;
 }
 
 .panels-modal-content .modal-content .panels-throbber-wrapper img {
