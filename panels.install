@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.6 2007/05/22 22:56:17 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.7 2007/06/01 01:50:50 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -81,12 +81,12 @@ function panels_update_1000() {
   $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_page}_pid', $max_pid)");
 
   $ret[] = update_sql("ALTER TABLE {panels_area} RENAME {panels_pane}");
-  $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN did int(10) NOT NULL DEFAULT 0 FIRST");
+  $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN pid int(10) NOT NULL DEFAULT 0 FIRST");
   $ret[] = update_sql("ALTER TABLE {panels_pane} CHANGE area panel varchar(32)");
   $result = db_query("SELECT * FROM {panels_pane}");
   while ($pane = db_fetch_object($result)) {
     $count++;
-    $ret[] = update_sql("UPDATE {panels_pane} SET pid = $count WHERE did = $pane->did AND pane = '$pane->pane' AND position = $pane->position");
+    $ret[] = update_sql("UPDATE {panels_pane} SET pid = $count WHERE did = $pane->did AND panel = '$pane->pane' AND position = $pane->position");
   }
   $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_pane}_pid', $count)");
 
