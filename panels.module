@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.15 2007/05/29 16:18:38 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.16 2007/06/01 02:41:49 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -1165,6 +1165,7 @@ function _panels_js_files() {
   drupal_add_js(panels_get_path('js/lib/dimensions.js'));
   drupal_add_js(panels_get_path('js/lib/mc.js'));
   drupal_add_js(panels_get_path('js/lib/form.js'));
+  drupal_add_js(array('panelsAjaxURL' => url('panels/ajax', NULL, NULL, TRUE)), 'setting');
   drupal_add_js(panels_get_path('js/display_editor.js'));
   drupal_add_css(panels_get_path('css/panels_dnd.css'));
   drupal_add_css(panels_get_path('css/panels_admin.css'));

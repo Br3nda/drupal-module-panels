@@ -13,7 +13,7 @@ Drupal.Panels.clickAdd = function() {
   $('#modalContent .modal-content').html($('div#panels-throbber').html());
   $.ajax({
     type: "POST",
-    url: "/panels/ajax/add-content/" + $('#panel-did').val() + '/' + id,
+    url: Drupal.settings.panelsAjaxURL + "/add-content/" + $('#panel-did').val() + '/' + id,
     global: true,
     success: Drupal.Panels.bindAjaxResponse,
     dataType: 'json'
@@ -49,7 +49,7 @@ Drupal.Panels.bindClickConfigure = function (o) {
     $('#modalContent .modal-content').html($('div#panels-throbber').html());
     $.ajax({
       type: "POST",
-      url: "/panels/ajax/configure/" + $('#panel-did').val() + '/' + id,
+      url: Drupal.settings.panelsAjaxURL + "/configure/" + $('#panel-did').val() + '/' + id,
       global: true,
       success: Drupal.Panels.bindAjaxResponse,
       dataType: 'json'
@@ -92,7 +92,7 @@ Drupal.Panels.Subform = {};
 /** Basic submit on a subform **/
 Drupal.Panels.Subform.bindClickSubmit = function() {
   $(this).ajaxSubmit({
-    url: '/panels/ajax/submit-form/' +  $('#panel-did').val(),
+    url: Drupal.settings.panelsAjaxURL + '/submit-form/' +  $('#panel-did').val(),
     method: 'post',
     after: Drupal.Panels.bindAjaxResponse,
     dataType: 'json'
@@ -105,7 +105,7 @@ Drupal.Panels.Subform.bindClickAddLink = function() {
   // show the empty dialog right away.
   $.ajax({
     type: "POST",
-    url: "/panels/ajax/add-config/" + $('#panel-did').val() + '/' + id,
+    url: Drupal.settings.panelsAjaxURL + "/add-config/" + $('#panel-did').val() + '/' + id,
     global: true,
     success: Drupal.Panels.bindAjaxResponse,
     dataType: 'json'
@@ -592,7 +592,7 @@ Drupal.Panels.autoAttach = function() {
     save = $('#panels-dnd-save').val();
     $.ajax({
       type: "POST",
-      url: "/panels/ajax/save-display/" + $('#panel-did').val(),
+      url: Drupal.settings.panelsAjaxURL + "/save-display/" + $('#panel-did').val(),
       data: serial.hash,
       global: true,
       success: function() {
