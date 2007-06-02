@@ -1,0 +1,424 @@
+# $Id: de.po,v 1.1.2.1 2007/06/02 10:38:50 hass Exp $
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  panels.module,v 1.10.2.9 2007/03/15 23:13:41 merlinofchaos
+#  fourcol_25_25_25_25.inc,v 1.0 2006/09/02 11:47:00 alexander.hass
+#  threecol_33_33_33.inc,v 1.0 2006/09/02 11:47:00 alexander.hass
+#  twocol_25_75.inc,v 1.0 2006/09/02 11:47:00 alexander.hass
+#  twocol_33_66.inc,v 1.0 2006/09/02 11:47:00 alexander.hass
+#  twocol_38_62.inc,v 1.0 2006/09/02 11:47:00 alexander.hass
+#  twocol_50_50.inc,v 1.0 2006/09/02 11:47:00 alexander.hass
+#  twocol_62_38.inc,v 1.0 2006/09/02 11:47:00 alexander.hass
+#  twocol_66_33.inc,v 1.0 2006/09/02 11:47:00 alexander.hass
+#  twocol_75_25.inc,v 1.0 2006/09/02 11:47:00 alexander.hass
+#  threecol_25_50_25_stacked.inc,v 1.5 2006/08/22 23:54:20 merlinofchaos
+#  threecol_33_34_33.inc,v 1.5 2006/08/22 23:54:20 merlinofchaos
+#  threecol_33_34_33_stacked.inc,v 1.5 2006/08/22 23:54:20 merlinofchaos
+#  twocol.inc,v 1.6 2006/08/22 23:54:20 merlinofchaos
+#  twocol_stacked.inc,v 1.5 2006/08/22 23:54:20 merlinofchaos
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: panels 5.x\n"
+"POT-Creation-Date: 2007-03-24 21:42+0100\n"
+"PO-Revision-Date: 2007-06-02 12:37+0100\n"
+"Last-Translator: Alexander Hass\n"
+"Language-Team: Alexander Hass\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: panels.module:382
+#: content_types/custom.inc:90
+msgid "CSS ID"
+msgstr "CSS ID"
+
+#: content_types/block.inc:75
+#: content_types/views.inc:123
+msgid "Block"
+msgstr "Block"
+
+#: layouts/threecol_25_50_25.inc:12
+#: layouts/threecol_25_50_25_stacked.inc:14
+#: layouts/threecol_33_34_33.inc:13
+#: layouts/threecol_33_34_33_stacked.inc:14
+#: layouts/twocol.inc:13
+#: layouts/twocol_stacked.inc:14
+msgid "Left side"
+msgstr "Linke Spalte"
+
+#: layouts/threecol_25_50_25.inc:12
+#: layouts/threecol_25_50_25_stacked.inc:14
+#: layouts/threecol_33_34_33.inc:13
+#: layouts/threecol_33_34_33_stacked.inc:14
+msgid "Middle column"
+msgstr "Mittlere Spalte"
+
+#: layouts/threecol_25_50_25.inc:12
+#: layouts/threecol_25_50_25_stacked.inc:14
+#: layouts/threecol_33_34_33.inc:13
+#: layouts/threecol_33_34_33_stacked.inc:14
+#: layouts/twocol.inc:13
+#: layouts/twocol_stacked.inc:14
+msgid "Right side"
+msgstr "Rechte Spalte"
+
+#: layouts/threecol_25_50_25_stacked.inc:14
+#: layouts/threecol_33_34_33_stacked.inc:14
+#: layouts/twocol_stacked.inc:14
+msgid "Top"
+msgstr "Oben"
+
+#: layouts/threecol_25_50_25_stacked.inc:14
+#: layouts/threecol_33_34_33_stacked.inc:14
+#: layouts/twocol_stacked.inc:14
+msgid "Bottom"
+msgstr "Unten"
+
+#: content_types/block.inc:79
+#: ;86
+msgid "Add block"
+msgstr "Block hinzufügen"
+
+#: content_types/block.inc:107
+msgid "Override title"
+msgstr "Titel überschreiben"
+
+#: content_types/block.inc:108
+msgid "If checked, the block title will be overridden with the override title text."
+msgstr "Sobald aktiviert, wird der Blocktitel mit dem Texttitel überschrieben."
+
+#: content_types/block.inc:113
+msgid "Override title text"
+msgstr "Titeltext überschreiben"
+
+#: content_types/custom.inc:50
+msgid "Enter an optional title for custom content you define"
+msgstr "Einen optionalen Titel für benutzerdefinierten Inhalt eingeben"
+
+#: content_types/custom.inc:57
+#: ;64
+msgid "Add custom"
+msgstr "Benutzerdefiniert hinzufügen"
+
+#: content_types/custom.inc:73
+#: ;74
+msgid "Title"
+msgstr "Titel"
+
+#: content_types/custom.inc:78
+msgid "Body"
+msgstr "Textkörper"
+
+#: content_types/custom.inc:91
+msgid "CSS ID of this custom content."
+msgstr "CSS ID dieses benutzerdefinierten Inhaltes."
+
+#: content_types/custom.inc:98
+msgid "CSS class"
+msgstr "CSS Klasse"
+
+#: content_types/custom.inc:99
+msgid "CSS class of this custom content."
+msgstr "CSS Klasse dieses benutzerdefinierten Inhaltes."
+
+#: content_types/node.inc:42
+msgid "Enter the title or NID of a post"
+msgstr "Den Titel oder die NID des Beitrages eingeben"
+
+#: content_types/node.inc:50
+#: ;57
+msgid "Add post"
+msgstr "Beitrag hinzufügen"
+
+#: content_types/node.inc:68
+msgid "Unable to find \"%s\""
+msgstr "„%s“ wurde nicht gefunden"
+
+#: content_types/node.inc:82
+msgid "Teaser"
+msgstr "Anrisstext"
+
+#: content_types/node.inc:85
+msgid "Check here to show only the node teaser"
+msgstr "Aktivieren, um nur den Anrisstext des Beitrages anzuzeigen."
+
+#: content_types/node.inc:90
+msgid "Display links"
+msgstr "Verweise anzeigen"
+
+#: content_types/node.inc:91
+msgid "Check here to display the links with the post."
+msgstr "Aktivieren, um die Verweise mit dem Beitrag anzuzeigen."
+
+#: content_types/node.inc:96
+msgid "Suppress node title"
+msgstr "Beitragstitel unterdrücken"
+
+#: content_types/node.inc:97
+msgid "Check here to suppress the node title."
+msgstr "Aktivieren, um den Beitragstitel zu unterdrücken."
+
+#: layouts/threecol_25_50_25.inc:8
+msgid "Three column 25/50/25"
+msgstr "Drei Spalten 25/50/25"
+
+#: layouts/threecol_25_50_25_stacked.inc:10
+msgid "Three column 25/50/25 stacked"
+msgstr "Drei Spalten 25/50/25 gestapelt"
+
+#: layouts/threecol_33_34_33.inc:9
+msgid "Three column 33/34/33"
+msgstr "Drei Spalten 33/34/33"
+
+#: layouts/threecol_33_34_33_stacked.inc:10
+msgid "Three column 33/34/33 stacked"
+msgstr "Drei Spalten 33/34/33 gestapelt"
+
+#: layouts/twocol.inc:9
+msgid "Two column"
+msgstr "Zwei Spalten"
+
+#: layouts/twocol_stacked.inc:10
+msgid "Two column stacked"
+msgstr "Zwei Spalten gestapelt"
+
+#: panels.module:11
+msgid "<p>You may peruse a list of your current panels layouts and edit them, or click add to create a new page.</p>"
+msgstr "<p>Die Liste der aktuellen Panel Layouts kann überprüft, bearbeitet oder eine neue Seite erstellt werden.</p>"
+
+#: panels.module:13
+msgid "<p>Choose a layout for your new page from the list below.</p>"
+msgstr "<p>Ein Layout für die neue Seite von der unten aufgeführten Liste auswählen.</p>"
+
+#: panels.module:60
+#: panels.info:0
+msgid "Panels"
+msgstr "Panels"
+
+#: panels.module:63
+msgid "Create pages on your site that are 2 or 3 columns"
+msgstr "Seiten mit 2 oder 3 Spalten in der Webseite erstellen"
+
+#: panels.module:67
+msgid "List"
+msgstr "Alle anzeigen"
+
+#: panels.module:75
+#: ;82
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: panels.module:89
+msgid "Edit panels"
+msgstr "Panels bearbeiten"
+
+#: panels.module:96
+msgid "Delete panels"
+msgstr "Panels löschen"
+
+#: panels.module:105
+msgid "Autocomplete node"
+msgstr "Beitrag automatisch vervollständigen"
+
+#: panels.module:199
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: panels.module:200
+#: ;228
+msgid "Delete"
+msgstr "Löschen"
+
+#: panels.module:205
+msgid "Panel title"
+msgstr "Paneltitel"
+
+#: panels.module:206
+msgid "URL"
+msgstr "URL"
+
+#: panels.module:207
+msgid "Operations"
+msgstr "Operationen"
+
+#: panels.module:225
+msgid "Are you sure you want to delete %title?"
+msgstr "Soll %title wirklich gelöscht werden?"
+
+#: panels.module:227
+msgid "This action cannot be undone."
+msgstr "Diese Aktion kann nicht rückgängig gemacht werden."
+
+#: panels.module:228
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: panels.module:308
+msgid "Add content"
+msgstr "Inhalt hinzufügen"
+
+#: panels.module:310
+msgid "Select an area to add content to, then select a type of content and click the appropriate button. The content will be added."
+msgstr "Zuerst einen Bereich auswählen zu dem Inhalt hinzugefügt werden soll, dann einen Inhalt auswählen und den entsprechenden Knopf drücken. Der Inhalt wird hinzugefügt."
+
+#: panels.module:319
+msgid "Area"
+msgstr "Bereich"
+
+#: panels.module:358
+msgid "General information"
+msgstr "Allgemeine Information"
+
+#: panels.module:375
+msgid "Page title"
+msgstr "Seitentitel"
+
+#: panels.module:376
+msgid "The page title for this panels layout"
+msgstr "Der Seitentitel für dieses Panels Layout"
+
+#: panels.module:383
+msgid "The CSS ID to apply to this page"
+msgstr "Die CSS ID, welche auf diese Seite angewendet werden soll"
+
+#: panels.module:394
+msgid "Access"
+msgstr "Zugriff"
+
+#: panels.module:397
+msgid "Only the checked roles will be able to see this panel in any form; if no roles are checked, access will not be restricted."
+msgstr "Nur die aktivierten Rollen können dieses Panel in jeglicher Art sehen; Wenn keine Rollen aktiviert sind, wird der Zugriff nicht beschränkt."
+
+#: panels.module:403
+msgid "Path"
+msgstr "Pfad"
+
+#: panels.module:404
+msgid "The URL path to give this page, i.e, path/to/page"
+msgstr "Der URL Pfad den diese Seite erhalten soll, z.b.: pfad/zu/seite"
+
+#: panels.module:508
+msgid "Save"
+msgstr "Speichern"
+
+#: panels.module:527
+msgid "This area has no content."
+msgstr "Dieser Bereich hat keinen Inhalt."
+
+#: panels.module:550
+msgid "Configure"
+msgstr "Konfigurieren"
+
+#: panels.module:599
+msgid "The panels has been saved."
+msgstr "Das Panel wurde gespeichert."
+
+#: panels.module:607
+msgid "Delete this item"
+msgstr "Diesen Beitrag löschen"
+
+#: panels.module:613
+msgid "Move item up"
+msgstr "Beitrag nach oben verschieben"
+
+#: panels.module:614
+msgid "Move item down"
+msgstr "Beitrag nach unten verschieben"
+
+#: panels.module:749
+msgid "Unable to find requested layout %s"
+msgstr "Das Layout %s konnte nicht gefunden werden"
+
+#: panels.module:853
+msgid "by %user"
+msgstr "von %user"
+
+#: panels.module:749
+#: ;0 panels.info:0
+msgid "panels"
+msgstr "panels"
+
+#: panels.module:21
+msgid "create panels"
+msgstr "Panels erstellen"
+
+#: panels.module:21
+msgid "access all panels"
+msgstr "Zugriff auf alle Panels"
+
+#: panels.info:0
+msgid "Create pages that are divided into areas of the page."
+msgstr "Erstelle Seiten, welche in Bereiche der Seite unterteilt sind."
+
+#: content_types/views.inc:86
+msgid "Choose a view from the views module"
+msgstr "Eine Ansicht vom Ansichtenmodul wählen"
+
+#: content_types/views.inc:90
+#: ;97
+msgid "Add view"
+msgstr "Ansicht hinzufügen"
+
+#: content_types/views.inc:121
+msgid "View type"
+msgstr "Ansichtstyp"
+
+#: content_types/views.inc:122
+msgid "Select which type of the view to display."
+msgstr "Den Typ einer Ansicht auswählen, der angezeigt werden soll."
+
+#: content_types/views.inc:123
+msgid "Page"
+msgstr "Seite"
+
+#: content_types/views.inc:123
+msgid "Embedded"
+msgstr "Eingebettet"
+
+#: content_types/views.inc:128
+msgid "Pager ID"
+msgstr "Pager ID"
+
+#: content_types/views.inc:130
+msgid "Select the numeric pager ID to use, or 0 to not have use paging. Select \"1\" if you aren't sure what this means"
+msgstr "Die zu verwendende Seitenreiter ID auswählen, oder 0 um keine Seitenreiter zu verwenden. Bei Unsicherheiten \"1\" wählen."
+
+#: content_types/views.inc:136
+msgid "Posts to Display"
+msgstr "Anzuzeigende Beiträge"
+
+#: content_types/views.inc:138
+msgid "Select the number of posts to display, or 0 to display all results."
+msgstr "Die Anzahl der anzuzeigenden Beiträge auswählen, oder 0 um alle Ergebnisse anzuzeigen."
+
+#: content_types/views.inc:144
+msgid "View arguments"
+msgstr "Argumente anzeigen"
+
+#: content_types/views.inc:146
+msgid "Arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You can use %0, %1, %2, etc, to use arguments from the actual URL. For example, if your panel URL is foo/bar, and someone hits foo/bar/5 use %2 to get the 5."
+msgstr "Argumente an die Ansicht übergeben, als wenn diese Teil der URL sind, in Form von arg1/arg2/arg3. Um Argumente von der aktuellen URL zu verwenden, kann %0, %1, %2, usw. verwendet werden. Sollte die Panel URL foo/bar lauten und jemand greift auf foo/bar/5 zu, kann %2 verwendet werden, um die 5 zu erhalten."
+
+#: content_types/views.inc:152
+msgid "Override URL"
+msgstr "URL überschreiben"
+
+#: content_types/views.inc:154
+msgid "If this is set, override the View URL; this can sometimes be useful to set to the panel URL"
+msgstr "Sobald aktiviert, wird die Ansichten URL überschrieben; Manchmal kann es sinnvoll sein, die Panel URL einzusetzten."
+
+#: content_types/views.inc:160
+msgid "Display view title"
+msgstr "Ansichtentitel anzeigen"
+
+#: content_types/views.inc:161
+msgid "If checked, the title of the view will be displayed."
+msgstr "Sobald aktiviert, wird der Titel der Ansicht angezeigt."
+
