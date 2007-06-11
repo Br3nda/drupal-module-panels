@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_25_50_25_stacked.inc,v 1.5.6.2 2007/05/22 22:08:01 merlinofchaos Exp $
+// $Id: threecol_25_50_25_stacked.inc,v 1.5.6.3 2007/06/11 02:25:16 merlinofchaos Exp $
 
 /**
  * implementation of hook_panels_layouts
@@ -31,16 +31,18 @@ function theme_panels_threecol_25_50_25_stacked($id, $content) {
   <div class="panel-col-top">
     <div class="inside">$content[top]</div>
   </div>
-  <div class="panel-col-first">
-    <div class="inside">$content[left]</div>
-  </div>
+  <div class="center-wrapper">
+    <div class="panel-col-first">
+      <div class="inside">$content[left]</div>
+    </div>
 
-  <div class="panel-col">
-    <div class="inside">$content[middle]</div>
-  </div>
+    <div class="panel-col">
+      <div class="inside">$content[middle]</div>
+    </div>
 
-  <div class="panel-col-last">
-    <div class="inside">$content[right]</div>
+    <div class="panel-col-last">
+      <div class="inside">$content[right]</div>
+    </div>
   </div>
   <div class="panel-col-bottom">
     <div class="inside">$content[bottom]</div>
