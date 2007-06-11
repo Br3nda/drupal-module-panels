@@ -1,3 +1,9 @@
+// $Id: display_editor.js,v 1.1.2.15 2007/06/11 01:27:02 merlinofchaos Exp $
+/**
+ * @file display_editor.js 
+ *
+ * Contains the javascript for the Panels display editor.
+ */
 
 Drupal.Panels = {};
 

@@ -172,7 +172,7 @@ a.close img {
 .content-type-button {
   float: left;
   width: 90px;
-  height: 130px;
+  height: 60px;
   font-size: 8pt;
   line-height: 1em;
   text-align: center;
@@ -234,6 +234,16 @@ a.close img {
   width: 100%;
   padding: 0;
   margin: 0;
+}
+
+
+.panels-section-title {
+  clear: left;
+  border-bottom: 1px solid #ddf;
+  margin-bottom: .5em;
+}
+
+.panels-section-decorator {
 }
 
 /* ---------------------------------------------------------------------------

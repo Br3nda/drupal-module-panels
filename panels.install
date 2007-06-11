@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.7 2007/06/01 01:50:50 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.8 2007/06/11 01:27:02 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -78,7 +78,9 @@ function panels_update_1000() {
   $ret[] = update_sql("UPDATE {panels_page} SET did = pid");
   
   $max_pid = db_result(db_query("SELECT MAX(pid) FROM {panels_page}"));
-  $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_page}_pid', $max_pid)");
+  if ($max_pid) {
+    $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_page}_pid', $max_pid)");
+  }
 
   $ret[] = update_sql("ALTER TABLE {panels_area} RENAME {panels_pane}");
   $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN pid int(10) NOT NULL DEFAULT 0 FIRST");
@@ -88,7 +90,9 @@ function panels_update_1000() {
     $count++;
     $ret[] = update_sql("UPDATE {panels_pane} SET pid = $count WHERE did = $pane->did AND panel = '$pane->pane' AND position = $pane->position");
   }
-  $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_pane}_pid', $count)");
+  if ($count) {
+    $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_pane}_pid', $count)");
+  }
 
   $ret[] = update_sql(<<<EOT
     CREATE TABLE {panels_display} (

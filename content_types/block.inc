@@ -58,15 +58,25 @@ function panels_admin_content_types_block() {
       foreach ($module_blocks as $delta => $block) {
         // strip_tags used because it goes through check_plain and that
         // just looks bad.
-        $types["$module-$delta"] = array(
+        $info = array(
           'title' => strip_tags($block['info']),
-          'icon' => 'block.png',
-          // Do we want to create some default icons here?
         );
+
+        // Ask around for furhter information.
+        $function = $module . '_panels_block_info';
+        if (!function_exists($function)) {
+          $function = 'panels_default_block_info';
+        }
+        $function($module, $delta, $info);
+
+        // this check means modules can remove their blocks; particularly useful
+        // if they offer the block some other way (like we do for views)
+        if ($info) {
+          $types["$module-$delta"] = $info;
+        }
       }
     }
   }
-  uasort($types, 'panels_title_sort');
   return $types;
 }
 
@@ -120,3 +130,118 @@ function panels_admin_title_block($conf) {
   $title = filter_xss_admin($block[$conf['delta']]['info']);
   return $title;
 }
+
+function panels_default_block_info($module, $delta, &$info) {
+  $core_modules = array('aggregator', 'book', 'CVS', 'help', 'node', 'profile', 'taxonomy', 'user', 'block', 'color', 'drupal', 'legacy', 'path', 'search', 'throttle', 'watchdog', 'blog', 'comment', 'filter', 'locale', 'ping', 'statistics', 'tracker', 'blogapi', 'contact', 'forum', 'menu', 'poll', 'system', 'upload');
+  
+  if (in_array($module, $core_modules)) {
+    $info['icon'] = 'icon_core_block.png';
+    $info['category'] = array(t('Core blocks'), -5);
+  }
+  else {
+    $info['icon'] = 'icon_contrib_block.png';
+    $info['category'] = t('Contributed modules');
+  }
+}
+
+// These are all on behalf of modules that don't implement panels but we that
+// we care about.
+
+/**
+ * Don't show Views' blocks; they're exposed another way.
+ */
+function views_panels_block_info($module, $delta, &$info) {
+  $info = NULL;
+}
+
+function menu_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_core_block_menu.png';
+  $info['category'] = array(t('Menus'), -2);
+}
+
+function forum_panels_block_info($module, $delta, &$info) {
+  $info['category'] = t('Core blocks');
+  switch($delta) {
+    case '0':
+      $info['icon'] = 'icon_core_activeforumtopics.png';
+      break;
+    case '1':
+      $info['icon'] = 'icon_core_newforumtopics.png';
+      break;
+    default:
+      // safety net
+    panels_default_block_info($module, $delta, $info);
+  }
+}
+
+function profile_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_core_authorinformation.png';
+  $info['category'] = t('Core blocks');
+}
+
+function book_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_core_booknavigation.png';
+  $info['category'] = t('Core blocks');
+}
+
+function blog_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_core_recentblogposts.png';
+  $info['category'] = t('Core blocks');
+}
+
+function poll_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_core_recentpoll.png';
+  $info['category'] = t('Core blocks');
+}
+
+function comment_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_core_recentcomments.png';
+  $info['category'] = t('Core blocks');
+}
+
+function search_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_core_searchform.png';
+  $info['category'] = t('Core blocks');
+}
+
+function node_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_core_syndicate.png';
+  $info['category'] = t('Core blocks');
+}
+
+function aggregator_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_core_syndicate.png';
+  $info['category'] = array(t('Syndicated Feeds'), -3);
+}
+
+function block_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_core_block_empty.png';
+  $info['category'] = t('Custom');
+}
+
+
+
+
+
+function user_panels_block_info($module, $delta, &$info) {
+  $info['category'] = t('Core blocks');
+  switch($delta) {
+    case '0':
+      $info['icon'] = 'icon_core_userlogin.png';
+      break;
+    case '1':
+      $info['icon'] = 'icon_core_navigation.png';
+      $info['category'] = array(t('Menus'), -2);
+      break;
+    case '2':
+      $info['icon'] = 'icon_core_whosnew.png';
+      break;
+    case '2':
+      $info['icon'] = 'icon_core_whosonline.png';
+      break;
+    default:
+      // safety net
+    panels_default_block_info($module, $delta, $info);
+  }
+}
+

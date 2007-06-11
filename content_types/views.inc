@@ -63,10 +63,12 @@ function panels_admin_content_types_views() {
   $result = db_query("SELECT * FROM {view_view}");
   while ($view = db_fetch_object($result)) {
     $title = views_get_title($view, 'admin');
+    $icon = !empty($view->block) ? 'icon_views_block.png' : 'icon_views_page.png';
     $types[$view->name] = array(
       'title' => strip_tags($title ? $title : $view->name),
-      'icon' => 'views.png',
+      'icon' => $icon,
       'description' => filter_xss_admin($view->description),
+      'category' => array(t('Views'), -1),
     );
   }
 
@@ -77,14 +79,15 @@ function panels_admin_content_types_views() {
     if (!$views[$view->name] && 
       ($views_status[$view->name] == 'enabled' || (!$views_status[$view->name] && !$view->disabled))) {
       $title = views_get_title($view, 'admin');
+      $icon = !empty($view->block) ? 'icon_views_block.png' : 'icon_views_page.png';
       $types[$view->name] = array(
         'title' => strip_tags($title ? $title : $view->name),
-        'icon' => 'views.png',
+        'icon' => $icon,
         'description' => filter_xss_admin($view->description),
+        'category' => array(t('Views'), -1),
       );
     }
   }
-  uasort($types, 'panels_title_sort');
   return $types;
 }
 

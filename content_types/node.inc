@@ -48,8 +48,9 @@ function panels_admin_content_types_node() {
   return array(
     'node' => array(
       'title' => t('Node content'),
-      'icon' => 'node.png',
+      'icon' => 'icon_node.png',
       'description' => t('Add a node from your site as content.'),
+      'category' => array(t('Custom'), -10),
     ),
   );
 }

@@ -1,15 +1,15 @@
 <?php
-// $Id: panels.module,v 1.10.4.16 2007/06/01 02:41:49 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.17 2007/06/11 01:27:02 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
 }
+function panels_menu($may_cache) {
+  if ($may_cache) {
     /**
      * FIXME: needs to be with the layout piece that requires it.
      * farm out menu items to layouts.
      */
-function panels_menu($may_cache) {
-  if ($may_cache) {
     $items[] = array(
       'path' => 'panels/node/autocomplete',
       'title' => t('Autocomplete node'),
@@ -105,8 +105,12 @@ function panels_add_button($image, $name, $text, $class, $id = NULL) {
 }
 
 // ---------------------------------------------------------------------------
-// session handling stuff for display editing
+// cache handling stuff for display editing
 
+/**
+ * Get a display from the cache; this is used if the display is currently
+ * being edited, with is can be a seriously multi-step process.
+ */
 function panels_cache_get($did) {
   static $cache = array();
   if (!array_key_exists($did, $cache)) {
@@ -116,15 +120,24 @@ function panels_cache_get($did) {
   return $cache[$did];
 }
 
+/**
+ * Save the edited display into the cache.
+ */
 function panels_cache_set($did, $cache) {
   cache_set(session_id() . ':' . $did, 'cache', serialize($cache), time() + 86400);
 }
 
+/**
+ * Clear a display from the cache; used if the editing is aborted.
+ */
 function panels_cache_clear($did) {
   cache_clear_all(session_id() . ':' . $did, 'cache');
 }
 
-// non-session globals
+/**
+ * Global storage function, used mostly so that _submit hooks can pass data 
+ * back to their originator more easily.
+ */
 function panels_set($var, $value = NULL) {
   static $vars = array();
   if ($value !== NULL) {
@@ -133,6 +146,9 @@ function panels_set($var, $value = NULL) {
   return $vars[$var];
 }
 
+/**
+ * Retrieve from global storage
+ */
 function panels_get($var) {
   return panels_set($var);
 }
@@ -149,6 +165,7 @@ function panels_edit($display, $destination, $content_types = NULL) {
     $display->did = $did = 'new';
   }
 
+  // Load the display being edited from cache, if possible.
   if (!empty($_POST) && is_object($cache = panels_cache_get($did))) {
     $display = $cache->display;
   }
@@ -166,6 +183,9 @@ function panels_edit($display, $destination, $content_types = NULL) {
   return $output . $hidden;
 }
 
+/**
+ * Form definition for the panels display editor
+ */
 function panels_edit_display($display, $destination) {
   $form['did'] = array(
     '#type' => 'hidden',
@@ -489,7 +509,7 @@ function panels_ct_get_types($type) {
  */
 function panels_get_available_content_types($context = NULL, $has_content = FALSE) {
   $content_types = panels_get_content_types();
-  uasort($content_types, 'panels_title_sort');
+//  uasort($content_types, 'panels_title_sort');
   $available = array();
 
   foreach ($content_types as $id => $type) {
@@ -603,6 +623,10 @@ function panels_add_content($cache, $panel_id) {
     $cache->content_types = panels_get_available_content_types();
   }
 
+  $weights = array(t('Contributed modules') => 0);
+  $categories = array();
+  $titles = array();
+
   foreach ($cache->content_types as $id => $types) {
     if (is_array($types)) {
       foreach ($types as $content_id => $info) {
@@ -626,16 +650,51 @@ function panels_add_content($cache, $panel_id) {
         else {
           $description = $title;
         }
-        $output .= '<div class="content-type-button">';
+
+        if (isset($info['category'])) {
+          if (is_array($info['category'])) {
+            list($category, $weight) = $info['category'];
+            $weights[$category] = $weight;
+          }
+          else {
+            $category = $info['category'];
+            if (!isset($weights['category'])) {
+              $weights[$category] = 0;
+            }
+          }
+        }
+        else {
+          $category = t('Contrib modules');
+        }
+        $output = '<div class="content-type-button">';
         $link_text = theme('image', $path . '/' . $icon, $description, $description);
         $output .= l($link_text, 'javascript: void()', array('class' => 'panels-modal-add-config', 'id' => $id . '-' . $panel_id . '-' . $content_id), NULL, NULL, NULL, TRUE);
         $output .= "<div>$title</div>";
         $output .= '</div>';
+        if (!isset($categories[$category])) {
+          $categories[$category] = array();
+          $titles[$category] = array();
+        }
+
+        $categories[$category][] = $output;
+        $titles[$category][] = $title;
       }
     }
   }
-  if (!$output) {
+  if (!$categories) {
     $output = t('There are no content types you may add to this display.');
+  }
+  else {
+    asort($weights);
+    $output = '';
+    foreach ($weights as $category => $weight) {
+      $output .= '<h3 class="panels-section-title">' . $category . '</h3>';
+      $output .= '<div class="panels-section-decorator"></div>';
+      natcasesort($titles[$category]);
+      foreach ($titles[$category] as $id => $title) {
+        $output .= $categories[$category][$id];
+      }
+    }
   }
   return $output;
 }
@@ -708,6 +767,8 @@ function panels_add_content_config_form_submit($form_id, $form) {
   $cache = panels_cache_get($form['did']);
 
   // keep an incrementing counter, add the data to the display.
+  // This counter is so that we can add this pane to the cache but not
+  // make it real until the final 'Save' is clicked.
   $pid = ++$cache->highest;
   $form['pid'] = "new-$pid";
 
@@ -862,58 +923,13 @@ function panels_edit_display_validate($form_id, $form_values, $form) {
   }
 }
 */
-/**
- * move an item in an array to the top
- */
-function panels_move_top(&$array, &$position) {
-  $value = $array[$position];
-  unset($array[$position]);
-  array_unshift($array, $value);
-  // reindex the array now
-  $array = array_values($array);
-}
-
-/**
- * move an item in an array to the bottom
- */
-function panels_move_bottom(&$array, &$position) {
-  $value = $array[$position];
-  unset($array[$position]);
-  $array[] = $value;
-  // reindex the array now
-  $array = array_values($array);
-}
-
-/**
- * move an item in an array up one position
- */
-function panels_move_up(&$array, &$position) {
-  $value = $array[$position];
-  $array[$position] = $array[$position - 1];
-  $array[$position - 1] = $value;
-}
-
-/**
- * move an item in an array up one position
- */
-function panels_move_down(&$array, &$position) {
-  $value = $array[$position];
-  $array[$position] = $array[$position + 1];
-  $array[$position + 1] = $value;
-}
-
-/**
- * Remove an item from an array
- */
-function panels_move_delete(&$array, &$position) {
-  unset($array[$position]);
-  // reindex the array now
-  $array = array_values($array);
-}
-
 // ---------------------------------------------------------------------------
 // panels database functions
 
+/**
+ * Forms the basis of a panel display and provides a constructur to ensure
+ * that the display always has a valid context.
+ */
 class panels_display {
   var $args = array();
   var $incoming_content = NULL;
@@ -927,12 +943,19 @@ class panels_display {
   }
 }
 
+/**
+ * Creates a new display with the given context, so that users don't
+ * have to mess with classes if they don't want to.
+ */
 function panels_new_display($context = NULL) {
   $display = new panels_display($context);
   $display->did = 'new';
   return $display;
 }
 
+/**
+ * Load a display from the database and set a context.
+ */
 function panels_load_display($did, $context = NULL) {
   $display = new panels_display($context);
 
@@ -953,6 +976,9 @@ function panels_load_display($did, $context = NULL) {
   return $display;
 }
 
+/**
+ * Save a display.
+ */
 function panels_save_display(&$display) {
   if ($display->did && $display->did != 'new') {
     db_query("UPDATE {panels_display} SET layout = '%s' WHERE did = %d", $display->layout, $display->did);
@@ -985,6 +1011,9 @@ function panels_save_display(&$display) {
   return $display; // to be nice, even tho we have a reference.
 }
 
+/**
+ * Delete a display
+ */
 function panels_delete_display($display) {
   db_query("DELETE FROM {panels_display} WHERE did = %d", $display->did);
   db_query("DELETE FROM {panels_pane} WHERE did = %d", $display->did);
@@ -992,7 +1021,11 @@ function panels_delete_display($display) {
 
 /**
  * For external use: Given a layout ID and a $content array, return the
- * panel display.
+ * panel display. The content array is filled in based upon the content
+ * available in the layout. If it's a two column with a content
+ * array defined like array('left' => t('Left side'), 'right' => 
+ * t('Right side')), then the $content array should be array('left' => 
+ * $output_left, 'right' => $output_right)
  */
 function panels_print_layout($id, $content) {
   $layout = panels_get_layout($id);
@@ -1030,6 +1063,11 @@ class panels_context {
   }
 }
 
+/**
+ * Clean up a display and make sure it has some required information if
+ * it doesn't already exist. Currently we wrequire a context, an incoming
+ * content and a css_id.
+ */
 function panels_sanitize_display(&$display) {
   if (!isset($display->args)) {
     $display->args = array();
