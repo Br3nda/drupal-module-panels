@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.19 2007/06/11 01:49:16 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.20 2007/06/11 02:05:43 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -206,6 +206,10 @@ function panels_edit_display($display, $destination) {
   $form['destination'] = array(
     '#type' => 'value',
     '#value' => $destination
+  );
+
+  $form['explanation'] = array(
+    '#value' => '<p>' . t('Grab the title bar of any pane to drag it to another panel. Click the add pane button in any panel to add more content. Click the configure button on any pane to re-configure that pane.') . '</p>',
   );
 
   $form['button']['#tree'] = TRUE;
