@@ -45,7 +45,7 @@ function theme_panels_custom_content($content, $id, $class) {
 function panels_admin_content_types_custom() {
   return array(
     'custom' => array(
-      'title' => t('Custom content'),
+      'title' => t('New custom content'),
       'icon' => 'icon_block_custom.png',
       'description' => t('Create a completely custom piece of HTML content.'),
       'category' => array(t('Custom'), -10),

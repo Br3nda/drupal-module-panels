@@ -1,16 +1,17 @@
 TODO:
 
-This is a brief list of the things that may still need to be done. No guarantee
-of them ever getting done.
+X = DONE
+o = TODO
+- = Skipped/postponed
 
 ajax/js
-    SKIPPED Change show/hide to use AJAX. 
-    X Write my own drag & drop
     o Add permission checking to all the ajax functions
     o Break up panels_ajax into separate entry areas [mostly done]
     o ensure complete degradability
     X Loading animation for panels-modal
     X Make the titlebar outside of the overflow in the modal
+    - Change show/hide to use AJAX. 
+    X Write my own drag & drop
 
 modules
     o panels node
@@ -19,11 +20,13 @@ modules
 panels page
     o panels page 'default' panels
     o allow panel-page to use $arg/$node/$node-type/$user substitution like Views
-    o allow panel-page to do menu item & tab like Views.
+    o allow panel-page to get a context; allow modules to provide this context.
+    X allow panel-page to do menu item & tab like Views.
     X provide 'edit' tab for panels pages
     X allow setting to not display blocks
 
 content types
+    o Get all 'block' settings into blocks.
     X Remove all calls to the 'admin' callback
     X Make panels_get_content_type() like using for layout
     X Translate views to new content format
@@ -31,8 +34,7 @@ content types
     X Translate custom to new content format
     X Allow content types to be aware of panel context.
     X Allow content types to include or exclude themselves based upon context.
-    o Figure out a way for blocks to easily have per-block icons
-    o Get all 'block' settings into blocks.
+    X Figure out a way for blocks to easily have per-block icons
     X sort blocks in content type list
     X sort views in content type list
     X add weight so custom and node will float up
@@ -49,9 +51,11 @@ icons
     X Change configure icon
     X Change remove pane icon
     X Find add content icon
-    o Create icons for content types
+    X Create icons for content types
 
 panels API
+    o Provide method to directly edit/configure an individual content block if viewer has permissions
+    o Provide method to control pane visibility. Make sure this is controllable from the admin so that not all users can get to it.
     X Change add content to be per panel
     X Make Cancel actually cancel
     X Wrap calls to existing callbacks
@@ -62,9 +66,12 @@ panels API
     X Allow API to accept context
     X Allow API to accept content
     X Allow API to accept arguments
-    o Provide method to directly edit/configure an individual content block if viewer has permissions
 
 General:
     o CSS class/id name cleanup and unification.
     
-
+Documentation
+    o Creating new panel modules that use the API
+    o Creating new content types
+    o Creating new layouts
+    o Doing interesting things with Panels
