@@ -216,7 +216,7 @@ function aggregator_panels_block_info($module, $delta, &$info) {
 
 function block_panels_block_info($module, $delta, &$info) {
   $info['icon'] = 'icon_core_block_empty.png';
-  $info['category'] = t('Custom');
+  $info['category'] = array(t('Custom'), -10);
 }
 
 

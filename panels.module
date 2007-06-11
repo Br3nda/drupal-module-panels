@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.20 2007/06/11 02:05:43 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.21 2007/06/11 04:40:25 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -997,7 +997,7 @@ function panels_save_display(&$display) {
   }
 
   // update all the panes
-  foreach ($display->panels as $id => $panes) {
+  foreach ((array) $display->panels as $id => $panes) {
     $position = 0;
     $new_panes = array();
     foreach ((array) $panes as $pid) {

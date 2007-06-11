@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.14 2007/05/23 00:14:24 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.15 2007/06/11 04:40:25 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -159,7 +159,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
  * Helper function to add a menu item for a panel.
  */
 
-function panels_page_get_title($panel_page, $context = 'page') {
+function panels_page_get_title($panel_page, $context = 'page', $default_title = NULL) {
   if ($context == 'menu-parent' && $panel_page->menu_parent_title) {
     return $panel_page->menu_parent_title;
   }
@@ -172,7 +172,12 @@ function panels_page_get_title($panel_page, $context = 'page') {
     return $panel_page->title;
   }
 
-  return t('No title');
+  if (is_null($default_title)) {
+    return t('No title');
+  }
+  else {
+    return $default_title;
+  }
 }
 
 function _panels_page_create_menu_item(&$items, $panel_page, $path, $access, $local_task_type = MENU_NORMAL_ITEM, $args = array()) {
@@ -775,7 +780,7 @@ function panels_page_view_page($panel_page) {
     return drupal_not_found();
   }
 
-  drupal_set_title(filter_xss_admin(panels_page_get_title($panel_page)));
+  drupal_set_title(filter_xss_admin(panels_page_get_title($panel_page)), 'page', '');
   if ($panel_page->no_blocks) {
     print theme('page', $output, FALSE);
   }
