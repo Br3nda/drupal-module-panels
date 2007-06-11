@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.15 2007/06/11 04:40:25 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.16 2007/06/11 06:03:58 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -780,7 +780,7 @@ function panels_page_view_page($panel_page) {
     return drupal_not_found();
   }
 
-  drupal_set_title(filter_xss_admin(panels_page_get_title($panel_page)), 'page', '');
+  drupal_set_title(filter_xss_admin(panels_page_get_title($panel_page, 'page', '')));
   if ($panel_page->no_blocks) {
     print theme('page', $output, FALSE);
   }
