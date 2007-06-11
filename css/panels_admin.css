@@ -80,6 +80,14 @@
   clear: left;
 }
 
+#panels-choose-layout .panels-layout-list label {
+  width: 300px;
+  float: left;
+  clear: left;
+  background: url(../images/go-right.png) right no-repeat;
+  margin-right: 20px;
+}
+
 .change-layout-display .layout-icon {
   float: left;
 }

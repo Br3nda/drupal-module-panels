@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.18 2007/06/11 01:40:45 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.19 2007/06/11 01:49:16 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -421,6 +421,8 @@ function panels_change_layout(&$form, $display, $new_layout_id) {
 
   $form['old'] = array(
     '#tree' => true,
+    '#prefix' => '<div class="panels-layout-list">',
+    '#suffix' => '</div>',
   );
 
   foreach ($display->panels as $id => $content) {
