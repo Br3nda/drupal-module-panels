@@ -1,6 +1,5 @@
-; $Id: panels.info,v 1.2.4.2 2007/04/25 06:58:36 merlinofchaos Exp $
+; $Id: panels.info,v 1.2.4.3 2007/06/18 23:17:13 dww Exp $
 name = Panels
 description = Core Panels display functions; provides no external UI, at least one other module (such as Panel pages) should be enabled.
-version = "$Name:  $"
 package = "Panels"
 
