@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.16 2007/06/19 02:17:22 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.17 2007/06/19 02:42:18 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -29,15 +29,15 @@ Drupal.Panels.clickAdd = function() {
 
 /** hide all button **/
 Drupal.Panels.clickHideAll = function() {
-  $('.panel-portlet .content').hide();
-  $('.panel-portlet .toggle').addClass('toggle-collapsed');
+  $('div.panel-portlet div.content').hide(200);
+  $('div.panel-portlet div.toggle').addClass('toggle-collapsed');
   return false;
 }
 
 /** show all button **/
 Drupal.Panels.clickShowAll = function() {
-  $('.panel-portlet .content').show();
-  $('.panel-portlet .toggle').removeClass('toggle-collapsed');
+  $('div.panel-portlet div.content').show(200);
+  $('div.panel-portlet div.toggle').removeClass('toggle-collapsed');
   return false;
 }
 
