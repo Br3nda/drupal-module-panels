@@ -8,6 +8,7 @@ ajax/js
     o Add permission checking to all the ajax functions
     o Break up panels_ajax into separate entry areas [mostly done]
     o ensure complete degradability
+    o Make sure the icons on the 'change layout' page are clickable
     X Loading animation for panels-modal
     X Make the titlebar outside of the overflow in the modal
     - Change show/hide to use AJAX. 
@@ -45,6 +46,8 @@ content types
     X unify title overriding.
 
 layouts
+    o Allow each layout to have settings
+    o Create a flexible layout where you can quickly create arbitrary layouts
     X Fix the div div problem in all layouts
 
 icons
@@ -54,7 +57,7 @@ icons
     X Create icons for content types
 
 panels API
-    o Provide method to directly edit/configure an individual content block if viewer has permissions
+    - Provide method to directly edit/configure an individual content block if viewer has permissions
     o Provide method to control pane visibility. Make sure this is controllable from the admin so that not all users can get to it.
     X Change add content to be per panel
     X Make Cancel actually cancel

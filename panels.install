@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.8 2007/06/11 01:27:02 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.9 2007/06/19 02:17:22 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -36,7 +36,8 @@ EOT
       db_query(<<<EOT
         CREATE TABLE {panels_display} (
           did INT(10) NOT NULL DEFAULT 0 PRIMARY KEY,
-          layout VARCHAR(32)
+          layout VARCHAR(32),
+          layout_settings longtext
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
@@ -125,5 +126,11 @@ function panels_update_1001() {
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN menu_tab_default_parent_type varchar(10)");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN menu_parent_title varchar(255)");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN menu_parent_tab_weight int(4)");
+  return $ret;
+}
+
+// Create a field for the layout settings
+function panels_update_1002() {
+  $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN layout_settings longtext");
   return $ret;
 }

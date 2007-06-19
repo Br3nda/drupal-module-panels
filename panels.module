@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.21 2007/06/11 04:40:25 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.22 2007/06/19 02:17:22 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -220,13 +220,16 @@ function panels_edit_display($display, $destination) {
   }
 
   $layout = panels_get_layout($display->layout);
-  foreach ($layout['panels'] as $id => $name) {
+  $layout_panels = panels_get_panels($layout, $display); 
+
+  foreach ($layout_panels as $id => $name) {
     $form['panels'][$id]['add'] = panels_add_button('add.gif', t('Add content'), t('Add content to this panel'), 'pane-add', "pane-add-$id");
   }
 
   $form['panel'] = array('#tree' => TRUE);
   $form['panel']['pane'] = array('#tree' => TRUE);
-  foreach ($layout['panels'] as $panel_id => $title) {
+
+  foreach ($layout_panels as $panel_id => $title) {
     $form['panel']['pane'][$panel_id] = array(
       '#type' => 'hidden',
       '#default_value' => implode(',', (array) $display->panels[$panel_id]),
@@ -270,9 +273,10 @@ function theme_panels_edit_display($form) {
   _panels_js_files();
   $display = $form['panels_display']['#value'];
   $layout = panels_get_layout($display->layout);
+  $layout_panels = panels_get_panels($layout, $display); 
   $save_buttons = drupal_render($form['submit']) . drupal_render($form['cancel']);
 
-  foreach ($layout['panels'] as $panel_id => $title) {
+  foreach ($layout_panels as $panel_id => $title) {
     foreach ((array) $display->panels[$panel_id] as $pid) {
       $pane = $display->content[$pid];
       $left_buttons = NULL;
@@ -283,7 +287,7 @@ function theme_panels_edit_display($form) {
     $content[$panel_id] = theme('panels_panel_dnd', $content[$panel_id], $panel_id, $title, drupal_render($form['panels'][$panel_id]['add']));
   }
   $output .= drupal_render($form);
-  $output .= theme('panels_dnd', panels_render_layout($layout, $content));
+  $output .= theme('panels_dnd', panels_render_layout($layout, $content, '', unserialize($display->layout_settings)));
   $output .= $save_buttons;
   return $output;
 }
@@ -291,6 +295,8 @@ function theme_panels_edit_display($form) {
 function panels_edit_display_submit($form_id, $form_values) {
   $display = $form_values['panels_display'];
   if ($form_values['op'] == t('Save')) {
+//    drupal_set_message('<pre>' . var_export($display, true) . '</pre>');
+//    drupal_set_message('<pre>' . var_export($form_values, true) . '</pre>');
     $old_content = $display->content;
     $display->content = array();
 
@@ -307,6 +313,7 @@ function panels_edit_display_submit($form_id, $form_values) {
         }
       }
     }
+//    drupal_set_message('<pre>' . var_export($display, true) . '</pre>');
     drupal_set_message(t('Panel content has been updated.'));
     panels_save_display($display);
   }
@@ -396,8 +403,9 @@ function panels_choose_layout_submit($form_id, $form_values) {
 
 function panels_change_layout(&$form, $display, $new_layout_id) {
   $new_layout = panels_get_layout($new_layout_id);
+  $new_layout_panels = panels_get_panels($new_layout, $display); 
 
-  $options = $new_layout['panels'];
+  $options = $new_layout_panels;
   $keys = array_keys($options);
   $default = $options[0];
 
@@ -429,10 +437,11 @@ function panels_change_layout(&$form, $display, $new_layout_id) {
     '#suffix' => '</div>',
   );
 
+  $old_layout_panels = panels_get_panels($old_layout, $display); 
   foreach ($display->panels as $id => $content) {
     $form['old'][$id] = array(
       '#type' => 'select',
-      '#title' => t('Move content in @layout to', array('@layout' => $old_layout['panels'][$id])),
+      '#title' => t('Move content in @layout to', array('@layout' => $old_layout_panels[$id])),
       '#options' => $options,
       '#default_value' => array_key_exists($id, $options) ? $id : $default,
     );
@@ -443,6 +452,63 @@ function panels_change_layout(&$form, $display, $new_layout_id) {
     '#value' => t('Back'),
   );
   return $form;
+}
+
+/**
+ * Shortcut to the panels layout settings editor
+ */
+function panels_edit_layout_settings($display, $finish, $destination) {
+  return drupal_get_form('panels_edit_layout_settings_form', $display, $finish, $destination);
+}
+/**
+ * Form to change the layout of a display.
+ */
+function panels_edit_layout_settings_form($display, $finish, $destination) {
+  $layout = panels_get_layout($display->layout);
+  if (!empty($layout['settings form']) && function_exists($layout['settings form'])) {
+    $form['layout_settings'] = $layout['settings form']($display, $layout, unserialize($display->layout_settings));
+  }
+
+  $form['layout_settings']['#tree'] = TRUE;
+
+  $form['variables'] = array(
+    '#type' => 'value',
+    '#value' => array($display, $finish, $destination),
+  );
+
+  $form['layout'] = array(
+    '#type' => 'value',
+    '#value' => $layout,
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => $finish,
+  );
+  return $form;
+}
+
+function panels_edit_layout_settings_form_validate($form_id, $form_values, $form) {
+  list($display, $finish, $destination) = $form_values['variables'];
+  $layout = $form_values['layout'];
+  if (!empty($layout['settings validate']) && function_exists($layout['settings validate'])) {
+    $layout['settings validate']($form_values['layout_settings'], $form['layout_settings'], $display, $layout, unserialize($display->layout_settings));
+  }
+}
+
+function panels_edit_layout_settings_form_submit($form_id, $form_values) {
+  list($display, $finish, $destination) = $form_values['variables'];
+
+  $layout = $form_values['layout'];
+  if (!empty($layout['settings submit']) && function_exists($layout['settings submit'])) {
+    $layout['settings submit']($form_values['layout_settings'], $display, $layout, unserialize($display->layout_settings));
+  }
+  
+  if ($form_values['op'] == $finish) {
+    $display->layout_settings = serialize($form_values['layout_settings']);
+    panels_save_display($display);
+    drupal_set_message("Your layout settings have been saved.");
+    return $destination;
+  }
 }
 
 // ------------------------------------------------------------------
@@ -537,6 +603,16 @@ function panels_get_available_content_types($context = NULL, $has_content = FALS
   return $available;
 }
 
+function panels_get_panels($layout, $display) {
+  if (!empty($layout['panels function']) && function_exists($layout['panels function'])) {
+    return $layout['panels function']($display, unserialize($display->layout_settings));
+  }
+  if (!empty($layout['panels'])) {
+    return $layout['panels'];
+  }
+  return array();
+}
+
 // ------------------------------------------------------------------
 // Functions to provide information about a panel or part of a panel.
 
@@ -612,10 +688,12 @@ function panels_ajax_add_content($did = NULL, $panel_id = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
     $display = $cache->display;
     $layout = panels_get_layout($display->layout);
-    if ($layout && array_key_exists($panel_id, $layout['panels'])) {
+    $layout_panels = panels_get_panels($layout, $display); 
+
+    if ($layout && array_key_exists($panel_id, $layout_panels)) {
       $output->output = panels_add_content($cache, $panel_id);
       $output->type = 'display';
-      $output->title = t('Add content to !s', array('!s' => $layout['panels'][$panel_id]));
+      $output->title = t('Add content to !s', array('!s' => $layout_panels[$panel_id]));
     }
   }
   panels_ajax_render($output);
@@ -779,10 +857,15 @@ function panels_add_content_config_form_submit($form_id, $form) {
   $pid = ++$cache->highest;
   $form['pid'] = "new-$pid";
 
+//  panels_ct_submit_form($form['type'], $form['configuration']);
+
   $cache->display->content[$form['pid']] = (object) $form;
   $cache->display->panels[$form['panel']][] = $form['pid'];
+//  drupal_set_message('<pre>' . var_export($cache->display, true) . '</pre>');
 
   panels_cache_set($form['did'], $cache);
+  // Set info for the javascript so it knows where to put the new pane.
+  // FIXME: Note that ->area appears to be a holdover -- it should be ->panel now.
   $return->type = 'add';
   $return->area = $form['panel'];
   $return->id = $form['pid'];
@@ -795,6 +878,8 @@ function panels_add_content_config_form_submit($form_id, $form) {
   $buttons['delete']['#parents'] = array('button', $form['pid'], 'delete');
   
   $buttons = form_builder('dummy', $buttons);
+
+  // Render the new pane for the javascript.
   $return->output = panels_show_pane($cache->display->content[$form['pid']], NULL, drupal_render($buttons));
 
   panels_set('return', $return);
@@ -860,9 +945,16 @@ function panels_edit_pane_config_form($display, $pid = NULL) {
   return $form;
 }
 
+function panels_edit_pane_config_form_validate($form_id, $form_values, $form) {
+  panels_ct_validate_form($form_values['type'], $form['configuration'], $form_values['configuration']);
+}
+
 function panels_edit_pane_config_form_submit($form_id, $form) {
   // save the new configuration.
   $cache = panels_cache_get($form['did']);
+
+//  panels_ct_submit_form($form['type'], $form['configuration']);
+  
   $cache->display->content[$form['pid']]->configuration = $form['configuration'];
   panels_cache_set($form['did'], $cache);
 
@@ -881,13 +973,13 @@ function panels_edit_pane_config_form_submit($form_id, $form) {
 }
  
 function panels_edit_submit_subform($display) {
+  // Check forms to make sure only valid forms can be rendered this way.
   $valid_forms = array('panels_add_content_config_form', 'panels_edit_pane_config_form');
   $form_id = $_POST['form_id'];
   if (!in_array($form_id, $valid_forms)) {
     return panels_ajax_render();
   }
 
-  // TODO: protect form_id to make sure it can only get panels forms.
   $output = drupal_get_form($form_id, $display);
 
   $next = panels_get('next');
@@ -988,12 +1080,12 @@ function panels_load_display($did, $context = NULL) {
  */
 function panels_save_display(&$display) {
   if ($display->did && $display->did != 'new') {
-    db_query("UPDATE {panels_display} SET layout = '%s' WHERE did = %d", $display->layout, $display->did);
+    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s' WHERE did = %d", $display->layout, $display->layout_settings, $display->did);
     db_query("DELETE FROM {panels_pane} WHERE did = %d", $display->did);
   }
   else {
     $display->did = db_next_id("{panels_display}_id");
-    db_query("INSERT INTO {panels_display} (did, layout) VALUES (%d, '%s')", $display->did, $display->layout);
+    db_query("INSERT INTO {panels_display} (did, layout, layout_settings) VALUES (%d, '%s', '%s')", $display->did, $display->layout, $display->layout_settings);
   }
 
   // update all the panes
@@ -1046,8 +1138,8 @@ function panels_print_layout($id, $content) {
 /**
  * Given a full layout structure and a content array, render a panel display.
  */
-function panels_render_layout($layout, $content, $css_id = NULL) {
-  $output = theme($layout['theme'], check_plain($css_id), $content);
+function panels_render_layout($layout, $content, $css_id = NULL, $settings = array()) {
+  $output = theme($layout['theme'], check_plain($css_id), $content, $settings);
 
   if ($output) {
     if (file_exists(path_to_theme() . '/' . $layout['css'])) {
@@ -1118,7 +1210,7 @@ function panels_render_display(&$display) {
     }
   }
 
-  $output = panels_render_layout($layout, $content, $display->css_id);
+  $output = panels_render_layout($layout, $content, $display->css_id, unserialize($display->layout_settings));
   return $output;
 }
 

@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.15 2007/06/11 01:27:02 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.16 2007/06/19 02:17:22 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -403,7 +403,9 @@ Drupal.Panels.Draggable = {
 
         val += this.id.replace(draggable.draggableId, '');
       });
-      $(draggable.formId + this.id).val(val);
+      // Note: _ is replaced with because Drupal automatically does this
+      // with form ids.
+      $(draggable.formId + this.id.replace(/_/g, '-')).val(val);
     });
     return false;
   }
@@ -591,24 +593,6 @@ Drupal.Panels.attachPane = function(parent) {
 Drupal.Panels.autoAttach = function() {
   // Show javascript only items.
   $('span#panels-js-only').css('display', 'inline');
-
-/*
-  $('#panels-dnd-save').click(function() {
-    serial = $.SortSerialize();
-    save = $('#panels-dnd-save').val();
-    $.ajax({
-      type: "POST",
-      url: Drupal.settings.panelsAjaxURL + "/save-display/" + $('#panel-did').val(),
-      data: serial.hash,
-      global: true,
-      success: function() {
-        $('#panel-op').val(save);
-        $('#panels-edit-display')[0].submit();
-      }
-    });
-    return false;
-  });
-*/
 
   // Bind buttons.
   $('input.pane-add').click(Drupal.Panels.clickAdd);

@@ -1,0 +1,45 @@
+/* $Id: flexible.css,v 1.1.2.1 2007/06/19 02:17:23 merlinofchaos Exp $ */
+
+.panel-flexible { 
+  overflow: hidden; 
+}
+
+.panel-flexible .panel-col { 
+  float: left; 
+  padding: 0;
+  margin-top: 1px;
+  margin-bottom: .5em;
+}
+
+.panel-flexible .panel-row {
+  padding: 0;
+  margin: 0;
+  padding-bottom: .5em;
+}
+
+.panel-flexible .panel-col-first .inside { 
+  margin-right: .5em;
+}
+
+.panel-flexible .panel-col-inside .inside { 
+  margin-right: .5em;
+  margin-left: .5em;
+}
+
+.panel-flexible .panel-col-last .inside { 
+  margin-left: .5em;
+}
+
+#panels-edit-display .panel-pane,
+#panels-edit-display .helperclass {
+  margin: .5em;
+}
+
+.panel-flexible .panel-separator {
+  margin: 0 0 1em 0;
+}
+
+.panel-clearer {
+  clear: both;
+  height: .5em;
+}

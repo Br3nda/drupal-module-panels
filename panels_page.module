@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.16 2007/06/11 06:03:58 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.17 2007/06/19 02:17:22 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -67,9 +67,7 @@ function panels_page_menu($may_cache) {
 
     // load panels from database
     $result = db_query("SELECT * FROM {panels_page}");
-    // FIXME: Fow now we're making these all callbacks, but we
-    // should steal code from Views so they can be normal, tabs,
-    // etc
+
     while ($panel_page = db_fetch_object($result)) {
       $panel_page->access = ($panel_page->access ? explode(', ', $panel_page->access) : array());
       panels_page_menu_items($items, $panel_page->path, $panel_page, FALSE);
@@ -134,6 +132,20 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
     'weight' => -3,
     'type' => MENU_LOCAL_TASK,
   );
+
+  $display = panels_load_display($page->did);
+  $layout = panels_get_layout($display->layout);
+  if (!empty($layout['settings form'])) {
+    $items[] = array(
+      'path' => $base . '/edit/settings',
+      'title' => t('Layout settings'),
+      'access' => $access,    
+      'callback' => 'panels_page_edit_layout_settings',
+      'callback arguments' => array($page->pid),
+      'weight' => -3,
+      'type' => MENU_LOCAL_TASK,
+    );
+  }
   $items[] = array(
     'path' => $base . '/edit/content',
     'title' => t('Content'),
@@ -462,7 +474,7 @@ function panels_page_edit($panel_page) {
  */
 function panels_page_edit_form($panel_page) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
-  $layout = panels_get_layouts($panel_page->display->layout);
+  $layout = panels_get_layout($panel_page->display->layout);
 
   $form['pid'] = array(
     '#type' => 'value',
@@ -508,7 +520,7 @@ function panels_page_edit_form($panel_page) {
   );
   $content = '<dl class="content-list">';
   
-  foreach ($layout['panels'] as $panel_id => $title) {
+  foreach (panels_get_panels($layout, $panel_page->display) as $panel_id => $title) {
     $content .= "<dt>$title</dt><dd>";
     if ($panel_page->display->panels[$panel_id]) {
       $content .= '<ol>';
@@ -706,12 +718,16 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   if ($panel_page->pid == 'new') {
     panels_page_save($panel_page);
     $GLOBALS['form_values']['pid'] = $panel_page->pid;
+    $layout = panels_get_layout($panel_page->display->layout);
+
+    if ($layout['settings form']) {
+      return "admin/build/panel-page/$panel_page->pid/edit/settings";
+    }
     return "admin/build/panel-page/$panel_page->pid/edit/content";
   }
   else {
     drupal_set_message(t('Your changes have been saved.'));
     panels_page_save($panel_page);
-    return "admin/build/panel-page/$panel_page->pid/edit/content";
   }
 }
 
@@ -723,6 +739,16 @@ function panels_page_edit_layout($panel_page) {
     $panel_page = panels_page_load($panel_page);
   }
   return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->pid/edit");
+}
+
+/**
+ * Pass through to the panels layout settings editor.
+ */
+function panels_page_edit_layout_settings($panel_page) {
+  if (!is_object($panel_page)) {
+    $panel_page = panels_page_load($panel_page);
+  }
+  return panels_edit_layout_settings($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->pid/edit/settings");
 }
 
 /**
