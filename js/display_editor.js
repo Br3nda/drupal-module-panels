@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.17 2007/06/19 02:42:18 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.18 2007/06/20 22:38:46 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -20,6 +20,7 @@ Drupal.Panels.clickAdd = function() {
   $.ajax({
     type: "POST",
     url: Drupal.settings.panelsAjaxURL + "/add-content/" + $('#panel-did').val() + '/' + id,
+    data: '',
     global: true,
     success: Drupal.Panels.bindAjaxResponse,
     dataType: 'json'
@@ -56,6 +57,7 @@ Drupal.Panels.bindClickConfigure = function (o) {
     $.ajax({
       type: "POST",
       url: Drupal.settings.panelsAjaxURL + "/configure/" + $('#panel-did').val() + '/' + id,
+      data: '',
       global: true,
       success: Drupal.Panels.bindAjaxResponse,
       dataType: 'json'
@@ -99,6 +101,7 @@ Drupal.Panels.Subform = {};
 Drupal.Panels.Subform.bindClickSubmit = function() {
   $(this).ajaxSubmit({
     url: Drupal.settings.panelsAjaxURL + '/submit-form/' +  $('#panel-did').val(),
+    data: '',
     method: 'post',
     after: Drupal.Panels.bindAjaxResponse,
     dataType: 'json'
@@ -112,6 +115,7 @@ Drupal.Panels.Subform.bindClickAddLink = function() {
   $.ajax({
     type: "POST",
     url: Drupal.settings.panelsAjaxURL + "/add-config/" + $('#panel-did').val() + '/' + id,
+    data: '',
     global: true,
     success: Drupal.Panels.bindAjaxResponse,
     dataType: 'json'
