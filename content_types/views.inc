@@ -29,6 +29,8 @@ function panels_content_views($conf, $panel_args) {
       return NULL;
     }
     $arguments = explode('/', $_GET['q']);
+    $args = $conf['args'];
+
     foreach ($arguments as $id => $arg) {
       $args = str_replace("%$id", $arg, $args);
     }
@@ -190,7 +192,7 @@ function panels_admin_edit_views($conf) {
     '#default_value' => $conf['args'],
     '#title' => t('Arguments'),
     '#size' => 30,
-    '#description' => t('Additional arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3.'),
+    '#description' => t('Additional arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You may use %0, %1, ..., %N to grab arguments from the URL.'),
   );
 
   $form['url'] = array(
