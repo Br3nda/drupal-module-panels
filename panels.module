@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.24 2007/06/24 21:56:12 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.25 2007/06/24 22:17:30 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -561,6 +561,12 @@ function panels_ct_validate_form($type, $form, $form_values) {
   }
 }
 
+function panels_ct_submit_form($type, $form_values) {
+  if ($function = panels_ct_function($type, 'submit callback')) {
+    return $function($form, $form_values); 
+  }
+}
+
 function panels_ct_get_types($type) {
   if (is_array($type)) {
     $content_type = $type;
@@ -861,7 +867,7 @@ function panels_add_content_config_form_submit($form_id, $form) {
   $pid = ++$cache->highest;
   $form['pid'] = "new-$pid";
 
-//  panels_ct_submit_form($form['type'], $form['configuration']);
+  panels_ct_submit_form($form['type'], $form['configuration']);
 
   $cache->display->content[$form['pid']] = (object) $form;
   $cache->display->panels[$form['panel']][] = $form['pid'];
@@ -957,7 +963,7 @@ function panels_edit_pane_config_form_submit($form_id, $form) {
   // save the new configuration.
   $cache = panels_cache_get($form['did']);
 
-//  panels_ct_submit_form($form['type'], $form['configuration']);
+  panels_ct_submit_form($form['type'], $form['configuration']);
   
   $cache->display->content[$form['pid']]->configuration = $form['configuration'];
   panels_cache_set($form['did'], $cache);
