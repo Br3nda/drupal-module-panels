@@ -21,6 +21,10 @@ function panels_block_panels_content_types() {
  */
 function panels_content_block($conf) {
   $block = (object) module_invoke($conf['module'], 'block', 'view', $conf['delta']);
+  if (empty($block)) {
+    return;
+  }
+
   $block->module = $conf['module'];
   $block->delta = $conf['delta'];
   if ($conf['override_title']) {
