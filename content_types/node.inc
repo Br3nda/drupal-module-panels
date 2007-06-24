@@ -12,7 +12,8 @@ function panels_node_panels_content_types() {
     'add callback' => 'panels_admin_add_node',
     'edit callback' => 'panels_admin_edit_node',
     'title callback' => 'panels_admin_title_node',
-    'validate callback' => 'panels_admin_validate_node',
+    'add validate callback' => 'panels_admin_validate_node',
+    'edit validate callback' => 'panels_admin_validate_node',
   );
   return $items;
 }

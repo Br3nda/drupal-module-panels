@@ -12,7 +12,8 @@ function panels_views_panels_content_types() {
       'add callback' => 'panels_admin_add_views',
       'edit callback' => 'panels_admin_edit_views',
       'title callback' => 'panels_admin_title_views',
-      'validate callback' => 'panels_admin_validate_views',
+      'add validate callback' => 'panels_admin_validate_views',
+      'edit validate callback' => 'panels_admin_validate_views',
     );
     return $items;
   }

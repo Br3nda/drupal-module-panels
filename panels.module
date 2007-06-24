@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.25 2007/06/24 22:17:30 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.26 2007/06/24 22:21:42 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -549,20 +549,32 @@ function panels_ct_get_add_form($type, $id, $parents) {
   }
 }
 
+function panels_ct_validate_add_form($type, $form, $form_values) {
+  if ($function = panels_ct_function($type, 'add validate callback')) {
+    return $function($form, $form_values); 
+  }
+}
+
+function panels_ct_submit_add_form($type, $form_values) {
+  if ($function = panels_ct_function($type, 'add submit callback')) {
+    return $function($form, $form_values); 
+  }
+}
+
 function panels_ct_get_edit_form($type, $conf, $parents) {
   if ($function = panels_ct_function($type, 'edit callback')) {
     return $function($conf, $parents); 
   }
 }
 
-function panels_ct_validate_form($type, $form, $form_values) {
-  if ($function = panels_ct_function($type, 'validate callback')) {
+function panels_ct_validate_edit_form($type, $form, $form_values) {
+  if ($function = panels_ct_function($type, 'edit validate callback')) {
     return $function($form, $form_values); 
   }
 }
 
-function panels_ct_submit_form($type, $form_values) {
-  if ($function = panels_ct_function($type, 'submit callback')) {
+function panels_ct_submit_edit_form($type, $form_values) {
+  if ($function = panels_ct_function($type, 'edit submit callback')) {
     return $function($form, $form_values); 
   }
 }
