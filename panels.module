@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.23 2007/06/24 21:11:37 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.24 2007/06/24 21:56:12 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -668,6 +668,7 @@ function panels_ajax_render($output = NULL, $title = NULL) {
     $output->type = 'display';
     $output->title = t('Error');
   }
+  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
   print drupal_to_js($output);
   exit;
 }
@@ -1454,6 +1455,7 @@ function panels_node_autocomplete($string) {
       }
       $matches[$prefix . $n] = '<span class="autocomplete_title">'. check_plain($node->title) .'</span> <span class="autocomplete_user">('. t('by %user', array('%user' => check_plain($node->name))) .')</span>';
     }
+    drupal_set_header('Content-Type: text/javascript; charset=utf-8');
     print drupal_to_js($matches);
     exit();
   }
