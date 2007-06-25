@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.9 2007/06/19 02:17:22 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.10 2007/06/25 23:44:27 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -18,6 +18,7 @@ function panels_install() {
           access varchar(128),
           path varchar(128),
           css_id varchar(128),
+          css longtext,
           no_blocks int(1) DEFAULT 0,
           -- menu fields
           menu int(1) DEFAULT 0,
@@ -48,6 +49,7 @@ EOT
           did int(10) NOT NULL DEFAULT 0,
           panel varchar(32),
           type varchar(32),
+          access varchar(128),
           configuration longtext,
           position int(5),
           key (did)
@@ -132,5 +134,7 @@ function panels_update_1001() {
 // Create a field for the layout settings
 function panels_update_1002() {
   $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN layout_settings longtext");
+  $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN access varchar(128) AFTER type");
+  $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN css longtext AFTER css_id");
   return $ret;
 }

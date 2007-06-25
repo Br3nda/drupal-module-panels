@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.17 2007/06/19 02:17:22 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.18 2007/06/25 23:44:27 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -496,6 +496,13 @@ function panels_page_edit_form($panel_page) {
     '#suffix' => '</div>',
   );
 
+  $form['right']['advanced'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Advanced settings'),
+  );
+
   $form['right']['layout'] = array(
     '#type' => 'fieldset',
     '#title' => t('Layout'),
@@ -565,11 +572,39 @@ function panels_page_edit_form($panel_page) {
     '#required' => TRUE,
   );
 
-  $form['left']['info']['no_blocks'] = array(
+  $form['right']['advanced'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Advanced settings'),
+  );
+
+  $form['right']['advanced']['no_blocks'] = array(
     '#type' => 'checkbox',
     '#default_value' => $panel_page->no_blocks,
     '#title' => t('Disable Drupal blocks/regions'),
     '#description' => t('Check this to have the panel page disable all regions displayed in the theme.'),
+  );
+
+  $rids = array();
+  $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
+  while ($obj = db_fetch_object($result)) {
+    $rids[$obj->rid] = $obj->name;
+  }
+
+  $form['right']['advanced']['access'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Access'),
+    '#default_value' => $panel_page->access,
+    '#options' => $rids,
+    '#description' => t('Only the checked roles will be able to see this panel in any form; if no roles are checked, access will not be restricted.'),
+  );
+
+  $form['right']['advanced']['css'] = array(
+    '#type' => 'textarea',
+    '#title' => t('CSS code'),
+    '#description' => t('Enter well-formed CSS code here; this code will be embedded into the page, and should only be used for minor adjustments; it is usually better to try to put CSS for the page into the theme if possible.'),
+    '#default_value' => $panel_page->css,
   );
 
   $form['left']['menu-info'] = array(
@@ -656,20 +691,6 @@ function panels_page_edit_form($panel_page) {
     '#description' => t('If the Parent Menu Item is being defined by this panel (if you set the %type_field to either %tab or %menu), you can specify its title here.  If blank, the menu title will be used if that is defined, or the page title if not.', array('%type_field' => t('Parent Menu Item Type'), '%tab' => t('Tab'), '%menu' => t('Normal menu item'))),
   );
 
-  $rids = array();
-  $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
-  while ($obj = db_fetch_object($result)) {
-    $rids[$obj->rid] = $obj->name;
-  }
-
-  $form['left']['info']['access'] = array(
-    '#type' => 'checkboxes',
-    '#title' => t('Access'),
-    '#default_value' => $panel_page->access,
-    '#options' => $rids,
-    '#description' => t('Only the checked roles will be able to see this panel in any form; if no roles are checked, access will not be restricted.'),
-  );
-
   $label = ($panel_page->pid == 'new') ? t('Next') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
@@ -702,6 +723,7 @@ function panels_page_edit_form_submit($form_id, $form_values) {
 
   $panel_page->title  = $form_values['title'];
   $panel_page->css_id = $form_values['css_id'];
+  $panel_page->css = $form_values['css'];
   $panel_page->no_blocks = $form_values['no_blocks'];
   $panel_page->menu = $form_values['menu'];
   $panel_page->menu_tab = $form_values['menu_tab'];
@@ -807,6 +829,10 @@ function panels_page_view_page($panel_page) {
   }
 
   drupal_set_title(filter_xss_admin(panels_page_get_title($panel_page, 'page', '')));
+
+  if ($panel_page->css) {
+    drupal_set_html_head("<style type=\"text/css\" media=\"all\">" . filter_xss_admin($panel_page->css) . "</style>\n");
+  }
   if ($panel_page->no_blocks) {
     print theme('page', $output, FALSE);
   }
@@ -850,6 +876,7 @@ function panels_page_save(&$panel_page) {
       "access = '%s', " .
       "path = '%s', " .
       "css_id = '%s', " .
+      "css = '%s', " .
       "no_blocks = %d, " .
       "menu = %d, " .
       "menu_tab = %d, " .
@@ -864,6 +891,7 @@ function panels_page_save(&$panel_page) {
         $panel_page->access, 
         $panel_page->path, 
         $panel_page->css_id, 
+        $panel_page->css, 
         $panel_page->no_blocks, 
         $panel_page->menu,
         $panel_page->menu_tab,
@@ -886,6 +914,7 @@ function panels_page_save(&$panel_page) {
         "access, " .
         "path, " .
         "css_id, " .
+        "css, " .
         "no_blocks, " .
         "menu, " .
         "menu_tab, " .
@@ -899,6 +928,7 @@ function panels_page_save(&$panel_page) {
       ") " .
       "VALUES (" .
         "%d, " .
+        "'%s', " .
         "'%s', " .
         "'%s', " .
         "'%s', " .
@@ -919,6 +949,7 @@ function panels_page_save(&$panel_page) {
         $panel_page->access, 
         $panel_page->path, 
         $panel_page->css_id, 
+        $panel_page->css, 
         $panel_page->no_blocks, 
         $panel_page->menu,
         $panel_page->menu_tab,

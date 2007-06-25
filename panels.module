@@ -1,9 +1,13 @@
 <?php
-// $Id: panels.module,v 1.10.4.26 2007/06/24 22:21:42 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.27 2007/06/25 23:44:27 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
 }
+
+/**
+ * Implementation of hook_menu
+ */
 function panels_menu($may_cache) {
   if ($may_cache) {
     /**
@@ -57,6 +61,42 @@ function panels_get_path($file, $base_path = false, $module = 'panels') {
     $output = base_path();
   }
   return $output . drupal_get_path('module', $module) . '/' . $file;
+}
+
+/**
+ * Implementation of hook_perm
+ */
+function panels_perm() {
+  return array('view all panes', 'administer pane visibility', 'administer advanced pane settings');
+}
+
+/**
+ * Determine visibility of a panel pane
+ */
+function panels_pane_access($pane, $account = NULL) {
+  if (!$account) {
+    global $user;
+    $account = $user;
+  }
+
+  // Administrator privileges
+  if (user_access('view all pane', $account)) {
+    return TRUE;
+  }
+
+  // All views with an empty access setting are available to all roles.
+  if (!$pane->access || !is_array($pane->access)) { 
+    return TRUE;
+  }
+
+  // Otherwise, check roles
+  static $roles = array();
+  if (!isset($roles[$account->uid])) {
+    $roles[$account->uid] = array_keys($account->roles);
+    $roles[$account->uid][] = $account->uid ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;
+  }
+
+  return array_intersect($pane->access, $roles[$account->uid]);
 }
 
 // ---------------------------------------------------------------------------
@@ -853,6 +893,27 @@ function panels_add_content_config_form($display, $content_type_id = NULL, $conf
   $form['configuration'] = $conf;
   $form['configuration']['#tree'] = TRUE;
   
+  if (user_access('administer pane visibility')) {
+    $rids = array();
+    $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
+    while ($obj = db_fetch_object($result)) {
+      $rids[$obj->rid] = $obj->name;
+    }
+
+    $form['access'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Access'),
+      '#default_value' => array(),
+      '#options' => $rids,
+      '#description' => t('Only the checked roles will be able to see this pane; if no roles are checked, access will not be restricted.'),
+    );
+  }
+  else {
+    $form['access'] = array(
+      '#type' => 'value',
+      '#value' => array(),
+    );
+  }
   $form['end_form'] = array('#value' => '</div>');
 
   $form['next'] = array(
@@ -867,7 +928,7 @@ function panels_add_content_config_form($display, $content_type_id = NULL, $conf
 }
 
 function panels_add_content_config_form_validate($form_id, $form_values, $form) {
-  panels_ct_validate_form($form_values['type'], $form['configuration'], $form_values['configuration']);
+  panels_ct_validate_add_form($form_values['type'], $form['configuration'], $form_values['configuration']);
 }
 
 function panels_add_content_config_form_submit($form_id, $form) {
@@ -878,8 +939,9 @@ function panels_add_content_config_form_submit($form_id, $form) {
   // make it real until the final 'Save' is clicked.
   $pid = ++$cache->highest;
   $form['pid'] = "new-$pid";
+  $form['access'] = array_keys(array_filter($form['access']));
 
-  panels_ct_submit_form($form['type'], $form['configuration']);
+  panels_ct_submit_add_form($form['type'], $form['configuration']);
 
   $cache->display->content[$form['pid']] = (object) $form;
   $cache->display->panels[$form['panel']][] = $form['pid'];
@@ -955,6 +1017,28 @@ function panels_edit_pane_config_form($display, $pid = NULL) {
   $form['configuration'] = panels_get_pane_edit_form($pane, array('configuration'));
   $form['configuration']['#tree'] = true;
 
+  if (user_access('administer pane visibility')) {
+    $rids = array();
+    $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
+    while ($obj = db_fetch_object($result)) {
+      $rids[$obj->rid] = $obj->name;
+    }
+
+    $form['access'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Access'),
+      '#default_value' => $pane->access,
+      '#options' => $rids,
+      '#description' => t('Only the checked roles will be able to see this pane; if no roles are checked, access will not be restricted.'),
+    );
+  }
+  else {
+    $form['access'] = array(
+      '#type' => 'value',
+      '#value' => $pane->access,
+    );
+  }
+
   $return->type = 'display';
   panels_set('return', $return);
   
@@ -968,15 +1052,16 @@ function panels_edit_pane_config_form($display, $pid = NULL) {
 }
 
 function panels_edit_pane_config_form_validate($form_id, $form_values, $form) {
-  panels_ct_validate_form($form_values['type'], $form['configuration'], $form_values['configuration']);
+  panels_ct_validate_edit_form($form_values['type'], $form['configuration'], $form_values['configuration']);
 }
 
 function panels_edit_pane_config_form_submit($form_id, $form) {
   // save the new configuration.
   $cache = panels_cache_get($form['did']);
 
-  panels_ct_submit_form($form['type'], $form['configuration']);
+  panels_ct_submit_edit_form($form['type'], $form['configuration']);
   
+  $cache->display->content[$form['pid']]->access = array_keys(array_filter($form['access']));
   $cache->display->content[$form['pid']]->configuration = $form['configuration'];
   panels_cache_set($form['did'], $cache);
 
@@ -988,7 +1073,7 @@ function panels_edit_pane_config_form_submit($form_id, $form) {
     $block->subject = t('No title');
   }
 
-  $return->output = theme('panels_pane', $block, $cache->display);
+  $return->output = theme('panels_pane_collapsible', $block, $cache->display);
 
   panels_set('return', $return);
   return FALSE;
@@ -1032,18 +1117,6 @@ function panels_edit_submit_subform($display) {
 // End of ajax functions
 // ---------------------
 
-/* TODO: Integrate this back in */
-/*
-function panels_edit_display_validate($form_id, $form_values, $form) {
-  foreach ($form_values['content'] as $area => $content) {
-    foreach ($content as $id => $item) {
-      if (is_numeric($id)) {
-        panels_ct_validate($item['type'], $item['configuration'], $form['content'][$area][$id]['configuration']);
-      }
-    }
-  }
-}
-*/
 // ---------------------------------------------------------------------------
 // panels database functions
 
@@ -1095,6 +1168,7 @@ function panels_load_display($did, $context = NULL) {
   $display->panels = $display->content = array();
   while ($pane = db_fetch_object($result)) {
     $pane->configuration = unserialize($pane->configuration);
+    $pane->access = ($pane->access ? explode(', ', $pane->access) : array());
     $display->panels[$pane->panel][] = $pane->pid;
     $display->content[$pane->pid] = $pane;
   }
@@ -1125,7 +1199,7 @@ function panels_save_display(&$display) {
         unset($display->content[$pid]);
         $pane->pid = db_next_id("{panels_pane}_pid");
       }
-      db_query("INSERT INTO {panels_pane} (pid, did, panel, type, configuration, position) VALUES (%d, %d, '%s', '%s', '%s', %d)", $pane->pid, $display->did, $pane->panel, $pane->type, serialize($pane->configuration), $pane->position);
+      db_query("INSERT INTO {panels_pane} (pid, did, panel, type, configuration, access, position) VALUES (%d, %d, '%s', '%s', '%s', '%s', %d)", $pane->pid, $display->did, $pane->panel, $pane->type, serialize($pane->configuration), !empty($pane->access) ? implode(', ', $pane->access) : '', $pane->position);
       // and put it back so our pids and positions can be used
       $display->content[$pid] = $pane;
       $new_panes[] = $pid;
@@ -1232,7 +1306,9 @@ function panels_render_display(&$display) {
       if (!empty($content[$pane->panel])) {
         $content[$pane->panel] .= theme('panels_separator', $display);
       }
-      $content[$pane->panel] .= theme('panels_pane', $result, $display); 
+      if (panels_pane_access($pane)) {
+        $content[$pane->panel] .= theme('panels_pane', $result, $display); 
+      }
     }
   }
 
