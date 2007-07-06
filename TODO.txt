@@ -46,8 +46,8 @@ content types
     X unify title overriding.
 
 layouts
-    o Allow each layout to have settings
-    o Create a flexible layout where you can quickly create arbitrary layouts
+    X Allow each layout to have settings
+    X Create a flexible layout where you can quickly create arbitrary layouts
     X Fix the div div problem in all layouts
 
 icons
@@ -58,7 +58,7 @@ icons
 
 panels API
     - Provide method to directly edit/configure an individual content block if viewer has permissions
-    o Provide method to control pane visibility. Make sure this is controllable from the admin so that not all users can get to it.
+    X Provide method to control pane visibility. Make sure this is controllable from the admin so that not all users can get to it.
     X Change add content to be per panel
     X Make Cancel actually cancel
     X Wrap calls to existing callbacks

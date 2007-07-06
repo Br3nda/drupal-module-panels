@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.18 2007/06/25 23:44:27 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.19 2007/07/06 18:09:09 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -53,8 +53,7 @@ function panels_page_menu($may_cache) {
       'path' => 'admin/build/panel-page/settings',
       'title' => t('Settings'),
       'access' => $access,    
-      'callback' => 'drupal_get_form',
-      'callback arguments' => array('panels_page_settings'),
+      'callback' => 'panels_page_settings',
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
@@ -296,88 +295,9 @@ function panels_page_access($panel_page, $account = NULL) {
  * Settings for panel pages
  */
 function panels_page_settings() {
-  $content_types = panels_get_content_types();
-  $default_types = variable_get('panels_page_default', NULL);
-  if (!isset($default_types)) {
-    $default_types = array('block' => TRUE, 'views' => TRUE, 'other' => TRUE);
-    $skip = TRUE;
-  }
-
-  foreach ($content_types as $id => $info) {
-    if (empty($info['single'])) {
-      $default_options[$id] = t('New @s', array('@s' => $info['title']));
-    }
-  }
-
-  $default_options['other'] = t('New content of other types');
-  $form['panels_page_default'] = array(
-    '#type' => 'checkboxes',
-    '#title' => t('New content behavior'),
-    '#description' => t('Select the default behavior of new content added to the system. If checked, new content will automatically be immediately available to be added to Panels pages. If not checked, new content will not be available until specifically allowed here.'),
-    '#options' => $default_options,
-    '#default_value' => array_keys(array_filter($default_types)),
-  );
-  
-  if ($skip) {
-    $form['markup'] = array('#value' => t('<p>Click Submit to be presented with a complete list of available content types set to the defaults you selected.</p>'));
-    $form['skip'] = array('#type' => 'value', '#value' => TRUE);
-  }
-  else {
-    // Rebuild the entire list, setting appropriately from defaults. Give
-    // each type its own checkboxes set unless it's 'single' in which
-    // case it can go into our fake other set.
-    $available_content_types = panels_get_available_content_types();
-    $allowed_content_types = variable_get('panels_page_allowed_types', array());
-    
-    foreach ($available_content_types as $id => $types) {
-      foreach ($types as $type => $info) {
-        $key = $id . '-' . $type;
-        $checkboxes = empty($content_types[$id]['single']) ? $id : 'other';
-        $options[$checkboxes][$key] = $info['title'];
-        if (!isset($allowed_content_types[$key])) {
-          $allowed[$checkboxes][$key] = isset($default_types[$id]) ? $default_types[$id] : $default_types['other'];
-        }
-        else {
-          $allowed[$checkboxes][$key] = $allowed_content_types[$key];
-        }
-      }
-    }
-
-    $form['content_types'] = array('#tree' => TRUE);
-    // cheat a bit
-    $content_types['other'] = array('title' => t('Other'), 'weight' => 10);
-    foreach ($content_types as $id => $info) {
-      if (isset($allowed[$id])) {
-        $form['content_types'][$id] = array(
-          '#prefix' => '<div class="panels-page-type-container">',
-          '#suffix' => '</div>',
-          '#type' => 'checkboxes',
-          '#title' => t('Allowed @s content', array('@s' => $info['title'])),
-          '#options' => $options[$id],
-          '#default_value' => array_keys(array_filter($allowed[$id])),
-        );
-      }
-    }
-  }
-
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Submit'),
-  );
-
-  drupal_add_css(drupal_get_path('module', 'panels_page') . '/css/panels_page.css');
-  return $form;
+  require_once drupal_get_path('module', 'panels') . '/panels_common.inc';
+  return drupal_get_form('panels_common_settings', 'panels_page');
 }
-
-function panels_page_settings_submit($form_id, $form_values) {
-  variable_set('panels_page_default', $form_values['panels_page_default']);
-  if (!$form_values['skip']) {
-    // merge the broken apart array neatly back together
-    variable_set('panels_page_allowed_types', call_user_func_array('array_merge', $form_values['content_types']));
-  }
-  drupal_set_message(t('Your changes have been saved.'));
-}
-
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
