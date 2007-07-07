@@ -129,7 +129,7 @@ function panels_admin_edit_block($conf) {
   );
 
   // Module-specific block configurations.
-  if ($settings = module_invoke($conf['module'], 'block', 'configure', $conf['delta'])) {
+  if (user_access('administer advanced pane settings') && $settings = module_invoke($conf['module'], 'block', 'configure', $conf['delta'])) {
     // Specifically modify a couple of core block forms.
     if ($conf['module'] == 'block') {
       unset($settings['submit']);
