@@ -15,8 +15,13 @@ ajax/js
     X Write my own drag & drop
 
 modules
-    o panels node
+    X panels node
     o mini-panel
+    o panels-profile
+    o panels-dashboard-compat (upgrade all the old dashboard installs)
+
+panels common
+    o update settings to use categories like the 'add content' popup now does.
 
 panels page
     o panels page 'default' panels

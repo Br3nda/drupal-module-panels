@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_common.inc,v 1.1.2.2 2007/07/07 21:01:02 merlinofchaos Exp $
+// $Id: panels_common.inc,v 1.1.2.3 2007/07/07 21:17:36 merlinofchaos Exp $
 
 /**
  * @file
@@ -7,7 +7,8 @@
 */
 
 /**
- * 
+ * A common settings page for Panels modules, because this code is relevant to
+ * any modules that don't already ahve special requirements.
  */
 function panels_common_settings($module_name = 'panels_common') {
   $content_types = panels_get_content_types();
@@ -88,6 +89,9 @@ function panels_common_settings($module_name = 'panels_common') {
   return $form;
 }
 
+/** 
+ * Submit hook for panels_common_settings
+ */
 function panels_common_settings_submit($form_id, $form_values) {
   $module_name = $form_values['module_name'];
   variable_set($module_name . '_default', $form_values['panels_common_default']);
@@ -98,10 +102,13 @@ function panels_common_settings_submit($form_id, $form_values) {
   drupal_set_message(t('Your changes have been saved.'));
 }
 
-function panels_common_get_allowed_types($module) {
+/**
+ * Based upon the settings, get the allowed types for this node.
+ */
+function panels_common_get_allowed_types($module, $default_defaults = array(), $default_allowed_types = array()) {
   $content_types = panels_get_available_content_types();
-  $default_types = variable_get($module . '_defaults', array());
-  $allowed_types = variable_get($module .'_allowed_types', array());
+  $default_types = variable_get($module . '_defaults', $default_defaults);
+  $allowed_types = variable_get($module .'_allowed_types', $default_allowed_types);
 
   // By default, if they haven't gone and done the initial setup here,
   // let all 'other' types (which will be all types) be available.
