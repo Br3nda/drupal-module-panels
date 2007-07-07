@@ -220,6 +220,11 @@ a.close img {
   width: auto;
 }
 
+.panels-modal-content .modal-form fieldset,
+.panels-modal-content .modal-form .form-checkboxes {
+  clear: left;
+}
+
 #edit-configuration-nid {
   clear: left;
 }

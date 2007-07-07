@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.27 2007/06/25 23:44:27 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.28 2007/07/07 22:51:22 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -597,7 +597,7 @@ function panels_ct_validate_add_form($type, $form, $form_values) {
 
 function panels_ct_submit_add_form($type, $form_values) {
   if ($function = panels_ct_function($type, 'add submit callback')) {
-    return $function($form, $form_values); 
+    return $function($form_values); 
   }
 }
 
@@ -615,7 +615,7 @@ function panels_ct_validate_edit_form($type, $form, $form_values) {
 
 function panels_ct_submit_edit_form($type, $form_values) {
   if ($function = panels_ct_function($type, 'edit submit callback')) {
-    return $function($form, $form_values); 
+    return $function($form_values); 
   }
 }
 
@@ -932,6 +932,7 @@ function panels_add_content_config_form_validate($form_id, $form_values, $form) 
 }
 
 function panels_add_content_config_form_submit($form_id, $form) {
+  drupal_set_message(var_export($form, true));
   $cache = panels_cache_get($form['did']);
 
   // keep an incrementing counter, add the data to the display.

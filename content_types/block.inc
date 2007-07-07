@@ -10,6 +10,8 @@ function panels_block_panels_content_types() {
     'add callback' => 'panels_admin_add_block',
     'edit callback' => 'panels_admin_edit_block',
     'title callback' => 'panels_admin_title_block',
+    'add submit callback' => 'panels_admin_submit_block',
+    'edit submit callback' => 'panels_admin_submit_block',
     //'validate callback' => 'panels_admin_validate_block',
   );
   return $items;
@@ -30,6 +32,7 @@ function panels_content_block($conf) {
   if ($conf['override_title']) {
     $block->subject = check_plain($conf['override_title_text']);
   }
+
   // Test for block visibility
   $result = db_query("SELECT pages, visibility FROM {blocks} WHERE module = '%s' AND delta = %d", $block->module, $block->delta);
   $block_visibility = db_fetch_object($result);
@@ -66,7 +69,7 @@ function panels_admin_content_types_block() {
           'title' => strip_tags($block['info']),
         );
 
-        // Ask around for furhter information.
+        // Ask around for further information.
         $function = $module . '_panels_block_info';
         if (!function_exists($function)) {
           $function = 'panels_default_block_info';
@@ -120,10 +123,61 @@ function panels_admin_edit_block($conf) {
     '#size' => 35,
     '#id' => 'override-title-textfield',
   );
+
   $form['aligner_stop'] = array(
     '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
   );
+
+  // Module-specific block configurations.
+  if ($settings = module_invoke($conf['module'], 'block', 'configure', $conf['delta'])) {
+    // Specifically modify a couple of core block forms.
+    if ($conf['module'] == 'block') {
+      unset($settings['submit']);
+      $settings['info']['#type'] = 'value';
+      $settings['info']['#value'] = $settings['info']['#default_value'];
+    }
+    panels_admin_fix_block_tree($settings);
+    $form['block_settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Block settings'),
+      '#description' => t('Settings in this section are global and are for all blocks of this type, anywhere in the system.'),
+      '#tree' => FALSE,
+    );
+
+
+    $form['block_settings'] += $settings;
+  }
+
   return $form;
+}
+
+function panels_admin_submit_block(&$form_values) {
+  if (!empty($form_values['block_settings'])) {
+    module_invoke($form_values['module'], 'block', 'save', $form_values['delta'], $form_values['block_settings']); 
+  }
+}
+
+/**
+ * Because form api cannot collapse just part of a tree, and the block settings
+ * assume no tree, we have to collapse the tree ourselves.
+ */
+function panels_admin_fix_block_tree(&$form, $key = NULL) {
+  if ($key) {
+    if (!empty($form['#parents'])) {
+      $form['#parents'] = array_merge(array('configuration', 'block_settings'), $form['#parents']);
+    }
+    else if (empty($form['#tree'])) {
+      $form['#parents'] = array('configuration', 'block_settings', $key);
+    }
+  }
+
+  if ($form['#type'] == 'textarea' && !empty($form['#rows']) && $form['#rows'] > 10) {
+    $form['#rows'] = 10;
+  }
+
+  foreach (element_children($form) as $key) {
+    panels_admin_fix_block_tree($form[$key], $key);
+  }
 }
 
 /**

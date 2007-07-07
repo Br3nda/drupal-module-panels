@@ -32,7 +32,8 @@ panels page
     X allow setting to not display blocks
 
 content types
-    o Get all 'block' settings into blocks.
+    o Allow creating new custom blocks.
+    X Get all 'block' settings into blocks.
     X Remove all calls to the 'admin' callback
     X Make panels_get_content_type() like using for layout
     X Translate views to new content format
@@ -77,7 +78,8 @@ panels API
 
 General:
     o CSS class/id name cleanup and unification.
-    
+    o Make sure core blocks that require context are labelled as such.
+
 Documentation
     o Creating new panel modules that use the API
     o Creating new content types
