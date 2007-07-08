@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.20 2007/07/07 21:01:02 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.21 2007/07/08 03:31:36 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -681,7 +681,7 @@ function panels_page_edit_layout($panel_page) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
-  return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->pid/edit");
+  return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->pid/edit/layout");
 }
 
 /**
@@ -707,7 +707,7 @@ function panels_page_edit_content($panel_page) {
   // Print this with theme('page') so that blocks are disabled while editing a display.
   // This is important because negative margins in common block layouts (i.e, Garland)
   // messes up the drag & drop.
-  print theme('page', panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->pid/edit", $content_types), FALSE);
+  print theme('page', panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->pid/edit/content", $content_types), FALSE);
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 <?php
-// $Id: onecol.inc,v 1.1.2.1 2007/07/08 03:14:30 merlinofchaos Exp $
+// $Id: onecol.inc,v 1.1.2.2 2007/07/08 03:31:36 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -10,7 +10,7 @@ function panels_onecol_panels_layouts() {
     'icon' => 'layouts/onecol.png',
     'theme' => 'panels_onecol',
     'css' => 'layouts/onecol.css',
-    'content areas' => array('middle' => t('Middle column')),
+    'panels' => array('middle' => t('Middle column')),
   );
 
   return $items;
