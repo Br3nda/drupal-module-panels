@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.29 2007/07/08 03:14:29 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.30 2007/07/08 03:24:35 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -939,7 +939,6 @@ function panels_add_content_config_form_validate($form_id, $form_values, $form) 
 }
 
 function panels_add_content_config_form_submit($form_id, $form) {
-  drupal_set_message(var_export($form, true));
   $cache = panels_cache_get($form['did']);
 
   // keep an incrementing counter, add the data to the display.
