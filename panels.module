@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.30 2007/07/08 03:24:35 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.31 2007/07/08 03:28:57 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -220,7 +220,7 @@ function panels_edit($display, $destination, $content_types = NULL) {
     panels_cache_set($did, $cache);
   }
 
-  drupal_set_message('<pre>' . check_plain(var_export($display, true)) . '</pre>');
+//  drupal_set_message('<pre>' . check_plain(var_export($display, true)) . '</pre>');
   $output = drupal_get_form('panels_edit_display', $display, $destination);
   $hidden = theme('panels_hidden');
   return $output . $hidden;
