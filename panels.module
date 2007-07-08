@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.28 2007/07/07 22:51:22 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.29 2007/07/08 03:14:29 merlinofchaos Exp $
 
 function panels_help($section = NULL) {
   
@@ -149,7 +149,7 @@ function panels_add_button($image, $name, $text, $class, $id = NULL) {
 
 /**
  * Get a display from the cache; this is used if the display is currently
- * being edited, with is can be a seriously multi-step process.
+ * being edited, which can be a seriously multi-step process.
  */
 function panels_cache_get($did) {
   static $cache = array();
@@ -198,6 +198,8 @@ function panels_get($var) {
 
 /**
  * Main API entry point to edit a panel display.
+ *
+ * TODO: Doc this. Important.
  */
 function panels_edit($display, $destination, $content_types = NULL) {
   $did = $display->did;
@@ -218,6 +220,7 @@ function panels_edit($display, $destination, $content_types = NULL) {
     panels_cache_set($did, $cache);
   }
 
+  drupal_set_message('<pre>' . check_plain(var_export($display, true)) . '</pre>');
   $output = drupal_get_form('panels_edit_display', $display, $destination);
   $hidden = theme('panels_hidden');
   return $output . $hidden;
@@ -364,6 +367,8 @@ function panels_edit_display_submit($form_id, $form_values) {
 
 /**
  * Shortcut to the panels layout editor
+ *
+ * TODO: Doc this. Important.
  */
 function panels_edit_layout($display, $finish, $destination) {
   return drupal_get_form('panels_choose_layout', $display, $finish, $destination);
@@ -499,6 +504,8 @@ function panels_change_layout(&$form, $display, $new_layout_id) {
 
 /**
  * Shortcut to the panels layout settings editor
+ *
+ * TODO: Doc this. Important.
  */
 function panels_edit_layout_settings($display, $finish, $destination) {
   return drupal_get_form('panels_edit_layout_settings_form', $display, $finish, $destination);

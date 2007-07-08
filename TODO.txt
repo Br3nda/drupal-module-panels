@@ -5,6 +5,8 @@ o = TODO
 - = Skipped/postponed
 
 ajax/js
+    o Remove 'panels_set' and use the broken up drupal_get_form functions
+      rather than drupal_get_form for our multi-step stuff.
     o Add permission checking to all the ajax functions
     o Break up panels_ajax into separate entry areas [mostly done]
     o ensure complete degradability
