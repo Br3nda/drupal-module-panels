@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.10 2007/06/25 23:44:27 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.11 2007/07/08 04:46:55 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -91,7 +91,7 @@ function panels_update_1000() {
   $result = db_query("SELECT * FROM {panels_pane}");
   while ($pane = db_fetch_object($result)) {
     $count++;
-    $ret[] = update_sql("UPDATE {panels_pane} SET pid = $count WHERE did = $pane->did AND panel = '$pane->pane' AND position = $pane->position");
+    $ret[] = update_sql("UPDATE {panels_pane} SET pid = $count WHERE did = $pane->did AND panel = '$pane->panel' AND position = $pane->position");
   }
   if ($count) {
     $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_pane}_pid', $count)");
@@ -107,13 +107,15 @@ EOT
   $result = db_query("SELECT did, layout FROM {panels_page}");
   $max_did = 0;
   while ($display = db_fetch_object($result)) {
-    $ret = update_sql("INSERT INTO {panels_display} VALUES (%d, '%s')", $display->did, $display->layout);
+    $ret[] = update_sql("INSERT INTO {panels_display} VALUES ($display->did, '$display->layout')");
     if ($display->did > $max_did) { 
       $max_did = $display->did;
     }
   }
   $ret[] = update_sql("ALTER TABLE {panels_page} DROP COLUMN layout");
-  $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_display}_did', $count)");
+  if ($max_did) {
+    $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_display}_did', $max_did)");
+  }
   return $ret;
 }
 
