@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.1 2007/07/07 21:01:02 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.2 2007/07/09 03:38:45 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -139,6 +139,7 @@ function panels_node_form(&$node, &$param) {
     '#type'=> 'textfield',
     '#title' => check_plain($type->title_label),
     '#required' => TRUE,
+    '#default_value' => $node->title,
   );
 
   $form['body'] = array(
@@ -147,10 +148,12 @@ function panels_node_form(&$node, &$param) {
     '#rows' => 10,
     '#required' => TRUE,
     '#description' => t('The teaser is a piece of text to describe when the panel is listed (such as when promoted to front page); the actual content will only be displayed on the full node view.'),
+    '#default_value' => $node->body,
   );
 
+//  drupal_set_message('<pre>' . check_plain(var_export($node, true)) . '</pre>');
   $css_id = '';
-  if (is_object($node->panels_node)) {
+  if (!empty($node->panels_node['css_id'])) {
     $css_id = $node->panels_node['css_id'];
   }
 
