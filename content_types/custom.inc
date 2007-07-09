@@ -30,7 +30,7 @@ function panels_content_custom($conf) {
 
 function theme_panels_custom_content($content, $id, $class) {
   if ($id) {
-    $id == 'id="' . $id . '"';
+    $id = 'id="' . $id . '"';
   }
 
   $output = '<div class="panels-custom ' . $class . '" ' . $id . '>';
