@@ -1,4 +1,5 @@
 <?php
+// $Id: node.inc,v 1.2.6.10 2007/07/09 23:45:59 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */

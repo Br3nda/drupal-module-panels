@@ -1,4 +1,5 @@
 <?php
+// $Id: views.inc,v 1.4.4.10 2007/07/09 23:45:59 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
