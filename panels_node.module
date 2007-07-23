@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.2 2007/07/09 03:38:45 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.3 2007/07/23 16:15:58 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -31,7 +31,7 @@ function panels_node_menu($may_cache) {
   else {
     if (arg(0) == 'node' && is_numeric(arg(1))) {
       $node = node_load(arg(1));
-      if ($node && $node->type == 'panel' && node_access($node, 'update')) {
+      if ($node && $node->type == 'panel' && node_access('update', $node)) {
         $base = 'node/' . arg(1) . '/panel_';
         $items[] = array(
           'path' => $base . 'layout',
