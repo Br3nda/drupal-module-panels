@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_common.inc,v 1.1.2.3 2007/07/07 21:17:36 merlinofchaos Exp $
+// $Id: panels_common.inc,v 1.1.2.4 2007/08/16 04:52:33 merlinofchaos Exp $
 
 /**
  * @file
@@ -127,4 +127,113 @@ function panels_common_get_allowed_types($module, $default_defaults = array(), $
     }
   }
   return $content_types;
+}
+
+/**
+ * The layout information fieldset displayed at admin/build/panel-%implementation%/add/%layout%.
+ */
+function panels_common_get_layout_information($panel_implementation) {
+  $form = array();
+  $layout = panels_get_layout($panel_implementation->display->layout);
+
+  $form = array(
+    '#type' => 'fieldset',
+    '#title' => t('Layout'),
+  );
+
+  $form['layout-icon'] = array(
+    '#value' => panels_print_layout_icon($panel_implementation->display->layout, $layout),
+  );
+
+  $form['layout-display'] = array(
+    '#value' => check_plain($layout['title']),
+  );
+  $content = '<dl class="content-list">';
+
+  foreach (panels_get_panels($layout, $panel_implementation->display) as $panel_id => $title) {
+    $content .= "<dt>$title</dt><dd>";
+    if ($panel_implementation->display->panels[$panel_id]) {
+      $content .= '<ol>';
+      foreach ($panel_implementation->display->panels[$panel_id] as $pid) {
+        $content .= '<li>'. panels_get_pane_title($panel_implementation->display->content[$pid]) .'</li>';
+      }
+      $content .= '</ol>';
+    }
+    else {
+      $content .= t('Empty');      
+    }
+    $content .= '</dd>';
+  }
+  $content .= '</dl>';
+
+  $form['layout-content'] = array(
+    '#value' => $content,
+  );
+
+  return $form;
+}
+
+/**
+ * The panel settings fieldset that can optionally be added to
+ * admin/build/panel-%implementation%/%panel_id%/edit, if the panels
+ * implementation wants to support panel settings.
+ */
+function panels_common_panel_settings($display, $panels_implementation = '', $panels_implementation_human = '') {
+  $panel_settings = unserialize($display->panel_settings);
+  $style_name = ($panel_settings['style']) ? $panel_settings['style'] : 'default';
+  $style = panels_get_panel_style($style_name);
+
+  // Let the user choose between panel styles that are available for any
+  // panels implementation or specifically to this one.
+  $options = array();
+  foreach (panels_get_panel_styles() as $name => $properties) {
+    $implementations = $properties['panels implementations'];
+    if (!is_array($implementations) || count($implementations) == 0 || in_array($panels_implementation, $implementations)) {
+      $options[$name] = $properties['label'];
+    }
+  }
+
+  $form = array();
+  $form['display'] = array('#type' => 'value', '#value' => $display);
+  $form['panel_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Panel settings'),
+    '#tree' => TRUE,
+  );
+  $form['panel_settings']['style'] = array(
+    '#type' => 'radios',
+    '#title' => t('Panel style'),
+    '#options' => $options,
+    '#description' => t(
+      'The style in which the panes of each panel in this %panels-implementation-human will be displayed.',
+      array('%panels-implementation-human' => $panels_implementation_human)
+    ),
+    '#default_value' => $style['name'],
+  );
+  $form['panel_settings']['style_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Panel style settings'),
+  );
+  if (in_array($style['module'], module_list()) && function_exists($style['module'] .'_panels_panel_style_settings_form')) {
+    $style_settings = module_invoke($style['module'], 'panels_panel_style_settings_form', $style['name'], unserialize($display->panel_settings));
+    if (is_array($style_settings)) {
+      $form['panel_settings']['style_settings'] += $style_settings;
+    }
+  }
+  else {
+    $form['panel_settings']['style_settings']['#description'] = t('The currently active style does not have any settings.');
+  }
+  $form['#validate']['panels_common_panel_settings_validate'] = array($style['module'], $style['name']);
+
+  return $form;
+}
+
+/**
+ * Allows panel styles to validate their style settings.
+ */
+function panels_common_panel_settings_validate($form, $module, $style) {
+  global $form_values;
+
+  $panel_settings = unserialize($form_values['display']->panel_settings);
+  module_invoke($module, 'panels_panel_style_settings_validate', $style, $panel_settings, $form['panel_settings']['style_settings'], $form_values['panel_settings']['style_settings']);
 }

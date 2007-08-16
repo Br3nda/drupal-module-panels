@@ -1,0 +1,39 @@
+<?php
+// $Id $
+
+/**
+ * Implementation of hook_install().
+ */
+function panels_mini_install() {
+  switch ($GLOBALS['dbtype']) {
+    case 'pgsql':
+    case 'mysql':
+    case 'mysqli':
+    default:
+      db_query(<<<EOT
+        CREATE TABLE {panels_mini} (
+          pid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
+          did int(10),
+          title varchar(128)
+        )/*!40100 DEFAULT CHARACTER SET utf8 */
+EOT
+      );
+  }
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function panels_mini_uninstall() {
+  $result = db_query("SELECT * FROM {panels_mini} ORDER BY title");
+  while ($panel_mini = db_fetch_object($result)) {
+    // Delete all associated displays.
+    panels_delete_display($panel_mini->did);
+
+    // Delete all configured blocks.
+    db_query("DELETE FROM {blocks} WHERE module = 'panels_mini' AND delta = %d", $panel_mini->pid);
+  }
+  
+  // Finally, delete all mini panels.
+  db_query("DROP TABLE IF EXISTS {panels_mini}");
+}

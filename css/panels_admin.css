@@ -17,20 +17,20 @@
   margin-bottom: 1em;
 }
 
-/* styles for the basic panel-page edit page */
+/* styles for the basic panel-%implementation% edit page */
 .layout-container {
   float: right;
   padding: 0 0 0 1em;
   margin: 0;
-  width: 50%;
+  width: 49%;
 }
 
-.panels-page-info-container {
+.info-container {
   padding-right: 1em;
+  width: 49%;
 }
 
-.layout-container fieldset,
-.panels-page-info-container fieldset {
+.layout-container fieldset {
   margin-top: 0;
   width: 98%;
 }
@@ -102,4 +102,3 @@
 #panels-edit-display .helperclass {
   margin: .5em;
 }
-

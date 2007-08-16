@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.11 2007/07/08 04:46:55 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.12 2007/08/16 04:52:33 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -38,7 +38,8 @@ EOT
         CREATE TABLE {panels_display} (
           did INT(10) NOT NULL DEFAULT 0 PRIMARY KEY,
           layout VARCHAR(32),
-          layout_settings longtext
+          layout_settings longtext,
+          panel_settings longtext
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
@@ -138,5 +139,11 @@ function panels_update_1002() {
   $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN layout_settings longtext");
   $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN access varchar(128) AFTER type");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN css longtext AFTER css_id");
+  return $ret;
+}
+
+// Create a field for the panel settings.
+function panels_update_1003() {
+  $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN panel_settings longtext");
   return $ret;
 }

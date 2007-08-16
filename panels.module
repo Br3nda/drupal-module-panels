@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.33 2007/07/23 16:15:58 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.34 2007/08/16 04:52:33 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -106,7 +106,7 @@ function panels_imagebutton_value() {
 function panels_add_button($image, $name, $text, $class, $id = NULL) {
   return array(
     '#type' => 'panels_imagebutton',
-    '#image' => panels_get_path('images/' . $image, true),
+    '#image' => panels_get_path('images/' . $image),
     '#title' => $text,
     '#default_value' => $name,
     '#class' => $class,
@@ -1349,12 +1349,12 @@ function panels_load_display($did, $context = NULL) {
  */
 function panels_save_display(&$display) {
   if ($display->did && $display->did != 'new') {
-    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s' WHERE did = %d", $display->layout, $display->layout_settings, $display->did);
+    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s' WHERE did = %d", $display->layout, $display->layout_settings, $display->panel_settings, $display->did);
     db_query("DELETE FROM {panels_pane} WHERE did = %d", $display->did);
   }
   else {
     $display->did = db_next_id("{panels_display}_id");
-    db_query("INSERT INTO {panels_display} (did, layout, layout_settings) VALUES (%d, '%s', '%s')", $display->did, $display->layout, $display->layout_settings);
+    db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings) VALUES (%d, '%s', '%s', '%s')", $display->did, $display->layout, $display->layout_settings, $display->panel_settings);
   }
 
   // update all the panes
@@ -1408,16 +1408,28 @@ function panels_print_layout($id, $content) {
  * Given a full layout structure and a content array, render a panel display.
  */
 function panels_render_layout($layout, $content, $css_id = NULL, $settings = array()) {
-  $output = theme($layout['theme'], check_plain($css_id), $content, $settings);
+  if (file_exists(path_to_theme() . '/' . $layout['css'])) {
+    drupal_add_css(path_to_theme() . '/' . $layout['css']);
+  }
+  else {
+    drupal_add_css(panels_get_path($layout['css'], false, $layout['module']));
+  }
 
-  if ($output) {
-    if (file_exists(path_to_theme() . '/' . $layout['css'])) {
-      drupal_add_css(path_to_theme() . '/' . $layout['css']);
-    }
-    else {
-      drupal_add_css(panels_get_path($layout['css'], false, $layout['module']));
+  // This now comes after the CSS is added, because panels-within-panels must
+  // have their CSS added in the right order; inner content before outer content.
+  if (is_object($content)) {
+    $display = $content;
+    $content = array();
+    // Loop through all panels, put all panes that belong to the current panel
+    // in an array, then render the panel.
+    foreach ($display->panels as $panel_name => $panes) {
+      $panes_in_panel = array_intersect_key($display->content, array_flip($panes));
+      $content[$panel_name] = panels_render_panel($panes_in_panel, $display);    
     }
   }
+
+  $output = theme($layout['theme'], check_plain($css_id), $content, $settings);
+
   return $output;
 }
 
@@ -1463,26 +1475,46 @@ function panels_sanitize_display(&$display) {
  */
 function panels_render_display(&$display) {
   $layout = panels_get_layout($display->layout);
-  
   if (!$layout) {
     return NULL;
   }
 
   panels_sanitize_display($display);
+  
+  return panels_render_layout($layout, $display, $display->css_id, unserialize($display->layout_settings));
+}
 
-  foreach ($display->content as $pid => $pane) {
-    if ($result = panels_get_pane_content($pane, $display->args, $display->context, $display->incoming_content)) {
-      if (!empty($content[$pane->panel])) {
-        $content[$pane->panel] .= theme('panels_separator', $display);
-      }
-      if (panels_pane_access($pane)) {
-        $content[$pane->panel] .= theme('panels_pane', $result, $display); 
-      }
+/**
+ * Render a panel, by storing the content of each pane in an appropriate array
+ * and then passing through to the theme function that will render the panel
+ * in the configured panel style.
+ *
+ * @param $panes
+ *   An array of panes that are assigned to the panel that's being rendered.
+ * @param $display
+ *   A display object.
+ * @return
+ *   The rendered HTML for a panel.
+ */
+function panels_render_panel($panes_in_panel, $display) {
+  $panel_settings = unserialize($display->panel_settings);
+  $style = (is_array($panel_settings)) ? panels_get_panel_style($panel_settings['style']) : array('name' => 'default', 'module' => 'panels');
+
+  // Store all panes in an array, sorted by their position in the panel.
+  foreach ($panes_in_panel as $pane_id => $pane) {
+    if (panels_pane_access($pane)) {
+      $panes[$pane->position] = panels_get_pane_content($pane, $display->args, $display->context, $display->incoming_content);
     }
   }
 
-  $output = panels_render_layout($layout, $content, $display->css_id, unserialize($display->layout_settings));
-  return $output;
+  // Retrieve the pid (can be a panel page id, a mini panel id, etc.), this
+  // might be used (or even necessary) for some panel display styles.
+  $pid = 0;
+  if (isset($display->owner) && is_object($display->owner) && isset($display->owner->pid)) {
+    $panel_id = $display->owner->pid;
+  }
+
+  return module_invoke($style['module'], 'panels_panel_style_render', $display, $style['name'], $panel_id, $panes);
 }
 
 // ---------------------------------------------------------------------------
@@ -1534,6 +1566,51 @@ function panels_get_layouts($layout = NULL) {
   return $layouts;
 }
 
+/**
+ * Collate information about a specific panel style.
+ *
+ * @param $style
+ *   Name of a panel style.
+ * @return
+ *   An array with information about the requested panel style.
+ */
+function panels_get_panel_style($style) {
+  return panels_get_panel_styles($style);
+}
+
+/**
+ * Collate information about all available panel styles.
+ *
+ * @param $style
+ *   Name of a panel style.
+ * @return
+ *   An array of arrays with information about all available panel styles. If
+ *   the $style parameter specified an available panel style, only this array
+ *   would be returned.
+ */
+function panels_get_panel_styles($style = NULL) {
+  static $styles;
+  
+  if (!isset($styles)) {
+    foreach (module_list() as $module) {
+      $module_panel_styles = module_invoke($module, 'panels_panel_style_info');
+      if ($module_panel_styles) {
+        foreach ($module_panel_styles as $name => $panel_style_info) {
+          $styles[$name] = $panel_style_info;
+          $styles[$name]['name'] = $name;
+          $styles[$name]['module'] = $module;
+        }
+      }
+    }
+  }
+
+  if ($style) {
+    return isset($styles[$style]) ? $styles[$style] : NULL;
+  }
+
+  return $styles;
+}
+
 function panels_get_content_type($content_type) {
   return panels_get_content_types($content_type);
 }
@@ -1580,6 +1657,38 @@ function _panels_js_files() {
 }
 
 // ---------------------------------------------------------------------------
+// Panels hooks
+
+/**
+ * Implementation of hook_panels_panel_style_info().
+ */
+function panels_panels_panel_style_info() {
+  return array(
+    'default' => array(
+      'label' => t('Default'),
+      'panels implementations' => array(),
+    ),
+    'list' => array(
+      'label' => t('List'),
+      'panels implementations' => array(),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_panels_panel_style_render().
+ */
+function panels_panels_panel_style_render($display, $style, $panel_id, $panes) {
+  switch ($style) {
+    case 'default':
+      return theme('panels_panel_default', $display, $panel_id, $panes);
+
+    case 'list':
+      return theme('panels_panel_list', $display, $panel_id, $panes);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Panels theming functions
 
 function theme_panels_dnd($content) {
@@ -1621,10 +1730,6 @@ function theme_panels_pane_collapsible($block) {
   $output .= '<h2 class="title">' . $block->subject . '</h2>';
   $output .= '<div class="content">' . filter_xss_admin($block->content) . '</div>';
   return $output;
-}
-
-function theme_panels_separator($display) {
-  return '<div class="panel-separator"></div>';
 }
 
 /**
@@ -1701,6 +1806,33 @@ EOF;
 }
 
 /**
+ * Panel style: default (panes separated by whitespace).
+ */
+function theme_panels_panel_default($display, $panel_id, $panes) {
+  $output = '';
+
+  foreach ($panes as $pane) {
+    if (isset($output)) {
+      $output .= '<div class="panel-separator"></div>';
+    }
+    $output .= theme('panels_pane', $pane, $display); 
+  }
+  return $output;
+}
+
+/**
+ * Panel style: list of panes (panes are items in an unordered list).
+ */
+function theme_panels_panel_list($display, $panel_id, $panes) {
+  $items = array();
+
+  foreach ($panes as $pane_id => $pane) {
+    $items[] = theme('panels_pane', $pane, $display);
+  }
+  return theme('item_list', $items);
+}
+
+/**
  * Helper function for autocompletion of node titles.
  * This is mostly stolen from clipper.
  */
@@ -1752,4 +1884,36 @@ function panels_title_sort($a, $b) {
     }
   }
   return ($a['weight'] < $b['weight']) ? -1 : 1;
+}
+
+/**
+ * For PHP 4 compatibility. The array_intersect_key is used in the
+ * panels_render_display function.
+ *
+ * Borrowed from http://php.net/manual/en/function.array-intersect-key.php#74956.
+ */
+if (!function_exists('array_intersect_key')) {
+  function array_intersect_key($isec, $keys) {
+    $argc = func_num_args();
+    if ($argc > 2) {
+      for ($i = 1; !empty($isec) && $i < $argc; $i++) {
+        $arr = func_get_arg($i);
+        foreach (array_keys($isec) as $key) {
+          if (!isset($arr[$key])) {
+            unset($isec[$key]);
+          }
+        }
+      }
+      return $isec;
+    }
+    else {
+      $res = array();
+      foreach (array_keys($isec) as $key) {
+        if (isset($keys[$key])) {
+          $res[$key] = $isec[$key];
+        }
+      }
+      return $res;
+    }
+  }
 }
