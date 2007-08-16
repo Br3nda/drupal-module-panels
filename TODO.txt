@@ -10,7 +10,7 @@ ajax/js
     o Add permission checking to all the ajax functions
     o Break up panels_ajax into separate entry areas [mostly done]
     o ensure complete degradability
-    o Make sure the icons on the 'change layout' page are clickable
+    X Make sure the icons on the 'change layout' page are clickable
     X Loading animation for panels-modal
     X Make the titlebar outside of the overflow in the modal
     - Change show/hide to use AJAX. 
@@ -18,7 +18,7 @@ ajax/js
 
 modules
     X panels node
-    o mini-panel
+    X mini-panel
     o panels-profile
     o panels-dashboard-compat (upgrade all the old dashboard installs)
 
