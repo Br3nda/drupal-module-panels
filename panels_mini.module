@@ -451,3 +451,11 @@ function panels_mini_delete($panel_mini) {
   db_query("DELETE FROM {blocks} WHERE module = 'panels_mini' AND delta = %d", $panel_mini->pid);
   return panels_delete_display($panel_mini->did);
 }
+
+/**
+ * Provide panels mini with its own category
+ */
+function panels_mini_panels_block_info($module, $delta, &$info) {
+  $info['icon'] = 'icon_contrib_block.png';
+  $info['category'] = array(t('Mini panels'), -8);
+}
