@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.22 2007/07/23 16:15:58 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.23 2007/08/16 05:02:46 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -387,6 +387,7 @@ function panels_page_edit($panel_page) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
+  drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   return drupal_get_form('panels_page_edit_form', $panel_page);
 }
 
@@ -681,6 +682,7 @@ function panels_page_edit_layout($panel_page) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
+  drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->pid/edit/layout");
 }
 
@@ -691,6 +693,7 @@ function panels_page_edit_layout_settings($panel_page) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
+  drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   return panels_edit_layout_settings($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->pid/edit/settings");
 }
 
@@ -707,6 +710,7 @@ function panels_page_edit_content($panel_page) {
   // Print this with theme('page') so that blocks are disabled while editing a display.
   // This is important because negative margins in common block layouts (i.e, Garland)
   // messes up the drag & drop.
+  drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   print theme('page', panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->pid/edit/content", $content_types), FALSE);
 }
 
