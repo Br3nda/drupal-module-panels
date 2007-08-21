@@ -1,5 +1,5 @@
 <?php
-// $Id $
+// $Id: panels_mini.module,v 1.1.2.3 2007/08/21 23:40:29 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
