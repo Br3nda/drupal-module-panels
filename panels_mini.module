@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.3 2007/08/21 23:40:29 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.4 2007/08/23 19:47:47 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -299,7 +299,7 @@ function panels_mini_edit_form($panel_mini) {
 function panels_mini_edit_form_submit($form_id, $form_values) {
   $panel_mini = $form_values['panel_mini'];
   $panel_mini->title  = $form_values['title'];
-  $panel_mini->display->panel_settings = serialize($form_values['panel_settings']);
+  $panel_mini->display->panel_settings = $form_values['panel_settings'];
 
   if ($panel_mini->pid == 'new') {
     panels_mini_save($panel_mini);

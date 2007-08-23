@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.23 2007/08/16 05:02:46 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.24 2007/08/23 19:47:47 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -50,10 +50,18 @@ function panels_page_menu($may_cache) {
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
+      'path' => 'admin/build/panel-page/import',
+      'title' => t('Import'),
+      'access' => $access,    
+      'callback' => 'panels_page_import_page',
+      'type' => MENU_LOCAL_TASK,
+    );
+    $items[] = array(
       'path' => 'admin/build/panel-page/settings',
       'title' => t('Settings'),
       'access' => $access,    
       'callback' => 'panels_page_settings',
+      'weight' => 5,
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
@@ -151,6 +159,15 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
     'access' => $access,    
     'callback' => 'panels_page_edit_content',
     'callback arguments' => array($page->pid),
+    'weight' => -1,
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items[] = array(
+    'path' => $base . '/export',
+    'title' => t('Export'),
+    'access' => $access,    
+    'callback' => 'drupal_get_form',
+    'callback arguments' => array('panels_page_edit_export', $page->pid),
     'weight' => -1,
     'type' => MENU_LOCAL_TASK,
   );
@@ -469,6 +486,14 @@ function panels_page_edit_form($panel_page) {
     '#value' => $content,
   );
 
+  $form['left']['info']['name'] = array(
+    '#type' => 'textfield',
+    '#size' => 35,
+    '#default_value' => $panel_page->name,
+    '#title' => t('Panel name'),
+    '#description' => t('A unique name used to identify this panel page internally. It must be only be alpha characters and underscores. No spaces, numbers or uppercase characters.'),
+  );
+
   $form['left']['info']['title'] = array(
     '#type' => 'textfield',
     '#size' => 35,
@@ -626,6 +651,14 @@ function panels_page_edit_form($panel_page) {
  * Validate a panel page edit form
  */
 function panels_page_edit_form_validate($form_id, $form_values, $form) {
+  // Test uniqueness of name:
+  $query = "SELECT pid FROM {panels_page} WHERE name = '%s'";
+  if (!empty($form_values['pid']) && is_numeric($form_values['pid'])) {
+    $query .= " AND pid != $form_values[pid]";
+  }
+  if (db_result(db_query($query, $form_values['name']))) {
+    form_error($form['left']['info']['name'], t('Panel name must be unique.'));
+  }
   if (!$form_values['path']) {
     form_error($form['left']['info']['path'], t('Path is required.'));
   }
@@ -644,6 +677,7 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
 
   $panel_page->title  = $form_values['title'];
+  $panel_page->name  = $form_values['name'];
   $panel_page->css_id = $form_values['css_id'];
   $panel_page->css = $form_values['css'];
   $panel_page->no_blocks = $form_values['no_blocks'];
@@ -660,12 +694,13 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   $panel_page->access = array_keys(array_filter($form_values['access']));
 
   if ($panel_page->pid == 'new') {
+    unset($_SESSION['pp_import']);
     panels_page_save($panel_page);
     $GLOBALS['form_values']['pid'] = $panel_page->pid;
     $layout = panels_get_layout($panel_page->display->layout);
 
     if ($layout['settings form']) {
-      return "admin/build/panel-page/$panel_page->pid/edit/settings";
+      return "admin/build/panel-page/$panel_page->pid/edit/settings/next";
     }
     return "admin/build/panel-page/$panel_page->pid/edit/content";
   }
@@ -689,12 +724,21 @@ function panels_page_edit_layout($panel_page) {
 /**
  * Pass through to the panels layout settings editor.
  */
-function panels_page_edit_layout_settings($panel_page) {
+function panels_page_edit_layout_settings($panel_page, $next = NULL) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
-  return panels_edit_layout_settings($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->pid/edit/settings");
+  if (empty($next)) {
+    $button = t('Save');
+    $dest = "admin/build/panel-page/$panel_page->pid/edit/settings";
+  }
+  else {
+    $button = t('Next');
+    $dest = "admin/build/panel-page/$panel_page->pid/edit/content";
+  }
+
+  return panels_edit_layout_settings($panel_page->display, $button, $dest);
 }
 
 /**
@@ -714,6 +758,79 @@ function panels_page_edit_content($panel_page) {
   print theme('page', panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->pid/edit/content", $content_types), FALSE);
 }
 
+/**
+ * Page callback to export a panel page to PHP code.
+ */
+function panels_page_edit_export($panel_page) {
+  if (!is_object($panel_page)) {
+    $panel_page = panels_page_load($panel_page);
+  }
+  drupal_set_title(check_plain($panel_page->title));
+  $code = panels_page_export($panel_page);
+
+  $lines = substr_count($code, "\n");
+  $form['code'] = array(
+    '#type' => 'textarea',
+    '#title' => $panel_page->title,
+    '#default_value' => $code,
+    '#rows' => $lines);
+  return $form;
+}
+
+/*
+ * Page callback to import a panel page from PHP code.
+ */
+function panels_page_import_page() {
+  if ($_POST['form_id'] == 'panels_page_edit_form') {
+    $panel_page = $_SESSION['pp_import'];
+    drupal_set_message($panel_page->pid);
+    drupal_set_title(t('Import panel page "@s"', array('@s' => $panel_page->title)));
+    return panels_page_edit($panel_page);
+  }
+
+  return drupal_get_form('panels_page_import_form');
+}
+
+/*
+ * Form to for the panel page import
+ */
+function panels_page_import_form() {
+  $form['panel_page'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Panel page code'),
+    '#cols' => 60,
+    '#rows' => 6,
+    '#description' => t('Cut and paste the results of an Export Panel Page here.'),
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t("Submit"),
+  );
+
+  $form['#redirect'] = NULL;
+  return $form;
+}
+
+/*
+ * Handle the submit button on importing a panel page.
+ */
+function panels_page_import_form_submit($formid, $form) {
+  ob_start();
+  eval($form['panel_page']);
+  ob_end_clean();
+
+  if (isset($page)) {
+    drupal_set_title(t('Import panel page "@s"', array('@s' => $page->title)));
+    $_SESSION['pp_import'] = $page;
+    $output = drupal_get_form('panels_page_edit_form', $page);
+    print theme('page', $output);
+    exit;
+  }
+  else {
+    drupal_set_message(t('Unable to get a panel page out of that.'));
+  }
+}
 // ---------------------------------------------------------------------------
 // view panels page
 
@@ -773,105 +890,72 @@ function panels_page_load($pid) {
   return $cache[$pid];
 }
 
+function panels_page_fields() {
+  return array(
+    "name" => "'%s'",
+    "title" => "'%s'",
+    "access" => "'%s'",
+    "path" => "'%s'",
+    "css_id" => "'%s'",
+    "css" => "'%s'",
+    "no_blocks" => "%d",
+    "menu" => "%d",
+    "menu_tab" => "%d",
+    "menu_tab_weight" => "%d",
+    "menu_title" => "'%s'",
+    "menu_tab_default" => "%d",
+    "menu_tab_default_parent_type" => "'%s'",
+    "menu_parent_title" => "'%s'",
+    "menu_parent_tab_weight" => "%d",
+  );
+}
 /**
  * Save a panel page. 
  */
-function panels_page_save(&$panel_page) {
+function panels_page_save($panel_page) {
+  // Save the display.
   $display = panels_save_display($panel_page->display);
+
+  // serialize the access string.
   $panel_page->access = implode(', ', $panel_page->access);
+  
+  // Create strings for our query from the list of fields.
+  $fields = panels_page_fields();
+  foreach ($fields as $field => $value) {
+    if (isset($panel_page->$field)) {
+      $f[] = $field;
+      $q[] = $value;
+      $v[] = $panel_page->$field;
+    }
+  }
 
   if ($panel_page->pid && $panel_page->pid != 'new') {
-    db_query(
-      "UPDATE {panels_page} SET " .
-      "title = '%s', " .
-      "access = '%s', " .
-      "path = '%s', " .
-      "css_id = '%s', " .
-      "css = '%s', " .
-      "no_blocks = %d, " .
-      "menu = %d, " .
-      "menu_tab = %d, " .
-      "menu_tab_weight = %d, " .
-      "menu_title = '%s', " .
-      "menu_tab_default = %d, " .
-      "menu_tab_default_parent_type = '%s', " .
-      "menu_parent_title = '%s', " .
-      "menu_parent_tab_weight = %d " .
-      "WHERE pid = %d", 
-        $panel_page->title, 
-        $panel_page->access, 
-        $panel_page->path, 
-        $panel_page->css_id, 
-        $panel_page->css, 
-        $panel_page->no_blocks, 
-        $panel_page->menu,
-        $panel_page->menu_tab,
-        $panel_page->menu_tab_weight,
-        $panel_page->menu_title,
-        $panel_page->menu_tab_default,
-        $panel_page->menu_tab_default_parent_type,
-        $panel_page->menu_parent_title,
-        $panel_page->menu_parent_tab_weight,
-      $panel_page->pid
-    );
+    if (empty($panel_page->name)) {
+      $panel_page->name = 'panel_page_' . $panel_page->pid;
+    }
+    $query = '';
+    foreach ($f as $id => $field) {
+      if ($query) {
+        $query .= ', ';
+      }
+      $query .= "$f = " . $q[$id];
+    }
+
+    $v[] = $panel_page->pid;
+    db_query("UPDATE {panels_page} SET $query WHERE pid = %d", $v);
   }
   else {
     $panel_page->pid = db_next_id("{panels_page}_pid");
+    // Tack our pid and did onto the query. These aren't listed as 'fields' because
+    // they can't be updated; once set they are permanent.
+    $v[] = $panel_page->pid;
+    $v[] = $display->did;
+
+    if (empty($panel_page->name)) {
+      $panel_page->name = 'panel_page_' . $panel_page->pid;
+    }
     // Yes, this is kind of long but it's a lot easier to match up values.
-    db_query(
-      "INSERT INTO {panels_page} ( " .
-        "pid, " .
-        "title, " .
-        "access, " .
-        "path, " .
-        "css_id, " .
-        "css, " .
-        "no_blocks, " .
-        "menu, " .
-        "menu_tab, " .
-        "menu_tab_weight, " .
-        "menu_title, " .
-        "menu_tab_default, " .
-        "menu_tab_default_parent_type, " .
-        "menu_parent_title, " .
-        "menu_parent_tab_weight, " .
-        "did " .
-      ") " .
-      "VALUES (" .
-        "%d, " .
-        "'%s', " .
-        "'%s', " .
-        "'%s', " .
-        "'%s', " .
-        "'%s', " .
-        "%d, " .
-        "%d, " .
-        "%d, " .
-        "%d, " .
-        "'%s', " .
-        "%d, " .
-        "'%s', " .
-        "'%s', " .
-        "%d, " .
-        "%d " .
-      ")",
-        $panel_page->pid, 
-        $panel_page->title, 
-        $panel_page->access, 
-        $panel_page->path, 
-        $panel_page->css_id, 
-        $panel_page->css, 
-        $panel_page->no_blocks, 
-        $panel_page->menu,
-        $panel_page->menu_tab,
-        $panel_page->menu_tab_weight,
-        $panel_page->menu_title,
-        $panel_page->menu_tab_default,
-        $panel_page->menu_tab_default_parent_type,
-        $panel_page->menu_parent_title,
-        $panel_page->menu_parent_tab_weight,
-        $display->did
-    );
+    db_query("INSERT INTO {panels_page} ( " . implode(', ', $f) . ", pid, did) VALUES (" . implode(', ', $q) . ", %d, %d)", $v);
   }
 
   menu_rebuild();
@@ -886,4 +970,19 @@ function panels_page_delete($panel_page) {
   menu_rebuild();
   return panels_delete_display($panel_page->did);
 }
+
+function panels_page_export($panel_page) {
+  $output = '';
+  $fields = panels_page_fields();
+  $output .= '$page = new stdClass()' . ";\n";
+  $output .= '$page->pid = \'new\'' . ";\n";
+  foreach ($fields as $field => $q) {
+    $output .= '  $page->' . $field . ' = ' . var_export($panel_page->$field, TRUE) . ";\n";  
+  }
+  $output .= panels_export_display($panel_page->display);
+  $output .= '$page->display = $display' . ";\n";
+
+  return $output;
+}
+
 

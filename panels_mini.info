@@ -1,4 +1,4 @@
-; $Id $
+; $Id: panels_mini.info,v 1.1.2.2 2007/08/23 19:47:47 merlinofchaos Exp $
 name = Mini panels
 description = Create mini panels that can be used as blocks.
 package = "Panels"

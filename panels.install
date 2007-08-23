@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.12 2007/08/16 04:52:33 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.13 2007/08/23 19:47:47 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -13,6 +13,7 @@ function panels_install() {
       db_query(<<<EOT
         CREATE TABLE {panels_page} (
           pid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
+          name varchar(255) UNIQUE,
           did int(10),
           title varchar(128),
           access varchar(128),
@@ -37,6 +38,7 @@ EOT
       db_query(<<<EOT
         CREATE TABLE {panels_display} (
           did INT(10) NOT NULL DEFAULT 0 PRIMARY KEY,
+          name varchar(255) UNIQUE,
           layout VARCHAR(32),
           layout_settings longtext,
           panel_settings longtext
@@ -57,6 +59,9 @@ EOT
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
+  }
+  if (!module_exists('panels_page')) {
+    drupal_set_message(t('It is recommended that you also enable the Panels page module.'));
   }
 }
 
@@ -136,6 +141,7 @@ function panels_update_1001() {
 
 // Create a field for the layout settings
 function panels_update_1002() {
+  $ret = array();
   $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN layout_settings longtext");
   $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN access varchar(128) AFTER type");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN css longtext AFTER css_id");
@@ -144,6 +150,20 @@ function panels_update_1002() {
 
 // Create a field for the panel settings.
 function panels_update_1003() {
+  $ret = array();
   $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN panel_settings longtext");
   return $ret;
 }
+
+// Create a field for the panel settings.
+// Renumbering to proper numbering scheme.
+function panels_update_5204() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN name varchar(255) UNIQUE");
+  $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN name varchar(255) UNIQUE");
+  // Give all our panels a name.
+  $ret[] = update_sql("UPDATE {panels_page} SET name = CONCAT('display_', pid)");
+  $ret[] = update_sql("UPDATE {panels_display} SET name = CONCAT('display_', did)");
+  return $ret;
+}
+

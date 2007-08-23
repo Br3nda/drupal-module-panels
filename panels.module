@@ -1,11 +1,20 @@
 <?php
-// $Id: panels.module,v 1.10.4.34 2007/08/16 04:52:33 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.35 2007/08/23 19:47:47 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
  */
 function panels_help($section = NULL) {
   
+}
+
+/**
+ * Returns the API version of Panels. This didn't exist in 1.
+ *
+ * @return An array with the major and minor versions
+ */
+function panels_api_version() {
+  return 2;
 }
 
 /**
@@ -300,7 +309,7 @@ function theme_panels_edit_display($form) {
     $content[$panel_id] = theme('panels_panel_dnd', $content[$panel_id], $panel_id, $title, drupal_render($form['panels'][$panel_id]['add']));
   }
   $output .= drupal_render($form);
-  $output .= theme('panels_dnd', panels_render_layout($layout, $content, '', unserialize($display->layout_settings)));
+  $output .= theme('panels_dnd', panels_render_layout($layout, $content, '', $display->layout_settings));
   $output .= $save_buttons;
   return $output;
 }
@@ -488,7 +497,7 @@ function panels_edit_layout_settings($display, $finish, $destination) {
 function panels_edit_layout_settings_form($display, $finish, $destination) {
   $layout = panels_get_layout($display->layout);
   if (!empty($layout['settings form']) && function_exists($layout['settings form'])) {
-    $form['layout_settings'] = $layout['settings form']($display, $layout, unserialize($display->layout_settings));
+    $form['layout_settings'] = $layout['settings form']($display, $layout, $display->layout_settings);
   }
 
   $form['layout_settings']['#tree'] = TRUE;
@@ -513,7 +522,7 @@ function panels_edit_layout_settings_form_validate($form_id, $form_values, $form
   list($display, $finish, $destination) = $form_values['variables'];
   $layout = $form_values['layout'];
   if (!empty($layout['settings validate']) && function_exists($layout['settings validate'])) {
-    $layout['settings validate']($form_values['layout_settings'], $form['layout_settings'], $display, $layout, unserialize($display->layout_settings));
+    $layout['settings validate']($form_values['layout_settings'], $form['layout_settings'], $display, $layout, $display->layout_settings);
   }
 }
 
@@ -522,11 +531,11 @@ function panels_edit_layout_settings_form_submit($form_id, $form_values) {
 
   $layout = $form_values['layout'];
   if (!empty($layout['settings submit']) && function_exists($layout['settings submit'])) {
-    $layout['settings submit']($form_values['layout_settings'], $display, $layout, unserialize($display->layout_settings));
+    $layout['settings submit']($form_values['layout_settings'], $display, $layout, $display->layout_settings);
   }
   
   if ($form_values['op'] == $finish) {
-    $display->layout_settings = serialize($form_values['layout_settings']);
+    $display->layout_settings = $form_values['layout_settings'];
     panels_save_display($display);
     drupal_set_message("Your layout settings have been saved.");
     return $destination;
@@ -766,7 +775,6 @@ function panels_ct_get_types($type) {
  */
 function panels_get_available_content_types($context = NULL, $has_content = FALSE) {
   $content_types = panels_get_content_types();
-//  uasort($content_types, 'panels_title_sort');
   $available = array();
 
   foreach ($content_types as $id => $type) {
@@ -789,7 +797,7 @@ function panels_get_available_content_types($context = NULL, $has_content = FALS
 
 function panels_get_panels($layout, $display) {
   if (!empty($layout['panels function']) && function_exists($layout['panels function'])) {
-    return $layout['panels function']($display, unserialize($display->layout_settings));
+    return $layout['panels function']($display, $display->layout_settings);
   }
   if (!empty($layout['panels'])) {
     return $layout['panels'];
@@ -1333,6 +1341,21 @@ function panels_load_display($did, $context = NULL) {
   if (!$display) {
     return NULL;
   }
+
+  // unserialize important bits:
+  if (!empty($display->layout_settings)) {
+    $display->layout_settings = unserialize($display->layout_settings);
+  }
+  else {
+    $display->layout_settings = array();
+  }
+  if (!empty($display->panel_settings)) {
+    $display->panel_settings = unserialize($display->panel_settings);
+  }
+  else {
+    $display->panel_settings = array();
+  }
+
   $result = db_query("SELECT * FROM {panels_pane} WHERE did = %d ORDER BY panel, position", $did);
   $display->panels = $display->content = array();
   while ($pane = db_fetch_object($result)) {
@@ -1349,12 +1372,12 @@ function panels_load_display($did, $context = NULL) {
  */
 function panels_save_display(&$display) {
   if ($display->did && $display->did != 'new') {
-    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s' WHERE did = %d", $display->layout, $display->layout_settings, $display->panel_settings, $display->did);
+    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s' WHERE did = %d", $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), $display->did);
     db_query("DELETE FROM {panels_pane} WHERE did = %d", $display->did);
   }
   else {
     $display->did = db_next_id("{panels_display}_id");
-    db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings) VALUES (%d, '%s', '%s', '%s')", $display->did, $display->layout, $display->layout_settings, $display->panel_settings);
+    db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings) VALUES (%d, '%s', '%s', '%s')", $display->did, $display->layout, serialize($display->layout_settings), serialize($display->panel_settings));
   }
 
   // update all the panes
@@ -1385,6 +1408,40 @@ function panels_save_display(&$display) {
 function panels_delete_display($display) {
   db_query("DELETE FROM {panels_display} WHERE did = %d", $display->did);
   db_query("DELETE FROM {panels_pane} WHERE did = %d", $display->did);
+}
+
+/**
+ * Export a display into code
+ */
+function panels_export_display($display) {
+  $output = '';
+  $output .= '$display = new stdClass()' . ";\n";
+  $output .= '$display->did = \'new\'' . ";\n";
+  $fields = array('name', 'layout', 'layout_settings', 'panel_settings');
+  foreach ($fields as $field) {
+    $output .= '$display->' . $field . ' = ' . var_export($display->$field, TRUE) . ";\n";
+  }
+
+  $output .= '$display->content = array()' . ";\n";
+  $output .= '$display->panels = array()' . ";\n";
+  $panels = array();
+
+  $counter = 0;
+  $counters = array();
+  foreach ($display->content as $pane) {
+    $id = 'new-' . ++$counter;
+    $output .= '$pane = new stdClass()'  . ";\n";
+    $fields = array('panel', 'type', 'access', 'configuration');
+    foreach ($fields as $field) {
+      $output .= '  $pane->' . $field . ' = ' . var_export($pane->$field, TRUE) . ";\n";
+    }
+    $output .= '$display->content[\'' . $id . '\'] = $pane' . ";\n";
+    if (!isset($counters[$pane->panel])) {
+      $counters[$pane->panel] = 0;
+    }
+    $output .= '$display->panels[\'' . $pane->panel . '\'][' . $counters[$pane->panel]++ .'] = \'' . $id . "';\n";    
+  }
+  return $output;
 }
 
 /**
@@ -1481,7 +1538,7 @@ function panels_render_display(&$display) {
 
   panels_sanitize_display($display);
   
-  return panels_render_layout($layout, $display, $display->css_id, unserialize($display->layout_settings));
+  return panels_render_layout($layout, $display, $display->css_id, $display->layout_settings);
 }
 
 /**
@@ -1497,8 +1554,12 @@ function panels_render_display(&$display) {
  *   The rendered HTML for a panel.
  */
 function panels_render_panel($panes_in_panel, $display) {
-  $panel_settings = unserialize($display->panel_settings);
-  $style = (is_array($panel_settings)) ? panels_get_panel_style($panel_settings['style']) : array('name' => 'default', 'module' => 'panels');
+  if (!empty($display->panel_settings)) {
+    $style = panels_get_panel_style($display->panel_settings['style']);
+  }
+  else {
+    $style = array('name' => 'default', 'module' => 'panels');
+  };
 
   // Store all panes in an array, sorted by their position in the panel.
   foreach ($panes_in_panel as $pane_id => $pane) {
@@ -1778,7 +1839,6 @@ function theme_panels_layout_icon($id, $image, $title = NULL) {
  * everything in the form theme is inside the form.
  */
 function theme_panels_hidden() {
-  // TODO: Move this to a theme function.
   $close_text = t('Close Window');
   $close_image = theme('image', panels_get_path('images/close.gif'), t('Close window'), t('Close window'));
   $throbber_image = theme('image', panels_get_path('images/throbber.gif'), t('Loading...'), t('Loading'));
@@ -1854,36 +1914,6 @@ function panels_node_autocomplete($string) {
     print drupal_to_js($matches);
     exit();
   }
-}
-
-/**
- * function for uasort to do title sorting.
- */
-function panels_title_sort($a, $b) {
-  if (!isset($a['weight'])) {
-    $a['weight'] = 0;
-  }
-  if (!isset($b['weight'])) {
-    $b['weight'] = 0;
-  }
-  if (!isset($a['title'])) {
-    $a['title'] = NULL;
-  }
-  if (!isset($b['title'])) {
-    $b['title'] = NULL;
-  }
-  if ($a['weight'] == $b['weight']) {
-    if ($a['title'] < $b['title']) {
-      return -1;
-    }
-    else if (drupal_strtolower($a['title']) > drupal_strtolower($b['title'])) {
-      return 1;
-    }
-    else {
-      return 0;
-    }
-  }
-  return ($a['weight'] < $b['weight']) ? -1 : 1;
 }
 
 /**
