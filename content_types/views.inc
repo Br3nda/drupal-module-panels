@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.12 2007/08/24 02:42:52 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.13 2007/08/24 03:53:27 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -50,9 +50,17 @@ function panels_content_views($conf, $panel_args) {
 
     $block->module = 'views';
     $block->delta = $view->name;
-    $view_type = $conf['type'] == 'embed' ? 'page' : $conf['type'];
+
     $title = $conf['override_title'] ? $conf['override_title_text'] : views_get_title($view, $view_type);
-    $block->subject = filter_xss_admin($title);
+    if (!empty($conf['link_to_view'])) {
+      $title = l($title, views_get_url($view, $args));
+    }
+    else {
+      $title = filter_xss_admin($title);
+    }
+    $block->subject = $title;
+
+    $view_type = $conf['type'] == 'embed' ? 'page' : $conf['type'];
     $pager_id = empty($conf['use_pager']) ? 0 : intval($conf['pager_id']);
     $block->content = views_build_view($conf['type'], $view, $args, $pager_id, intval($conf['nodes_per_page']));
   }
@@ -154,6 +162,13 @@ function panels_admin_edit_views($conf) {
     '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
   );
   
+  $form['link_to_view'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $conf['link_to_view'],
+    '#title' => t('Link title to view'),
+    '#description' => t('If checked, the title will be a link to the view.'),
+  );
+
   $form['pager_aligner_start'] = array(
     '#value' => '<div class="option-text-aligner">',
   );
