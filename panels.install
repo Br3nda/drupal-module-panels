@@ -1,11 +1,11 @@
 <?php
-// $Id: panels.install,v 1.1.6.13 2007/08/23 19:47:47 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.14 2007/08/24 02:37:08 merlinofchaos Exp $
 
 /**
  * Install the panels tables
  */
 function panels_install() {
-  switch ($GLOBALS['dbtype']) {
+  switch ($GLOBALS['db_type']) {
     case 'pgsql':
     case 'mysql':
     case 'mysqli':
