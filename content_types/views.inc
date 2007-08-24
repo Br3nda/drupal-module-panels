@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.14 2007/08/24 04:08:57 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.15 2007/08/24 04:15:32 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -37,7 +37,11 @@ function panels_content_views($conf, $panel_args) {
       $args = str_replace("%$id", $arg, $args);
     }
 
-    $args = preg_replace(',/?%\d,', '', $args);
+    foreach ($panel_args as $id => $arg) {
+      $args = str_replace("@$id", $arg, $args);
+    }
+
+    $args = preg_replace('/?(%\d|@\d),', '', $args);
     $args = $args ? explode('/', $args) : array();
 
     if ($conf['panel_args'] && is_array($panel_args)) {
@@ -201,7 +205,7 @@ function panels_admin_edit_views($conf) {
     '#type' => 'checkbox',
     '#title' => t('Send arguments'),
     '#default_value' => $conf['panel_args'],
-    '#description' => t('Select this to send URL arguments from the the panel to the view.'),
+    '#description' => t('Select this to send all arguments from the panel directly to the view. If checked, the panel arguments will precede any additional arguments passed in through the Arguments field below.'),
   );
 
   $form['args'] = array(
@@ -209,7 +213,7 @@ function panels_admin_edit_views($conf) {
     '#default_value' => $conf['args'],
     '#title' => t('Arguments'),
     '#size' => 30,
-    '#description' => t('Additional arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You may use %0, %1, ..., %N to grab arguments from the URL.'),
+    '#description' => t('Additional arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You may use %0, %1, ..., %N to grab arguments from the URL. Or use @0, @1, @2, ..., @N to use arguments passed into the panel.'),
   );
 
   $form['url'] = array(
