@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.2.6.10 2007/07/09 23:45:59 merlinofchaos Exp $
+// $Id: node.inc,v 1.2.6.11 2007/08/24 02:52:11 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -23,8 +23,18 @@ function panels_node_panels_content_types() {
  * Output function for the 'node' content type. Outputs a node
  * based on the module and delta supplied in the configuration.
  */
-function panels_content_node($conf) {
-  $node = node_load($conf['nid']);
+function panels_content_node($conf, $panel_args) {
+
+  $nid = $conf['nid'];
+  foreach (explode('/', $_GET['q']) as $id => $arg) {
+    $nid = str_replace("%$id", $arg, $nid);
+  }
+
+  foreach ($panel_args as $id => $arg) {
+    $nid = str_replace("@$id", $arg, $nid);
+  }
+
+  $node = node_load($nid);
   if (!node_access('view', $node)) {
     return;
   }
@@ -67,6 +77,7 @@ function panels_admin_add_node($id) {
     '#prefix' => '<div class="no-float">',
     '#suffix' => '</div>',
     '#title' => t('Enter the title or NID of a post'),
+    '#description' => t('To use a NID from the URL, you may use %0, %1, ..., %N to get URL arguments. Or use @0, @1, @2, ..., @N to use arguments passed into the panel.'),
     '#type' => 'textfield',
     '#maxlength' => 512,
     '#autocomplete_path' => 'panels/node/autocomplete',
@@ -136,7 +147,8 @@ function panels_admin_validate_node($form, $form_values) {
       form_set_value($form['nid'], $node->nid);
     }
   }
-  if (!$node) {
+
+  if (!($node || preg_match('/^[@%]\d+$/', $nid))) {
     form_error($form['nid'], t('Invalid node'));
   }
 }
