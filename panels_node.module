@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.3 2007/07/23 16:15:58 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.4 2007/08/24 01:58:09 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -22,8 +22,9 @@ function panels_node_menu($may_cache) {
       'access' => user_access('create panel-nodes'),
     );
     $items[] = array(
-      'path' => 'admin/settings/panel-node',
-      'title' => t('Panel-nodes'),
+      'path' => 'admin/panels/panel-node',
+      'title' => t('Panel nodes settings'),
+      'description' => t('Configure panel node content availability.'),
       'access' => user_access('administer panel-nodes'),    
       'callback' => 'panels_node_settings',
     );

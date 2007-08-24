@@ -1,15 +1,15 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.25 2007/08/24 01:17:13 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.26 2007/08/24 01:58:09 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
  */
 function panels_page_help($section = '') {
   switch ($section) {
-    case 'admin/build/panel-page':
-    case 'admin/build/panel-page/list':
+    case 'admin/panels/panel-page':
+    case 'admin/panels/panel-page/list':
       return t('<p>You may peruse a list of your current panels layouts and edit them, or click add to create a new page.</p>');
-    case 'admin/build/panel-page/add':
+    case 'admin/panels/panel-page/add':
       return t('<p>Choose a layout for your new page from the list below.</p>');
   }
 }
@@ -28,14 +28,14 @@ function panels_page_menu($may_cache) {
   if ($may_cache) {
     $access = user_access('create panel-pages');
     $items[] = array(
-      'path' => 'admin/build/panel-page',
+      'path' => 'admin/panels/panel-page',
       'title' => t('Panel pages'),
       'access' => $access,    
       'callback' => 'panels_page_list_page',
-      'description' => t('Create and administer panel-pages (complex layout pages with URLs)'),
+      'description' => t('Create and administer panel-pages (complex layout pages with URLs).'),
     );
     $items[] = array(
-      'path' => 'admin/build/panel-page/list',
+      'path' => 'admin/panels/panel-page/list',
       'title' => t('List'),
       'access' => $access,    
       'callback' => 'panels_page_list_page',
@@ -43,21 +43,21 @@ function panels_page_menu($may_cache) {
       'type' => MENU_DEFAULT_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panel-page/add',
+      'path' => 'admin/panels/panel-page/add',
       'title' => t('Add'),
       'access' => $access,    
       'callback' => 'panels_page_add_page',
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panel-page/import',
+      'path' => 'admin/panels/panel-page/import',
       'title' => t('Import'),
       'access' => $access,    
       'callback' => 'panels_page_import_page',
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panel-page/settings',
+      'path' => 'admin/panels/panel-page/settings',
       'title' => t('Settings'),
       'access' => $access,    
       'callback' => 'panels_page_settings',
@@ -65,14 +65,14 @@ function panels_page_menu($may_cache) {
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panel-page/add/layout',
+      'path' => 'admin/panels/panel-page/add/layout',
       'title' => t('Add'),
       'access' => $access,    
       'callback' => 'panels_page_add_layout_page',
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panel-page/disable',
+      'path' => 'admin/panels/panel-page/disable',
       'title' => t('Export'),
       'access' => $access,    
       'callback' => 'panels_page_disable',
@@ -80,7 +80,7 @@ function panels_page_menu($may_cache) {
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panel-page/enable',
+      'path' => 'admin/panels/panel-page/enable',
       'title' => t('Export'),
       'access' => $access,    
       'callback' => 'panels_page_enable',
@@ -93,7 +93,7 @@ function panels_page_menu($may_cache) {
       if (empty($panel_page->disabled)) {
         $panel_page->access = ($panel_page->access ? explode(', ', $panel_page->access) : array());
         panels_page_menu_items($items, $panel_page->path, $panel_page, FALSE);
-        panels_page_menu_items($items, 'admin/build/panel-page/' . $panel_page->name, $panel_page, TRUE);
+        panels_page_menu_items($items, 'admin/panels/panel-page/' . $panel_page->name, $panel_page, TRUE);
       }
     }
   }
@@ -344,18 +344,18 @@ function panels_page_list_page() {
   $layouts = panels_get_layouts();
   foreach (panels_page_load_all() as $panel_page) {
     $ops = array(
-      l(t('Edit'), "admin/build/panel-page/$panel_page->name/edit"),
-      l(t('Export'), "admin/build/panel-page/$panel_page->name/export"),
+      l(t('Edit'), "admin/panels/panel-page/$panel_page->name/edit"),
+      l(t('Export'), "admin/panels/panel-page/$panel_page->name/export"),
     );
     if ($panel_page->type != t('Default')) {
-      $ops[] = l(t('Delete'), "admin/build/panel-page/$panel_page->name/delete");
+      $ops[] = l(t('Delete'), "admin/panels/panel-page/$panel_page->name/delete");
     }
     else {
       if (empty($panel_page->disabled)) {
-        $ops[] = l(t('Disable'), "admin/build/panel-page/disable/$panel_page->name", NULL, drupal_get_destination());
+        $ops[] = l(t('Disable'), "admin/panels/panel-page/disable/$panel_page->name", NULL, drupal_get_destination());
       }
       else {
-        $ops[] = l(t('Enable'), "admin/build/panel-page/enable/$panel_page->name", NULL, drupal_get_destination());
+        $ops[] = l(t('Enable'), "admin/panels/panel-page/enable/$panel_page->name", NULL, drupal_get_destination());
       }
     }
 
@@ -420,7 +420,7 @@ function panels_page_delete_confirm($panel_page) {
   $form['did'] = array('#type' => 'value', '#value' => $panel_page->did);
   return confirm_form( $form,
     t('Are you sure you want to delete "@title"?', array('@title' => panels_page_get_title($panel_page))),
-    $_GET['destination'] ? $_GET['destination'] : 'admin/build/panel-page',
+    $_GET['destination'] ? $_GET['destination'] : 'admin/panels/panel-page',
     t('This action cannot be undone.'),
     t('Delete'), t('Cancel')
   );
@@ -433,7 +433,7 @@ function panels_page_delete_confirm_submit($formid, $form) {
   if ($form['confirm']) {
     panels_page_delete((object) $form);
     // TODO: Is this necessary or did we feed it the location already?
-    return 'admin/build/panel-page';
+    return 'admin/panels/panel-page';
   }
 }
 
@@ -766,9 +766,9 @@ function panels_page_edit_form_submit($form_id, $form_values) {
     $layout = panels_get_layout($panel_page->display->layout);
 
     if ($layout['settings form']) {
-      return "admin/build/panel-page/$panel_page->name/edit/settings/next";
+      return "admin/panels/panel-page/$panel_page->name/edit/settings/next";
     }
-    return "admin/build/panel-page/$panel_page->name/edit/content";
+    return "admin/panels/panel-page/$panel_page->name/edit/content";
   }
   else {
     drupal_set_message(t('Your changes have been saved.'));
@@ -792,7 +792,7 @@ function panels_page_edit_layout($panel_page) {
   }
 
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
-  return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->name/edit/layout");
+  return panels_edit_layout($panel_page->display, t('Save'), "admin/panels/panel-page/$panel_page->name/edit/layout");
 }
 
 /**
@@ -813,11 +813,11 @@ function panels_page_edit_layout_settings($panel_page, $next = NULL) {
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   if (empty($next)) {
     $button = t('Save');
-    $dest = "admin/build/panel-page/$panel_page->name/edit/settings";
+    $dest = "admin/panels/panel-page/$panel_page->name/edit/settings";
   }
   else {
     $button = t('Next');
-    $dest = "admin/build/panel-page/$panel_page->name/edit/content";
+    $dest = "admin/panels/panel-page/$panel_page->name/edit/content";
   }
 
   return panels_edit_layout_settings($panel_page->display, $button, $dest);
@@ -846,7 +846,7 @@ function panels_page_edit_content($panel_page) {
   // This is important because negative margins in common block layouts (i.e, Garland)
   // messes up the drag & drop.
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
-  print theme('page', panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->name/edit/content", $content_types), FALSE);
+  print theme('page', panels_edit($panel_page->display, "admin/panels/panel-page/$panel_page->name/edit/content", $content_types), FALSE);
 }
 
 /**

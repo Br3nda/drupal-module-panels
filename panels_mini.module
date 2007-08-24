@@ -1,15 +1,15 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.4 2007/08/23 19:47:47 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.5 2007/08/24 01:58:09 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
  */
 function panels_mini_help($section = '') {
   switch ($section) {
-    case 'admin/build/panel-mini':
-    case 'admin/build/panel-mini/list':
+    case 'admin/panels/panel-mini':
+    case 'admin/panels/panel-mini/list':
       return t('<p>You can edit existing mini panels, or click add to create a new one.</p>');
-    case 'admin/build/panel-mini/add':
+    case 'admin/panels/panel-mini/add':
       return t('<p>Mini panels are the small variants of panel pages. Instead of pages, they define blocks.</p>');
   }
 }
@@ -29,14 +29,14 @@ function panels_mini_menu($may_cache) {
     $access = user_access('create mini panels');
     
     $items[] = array(
-      'path' => 'admin/build/panel-mini',
+      'path' => 'admin/panels/panel-mini',
       'title' => t('Mini panels'),
       'access' => $access,    
       'callback' => 'panels_mini_list_page',
-      'description' => t('Create and administer mini panels (panels exposed as blocks)'),
+      'description' => t('Create and administer mini panels (panels exposed as blocks).'),
     );
     $items[] = array(
-      'path' => 'admin/build/panel-mini/list',
+      'path' => 'admin/panels/panel-mini/list',
       'title' => t('List'),
       'access' => $access,    
       'callback' => 'panels_mini_list_page',
@@ -44,14 +44,14 @@ function panels_mini_menu($may_cache) {
       'type' => MENU_DEFAULT_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panel-mini/add',
+      'path' => 'admin/panels/panel-mini/add',
       'title' => t('Add'),
       'access' => $access,
       'callback' => 'panels_mini_add_page',
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
-      'path' => 'admin/build/panel-mini/settings',
+      'path' => 'admin/panels/panel-mini/settings',
       'title' => t('Settings'),
       'access' => $access,    
       'callback' => 'panels_mini_settings',
@@ -61,7 +61,7 @@ function panels_mini_menu($may_cache) {
   else {
     $result = db_query("SELECT * FROM {panels_mini}");
     while ($panel_mini = db_fetch_object($result)) {
-      panels_mini_menu_items($items, "admin/build/panel-mini/$panel_mini->pid", $panel_mini);
+      panels_mini_menu_items($items, "admin/panels/panel-mini/$panel_mini->pid", $panel_mini);
     }
   }
   return $items;
@@ -163,8 +163,8 @@ function panels_mini_list_page() {
     $item = array();
     $item[] = check_plain($panel_mini->title);
     $item[] = implode(' | ', array(
-      l(t('Edit'), "admin/build/panel-mini/$panel_mini->pid/edit"),
-      l(t('Delete'), "admin/build/panel-mini/$panel_mini->pid/delete"),
+      l(t('Edit'), "admin/panels/panel-mini/$panel_mini->pid/edit"),
+      l(t('Delete'), "admin/panels/panel-mini/$panel_mini->pid/delete"),
     ));
     $items[] = $item;
   }
@@ -189,7 +189,7 @@ function panels_mini_delete_confirm($panel_mini) {
   $form['did'] = array('#type' => 'value', '#value' => $panel_mini->did);
   return confirm_form($form,
     t('Are you sure you want to delete the mini panel "@title"?', array('@title' => $panel_mini->title)),
-    $_GET['destination'] ? $_GET['destination'] : 'admin/build/panel-mini',
+    $_GET['destination'] ? $_GET['destination'] : 'admin/panels/panel-mini',
     t('This action cannot be undone.'),
     t('Delete'), t('Cancel')
   );
@@ -201,7 +201,7 @@ function panels_mini_delete_confirm($panel_mini) {
 function panels_mini_delete_confirm_submit($formid, $form) {
   if ($form['confirm']) {
     panels_mini_delete((object) $form);
-    return 'admin/build/panel-mini';
+    return 'admin/panels/panel-mini';
   }
 }
 
@@ -306,7 +306,7 @@ function panels_mini_edit_form_submit($form_id, $form_values) {
     // TODO: Why not use form_set_value()?
     $GLOBALS['form_values']['pid'] = $panel_mini->pid;
 
-    return "admin/build/panel-mini/$panel_mini->pid/edit/content";
+    return "admin/panels/panel-mini/$panel_mini->pid/edit/content";
   }
   else {
     drupal_set_message(t('Your changes have been saved.'));
@@ -328,7 +328,7 @@ function panels_mini_edit_content($panel_mini) {
   // This is important because negative margins in common block layouts (i.e, Garland)
   // messes up the drag & drop.
   drupal_set_title(check_plain($panel_mini->title));
-  print theme('page', panels_edit($panel_mini->display, "admin/build/panel-mini/$panel_mini->pid/edit/content", $content_types), FALSE);
+  print theme('page', panels_edit($panel_mini->display, "admin/panels/panel-mini/$panel_mini->pid/edit/content", $content_types), FALSE);
 }
 
 /**
@@ -339,7 +339,7 @@ function panels_mini_edit_layout($panel_mini) {
     $panel_mini = panels_mini_load($panel_mini);
   }
   drupal_set_title(check_plain($panel_mini->title));
-  return panels_edit_layout($panel_mini->display, t('Save'), "admin/build/panel-mini/$panel_mini->pid/edit/layout");
+  return panels_edit_layout($panel_mini->display, t('Save'), "admin/panels/panel-mini/$panel_mini->pid/edit/layout");
 }
 
 /**
@@ -350,7 +350,7 @@ function panels_mini_edit_layout_settings($panel_mini) {
     $panel_mini = panels_mini_load($panel_mini);
   }
   drupal_set_title(check_plain($panel_mini->title));
-  return panels_edit_layout_settings($panel_mini->display, t('Save'), "admin/build/panel-mini/$panel_mini->pid/edit/settings");
+  return panels_edit_layout_settings($panel_mini->display, t('Save'), "admin/panels/panel-mini/$panel_mini->pid/edit/settings");
 }
 
 // ---------------------------------------------------------------------------
