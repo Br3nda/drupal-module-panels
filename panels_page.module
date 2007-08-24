@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.26 2007/08/24 01:58:09 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.27 2007/08/24 04:40:21 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -646,8 +646,7 @@ function panels_page_edit_form($panel_page) {
     '#type' => 'textfield',
     '#title' => t('Tab Weight'),
     '#default_value' => $panel_page->menu_tab_weight,
-    '#width' => 10,
-    '#size' => 20,
+    '#size' => 5,
     '#description' => t('If this is a menu tab, select the weight; lower numbers will be further to the left.'),
   );
 
@@ -691,7 +690,7 @@ function panels_page_edit_form($panel_page) {
     '#type' => 'textfield',
     '#title' => t('Tab Weight'),
     '#default_value' => $panel_page->menu_parent_tab_weight,
-    '#width' => 10,
+    '#size' => 5,
     '#description' => t('If the parent menu item is a tab, select the weight; lower numbers will be further to the left.'),
   );
 

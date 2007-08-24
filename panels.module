@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.37 2007/08/24 01:58:09 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.38 2007/08/24 04:40:21 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -1805,9 +1805,11 @@ function theme_panels_pane_dnd($block, $id, $label, $left_buttons = NULL, $butto
 }
 
 function theme_panels_pane($block, $display) {
-  $output = '<div class="panel-pane">';
-  $output .= theme('block', $block);
-  $output .= '</div>';
+  if (!empty($block->content)) {
+    $output = '<div class="panel-pane">';
+    $output .= theme('block', $block);
+    $output .= '</div>';
+  }
   return $output;
 }
 
