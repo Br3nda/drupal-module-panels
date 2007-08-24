@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.11 2007/08/24 02:41:05 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.12 2007/08/24 02:42:52 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -37,7 +37,7 @@ function panels_content_views($conf, $panel_args) {
       $args = str_replace("%$id", $arg, $args);
     }
 
-    $args = preg_replace('/\\/%\d/', '', $args);
+    $args = preg_replace(',/?%\d,', '', $args);
     $args = $args ? explode('/', $args) : array();
 
     if ($conf['panel_args'] && is_array($panel_args)) {
