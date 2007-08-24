@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.27 2007/08/24 04:40:21 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.28 2007/08/24 18:58:00 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -25,6 +25,8 @@ function panels_page_perm() {
  * Implementation of hook_menu()
  */
 function panels_page_menu($may_cache) {
+  $items = array();
+  $panels = panels_page_load_all();
   if ($may_cache) {
     $access = user_access('create panel-pages');
     $items[] = array(
@@ -89,18 +91,56 @@ function panels_page_menu($may_cache) {
     );
 
     // Get all panels and, if enabled, create menu items.
-    foreach (panels_page_load_all() as $panel_page) {
+    foreach ($panels as $panel_page) {
       if (empty($panel_page->disabled)) {
-        $panel_page->access = ($panel_page->access ? explode(', ', $panel_page->access) : array());
-        panels_page_menu_items($items, $panel_page->path, $panel_page, FALSE);
+// TODO: Verify we don't need this anymore.
+//        $panel_page->access = ($panel_page->access ? explode(', ', $panel_page->access) : array());
+        // Only create menu items based on the path if it's not a variable path.
+        if (strpos($panel_page->path, '%') === FALSE) {
+          panels_page_menu_items($items, $panel_page->path, $panel_page, FALSE);  
+        }
         panels_page_menu_items($items, 'admin/panels/panel-page/' . $panel_page->name, $panel_page, TRUE);
+      }
+    }
+  }
+  else {
+    // Look for panels with variable arguments.
+    // Build an array of $urls because 'real' URLs will take precedence over
+    // argument filled URLs
+    $urls = array();
+    foreach ($panels as $panel_page) {
+      $url[$panel_page->path] = TRUE;
+    }
+
+    foreach ($panels as $panel_page) {
+      if (strpos($panel_page->path, '%') !== FALSE) {
+        $path = explode('/', $panel_page->path);
+        $match = TRUE;
+        foreach ($path as $id => $chunk) {
+          if ($chunk != '%' && $chunk != arg($id)) {
+            $match = FALSE;
+            break;
+          }
+        }
+        // It's a MATCH! Construct the URL
+        if ($match) {
+          $args = array();
+          foreach ($path as $id => $chunk) {
+            if ($chunk == '%') {       
+              // TODO: Here is where we can perform validation
+              $path[$id] = arg($id);
+              $args[] = arg($id);
+            }
+          }
+          panels_page_menu_items($items, implode('/', $path), $panel_page, FALSE, $args);  
+        }
       }
     }
   }
   return $items;
 }
 
-function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
+function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = array()) {
   $view_access = panels_page_access($page);
   $access = user_access('create panel-pages');
 
@@ -110,13 +150,13 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
       'title' => t('View'),
       'access' => $view_access,    
       'callback' => 'panels_page_view_page',
-      'callback arguments' => array($page->name),
+      'callback arguments' => array_merge(array($page->name), $args),
       'weight' => -10,
       'type' => MENU_CALLBACK,
     );
   }
   else {
-    _panels_page_create_menu_item($items, $page, $base, $view_access);
+    _panels_page_create_menu_item($items, $page, $base, $view_access, $args);
   }
 
   $items[] = array(
@@ -229,13 +269,12 @@ function panels_page_get_title($panel_page, $context = 'page', $default_title = 
 /**
  * Create a menu item for a panel page.
  */
-function _panels_page_create_menu_item(&$items, $panel_page, $path, $access, $local_task_type = MENU_NORMAL_ITEM, $args = array()) {
+function _panels_page_create_menu_item(&$items, $panel_page, $path, $access, $args = array()) {
   $title = filter_xss_admin(panels_page_get_title($panel_page, 'menu'));
   $type = _panels_page_menu_type($panel_page);
   if ($type == MENU_LOCAL_TASK || $type == MENU_DEFAULT_LOCAL_TASK) {
     $weight = $panel_page->menu_tab_weight;
   }
-
   $items[] = _panels_page_menu_item($path, $title, $panel_page, $args, $access, $type, $weight);
 
   if ($type == MENU_DEFAULT_LOCAL_TASK && dirname($path) && dirname($path) != '.') {
@@ -266,7 +305,7 @@ function _panels_page_menu_item($path, $title, $panel_page, $args, $access, $typ
   $retval = array('path' => $path,
     'title' => $title,
     'callback' => 'panels_page_view_page',
-    'callback arguments' => array($panel_page->name),
+    'callback arguments' => array_merge(array($panel_page->name), $args),
     'access' => user_access('access content') && $access,
     'type' => $type,
   );
@@ -581,7 +620,7 @@ function panels_page_edit_form($panel_page) {
     '#size' => 35,
     '#default_value' => $panel_page->path,
     '#title' => t('Path'),
-    '#description' => t('The URL path to give this page, i.e, path/to/page'),
+    '#description' => t('The URL path to give this page, i.e, path/to/page. You may use "%" as an argument placeholder: i.e, node/%/panel'),
     '#required' => TRUE,
   );
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.38 2007/08/24 04:40:21 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.39 2007/08/24 18:58:00 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -1586,6 +1586,7 @@ function panels_render_panel($panes_in_panel, $display) {
   };
 
   // Store all panes in an array, sorted by their position in the panel.
+  $panes = array();
   foreach ($panes_in_panel as $pane_id => $pane) {
     if (panels_pane_access($pane)) {
       $panes[$pane->position] = panels_get_pane_content($pane, $display->args, $display->context, $display->incoming_content);
