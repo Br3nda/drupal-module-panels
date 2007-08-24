@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.39 2007/08/24 18:58:00 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.40 2007/08/24 19:53:41 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -1925,7 +1925,7 @@ function theme_panels_panel_list($display, $panel_id, $panes) {
  */
 function panels_node_autocomplete($string) {
   if ($string != '') { // if there are node_types passed, we'll use those in a MySQL IN query.
-    $result = db_query_range(db_rewrite_sql('SELECT n.title, u.name FROM {node} n INNER JOIN {users} u ON u.uid = n.uid WHERE LOWER(title) LIKE LOWER("%%%s%%")'), $string, 0, 10);
+    $result = db_query_range(db_rewrite_sql('SELECT n.title, u.name FROM {node} n INNER JOIN {users} u ON u.uid = n.uid WHERE LOWER(title) LIKE LOWER(\'%%%s%%\')'), $string, 0, 10);
     $prefix = count($array) ? implode(', ', $array) .', ' : '';
 
     $matches = array();
