@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.13 2007/08/24 03:53:27 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.14 2007/08/24 04:08:57 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -231,3 +231,11 @@ function panels_admin_title_views($conf) {
   $title = views_get_title($view, 'admin');
   return $title ? $title : $view->name;
 }
+
+/**
+ * Don't show Views' blocks; we expose them already.
+ */
+function views_panels_block_info($module, $delta, &$info) {
+  $info = NULL;
+}
+
