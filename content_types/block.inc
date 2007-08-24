@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.6.12 2007/08/24 04:08:57 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.6.13 2007/08/24 04:31:19 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -39,15 +39,15 @@ function panels_content_block($conf) {
   $block_visibility = db_fetch_object($result);
 
   if ($block_visibility && $block_visibility->pages) {
-   if ($block_visibility->visibility < 2) {
-     $path = drupal_get_path_alias($_GET['q']);
-     $regexp = '/^('. preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'), array('|', '.*', '\1'. preg_quote(variable_get('site_frontpage', 'node'), '/') .'\2'), preg_quote($block->pages, '/')) .')$/';
-     $page_match = !($block->visibility xor preg_match($regexp, $path));
-   } else {
-     $page_match = drupal_eval($block->pages);
-   }
+    if ($block_visibility->visibility < 2) {
+      $path = drupal_get_path_alias($_GET['q']);
+      $regexp = '/^('. preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'),  array('|', '.*', '\1'. preg_quote(variable_get('site_frontpage', 'node'), '/') .'\2'), preg_quote($block->pages, '/')) .')$/';
+      $page_match = !($block->visibility xor preg_match($regexp, $path));
+    } else {
+      $page_match = drupal_eval($block->pages);
+    }
   } else {
-   $page_match = TRUE;
+    $page_match = TRUE;
   }
 
   if ($page_match) {

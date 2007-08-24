@@ -1,5 +1,5 @@
 <?php
-// $Id: custom.inc,v 1.2.6.9 2007/07/09 23:45:59 merlinofchaos Exp $
+// $Id: custom.inc,v 1.2.6.10 2007/08/24 04:31:19 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -33,10 +33,12 @@ function theme_panels_custom_content($content, $id, $class) {
   if ($id) {
     $id = 'id="' . $id . '"';
   }
-
-  $output = '<div class="panels-custom ' . $class . '" ' . $id . '>';
-  $output .= $content;
-  $output .= '</div>';
+  
+  if ($content) {
+    $output = '<div class="panels-custom ' . $class . '" ' . $id . '>';
+    $output .= $content;
+    $output .= '</div>';
+  }
   return $output;
 }
 
