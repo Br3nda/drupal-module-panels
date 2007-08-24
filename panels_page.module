@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.28 2007/08/24 18:58:00 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.29 2007/08/24 22:19:54 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -77,7 +77,7 @@ function panels_page_menu($may_cache) {
       'path' => 'admin/panels/panel-page/disable',
       'title' => t('Export'),
       'access' => $access,    
-      'callback' => 'panels_page_disable',
+      'callback' => 'panels_page_disable_page',
       'weight' => -1,
       'type' => MENU_LOCAL_TASK,
     );
@@ -85,7 +85,7 @@ function panels_page_menu($may_cache) {
       'path' => 'admin/panels/panel-page/enable',
       'title' => t('Export'),
       'access' => $access,    
-      'callback' => 'panels_page_enable',
+      'callback' => 'panels_page_enable_page',
       'weight' => -1,
       'type' => MENU_LOCAL_TASK,
     );
@@ -398,7 +398,7 @@ function panels_page_list_page() {
       }
     }
 
-    $path = empty($panel_page->disabled) ? l($panel_page->path, $panel_page->path) : check_plain($panel_page->path);
+    $path = empty($panel_page->disabled) && strpos($panel_page->path, '%') === FALSE ? l($panel_page->path, $panel_page->path) : check_plain($panel_page->path);
     $item = array();
     $item[] = check_plain(panels_page_get_title($panel_page));
     $item[] = $panel_page->type; // this is safe as it's always programmatic
@@ -421,7 +421,7 @@ function panels_page_list_page() {
 /**
  * Enable a default panel.
  */
-function panels_page_enable($name = NULL) {
+function panels_page_enable_page($name = NULL) {
   $defaults = panels_page_default_panels();
   if (isset($defaults[$name])) {
     $status = variable_get('panel_page_defaults', array());
@@ -436,7 +436,7 @@ function panels_page_enable($name = NULL) {
 /**
  * Disable a default panel.
  */
-function panels_page_disable($name = NULL) {
+function panels_page_disable_page($name = NULL) {
   $defaults = panels_page_default_panels();
   if (isset($defaults[$name])) {
     $status = variable_get('panel_page_defaults', array());
