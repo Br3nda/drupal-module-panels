@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.24 2007/08/23 19:47:47 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.25 2007/08/24 01:17:13 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -71,14 +71,30 @@ function panels_page_menu($may_cache) {
       'callback' => 'panels_page_add_layout_page',
       'type' => MENU_LOCAL_TASK,
     );
+    $items[] = array(
+      'path' => 'admin/build/panel-page/disable',
+      'title' => t('Export'),
+      'access' => $access,    
+      'callback' => 'panels_page_disable',
+      'weight' => -1,
+      'type' => MENU_LOCAL_TASK,
+    );
+    $items[] = array(
+      'path' => 'admin/build/panel-page/enable',
+      'title' => t('Export'),
+      'access' => $access,    
+      'callback' => 'panels_page_enable',
+      'weight' => -1,
+      'type' => MENU_LOCAL_TASK,
+    );
 
-    // load panels from database
-    $result = db_query("SELECT * FROM {panels_page}");
-
-    while ($panel_page = db_fetch_object($result)) {
-      $panel_page->access = ($panel_page->access ? explode(', ', $panel_page->access) : array());
-      panels_page_menu_items($items, $panel_page->path, $panel_page, FALSE);
-      panels_page_menu_items($items, 'admin/build/panel-page/' . $panel_page->pid, $panel_page, TRUE);
+    // Get all panels and, if enabled, create menu items.
+    foreach (panels_page_load_all() as $panel_page) {
+      if (empty($panel_page->disabled)) {
+        $panel_page->access = ($panel_page->access ? explode(', ', $panel_page->access) : array());
+        panels_page_menu_items($items, $panel_page->path, $panel_page, FALSE);
+        panels_page_menu_items($items, 'admin/build/panel-page/' . $panel_page->name, $panel_page, TRUE);
+      }
     }
   }
   return $items;
@@ -94,7 +110,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
       'title' => t('View'),
       'access' => $view_access,    
       'callback' => 'panels_page_view_page',
-      'callback arguments' => array($page->pid),
+      'callback arguments' => array($page->name),
       'weight' => -10,
       'type' => MENU_CALLBACK,
     );
@@ -108,7 +124,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
     'title' => t('View'),
     'access' => $view_access,    
     'callback' => 'panels_page_view_page',
-    'callback arguments' => array($page->pid),
+    'callback arguments' => array($page->name),
     'weight' => -10,
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
@@ -117,7 +133,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
     'title' => t('Edit'),
     'access' => $access,    
     'callback' => 'panels_page_edit',
-    'callback arguments' => array($page->pid),
+    'callback arguments' => array($page->name),
     'weight' => -5,
     'type' => MENU_LOCAL_TASK,
   );
@@ -126,7 +142,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
     'title' => t('General'),
     'access' => $access,    
     'callback' => 'panels_page_edit',
-    'callback arguments' => array($page->pid),
+    'callback arguments' => array($page->name),
     'weight' => -5,
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
@@ -135,20 +151,19 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
     'title' => t('Layout'),
     'access' => $access,    
     'callback' => 'panels_page_edit_layout',
-    'callback arguments' => array($page->pid),
+    'callback arguments' => array($page->name),
     'weight' => -3,
     'type' => MENU_LOCAL_TASK,
   );
 
-  $display = panels_load_display($page->did);
-  $layout = panels_get_layout($display->layout);
+  $layout = panels_get_layout($page->display->layout);
   if (!empty($layout['settings form'])) {
     $items[] = array(
       'path' => $base . '/edit/settings',
       'title' => t('Layout settings'),
       'access' => $access,    
       'callback' => 'panels_page_edit_layout_settings',
-      'callback arguments' => array($page->pid),
+      'callback arguments' => array($page->name),
       'weight' => -3,
       'type' => MENU_LOCAL_TASK,
     );
@@ -158,7 +173,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
     'title' => t('Content'),
     'access' => $access,    
     'callback' => 'panels_page_edit_content',
-    'callback arguments' => array($page->pid),
+    'callback arguments' => array($page->name),
     'weight' => -1,
     'type' => MENU_LOCAL_TASK,
   );
@@ -167,7 +182,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
     'title' => t('Export'),
     'access' => $access,    
     'callback' => 'drupal_get_form',
-    'callback arguments' => array('panels_page_edit_export', $page->pid),
+    'callback arguments' => array('panels_page_edit_export', $page->name),
     'weight' => -1,
     'type' => MENU_LOCAL_TASK,
   );
@@ -176,7 +191,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
     'title' => t('Delete panel page'),
     'access' => $access,    
     'callback' => 'drupal_get_form',
-    'callback arguments' => array('panels_page_delete_confirm', $page->pid),
+    'callback arguments' => array('panels_page_delete_confirm', $page->name),
     'type' => MENU_CALLBACK,
   );
 }
@@ -187,6 +202,9 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE) {
  * Helper function to add a menu item for a panel.
  */
 
+/**
+ * Get the title for a panel page, given a context.
+ */
 function panels_page_get_title($panel_page, $context = 'page', $default_title = NULL) {
   if ($context == 'menu-parent' && $panel_page->menu_parent_title) {
     return $panel_page->menu_parent_title;
@@ -208,6 +226,9 @@ function panels_page_get_title($panel_page, $context = 'page', $default_title = 
   }
 }
 
+/**
+ * Create a menu item for a panel page.
+ */
 function _panels_page_create_menu_item(&$items, $panel_page, $path, $access, $local_task_type = MENU_NORMAL_ITEM, $args = array()) {
   $title = filter_xss_admin(panels_page_get_title($panel_page, 'menu'));
   $type = _panels_page_menu_type($panel_page);
@@ -245,7 +266,7 @@ function _panels_page_menu_item($path, $title, $panel_page, $args, $access, $typ
   $retval = array('path' => $path,
     'title' => $title,
     'callback' => 'panels_page_view_page',
-    'callback arguments' => array($panel_page->pid),
+    'callback arguments' => array($panel_page->name),
     'access' => user_access('access content') && $access,
     'type' => $type,
   );
@@ -321,26 +342,71 @@ function panels_page_settings() {
  */
 function panels_page_list_page() {
   $layouts = panels_get_layouts();
-  $result = db_query("SELECT p.*, d.layout FROM {panels_page} p INNER JOIN {panels_display} d ON p.did = d.did ORDER BY p.title");
-  while ($panel_page = db_fetch_object($result)) {
+  foreach (panels_page_load_all() as $panel_page) {
+    $ops = array(
+      l(t('Edit'), "admin/build/panel-page/$panel_page->name/edit"),
+      l(t('Export'), "admin/build/panel-page/$panel_page->name/export"),
+    );
+    if ($panel_page->type != t('Default')) {
+      $ops[] = l(t('Delete'), "admin/build/panel-page/$panel_page->name/delete");
+    }
+    else {
+      if (empty($panel_page->disabled)) {
+        $ops[] = l(t('Disable'), "admin/build/panel-page/disable/$panel_page->name", NULL, drupal_get_destination());
+      }
+      else {
+        $ops[] = l(t('Enable'), "admin/build/panel-page/enable/$panel_page->name", NULL, drupal_get_destination());
+      }
+    }
+
+    $path = empty($panel_page->disabled) ? l($panel_page->path, $panel_page->path) : check_plain($panel_page->path);
     $item = array();
     $item[] = check_plain(panels_page_get_title($panel_page));
-    $item[] = check_plain($layouts[$panel_page->layout]['title']);
-    $item[] = l($panel_page->path, $panel_page->path);
-    $item[] = implode(' | ', array(
-      l(t('Edit'), "admin/build/panel-page/$panel_page->pid/edit"),
-      l(t('Delete'), "admin/build/panel-page/$panel_page->pid/delete"),
-    ));
+    $item[] = $panel_page->type; // this is safe as it's always programmatic
+    $item[] = check_plain($layouts[$panel_page->display->layout]['title']);
+    $item[] = $path;
+    $item[] = implode(' | ', $ops);
     $items[] = $item;
   }
   $header = array(
     t('Page title'),
+    t('Type'),
     t('Layout'),
     t('URL'),
     t('Operations'),
   );
   $output = theme('table', $header, $items);
   return $output;
+}
+
+/**
+ * Enable a default panel.
+ */
+function panels_page_enable($name = NULL) {
+  $defaults = panels_page_default_panels();
+  if (isset($defaults[$name])) {
+    $status = variable_get('panel_page_defaults', array());
+    $status[$name] = FALSE;
+    variable_set('panel_page_defaults', $status);
+    menu_rebuild();
+    drupal_set_message(t('Panel page enabled'));
+  }
+  drupal_goto();
+}
+
+/**
+ * Disable a default panel.
+ */
+function panels_page_disable($name = NULL) {
+  $defaults = panels_page_default_panels();
+  if (isset($defaults[$name])) {
+    $status = variable_get('panel_page_defaults', array());
+    $status[$name] = TRUE;
+    variable_set('panel_page_defaults', $status);
+    drupal_set_message(t('Panel page disabled'));
+    menu_rebuild();
+  }
+  drupal_goto();
 }
 
 /*
@@ -695,14 +761,14 @@ function panels_page_edit_form_submit($form_id, $form_values) {
 
   if ($panel_page->pid == 'new') {
     unset($_SESSION['pp_import']);
-    panels_page_save($panel_page);
-    $GLOBALS['form_values']['pid'] = $panel_page->pid;
+    $pid = panels_page_save($panel_page);
+    $GLOBALS['form_values']['pid'] = $pid;
     $layout = panels_get_layout($panel_page->display->layout);
 
     if ($layout['settings form']) {
-      return "admin/build/panel-page/$panel_page->pid/edit/settings/next";
+      return "admin/build/panel-page/$panel_page->name/edit/settings/next";
     }
-    return "admin/build/panel-page/$panel_page->pid/edit/content";
+    return "admin/build/panel-page/$panel_page->name/edit/content";
   }
   else {
     drupal_set_message(t('Your changes have been saved.'));
@@ -717,8 +783,16 @@ function panels_page_edit_layout($panel_page) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
+  // If we visit this page on a default panel, we have to make it real.
+  if ($panel_page->pid == 'new') {
+    $pid = panels_page_save($panel_page);
+    // reload because not everything gets properly reset on save and we need
+    // ids that were created.
+    $panel_page = panels_page_load($pid);
+  }
+
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
-  return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->pid/edit/layout");
+  return panels_edit_layout($panel_page->display, t('Save'), "admin/build/panel-page/$panel_page->name/edit/layout");
 }
 
 /**
@@ -728,14 +802,22 @@ function panels_page_edit_layout_settings($panel_page, $next = NULL) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
+  // If we visit this page on a default panel, we have to make it real.
+  if ($panel_page->pid == 'new') {
+    $pid = panels_page_save($panel_page);
+    // reload because not everything gets properly reset on save and we need
+    // ids that were created.
+    $panel_page = panels_page_load($pid);
+  }
+
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   if (empty($next)) {
     $button = t('Save');
-    $dest = "admin/build/panel-page/$panel_page->pid/edit/settings";
+    $dest = "admin/build/panel-page/$panel_page->name/edit/settings";
   }
   else {
     $button = t('Next');
-    $dest = "admin/build/panel-page/$panel_page->pid/edit/content";
+    $dest = "admin/build/panel-page/$panel_page->name/edit/content";
   }
 
   return panels_edit_layout_settings($panel_page->display, $button, $dest);
@@ -748,6 +830,15 @@ function panels_page_edit_content($panel_page) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
+
+  // If we visit this page on a default panel, we have to make it real.
+  if ($panel_page->pid == 'new') {
+    $pid = panels_page_save($panel_page);
+    // reload because not everything gets properly reset on save and we need
+    // ids that were created.
+    $panel_page = panels_page_load($pid);
+  }
+
   require_once drupal_get_path('module', 'panels') . '/panels_common.inc';
   $content_types = panels_common_get_allowed_types('panels_page');
 
@@ -755,7 +846,7 @@ function panels_page_edit_content($panel_page) {
   // This is important because negative margins in common block layouts (i.e, Garland)
   // messes up the drag & drop.
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
-  print theme('page', panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->pid/edit/content", $content_types), FALSE);
+  print theme('page', panels_edit($panel_page->display, "admin/build/panel-page/$panel_page->name/edit/content", $content_types), FALSE);
 }
 
 /**
@@ -783,7 +874,6 @@ function panels_page_edit_export($panel_page) {
 function panels_page_import_page() {
   if ($_POST['form_id'] == 'panels_page_edit_form') {
     $panel_page = $_SESSION['pp_import'];
-    drupal_set_message($panel_page->pid);
     drupal_set_title(t('Import panel page "@s"', array('@s' => $panel_page->title)));
     return panels_page_edit($panel_page);
   }
@@ -834,11 +924,13 @@ function panels_page_import_form_submit($formid, $form) {
 // ---------------------------------------------------------------------------
 // view panels page
 
+/**
+ * Page callback to view a panel page.
+ */
 function panels_page_view_page($panel_page) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
-
   if (!$panel_page) {
     return drupal_not_found();
   }
@@ -873,13 +965,71 @@ function panels_page_view_page($panel_page) {
 // Database functions
 
 /**
+ * Fetch all panel pages in the system. This function does not cache.
+ */
+function panels_page_load_all($displays = TRUE, $page_size = 0) {
+  $pages = $dids = array();
+  $query = "SELECT * FROM {panels_page}";
+  if ($page_size) {
+    $result = pager_query($query, $page_size);
+  }
+  else {
+    $result = db_query($query);
+  }
+
+  while ($page = db_fetch_object($result)) {
+    $page->access = ($page->access ? explode(', ', $page->access) : array());
+    $page->type = t('Local');
+    $pages[$page->name] = $page;
+    $dids[] = $page->did;
+  }
+
+  if ($displays && $dids) {
+    $displays = panels_load_displays($dids);
+    foreach ($pages as $name => $page) {
+      if (!empty($displays[$page->did])) {
+        $pages[$name]->display = $displays[$page->did];
+      }
+    }
+  }
+
+  $status = variable_get('panel_page_defaults', array());
+  foreach (panels_page_default_panels() as $page) {
+    // Determine if default panel is enabled or disabled.
+    if (isset($status[$page->name])) {
+      $page->disabled = $status[$page->name];
+    }
+
+    if (!empty($pages[$page->name])) {
+      $pages[$page->name]->type = t('Overridden');
+    }
+    else {
+      $page->type = t('Default');
+      $pages[$page->name] = $page;
+    }
+  }
+  return $pages;
+}
+
+/**
  * Load a panel page and its associated display
  */
 function panels_page_load($pid) {
   static $cache = array();
   if (!array_key_exists($pid, $cache)) {
-    $cache[$pid] = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE pid = %d", $pid));
+    if (!is_numeric($pid)) {
+      $where = "name = '%s'";
+    }
+    else {
+      $where = 'pid = %d';
+    }
+    $cache[$pid] = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE $where", $pid));
     if (!$cache[$pid]) {
+      $defaults = panels_page_default_panels();
+      if (isset($defaults[$pid])) {
+        $cache[$pid] = $defaults[$pid];
+        return $cache[$pid];
+      }
       return;
     }
 
@@ -890,6 +1040,9 @@ function panels_page_load($pid) {
   return $cache[$pid];
 }
 
+/**
+ * A list of the fields used in the panel_page table.
+ */
 function panels_page_fields() {
   return array(
     "name" => "'%s'",
@@ -909,6 +1062,7 @@ function panels_page_fields() {
     "menu_parent_tab_weight" => "%d",
   );
 }
+
 /**
  * Save a panel page. 
  */
@@ -938,7 +1092,7 @@ function panels_page_save($panel_page) {
       if ($query) {
         $query .= ', ';
       }
-      $query .= "$f = " . $q[$id];
+      $query .= "$f[$id] = " . $q[$id];
     }
 
     $v[] = $panel_page->pid;
@@ -971,6 +1125,10 @@ function panels_page_delete($panel_page) {
   return panels_delete_display($panel_page->did);
 }
 
+/**
+ * Export a panel page into PHP code for use in import. The code returned from
+ * can be used directly in panels_page_save().
+ */
 function panels_page_export($panel_page) {
   $output = '';
   $fields = panels_page_fields();
@@ -985,4 +1143,15 @@ function panels_page_export($panel_page) {
   return $output;
 }
 
+/**
+ * Get all 'default' panels.
+ */
+function panels_page_default_panels() {
+  $panels = module_invoke_all('default_panel_pages');
+  if (!is_array($panels)) {
+    $panels = array();
+  }
+
+  return $panels;
+}
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.35 2007/08/23 19:47:47 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.36 2007/08/24 01:17:13 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -1327,44 +1327,61 @@ function panels_new_display($context = NULL) {
 /**
  * Load a display from the database and set a context.
  */
-function panels_load_display($did, $context = NULL) {
-  $display = new panels_display($context);
-
-  $obj = db_fetch_array(db_query("SELECT * FROM {panels_display} WHERE did = %d", $did));
-  if (!$obj) {
-    return NULL;
+function panels_load_displays($dids, $context = NULL) {
+  $displays = array();
+  if (empty($dids) || !is_array($dids)) {
+    return $displays;
   }
 
-  foreach ($obj as $key => $value) {
-    $display->$key = $value;
-  }
-  if (!$display) {
-    return NULL;
+  $subs = implode(', ', array_fill(0, count($dids), '%d'));
+
+  $result = db_query("SELECT * FROM {panels_display} WHERE did IN ($subs)", $dids);
+
+  while ($obj = db_fetch_array($result)) {
+    $display = new panels_display($context);
+
+    foreach ($obj as $key => $value) {
+      $display->$key = $value;
+    }
+
+    // unserialize important bits:
+    if (!empty($display->layout_settings)) {
+      $display->layout_settings = unserialize($display->layout_settings);
+    }
+    else {
+      $display->layout_settings = array();
+    }
+    if (!empty($display->panel_settings)) {
+      $display->panel_settings = unserialize($display->panel_settings);
+    }
+    else {
+      $display->panel_settings = array();
+    }
+    $display->panels = $display->content = array();
+
+    $displays[$display->did] = $display;
   }
 
-  // unserialize important bits:
-  if (!empty($display->layout_settings)) {
-    $display->layout_settings = unserialize($display->layout_settings);
-  }
-  else {
-    $display->layout_settings = array();
-  }
-  if (!empty($display->panel_settings)) {
-    $display->panel_settings = unserialize($display->panel_settings);
-  }
-  else {
-    $display->panel_settings = array();
-  }
+  $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) ORDER BY did, panel, position", $dids);
 
-  $result = db_query("SELECT * FROM {panels_pane} WHERE did = %d ORDER BY panel, position", $did);
-  $display->panels = $display->content = array();
   while ($pane = db_fetch_object($result)) {
     $pane->configuration = unserialize($pane->configuration);
     $pane->access = ($pane->access ? explode(', ', $pane->access) : array());
-    $display->panels[$pane->panel][] = $pane->pid;
-    $display->content[$pane->pid] = $pane;
+
+    $displays[$pane->did]->panels[$pane->panel][] = $pane->pid;
+    $displays[$pane->did]->content[$pane->pid] = $pane;
   }
-  return $display;
+  return $displays;
+}
+
+/**
+ * Load a single display.
+ */
+function panels_load_display($did, $context = NULL) {
+  $displays = panels_load_displays(array($did), $context);
+  if (!empty($displays)) {
+    return array_shift($displays);
+  }
 }
 
 /**
