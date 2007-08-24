@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.18 2007/06/20 22:38:46 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.19 2007/08/24 02:32:05 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -44,7 +44,7 @@ Drupal.Panels.clickShowAll = function() {
 
 /** Configure pane button */
 Drupal.Panels.bindClickConfigure = function (o) {
-  $('input.pane-configure').unclick();
+  $('input.pane-configure').unbind('click');
   $('input.pane-configure').click(function() {
     var id = $(this)[0].id.replace('edit-button-', '').replace('-configure', '');
     // show the empty dialog right away.
@@ -68,7 +68,7 @@ Drupal.Panels.bindClickConfigure = function (o) {
 
 /** Delete pane button **/
 Drupal.Panels.bindClickDelete = function(o) {
-  $('input.pane-delete').unclick();
+  $('input.pane-delete').unbind('click');
   $('input.pane-delete').click(function() {
     if (confirm('Remove this pane?')) {
       var id = $(this)[0].id.replace('edit-button-', '').replace('-delete', '');
@@ -173,7 +173,7 @@ Drupal.Panels.bindAjaxResponse = function(data) {
     $('#modalContent div.modal-content').html(data.output);
 
     // Bind forms to ajax submit.
-    $('div.panels-modal-content form').unsubmit(); // be safe here.
+    $('div.panels-modal-content form').unbind('submit'); // be safe here.
     $('div.panels-modal-content form').submit(Drupal.Panels.Subform.bindClickSubmit);
 
     // Bind links to ajax links.
@@ -480,7 +480,7 @@ Drupal.Panels.DraggableHandler = function() {
       draggable.unsetDropZone();
     }
 
-    $('body').unmouseup().unmousemove();
+    $('body').unbind('mouseup').unbind('mousemove');
     draggable.savePositions();
   }
 
@@ -564,7 +564,7 @@ Drupal.Panels.DraggableHandler = function() {
 
     draggable.object.style.top = windowOffset.top + 'px';
     draggable.object.style.left = windowOffset.left + 'px';
-    $('body').unmouseup().unmousemove().mouseup(mouseUp).mousemove(mouseMove);
+    $('body').unbind('mouseup').unbind('mousemove').mouseup(mouseUp).mousemove(mouseMove);
 
     draggable.calculateDropZones(mousePos, e);
     return false;

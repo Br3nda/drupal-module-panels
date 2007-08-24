@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.4 2007/08/24 01:58:09 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.5 2007/08/24 02:32:05 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -8,7 +8,7 @@
  * Implementation of hook_perm()
  */
 function panels_node_perm() {
-  return array('create panel-nodes', 'administer panel-nodes');
+  return array('create panel-nodes', 'edit own panel-nodes', 'administer panel-nodes');
 }
 
 /**
@@ -102,7 +102,7 @@ function panels_node_access($op, $node = NULL) {
     return TRUE;
   }
 
-  if ($op == 'update' && $node->uid == $user->uid) {
+  if ($op == 'update' && $node->uid == $user->uid && user_access('edit own panel-nodes')) {
     return TRUE;
   }
 }
