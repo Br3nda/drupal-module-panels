@@ -1,5 +1,5 @@
 <?php
-// $Id: onecol.inc,v 1.1.2.2 2007/07/08 03:31:36 merlinofchaos Exp $
+// $Id: onecol.inc,v 1.1.2.3 2007/08/24 02:49:06 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -26,12 +26,11 @@ function theme_panels_onecol($id, $content) {
   }
 
   $output = <<<EOT
-<div class="panel-1col" $idstr>
+<div class="panel-1col clear-block" $idstr>
   <div class="panel-col">
     <div>$content[middle]</div>
   </div>
 </div>
-<br class="panel-clearer" />
 EOT;
   return $output;
 }

@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_33_34_33.inc,v 1.5.6.2 2007/05/22 22:08:01 merlinofchaos Exp $
+// $Id: threecol_33_34_33.inc,v 1.5.6.3 2007/08/24 02:49:06 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -26,7 +26,7 @@ function theme_panels_threecol_33_34_33($id, $content) {
   }
 
   $output = <<<EOT
-<div class="panel-3col-33" $idstr>
+<div class="panel-3col-33 clear-block" $idstr>
   <div class="panel-col-first">
     <div class="inside">$content[left]</div>
   </div>
@@ -39,7 +39,6 @@ function theme_panels_threecol_33_34_33($id, $content) {
     <div class="inside">$content[right]</div>
   </div>
 </div>
-<br class="panel-clearer" />
 EOT;
   return $output;
 }

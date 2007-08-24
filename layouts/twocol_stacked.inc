@@ -1,5 +1,5 @@
 <?php
-// $Id: twocol_stacked.inc,v 1.5.6.3 2007/06/11 02:25:16 merlinofchaos Exp $
+// $Id: twocol_stacked.inc,v 1.5.6.4 2007/08/24 02:49:06 merlinofchaos Exp $
 
 /**
  * implementation of hook_panels_layouts
@@ -27,7 +27,7 @@ function theme_panels_twocol_stacked($id, $content) {
   }
 
   $output = <<<EOT
-<div class="panel-2col-stacked" $idstr>
+<div class="panel-2col-stacked clear-block" $idstr>
   <div class="panel-col-top">
     <div class="inside">$content[top]</div>
   </div>
@@ -44,7 +44,6 @@ function theme_panels_twocol_stacked($id, $content) {
     <div class="inside">$content[bottom]</div>
   </div>
 </div>
-<br class="panel-clearer" />
 EOT;
   return $output;
 }

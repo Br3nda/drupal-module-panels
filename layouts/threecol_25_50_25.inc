@@ -25,7 +25,7 @@ function theme_panels_threecol_25_50_25($id, $content) {
   }
 
   $output = <<<EOT
-<div class="panel-3col" $idstr>
+<div class="panel-3col clear-block" $idstr>
   <div class="panel-col-first">
     <div class="inside">$content[left]</div>
   </div>
@@ -38,7 +38,6 @@ function theme_panels_threecol_25_50_25($id, $content) {
     <div class="inside">$content[right]</div>
   </div>
 </div>
-<br class="panel-clearer" />
 EOT;
   return $output;
 }

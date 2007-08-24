@@ -1,5 +1,5 @@
 <?php
-// $Id: twocol.inc,v 1.6.6.2 2007/05/22 22:08:01 merlinofchaos Exp $
+// $Id: twocol.inc,v 1.6.6.3 2007/08/24 02:49:06 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -26,7 +26,7 @@ function theme_panels_twocol($id, $content) {
   }
 
   $output = <<<EOT
-<div class="panel-2col" $idstr>
+<div class="panel-2col clear-block" $idstr>
   <div class="panel-col-first">
     <div class="inside">$content[left]</div>
   </div>
@@ -35,7 +35,6 @@ function theme_panels_twocol($id, $content) {
     <div class="inside">$content[right]</div>
   </div>
 </div>
-<br class="panel-clearer" />
 EOT;
   return $output;
 }

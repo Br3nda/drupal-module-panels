@@ -1,4 +1,4 @@
-/* $Id: twocol.css,v 1.4.6.1 2007/05/22 22:08:01 merlinofchaos Exp $ */
+/* $Id: twocol.css,v 1.4.6.2 2007/08/24 02:49:06 merlinofchaos Exp $ */
 
 .panel-2col { 
   overflow: hidden; 
@@ -29,8 +29,4 @@
 
 .panel-2col .panel-separator {
   margin: 0 0 1em 0;
-}
-
-.panel-clearer {
-  clear: both;
 }
