@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.2.6.11 2007/08/24 02:52:11 merlinofchaos Exp $
+// $Id: node.inc,v 1.2.6.12 2007/08/24 03:00:25 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -24,7 +24,6 @@ function panels_node_panels_content_types() {
  * based on the module and delta supplied in the configuration.
  */
 function panels_content_node($conf, $panel_args) {
-
   $nid = $conf['nid'];
   foreach (explode('/', $_GET['q']) as $id => $arg) {
     $nid = str_replace("%$id", $arg, $nid);
@@ -32,6 +31,11 @@ function panels_content_node($conf, $panel_args) {
 
   foreach ($panel_args as $id => $arg) {
     $nid = str_replace("@$id", $arg, $nid);
+  }
+
+  // Support node translation
+  if (module_exists('translation')) {
+    $nid = module_invoke('translation', 'node_nid', $nid, $GLOBALS['locale']);
   }
 
   $node = node_load($nid);
