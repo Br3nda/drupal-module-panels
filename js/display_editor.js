@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.19 2007/08/24 02:32:05 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.20 2007/08/25 00:25:45 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -23,6 +23,7 @@ Drupal.Panels.clickAdd = function() {
     data: '',
     global: true,
     success: Drupal.Panels.bindAjaxResponse,
+    error: function() { alert("An error occurred."); $('#panels-modal').unmodalContent(); },
     dataType: 'json'
   });
   return false;
@@ -60,6 +61,7 @@ Drupal.Panels.bindClickConfigure = function (o) {
       data: '',
       global: true,
       success: Drupal.Panels.bindAjaxResponse,
+      error: function() { alert("An error occurred."); $('#panels-modal').unmodalContent(); },
       dataType: 'json'
     });
     return false;
@@ -118,6 +120,7 @@ Drupal.Panels.Subform.bindClickAddLink = function() {
     data: '',
     global: true,
     success: Drupal.Panels.bindAjaxResponse,
+  	error: function() { alert("An error occurred."); $('#panels-modal').unmodalContent(); },
     dataType: 'json'
   });
   return false;

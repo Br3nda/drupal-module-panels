@@ -69,6 +69,7 @@
 
 #panels-choose-layout .form-radios .form-item .layout-icon {
   float: none;
+  height: 15em;
 }
 
 #panels-choose-layout .form-radios .form-item .option {

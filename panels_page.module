@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.29 2007/08/24 22:19:54 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.30 2007/08/25 00:25:45 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -97,9 +97,9 @@ function panels_page_menu($may_cache) {
 //        $panel_page->access = ($panel_page->access ? explode(', ', $panel_page->access) : array());
         // Only create menu items based on the path if it's not a variable path.
         if (strpos($panel_page->path, '%') === FALSE) {
-          panels_page_menu_items($items, $panel_page->path, $panel_page, FALSE);  
+          panels_page_menu_items($items, $panel_page->path, $panel_page, FALSE, array($panel_page->name));  
         }
-        panels_page_menu_items($items, 'admin/panels/panel-page/' . $panel_page->name, $panel_page, TRUE);
+        panels_page_menu_items($items, 'admin/panels/panel-page/' . $panel_page->name, $panel_page, TRUE, array($panel_page->name));
       }
     }
   }
@@ -124,7 +124,7 @@ function panels_page_menu($may_cache) {
         }
         // It's a MATCH! Construct the URL
         if ($match) {
-          $args = array();
+          $args = array($panel_page);
           foreach ($path as $id => $chunk) {
             if ($chunk == '%') {       
               // TODO: Here is where we can perform validation
@@ -150,7 +150,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = a
       'title' => t('View'),
       'access' => $view_access,    
       'callback' => 'panels_page_view_page',
-      'callback arguments' => array_merge(array($page->name), $args),
+      'callback arguments' => $args,
       'weight' => -10,
       'type' => MENU_CALLBACK,
     );
@@ -164,7 +164,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = a
     'title' => t('View'),
     'access' => $view_access,    
     'callback' => 'panels_page_view_page',
-    'callback arguments' => array($page->name),
+    'callback arguments' => $args,
     'weight' => -10,
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
@@ -185,6 +185,15 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = a
     'callback arguments' => array($page->name),
     'weight' => -5,
     'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  $items[] = array(
+    'path' => $base . '/edit/advanced',
+    'title' => t('Advanced'),
+    'access' => $access,    
+    'callback' => 'panels_page_edit_advanced',
+    'callback arguments' => array($page->name),
+    'weight' => -4,
+    'type' => MENU_LOCAL_TASK,
   );
   $items[] = array(
     'path' => $base . '/edit/layout',
@@ -305,7 +314,7 @@ function _panels_page_menu_item($path, $title, $panel_page, $args, $access, $typ
   $retval = array('path' => $path,
     'title' => $title,
     'callback' => 'panels_page_view_page',
-    'callback arguments' => array_merge(array($panel_page->name), $args),
+    'callback arguments' => $args,
     'access' => user_access('access content') && $access,
     'type' => $type,
   );
@@ -540,18 +549,6 @@ function panels_page_edit_form($panel_page) {
     '#suffix' => '</div>',
   );
 
-  $form['right']['advanced'] = array(
-    '#type' => 'fieldset',
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#title' => t('Advanced settings'),
-  );
-
-  $form['right']['layout'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Layout'),
-  );
-
   $form['left']['info'] = array(
     '#type' => 'fieldset',
     '#title' => t('Page settings'),
@@ -624,10 +621,112 @@ function panels_page_edit_form($panel_page) {
     '#required' => TRUE,
   );
 
+  $label = ($panel_page->pid == 'new') ? t('Next') : t('Save');
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => $label,
+  );  
+
+  return $form;
+}
+
+/**
+ * Validate a panel page edit form
+ */
+function panels_page_edit_form_validate($form_id, $form_values, $form) {
+  // Test uniqueness of name:
+  $query = "SELECT pid FROM {panels_page} WHERE name = '%s'";
+  if (!empty($form_values['pid']) && is_numeric($form_values['pid'])) {
+    $query .= " AND pid != $form_values[pid]";
+  }
+  if (db_result(db_query($query, $form_values['name']))) {
+    form_error($form['left']['info']['name'], t('Panel name must be unique.'));
+  }
+  if (!$form_values['path']) {
+    form_error($form['left']['info']['path'], t('Path is required.'));
+  }
+  else {
+    $result = db_result(db_query("SELECT pid FROM {panels_page} WHERE path = '%s' AND pid <> %d", $form_values['path'], $form_values['pid']));
+    if ($result) {
+      form_error($form['left']['info']['path'], t('Path may not be the same as another panel page path.'));
+    }
+  }
+}
+
+/**
+ * Process submission of the panel page edit form
+ */
+function panels_page_edit_form_submit($form_id, $form_values) {
+  $panel_page = $form_values['panel_page'];
+
+  $panel_page->title  = $form_values['title'];
+  $panel_page->name  = $form_values['name'];
+  $panel_page->css_id = $form_values['css_id'];
+  $panel_page->path  = $form_values['path'];
+
+  if ($panel_page->pid == 'new') {
+    unset($_SESSION['pp_import']);
+    $pid = panels_page_save($panel_page);
+    $GLOBALS['form_values']['pid'] = $pid;
+    $layout = panels_get_layout($panel_page->display->layout);
+
+    if ($layout['settings form']) {
+      return "admin/panels/panel-page/$panel_page->name/edit/settings/next";
+    }
+    return "admin/panels/panel-page/$panel_page->name/edit/content";
+  }
+  else {
+    drupal_set_message(t('Your changes have been saved.'));
+    panels_page_save($panel_page);
+  }
+}
+
+function panels_page_edit_advanced($panel_page) {
+  if (!is_object($panel_page)) {
+    $panel_page = panels_page_load($panel_page);
+  }
+  drupal_set_title(check_plain(panels_page_get_title($panel_page)));
+  return drupal_get_form('panels_page_advanced_form', $panel_page);
+}
+
+/**
+ * The form to edit the advanced settings of a panel page
+ */
+function panels_page_advanced_form($panel_page) {
+  drupal_add_css(panels_get_path('css/panels_admin.css'));
+  $layout = panels_get_layout($panel_page->display->layout);
+
+  $form['pid'] = array(
+    '#type' => 'value',
+    '#value' => $panel_page->pid,
+  );
+
+  $form['panel_page'] = array(
+    '#type' => 'value', 
+    '#value' => $panel_page
+  );
+
+  $form['right'] = array(
+    '#prefix' => '<div class="layout-container">',
+    '#suffix' => '</div>',
+  );
+
+  $form['left'] = array(
+    '#prefix' => '<div class="panel-page-info-container">',
+    '#suffix' => '</div>',
+  );
+
   $form['right']['advanced'] = array(
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
+    '#title' => t('Advanced settings'),
+  );
+
+  $form['right']['advanced'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
     '#title' => t('Advanced settings'),
   );
 
@@ -752,37 +851,11 @@ function panels_page_edit_form($panel_page) {
 }
 
 /**
- * Validate a panel page edit form
- */
-function panels_page_edit_form_validate($form_id, $form_values, $form) {
-  // Test uniqueness of name:
-  $query = "SELECT pid FROM {panels_page} WHERE name = '%s'";
-  if (!empty($form_values['pid']) && is_numeric($form_values['pid'])) {
-    $query .= " AND pid != $form_values[pid]";
-  }
-  if (db_result(db_query($query, $form_values['name']))) {
-    form_error($form['left']['info']['name'], t('Panel name must be unique.'));
-  }
-  if (!$form_values['path']) {
-    form_error($form['left']['info']['path'], t('Path is required.'));
-  }
-  else {
-    $result = db_result(db_query("SELECT pid FROM {panels_page} WHERE path = '%s' AND pid <> %d", $form_values['path'], $form_values['pid']));
-    if ($result) {
-      form_error($form['left']['info']['path'], t('Path may not be the same as another panel page path.'));
-    }
-  }
-}
-
-/**
  * Process submission of the panel page edit form
  */
-function panels_page_edit_form_submit($form_id, $form_values) {
+function panels_page_advanced_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
 
-  $panel_page->title  = $form_values['title'];
-  $panel_page->name  = $form_values['name'];
-  $panel_page->css_id = $form_values['css_id'];
   $panel_page->css = $form_values['css'];
   $panel_page->no_blocks = $form_values['no_blocks'];
   $panel_page->menu = $form_values['menu'];
@@ -794,24 +867,10 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   $panel_page->menu_parent_title = $form_values['menu_parent_title'];
   $panel_page->menu_parent_tab_weight = $form_values['menu_parent_tab_weight'];
 
-  $panel_page->path  = $form_values['path'];
   $panel_page->access = array_keys(array_filter($form_values['access']));
 
-  if ($panel_page->pid == 'new') {
-    unset($_SESSION['pp_import']);
-    $pid = panels_page_save($panel_page);
-    $GLOBALS['form_values']['pid'] = $pid;
-    $layout = panels_get_layout($panel_page->display->layout);
-
-    if ($layout['settings form']) {
-      return "admin/panels/panel-page/$panel_page->name/edit/settings/next";
-    }
-    return "admin/panels/panel-page/$panel_page->name/edit/content";
-  }
-  else {
-    drupal_set_message(t('Your changes have been saved.'));
-    panels_page_save($panel_page);
-  }
+  drupal_set_message(t('Your changes have been saved.'));
+  panels_page_save($panel_page);
 }
 
 /**
