@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_common.inc,v 1.1.2.4 2007/08/16 04:52:33 merlinofchaos Exp $
+// $Id: panels_common.inc,v 1.1.2.5 2007/08/25 16:14:31 merlinofchaos Exp $
 
 /**
  * @file
@@ -179,7 +179,7 @@ function panels_common_get_layout_information($panel_implementation) {
  * implementation wants to support panel settings.
  */
 function panels_common_panel_settings($display, $panels_implementation = '', $panels_implementation_human = '') {
-  $panel_settings = unserialize($display->panel_settings);
+  $panel_settings = $display->panel_settings;
   $style_name = ($panel_settings['style']) ? $panel_settings['style'] : 'default';
   $style = panels_get_panel_style($style_name);
 
@@ -215,7 +215,7 @@ function panels_common_panel_settings($display, $panels_implementation = '', $pa
     '#title' => t('Panel style settings'),
   );
   if (in_array($style['module'], module_list()) && function_exists($style['module'] .'_panels_panel_style_settings_form')) {
-    $style_settings = module_invoke($style['module'], 'panels_panel_style_settings_form', $style['name'], unserialize($display->panel_settings));
+    $style_settings = module_invoke($style['module'], 'panels_panel_style_settings_form', $style['name'], $display->panel_settings);
     if (is_array($style_settings)) {
       $form['panel_settings']['style_settings'] += $style_settings;
     }
@@ -234,6 +234,6 @@ function panels_common_panel_settings($display, $panels_implementation = '', $pa
 function panels_common_panel_settings_validate($form, $module, $style) {
   global $form_values;
 
-  $panel_settings = unserialize($form_values['display']->panel_settings);
+  $panel_settings = $form_values['display']->panel_settings;
   module_invoke($module, 'panels_panel_style_settings_validate', $style, $panel_settings, $form['panel_settings']['style_settings'], $form_values['panel_settings']['style_settings']);
 }
