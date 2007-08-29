@@ -1,11 +1,10 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.2 2007/08/24 02:49:06 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.3 2007/08/29 22:02:04 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
 function panels_flexible_panels_layouts() {
   $items['flexible'] = array(
-    'module' => 'panels',
     'title' => t('Flexible'),
     'icon' => 'layouts/flexible.png',
     'theme' => 'panels_flexible',
@@ -13,7 +12,6 @@ function panels_flexible_panels_layouts() {
     'settings form' => 'panels_flexible_settings_form',
     'settings validate' => 'panels_flexible_settings_validate',
     'settings submit' => 'panels_flexible_settings_submit',
-//    'panels' => array('left' => t('Left side'), 'right' => t('Right side')),
     'panels function' => 'panels_flexible_panels',
   );
 
@@ -26,17 +24,20 @@ function panels_flexible_default_panels() {
     'row_1' => array(
       'columns' => 1, 
       'width_1' => 100,
+      'names' => array(t('Top')),
     ),
     'row_2' => array(
       'columns' => 3, 
       'width_1' => 25,
       'width_2' => 50,
       'width_3' => 25,
+      'names' => array(t('Left'), t('Middle'), t('Right')),
     ),
     // row 3
     'row_3' => array(
       'columns' => 1, 
       'width_1' => 100,
+      'names' => array(t('Bottom')),
     ),
   );
 }
@@ -85,6 +86,19 @@ function panels_flexible_settings_form($display, $layout, &$settings) {
         '#default_value' => $settings["row_$row"]["width_$col"],
       );
     }
+    if (is_array($settings["row_$row"]["names"])) {
+      $names = implode(', ', $settings["row_$row"]["names"]);
+    }
+    else {
+      $names = '';
+    }
+    $form["row_$row"]['names'] = array(
+      '#prefix' => '<div style="float: left;">',
+      '#suffix' => '</div>',
+      '#type' => 'textfield',
+      '#title' => t('Column titles, separated by commas'),
+      '#default_value' => $names,
+    );
   }
 
   return $form;
@@ -115,10 +129,17 @@ function panels_flexible_settings_validate($values, $form, $display, $layout, $s
 }
 
 function panels_flexible_settings_submit(&$values, $display, $layout, $settings) {
-  for ($row = $values['rows']; $row > $settings['rows']; $row--) {
-    if (empty($values["row_$row"]['columns'])) {
+  for ($row = 1; $row <= $values['rows']; $row++) {
+    if ($row > $settings['rows'] && empty($values["row_$row"]['columns'])) {
       $values["row_$row"]['columns'] = 1;
       $values["row_$row"]['width_1'] = 100;
+    }
+    if (!empty($values["row_$row"]['names'])) {
+      $names = explode(',', $values["row_$row"]['names']);
+      foreach ($names as $nid => $name) {
+        $names[$nid] = trim($name);
+      }
+      $values["row_$row"]['names'] = $names;
     }
   }
 }
@@ -134,7 +155,12 @@ function panels_flexible_panels($display, $settings) {
 
   for ($row = 1; $row <= intval($settings['rows']); $row++) {
     for ($col = 1; $col <= intval($settings["row_$row"]['columns']); $col++) {
-      $panels["row_${row}_$col"] = t("Row @row, Column @col", array('@row' => $row, '@col' => $col));
+      if (!empty($settings["row_$row"]['names'][$col - 1])) {
+        $panels["row_${row}_$col"] = $settings["row_$row"]['names'][$col - 1];
+      }
+      else {
+        $panels["row_${row}_$col"] = t("Row @row, Column @col", array('@row' => $row, '@col' => $col));
+      }
     }
   }
   return $panels;

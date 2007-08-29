@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.5 2007/08/24 01:58:09 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -149,7 +149,7 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
  * Settings for mini panels.
  */
 function panels_mini_settings() {
-  require_once drupal_get_path('module', 'panels') .'/panels_common.inc';
+  require_once drupal_get_path('module', 'panels') .'/includes/common.inc';
   return drupal_get_form('panels_common_settings', 'panels_mini');
 }
 
@@ -245,7 +245,7 @@ function panels_mini_edit($panel_mini) {
  * The form to edit the settings of a mini panel.
  */
 function panels_mini_edit_form($panel_mini) {
-  require_once drupal_get_path('module', 'panels') .'/panels_common.inc';
+  require_once drupal_get_path('module', 'panels') .'/includes/common.inc';
   drupal_add_css(panels_get_path('css/panels_admin.css'));
 
   $form['pid'] = array(
@@ -280,7 +280,7 @@ function panels_mini_edit_form($panel_mini) {
   
   // Add the "panel settings" section of the form and the accompanying submit
   // handler.
-  $form['left'] += panels_common_panel_settings($panel_mini->display, 'panels_mini', 'mini panel');
+  $form['left'] += panels_common_panel_settings($panel_mini->display, 'panels_mini', t('mini panel'));
 
   $form['right']['layout'] = panels_common_get_layout_information($panel_mini);
 
@@ -321,7 +321,7 @@ function panels_mini_edit_content($panel_mini) {
   if (!is_object($panel_mini)) {
     $panel_mini = panels_mini_load($panel_mini);
   }
-  require_once drupal_get_path('module', 'panels') .'/panels_common.inc';
+  require_once drupal_get_path('module', 'panels') .'/includes/common.inc';
   $content_types = panels_common_get_allowed_types('panels_mini');
 
   // Print this with theme('page') so that blocks are disabled while editing a display.

@@ -1,4 +1,4 @@
-; $Id: panels_page.info,v 1.1.2.3 2007/06/18 23:17:13 dww Exp $
+; $Id: panels_page.info,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
 name = Panel pages
 description = Create pages that are divided into areas of the page.
 package = "Panels"

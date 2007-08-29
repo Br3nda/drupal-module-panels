@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_common.inc,v 1.1.2.5 2007/08/25 16:14:31 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
 
 /**
  * @file
@@ -130,7 +130,7 @@ function panels_common_get_allowed_types($module, $default_defaults = array(), $
 }
 
 /**
- * The layout information fieldset displayed at admin/build/panel-%implementation%/add/%layout%.
+ * The layout information fieldset displayed at admin/edit/panel-%implementation%/add/%layout%.
  */
 function panels_common_get_layout_information($panel_implementation) {
   $form = array();
@@ -175,45 +175,53 @@ function panels_common_get_layout_information($panel_implementation) {
 
 /**
  * The panel settings fieldset that can optionally be added to
- * admin/build/panel-%implementation%/%panel_id%/edit, if the panels
+ * admin/panels/panel-%implementation%/%panel_id%/edit, if the panels
  * implementation wants to support panel settings.
  */
-function panels_common_panel_settings($display, $panels_implementation = '', $panels_implementation_human = '') {
+function panels_common_panel_settings($display, $panels_implementation = '', $label = '') {
   $panel_settings = $display->panel_settings;
-  $style_name = ($panel_settings['style']) ? $panel_settings['style'] : 'default';
-  $style = panels_get_panel_style($style_name);
+  $style_name = (!empty($panel_settings['style'])) ? $panel_settings['style'] : 'default';
+  $style = panels_get_style($style_name);
 
   // Let the user choose between panel styles that are available for any
   // panels implementation or specifically to this one.
   $options = array();
-  foreach (panels_get_panel_styles() as $name => $properties) {
+  foreach (panels_get_styles() as $name => $properties) {
     $implementations = $properties['panels implementations'];
     if (!is_array($implementations) || count($implementations) == 0 || in_array($panels_implementation, $implementations)) {
-      $options[$name] = $properties['label'];
+      // TODO: 'label' is deprecated, will go away.
+      $options[$name] = empty($properties['title']) ? $properties['label'] : $properties['title'];
     }
   }
 
   $form = array();
+
   $form['display'] = array('#type' => 'value', '#value' => $display);
+
   $form['panel_settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('Panel settings'),
     '#tree' => TRUE,
   );
+
   $form['panel_settings']['style'] = array(
     '#type' => 'radios',
     '#title' => t('Panel style'),
     '#options' => $options,
     '#description' => t(
       'The style in which the panes of each panel in this %panels-implementation-human will be displayed.',
-      array('%panels-implementation-human' => $panels_implementation_human)
+      array('%panels-implementation-human' => $label)
     ),
     '#default_value' => $style['name'],
   );
+
   $form['panel_settings']['style_settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('Panel style settings'),
   );
+
+  // TODO: Shift the settings here into the new style, and put them into
+  // a modal.
   if (in_array($style['module'], module_list()) && function_exists($style['module'] .'_panels_panel_style_settings_form')) {
     $style_settings = module_invoke($style['module'], 'panels_panel_style_settings_form', $style['name'], $display->panel_settings);
     if (is_array($style_settings)) {
@@ -234,6 +242,7 @@ function panels_common_panel_settings($display, $panels_implementation = '', $pa
 function panels_common_panel_settings_validate($form, $module, $style) {
   global $form_values;
 
+  // TODO: Shift the validate here into the new style, and put them into
   $panel_settings = $form_values['display']->panel_settings;
   module_invoke($module, 'panels_panel_style_settings_validate', $style, $panel_settings, $form['panel_settings']['style_settings'], $form_values['panel_settings']['style_settings']);
 }

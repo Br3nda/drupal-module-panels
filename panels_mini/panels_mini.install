@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.install,v 1.1.2.2 2007/08/23 19:47:47 merlinofchaos Exp $
+// $Id: panels_mini.install,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
 
 /**
  * Implementation of hook_install().

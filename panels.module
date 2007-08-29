@@ -1,11 +1,11 @@
 <?php
-// $Id: panels.module,v 1.10.4.40 2007/08/24 19:53:41 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.41 2007/08/29 22:02:03 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
  */
 function panels_help($section = NULL) {
-  
+
 }
 
 /**
@@ -25,7 +25,7 @@ function panels_menu($may_cache) {
     $items[] = array(
       'path' => 'admin/panels',
       'title' => t('Panels'),
-      'access' => user_access('access administration pages'),    
+      'access' => user_access('access administration pages'),
       'callback' => 'system_admin_menu_block_page',
       'description' => t('Administer items related to the Panels module.'),
     );
@@ -39,33 +39,47 @@ function panels_menu($may_cache) {
     $items[] = array(
       'path' => 'panels/ajax',
       'title' => t('ajax'),
-      'callback' => 'panels_ajax',
+      'callback' => 'panels_ajax_passthru',
+      'callback arguments' => array('panels_ajax'),
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK
     );
     $items[] = array(
       'path' => 'panels/ajax/add-content',
       'title' => t('ajax'),
-      'callback' => 'panels_ajax_add_content',
+      'callback' => 'panels_ajax_passthru',
+      'callback arguments' => array('panels_ajax_add_content'),
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK
     );
     $items[] = array(
       'path' => 'panels/ajax/add-config',
       'title' => t('ajax'),
-      'callback' => 'panels_ajax_add_config',
+      'callback' => 'panels_ajax_passthru',
+      'callback arguments' => array('panels_ajax_add_config'),
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK
     );
     $items[] = array(
       'path' => 'panels/ajax/configure',
       'title' => t('ajax'),
-      'callback' => 'panels_ajax_configure',
+      'callback' => 'panels_ajax_passthru',
+      'callback arguments' => array('panels_ajax_configure'),
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK
     );
   }
   return $items;
+}
+
+/**
+ * Helper function for our AJAX stuff to call through to the right location
+ */
+function panels_ajax_passthru() {
+  $args = func_get_args();
+  $callback = array_shift($args);
+  include_once './' . panels_get_path('includes/display_edit.inc');
+  return call_user_func_array($callback, $args);
 }
 
 /**
@@ -100,12 +114,12 @@ function panels_elements() {
  * Theme our image button.
  */
 function theme_panels_imagebutton($element) {
-  return '<input type="image" ' . 
-    'class="form-' . $element['#button_type'] . ' ' . $element['#class'] . '" ' . 
+  return '<input type="image" ' .
+    'class="form-' . $element['#button_type'] . ' ' . $element['#class'] . '" ' .
     'name="'. $element['#name'] .'" ' .
-    'value="'. check_plain($element['#default_value']) .'" ' . 
+    'value="'. check_plain($element['#default_value']) .'" ' .
     'id="' . $element['#id'] . '" ' .
-    drupal_attributes($element['#attributes']) . 
+    drupal_attributes($element['#attributes']) .
     ' src="' . base_path() . $element['#image'] . '" ' .
     'alt="' . $element['#title'] . '" ' .
     'title="' . $element['#title'] . '" ' .
@@ -161,7 +175,7 @@ function panels_cache_clear($did) {
 }
 
 /**
- * Global storage function, used mostly so that _submit hooks can pass data 
+ * Global storage function, used mostly so that _submit hooks can pass data
  * back to their originator more easily.
  */
 function panels_set($var, $value = NULL) {
@@ -181,174 +195,14 @@ function panels_get($var) {
 
 // ---------------------------------------------------------------------------
 // panels display editing
-
 /**
  * Main API entry point to edit a panel display.
  *
  * TODO: Doc this. Important.
  */
 function panels_edit($display, $destination, $content_types = NULL) {
-  $did = $display->did;
-  if (!$did) {
-    $display->did = $did = 'new';
-  }
-
-  // Load the display being edited from cache, if possible.
-  if (!empty($_POST) && is_object($cache = panels_cache_get($did))) {
-    $display = $cache->display;
-  }
-  else {
-    panels_cache_clear($did);
-    $cache = new stdClass();
-    $cache->display = $display;
-    $cache->highest = 0;
-    $cache->content_types = $content_types;
-    panels_cache_set($did, $cache);
-  }
-
-//  drupal_set_message('<pre>' . check_plain(var_export($display, true)) . '</pre>');
-  $output = drupal_get_form('panels_edit_display', $display, $destination);
-  $hidden = theme('panels_hidden');
-  return $output . $hidden;
-}
-
-/**
- * Form definition for the panels display editor
- */
-function panels_edit_display($display, $destination) {
-  $form['did'] = array(
-    '#type' => 'hidden',
-    '#value' => $display->did,
-    '#id' => 'panel-did',
-  );
-
-  $form['op'] = array(
-    '#type' => 'hidden',
-    '#id' => 'panel-op',
-  );
-
-  $form['panels_display'] = array(
-    '#type' => 'value',
-    '#value' => $display
-  );
-
-  $form['destination'] = array(
-    '#type' => 'value',
-    '#value' => $destination
-  );
-
-  $form['explanation'] = array(
-    '#value' => '<p>' . t('Grab the title bar of any pane to drag it to another panel. Click the add pane button in any panel to add more content. Click the configure button on any pane to re-configure that pane.') . '</p>',
-  );
-
-  $form['button']['#tree'] = TRUE;
-  foreach ($display->content as $pid => $panel) {
-    $form['button'][$pid]['#tree'] = TRUE;
-    $form['button'][$pid]['configure'] = panels_add_button('configure.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
-    $form['button'][$pid]['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');
-  }
-
-  $layout = panels_get_layout($display->layout);
-  $layout_panels = panels_get_panels($layout, $display); 
-
-  foreach ($layout_panels as $id => $name) {
-    $form['panels'][$id]['add'] = panels_add_button('add.gif', t('Add content'), t('Add content to this panel'), 'pane-add', "pane-add-$id");
-  }
-
-  $form['panel'] = array('#tree' => TRUE);
-  $form['panel']['pane'] = array('#tree' => TRUE);
-
-  foreach ($layout_panels as $panel_id => $title) {
-    $form['panel']['pane'][$panel_id] = array(
-      '#type' => 'hidden',
-      '#default_value' => implode(',', (array) $display->panels[$panel_id]),
-    );
-  }
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-    '#id' => 'panels-dnd-save',
-  );  
-  $form['cancel'] = array(
-    '#type' => 'submit',
-    '#value' => t('Cancel'),
-  );  
-
-  $form['hide'] = array(
-    '#prefix' => '<span id="panels-js-only">',
-    '#suffix' => '</span>',
-  );
-
-  $form['hide']['hide-all'] = array(
-    '#type' => 'submit',
-    '#value' => t('Hide all'),
-    '#id' => 'panels-hide-all',
-  );  
-
-  $form['hide']['show-all'] = array(
-    '#type' => 'submit',
-    '#value' => t('Show all'),
-    '#id' => 'panels-show-all',
-  );  
-  
-  if ($submit) {
-    // The caller wants their own submit.
-    $form['#submit'] = array($submit => array());
-  }
-  return $form;
-}
-
-function theme_panels_edit_display($form) {
-  _panels_js_files();
-  $display = $form['panels_display']['#value'];
-  $layout = panels_get_layout($display->layout);
-  $layout_panels = panels_get_panels($layout, $display); 
-  $save_buttons = drupal_render($form['submit']) . drupal_render($form['cancel']);
-
-  foreach ($layout_panels as $panel_id => $title) {
-    foreach ((array) $display->panels[$panel_id] as $pid) {
-      $pane = $display->content[$pid];
-      $left_buttons = NULL;
-      $buttons = drupal_render($form['button'][$pid]['configure']);
-      $buttons .= drupal_render($form['button'][$pid]['delete']);
-      $content[$pane->panel] .= panels_show_pane($pane, $left_buttons, $buttons);
-    }
-    $content[$panel_id] = theme('panels_panel_dnd', $content[$panel_id], $panel_id, $title, drupal_render($form['panels'][$panel_id]['add']));
-  }
-  $output .= drupal_render($form);
-  $output .= theme('panels_dnd', panels_render_layout($layout, $content, '', $display->layout_settings));
-  $output .= $save_buttons;
-  return $output;
-}
-
-function panels_edit_display_submit($form_id, $form_values) {
-  $display = $form_values['panels_display'];
-  if ($form_values['op'] == t('Save')) {
-//    drupal_set_message('<pre>' . var_export($display, true) . '</pre>');
-//    drupal_set_message('<pre>' . var_export($form_values, true) . '</pre>');
-    $old_content = $display->content;
-    $display->content = array();
-
-    foreach ($form_values['panel']['pane'] as $panel_id => $panes) {
-      $display->panels[$panel_id] = array();
-      if ($panes) {
-        $pids = explode(',', $panes);
-        foreach ($pids as $pid) {
-          if ($old_content[$pid]) {
-            $display->panels[$panel_id][] = $pid;
-            $old_content[$pid]->panel = $panel_id;
-            $display->content[$pid] = $old_content[$pid];
-          }
-        }
-      }
-    }
-//    drupal_set_message('<pre>' . var_export($display, true) . '</pre>');
-    drupal_set_message(t('Panel content has been updated.'));
-    panels_save_display($display);
-  }
-
-  panels_cache_clear($display->did);
-  return $form_values['destination'];
+  include_once './' . panels_get_path('includes/display_edit.inc');
+  return _panels_edit($display, $destination, $content_types);
 }
 
 /**
@@ -357,137 +211,8 @@ function panels_edit_display_submit($form_id, $form_values) {
  * TODO: Doc this. Important.
  */
 function panels_edit_layout($display, $finish, $destination) {
+  include_once './' . panels_get_path('includes/display_edit.inc');
   return drupal_get_form('panels_choose_layout', $display, $finish, $destination);
-}
-/**
- * Form to change the layout of a display.
- */
-function panels_choose_layout($display, $finish, $destination) {
-  $layouts = panels_get_layouts();
-
-  foreach ($layouts as $id => $layout) {
-    $options[$id] = panels_print_layout_icon($id, $layout, check_plain($layout['title']));
-  }
-
-  drupal_add_js(panels_get_path('js/layout.js'));
-  $form['layout'] = array(
-    '#type' => 'radios',
-    '#title' => t('Choose layout'),
-    '#options' => $options,
-    '#default_value' => $display->layout,
-  );
-
-  $form['clearer'] = array(
-    '#value' => '<div style="clear: both;"></div>',
-  );
-
-  $form['variables'] = array(
-    '#type' => 'value',
-    '#value' => array($display, $finish, $destination),
-  );
-
-  if ($_POST['op'] && $_POST['op'] != t('Back') && $display->content) {
-    $form['#post'] = $_POST;
-    $form = form_builder('panels_choose_layout', $form);
-    unset($form['#post']);
-    $form['layout']['#type'] = 'hidden';
-    panels_change_layout($form, $display, $form['layout']['#value']);
-  }
-
-  if (($_POST['op'] && $_POST['op'] != t('Back')) || !$display->content) {
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => $finish,
-    );
-  }
-  else { 
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => t('Next'),
-    );
-  }
-  
-  $form['#token'] = FALSE; // no token please
-  return $form;
-}
-
-function panels_choose_layout_submit($form_id, $form_values) {
-  list($display, $finish, $destination) = $form_values['variables'];
-  $new_layout_id = $form_values['layout'];
-
-  if ($form_values['op'] == $finish) {
-    if (!empty($form_values['old'])) {
-      foreach ($form_values['old'] as $id => $new_id) {
-        $content[$new_id] = array_merge((array) $content[$new_id], $display->panels[$id]);
-        foreach($content[$new_id] as $pid) {
-          $display->content[$pid]->panel = $new_id;
-        }
-      }
-
-      $display->panels = $content;
-    }
-
-    $display->layout = $new_layout_id;
-
-    // save it back to our session.
-    panels_save_display($display);
-    return $destination;
-  }
-
-  return FALSE;
-}
-
-function panels_change_layout(&$form, $display, $new_layout_id) {
-  $new_layout = panels_get_layout($new_layout_id);
-  $new_layout_panels = panels_get_panels($new_layout, $display); 
-
-  $options = $new_layout_panels;
-  $keys = array_keys($options);
-  $default = $options[0];
-
-  $old_layout = panels_get_layout($display->layout);
-
-  $form['container'] = array(
-    '#prefix' => '<div class="change-layout-display">',
-    '#suffix' => '</div>',
-  );
-
-  $form['container']['old_layout'] = array(
-    '#value' => panels_print_layout_icon($display->layout, $old_layout, check_plain($old_layout['title'])),
-  );
-  
-  $form['container']['right_arrow'] = array(
-    '#value' => theme('image', drupal_get_path('module', 'panels') . '/images/go-right.png'),
-  );
-  $form['container']['new_layout'] = array(
-    '#value' => panels_print_layout_icon($new_layout_id, $new_layout, check_plain($new_layout['title'])),
-  );
-
-  $form['container-clearer'] = array(
-    '#value' => '<div style="clear: both;"></div>',
-  );
-
-  $form['old'] = array(
-    '#tree' => true,
-    '#prefix' => '<div class="panels-layout-list">',
-    '#suffix' => '</div>',
-  );
-
-  $old_layout_panels = panels_get_panels($old_layout, $display); 
-  foreach ($display->panels as $id => $content) {
-    $form['old'][$id] = array(
-      '#type' => 'select',
-      '#title' => t('Move content in @layout to', array('@layout' => $old_layout_panels[$id])),
-      '#options' => $options,
-      '#default_value' => array_key_exists($id, $options) ? $id : $default,
-    );
-  }
-
-  $form['back'] = array(
-    '#type' => 'submit',
-    '#value' => t('Back'),
-  );
-  return $form;
 }
 
 /**
@@ -496,810 +221,10 @@ function panels_change_layout(&$form, $display, $new_layout_id) {
  * TODO: Doc this. Important.
  */
 function panels_edit_layout_settings($display, $finish, $destination) {
+  include_once './' . panels_get_path('includes/display_edit.inc');
   return drupal_get_form('panels_edit_layout_settings_form', $display, $finish, $destination);
 }
-/**
- * Form to change the layout of a display.
- */
-function panels_edit_layout_settings_form($display, $finish, $destination) {
-  $layout = panels_get_layout($display->layout);
-  if (!empty($layout['settings form']) && function_exists($layout['settings form'])) {
-    $form['layout_settings'] = $layout['settings form']($display, $layout, $display->layout_settings);
-  }
 
-  $form['layout_settings']['#tree'] = TRUE;
-
-  $form['variables'] = array(
-    '#type' => 'value',
-    '#value' => array($display, $finish, $destination),
-  );
-
-  $form['layout'] = array(
-    '#type' => 'value',
-    '#value' => $layout,
-  );
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => $finish,
-  );
-  return $form;
-}
-
-function panels_edit_layout_settings_form_validate($form_id, $form_values, $form) {
-  list($display, $finish, $destination) = $form_values['variables'];
-  $layout = $form_values['layout'];
-  if (!empty($layout['settings validate']) && function_exists($layout['settings validate'])) {
-    $layout['settings validate']($form_values['layout_settings'], $form['layout_settings'], $display, $layout, $display->layout_settings);
-  }
-}
-
-function panels_edit_layout_settings_form_submit($form_id, $form_values) {
-  list($display, $finish, $destination) = $form_values['variables'];
-
-  $layout = $form_values['layout'];
-  if (!empty($layout['settings submit']) && function_exists($layout['settings submit'])) {
-    $layout['settings submit']($form_values['layout_settings'], $display, $layout, $display->layout_settings);
-  }
-  
-  if ($form_values['op'] == $finish) {
-    $display->layout_settings = $form_values['layout_settings'];
-    panels_save_display($display);
-    drupal_set_message("Your layout settings have been saved.");
-    return $destination;
-  }
-}
-
-/**
- * @defgroup panels_content Panels content and pane helper/info functions
- * @{
- */
-
-/**
- * Determine visibility of a panel pane
- *
- * @param $pane
- *   The pane object to test.
- * @param $account
- *   The account to test access against.
- */
-function panels_pane_access($pane, $account = NULL) {
-  if (!$account) {
-    global $user;
-    $account = $user;
-  }
-
-  // Administrator privileges
-  if (user_access('view all pane', $account)) {
-    return TRUE;
-  }
-
-  // All views with an empty access setting are available to all roles.
-  if (!$pane->access || !is_array($pane->access)) { 
-    return TRUE;
-  }
-
-  // Otherwise, check roles
-  static $roles = array();
-  if (!isset($roles[$account->uid])) {
-    $roles[$account->uid] = array_keys($account->roles);
-    $roles[$account->uid][] = $account->uid ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;
-  }
-
-  return array_intersect($pane->access, $roles[$account->uid]);
-}
-
-/**
- * Get the function to call for a given operation on a content type.
- *
- * @param $type
- *   The content type to check. May be the name (which loads the content type) or
- *   an already loaded content type object.
- * @param $name
- *   The name of the function to retrieve; this will be set in the content type
- *   definition. May be:
- *   - render callback
- *   - title callback
- *   - add callback
- *   - add validate callback
- *   - add submit callback
- *   - edit callback
- *   - edit validate callback
- *   - edit submit callback
- */
-function panels_ct_function($type, $name) {
-  if (is_object($type)) {
-    $content_type = $type;
-  }
-  else {
-    $content_type = panels_get_content_type($type);
-  }
-
-  $function = $content_type[$name];
-  if (function_exists($function)) {
-    return $function; 
-  }
-}  
-
-/**
- * Get the content from a given content type.
- *
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $conf
- *   The configuration for the content type.
- * @param $args
- *   The arguments to the content type.
- * @param $context
- *   The panels_context object.
- * @Param $incoming_content
- *   Any incoming content, if this display is a wrapper.
- */
-function panels_ct_get_content($type, $conf, $args, $context, $incoming_content) {
-  if ($function = panels_ct_function($type, 'render callback')) {
-    return $function($conf, $args, $context, $incoming_content); 
-  }
-}
-
-/**
- * Get the title from a given content type.
- *
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $conf
- *   The configuration for the content type.
- */
-function panels_ct_get_title($type, $conf) {
-  if ($function = panels_ct_function($type, 'title callback')) {
-    return $function($conf); 
-  }
-}
-
-/**
- * Get the form to add a new instance of a content type.
- *
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $id
- *   The identifier for the content to add; this is specific to the type of
- *   content.
- * @param $parents
- *   The #parents to be used on the form, because some form gadgets need to
- *   know where they live.
- */
-function panels_ct_get_add_form($type, $id, $parents) {
-  if ($function = panels_ct_function($type, 'add callback')) {
-    return $function($id, $parents); 
-  }
-}
-
-/**
- * Call the validate handler for the add form for a content type.
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $form
- *   The actual Forms API form that is being validated.
- * @param $form_values
- *   The actual Forms API values being validated.
- */
-function panels_ct_validate_add_form($type, $form, $form_values) {
-  if ($function = panels_ct_function($type, 'add validate callback')) {
-    return $function($form, $form_values); 
-  }
-}
-
-/**
- * Call the submit handler for the add form for a content type.
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $form_values
- *   The actual Forms API values being validated.
- */
-function panels_ct_submit_add_form($type, $form_values) {
-  if ($function = panels_ct_function($type, 'add submit callback')) {
-    return $function($form_values); 
-  }
-}
-
-/**
- * Get the form to edit an instance of a content type.
- *
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $id
- *   The identifier for the content to add; this is specific to the type of
- *   content.
- * @param $parents
- *   The #parents to be used on the form, because some form gadgets need to
- *   know where they live.
- */
-function panels_ct_get_edit_form($type, $conf, $parents) {
-  if ($function = panels_ct_function($type, 'edit callback')) {
-    return $function($conf, $parents); 
-  }
-}
-
-/**
- * Call the validate handler for the edit form for a content type.
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $form
- *   The actual Forms API form that is being validated.
- * @param $form_values
- *   The actual Forms API values being validated.
- */
-function panels_ct_validate_edit_form($type, $form, $form_values) {
-  if ($function = panels_ct_function($type, 'edit validate callback')) {
-    return $function($form, $form_values); 
-  }
-}
-
-/**
- * Call the submit handler for the edit form for a content type.
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $form_values
- *   The actual Forms API values being validated.
- */
-function panels_ct_submit_edit_form($type, $form_values) {
-  if ($function = panels_ct_function($type, 'edit submit callback')) {
-    return $function($form_values); 
-  }
-}
-
-/**
- * Get all of the individual types provided by a given content types. This
- * would be all of the blocks for the block type, or all of the views for
- * the view type.
- *
- * @param $type
- *   The content type to load.
- */
-function panels_ct_get_types($type) {
-  if (is_array($type)) {
-    $content_type = $type;
-  }
-  else {
-    $content_type = panels_get_content_type($type);
-  }
-
-  $function = $content_type['content_types'];
-  if (is_array($function)) {
-    return $function;
-  }
-
-  if (function_exists($function)) {
-    return $function($conf); 
-  }
-}
-
-/**
- * Get an array of all available content types that can be fed into the
- * display editor for the add content list.
- *
- * @param $context
- *   If a context is provided, content that requires that context can apepar.
- * @param $
- */
-function panels_get_available_content_types($context = NULL, $has_content = FALSE) {
-  $content_types = panels_get_content_types();
-  $available = array();
-
-  foreach ($content_types as $id => $type) {
-    // exclude items that require content if we're saying we don't
-    // provide it.
-    if (!empty($type['requires content']) && !$has_content) {
-      continue;
-    }
-
-    // Check to see if the content type can be used in this context.
-    if (!isset($type['required context']) || 
-        (is_array($type['required_context']) &&
-           in_array($context, $type['required_context'])) ||
-        ($type['required_context'] == $context)) {
-      $available[$id] = panels_ct_get_types($type);
-    }
-  }
-  return $available;
-}
-
-function panels_get_panels($layout, $display) {
-  if (!empty($layout['panels function']) && function_exists($layout['panels function'])) {
-    return $layout['panels function']($display, $display->layout_settings);
-  }
-  if (!empty($layout['panels'])) {
-    return $layout['panels'];
-  }
-  return array();
-}
-
-// ------------------------------------------------------------------
-// Functions to provide information about a panel or part of a panel.
-
-/**
- * Get the content from a given pane.
- *
- * @param $pane
- *   The pane to retrieve content from.
- * @param $args
- *   The arguments sent to the display.
- * @param $context
- *   The panels context.
- * @param $incoming_content
- *   Any incoming content if this display is a wrapper.
- */
-function panels_get_pane_content($pane, $args = array(), $context = NULL, $incoming_content = '') {
-  if (!$context) {
-    $context = new panels_context;
-  }
-  if (!$incoming_content === '') {
-    $incoming_content = t('Incoming content will be displayed here.');
-  }
-
-  return panels_ct_get_content($pane->type, $pane->configuration, $args, $context, $incoming_content);
-}
-
-/**
- * Get the title of a pane.
- *
- * @param $pane
- *   The $pane object.
- */
-function panels_get_pane_title($pane) {
-  return panels_ct_get_title($pane->type, $pane->configuration);
-}
-
-/**
- * Display the edit form for a pane.
- *
- * @param $pane
- *   The pane to edit.
- * @param $parents
- *   The form api #parents array for that this subform will live in.
- */
-function panels_get_pane_edit_form($pane, $parents) {
-  return panels_ct_get_edit_form($pane->type, $pane->configuration, $parents);
-}
-
-/**
- * Render a single pane in the edit environment.
- *
- * @param $pane
- *   The pane to render.
- * @param $left_buttons
- *   Buttons that go on the left side of the pane.
- * @param $buttons
- *   Buttons that go on the right side of 
- * @param $skin
- *   If true, provide the outside div. Used to provide an easy way to get
- *   just the innards for ajax replacement
- */
-function panels_show_pane($pane, $left_buttons, $buttons, $skin = TRUE) {
-  $block = panels_get_pane_content($pane);
-  $title = panels_get_pane_title($pane);
-
-  $output = theme('panels_pane_dnd', $block, $pane->pid, $title, $left_buttons, $buttons);
-  if ($skin) {
-    $output = '<div class="panel-pane" id="panel-pane-' . $pane->pid . '">' . $output . '</div>';
-  }
-  return $output;
-}
-
-/**
- * @} End of "defgroup panels_content".
- */
-
-/**
- * @defgroup panels_ajax Functions for panels ajax features
- * @{
- */
-
-/**
- * Simple render function to make sure output is what we want.
- */
-function panels_ajax_render($output = NULL, $title = NULL) {
-  if (!is_object($output)) {
-    $temp = new stdClass();
-    $temp->output = $output;
-    $temp->type = 'display';
-    $temp->title = $title;
-    $output = $temp;
-  }
-  if (!$output->output || !$output->type) {
-    $output->output = t('The input was invalid');
-    $output->type = 'display';
-    $output->title = t('Error');
-  }
-  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
-  print drupal_to_js($output);
-  exit;
-}
-
-/**
- * entry point into all the ajax stuff
- */
-function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
-  switch ($op) {
-    case 'submit-form':
-      if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
-        $output = panels_edit_submit_subform($cache->display);
-      }
-      break;
-  }      
-
-  panels_ajax_render($output);
-}
-
-function panels_ajax_add_content($did = NULL, $panel_id = NULL) {
-  if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
-    $display = $cache->display;
-    $layout = panels_get_layout($display->layout);
-    $layout_panels = panels_get_panels($layout, $display); 
-
-    if ($layout && array_key_exists($panel_id, $layout_panels)) {
-      $output->output = panels_add_content($cache, $panel_id);
-      $output->type = 'display';
-      $output->title = t('Add content to !s', array('!s' => $layout_panels[$panel_id]));
-    }
-  }
-  panels_ajax_render($output);
-}
-
-function panels_add_content($cache, $panel_id) {
-  $return->type = 'display';
-  $return->title = t('Choose type');
-  panels_set('return', $return);
-
-  if (!isset($cache->content_types)) {
-    $cache->content_types = panels_get_available_content_types();
-  }
-
-  $weights = array(t('Contributed modules') => 0);
-  $categories = array();
-  $titles = array();
-
-  foreach ($cache->content_types as $id => $types) {
-    if (is_array($types)) {
-      foreach ($types as $content_id => $info) {
-        if (isset($info['icon'])) {
-          $icon = $info['icon'];
-          if (isset($info['path'])) {
-            $path = $info['path'];
-          }
-          else {
-            $path = panels_get_path("content_types/$id");
-          }
-        }
-        else {
-          $icon = 'no-icon.png';
-          $path = panels_get_path('images');
-        }
-        $title = filter_xss_admin($info['title']);
-        if (isset($info['description'])) {
-          $description = $info['description'];
-        }
-        else {
-          $description = $title;
-        }
-
-        if (isset($info['category'])) {
-          if (is_array($info['category'])) {
-            list($category, $weight) = $info['category'];
-            $weights[$category] = $weight;
-          }
-          else {
-            $category = $info['category'];
-            if (!isset($weights['category'])) {
-              $weights[$category] = 0;
-            }
-          }
-        }
-        else {
-          $category = t('Contrib modules');
-        }
-        $output = '<div class="content-type-button">';
-        $link_text = theme('image', $path . '/' . $icon, $description, $description);
-        $output .= l($link_text, 'javascript: void()', array('class' => 'panels-modal-add-config', 'id' => $id . '-' . $panel_id . '-' . $content_id), NULL, NULL, NULL, TRUE);
-        $output .= "<div>$title</div>";
-        $output .= '</div>';
-        if (!isset($categories[$category])) {
-          $categories[$category] = array();
-          $titles[$category] = array();
-        }
-
-        $categories[$category][] = $output;
-        $titles[$category][] = $title;
-      }
-    }
-  }
-  if (!$categories) {
-    $output = t('There are no content types you may add to this display.');
-  }
-  else {
-    asort($weights);
-    $output = '';
-    foreach ($weights as $category => $weight) {
-      $output .= '<h3 class="panels-section-title">' . $category . '</h3>';
-      $output .= '<div class="panels-section-decorator"></div>';
-      natcasesort($titles[$category]);
-      foreach ($titles[$category] as $id => $title) {
-        $output .= $categories[$category][$id];
-      }
-    }
-  }
-  return $output;
-}
-
-
-function panels_ajax_add_config($did = NULL, $pid = NULL) {
-  if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
-    $display = $cache->display;
-    list($content_type_id, $panel_id, $type) = explode('-', $pid, 3);
-    $conf = panels_ct_get_add_form($content_type_id, $type, array('configuration'));
-    $types = panels_ct_get_types($content_type_id);
-    $title = $types[$type]['title'];
-
-    $cache->add_config = array($content_type_id, $conf, $panel_id, $title);
-    panels_cache_set($display->did, $cache);
-
-    $text = drupal_get_form('panels_add_content_config_form', $cache, $content_type_id, $conf, $panel_id, $title);
-    $output = panels_get('return');
-    $output->output = $text;
-  }      
-  panels_ajax_render($output);
-}
-
-function panels_add_content_config_form($display, $content_type_id = NULL, $conf = NULL, $panel_id = NULL, $title = NULL) {
-  if (empty($content_type_id)) {
-    $cache = panels_cache_get($display->did);
-    if (isset($cache->add_config)) {
-      list($content_type_id, $conf, $panel_id, $title) = $cache->add_config;
-    }
-  }
-
-  $form['start_form'] = array('#value' => '<div class="modal-form">');
-
-  $form['did'] = array(
-    '#type' => 'value',
-    '#value' => $display->did,
-  );
-
-  $form['type'] = array(
-    '#type' => 'value',
-    '#value' => $content_type_id,
-  );
-
-  $form['panel'] = array(
-    '#type' => 'value',
-    '#value' => $panel_id,
-  );
-
-  $form['configuration'] = $conf;
-  $form['configuration']['#tree'] = TRUE;
-  
-  if (user_access('administer pane visibility')) {
-    $rids = array();
-    $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
-    while ($obj = db_fetch_object($result)) {
-      $rids[$obj->rid] = $obj->name;
-    }
-
-    $form['access'] = array(
-      '#type' => 'checkboxes',
-      '#title' => t('Access'),
-      '#default_value' => array(),
-      '#options' => $rids,
-      '#description' => t('Only the checked roles will be able to see this pane; if no roles are checked, access will not be restricted.'),
-    );
-  }
-  else {
-    $form['access'] = array(
-      '#type' => 'value',
-      '#value' => array(),
-    );
-  }
-  $form['end_form'] = array('#value' => '</div>');
-
-  $form['next'] = array(
-    '#type' => 'submit',
-    '#value' => t('Add pane'),
-  );
-
-  $return->type = 'display';
-  $return->title = t('Configure !s', array('!s' => $title));
-  panels_set('return', $return);
-  return $form;
-}
-
-function panels_add_content_config_form_validate($form_id, $form_values, $form) {
-  panels_ct_validate_add_form($form_values['type'], $form['configuration'], $form_values['configuration']);
-}
-
-function panels_add_content_config_form_submit($form_id, $form) {
-  $cache = panels_cache_get($form['did']);
-
-  // keep an incrementing counter, add the data to the display.
-  // This counter is so that we can add this pane to the cache but not
-  // make it real until the final 'Save' is clicked.
-  $pid = ++$cache->highest;
-  $form['pid'] = "new-$pid";
-  $form['access'] = array_keys(array_filter($form['access']));
-
-  panels_ct_submit_add_form($form['type'], $form['configuration']);
-
-  $cache->display->content[$form['pid']] = (object) $form;
-  $cache->display->panels[$form['panel']][] = $form['pid'];
-//  drupal_set_message('<pre>' . var_export($cache->display, true) . '</pre>');
-
-  panels_cache_set($form['did'], $cache);
-  // Set info for the javascript so it knows where to put the new pane.
-  // FIXME: Note that ->area appears to be a holdover -- it should be ->panel now.
-  $return->type = 'add';
-  $return->area = $form['panel'];
-  $return->id = $form['pid'];
-
-  // we need to fake the buttons a little.
-  $buttons['configure'] = panels_add_button('configure.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
-  $buttons['configure']['#parents'] = array('button', $form['pid'], 'configure');
-
-  $buttons['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');
-  $buttons['delete']['#parents'] = array('button', $form['pid'], 'delete');
-  
-  $buttons = form_builder('dummy', $buttons);
-
-  // Render the new pane for the javascript.
-  $return->output = panels_show_pane($cache->display->content[$form['pid']], NULL, drupal_render($buttons));
-
-  panels_set('return', $return);
-  return FALSE;
-}
-
-function panels_ajax_configure($did = NULL, $pid = NULL) {
-  if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
-    $text = drupal_get_form('panels_edit_pane_config_form', $cache->display, $pid);
-    $output = panels_get('return');
-    $output->output = $text;
-  }
-  panels_ajax_render($output);
-}
-
-function panels_edit_pane_config_form($display, $pid = NULL) {
-  $cache = panels_cache_get($display->did);
-  if ($pid === NULL) {
-    if (isset($cache->pid)) {
-      $pid = $cache->pid;
-    }
-    else {
-      return array();
-    }
-  }
-  else {
-    $cache->pid = $pid;
-    panels_cache_set($display->did, $cache);
-  }
-
-  $pane = $display->content[$pid];
-
-  $form['start_form'] = array('#value' => '<div class="modal-form">');
-
-  $form['did'] = array(
-    '#type' => 'value',
-    '#value' => $display->did,
-  );
-
-  $form['pid'] = array(
-    '#type' => 'value',
-    '#value' => $pid,
-  );
-
-  $form['type'] = array(
-    '#type' => 'value',
-    '#value' => $content_type_id,
-  );
-
-  $return->title = t('Configure !s', array('!s' => panels_get_pane_title($pane)));
-  $form['configuration'] = panels_get_pane_edit_form($pane, array('configuration'));
-  $form['configuration']['#tree'] = true;
-
-  if (user_access('administer pane visibility')) {
-    $rids = array();
-    $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
-    while ($obj = db_fetch_object($result)) {
-      $rids[$obj->rid] = $obj->name;
-    }
-
-    $form['access'] = array(
-      '#type' => 'checkboxes',
-      '#title' => t('Access'),
-      '#default_value' => $pane->access,
-      '#options' => $rids,
-      '#description' => t('Only the checked roles will be able to see this pane; if no roles are checked, access will not be restricted.'),
-    );
-  }
-  else {
-    $form['access'] = array(
-      '#type' => 'value',
-      '#value' => $pane->access,
-    );
-  }
-
-  $return->type = 'display';
-  panels_set('return', $return);
-  
-  $form['end_form'] = array('#value' => '</div>');
-
-  $form['next'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
-  return $form;
-}
-
-function panels_edit_pane_config_form_validate($form_id, $form_values, $form) {
-  panels_ct_validate_edit_form($form_values['type'], $form['configuration'], $form_values['configuration']);
-}
-
-function panels_edit_pane_config_form_submit($form_id, $form) {
-  // save the new configuration.
-  $cache = panels_cache_get($form['did']);
-
-  panels_ct_submit_edit_form($form['type'], $form['configuration']);
-  
-  $cache->display->content[$form['pid']]->access = array_keys(array_filter($form['access']));
-  $cache->display->content[$form['pid']]->configuration = $form['configuration'];
-  panels_cache_set($form['did'], $cache);
-
-  $return->type = 'replace';
-  $return->id = $form['pid'];
-
-  $block = panels_get_pane_content($cache->display->content[$form['pid']]);
-  if (!$block->subject) {
-    $block->subject = t('No title');
-  }
-
-  $return->output = theme('panels_pane_collapsible', $block, $cache->display);
-
-  panels_set('return', $return);
-  return FALSE;
-}
- 
-function panels_edit_submit_subform($display) {
-  // Check forms to make sure only valid forms can be rendered this way.
-  $valid_forms = array('panels_add_content_config_form', 'panels_edit_pane_config_form');
-  $form_id = $_POST['form_id'];
-  if (!in_array($form_id, $valid_forms)) {
-    return panels_ajax_render();
-  }
-
-  $output = drupal_get_form($form_id, $display);
-
-  $next = panels_get('next');
-
-  if ($next) {
-    $output = drupal_get_form($next['form'], $display, $next['data']);
-    $return = panels_get('return');
-    if (!$return->output) {
-      $return->output = $output;
-    }
-  }
-  else {
-    if (!($return = panels_get('return'))) {
-      $return->type = 'display';
-      $return->output = $output;
-    }
-    else if ($return->type == 'display' && !$return->output) {
-      $return->output = $output;
-    }
-  }
-
-  if ($return->type == 'display') {
-    $return->output = theme('status_messages') . $return->output;
-  }
-  return $return;
-}
-
-/**
- * @} End of "defgroup panels_content".
- */
 
 // ---------------------------------------------------------------------------
 // panels database functions
@@ -1320,6 +245,44 @@ class panels_display {
     }
   }
 }
+
+/**
+ * Forms the basis for describing and storing a context that a display
+ * might be running in.
+ */
+class panels_context {
+  var $type = NULL;
+  var $data = NULL;
+
+  function panels_context($type = 'none', $data = NULL) {
+    $this->type = $type;
+    $this->data = $data;
+  }
+}
+
+/**
+ * Clean up a display and make sure it has some required information if
+ * it doesn't already exist. Currently we wrequire a context, an incoming
+ * content and a css_id.
+ */
+function panels_sanitize_display(&$display) {
+  if (!isset($display->args)) {
+    $display->args = array();
+  }
+
+  if (!isset($display->incoming_content)) {
+    $display->incoming_content = NULL;
+  }
+
+  if (!isset($display->context)) {
+    $display->context = new panels_context();
+  }
+
+  if (!isset($display->css_id)) {
+    $display->css_id = NULL;
+  }
+}
+
 
 /**
  * Creates a new display with the given context, so that users don't
@@ -1463,7 +426,7 @@ function panels_export_display($display) {
     if (!isset($counters[$pane->panel])) {
       $counters[$pane->panel] = 0;
     }
-    $output .= '$display->panels[\'' . $pane->panel . '\'][' . $counters[$pane->panel]++ .'] = \'' . $id . "';\n";    
+    $output .= '$display->panels[\'' . $pane->panel . '\'][' . $counters[$pane->panel]++ .'] = \'' . $id . "';\n";
   }
   return $output;
 }
@@ -1472,21 +435,23 @@ function panels_export_display($display) {
  * For external use: Given a layout ID and a $content array, return the
  * panel display. The content array is filled in based upon the content
  * available in the layout. If it's a two column with a content
- * array defined like array('left' => t('Left side'), 'right' => 
- * t('Right side')), then the $content array should be array('left' => 
+ * array defined like array('left' => t('Left side'), 'right' =>
+ * t('Right side')), then the $content array should be array('left' =>
  * $output_left, 'right' => $output_right)
+ * @render
  */
 function panels_print_layout($id, $content) {
   $layout = panels_get_layout($id);
   if (!$layout) {
     return;
   }
-  
+
   return panels_render_layout($layout, $content);
 }
 
 /**
  * Given a full layout structure and a content array, render a panel display.
+ * @render
  */
 function panels_render_layout($layout, $content, $css_id = NULL, $settings = array()) {
   if (file_exists(path_to_theme() . '/' . $layout['css'])) {
@@ -1495,7 +460,6 @@ function panels_render_layout($layout, $content, $css_id = NULL, $settings = arr
   else {
     drupal_add_css(panels_get_path($layout['css'], false, $layout['module']));
   }
-
   // This now comes after the CSS is added, because panels-within-panels must
   // have their CSS added in the right order; inner content before outer content.
   if (is_object($content)) {
@@ -1503,9 +467,12 @@ function panels_render_layout($layout, $content, $css_id = NULL, $settings = arr
     $content = array();
     // Loop through all panels, put all panes that belong to the current panel
     // in an array, then render the panel.
-    foreach ($display->panels as $panel_name => $panes) {
-      $panes_in_panel = array_intersect_key($display->content, array_flip($panes));
-      $content[$panel_name] = panels_render_panel($panes_in_panel, $display);    
+    foreach ($display->panels as $panel_name => $pids) {
+      $panels = array(); 
+      foreach ($pids as $pid) {
+        $panels[$pid] = $display->content[$pid];
+      }
+      $content[$panel_name] = panels_render_panel($panels, $display);
     }
   }
 
@@ -1514,45 +481,13 @@ function panels_render_layout($layout, $content, $css_id = NULL, $settings = arr
   return $output;
 }
 
-class panels_context {
-  var $type = NULL;
-  var $data = NULL;
-
-  function panels_context($type = 'none', $data = NULL) {
-    $this->type = $type;
-    $this->data = $data;
-  }
-}
-
-/**
- * Clean up a display and make sure it has some required information if
- * it doesn't already exist. Currently we wrequire a context, an incoming
- * content and a css_id.
- */
-function panels_sanitize_display(&$display) {
-  if (!isset($display->args)) {
-    $display->args = array();
-  }
-
-  if (!isset($display->incoming_content)) {
-    $display->incoming_content = NULL;
-  }
-
-  if (!isset($display->context)) {
-    $display->context = new panels_context();
-  }
-
-  if (!isset($display->css_id)) {
-    $display->css_id = NULL;
-  }
-}
-
 /**
  * Render a display by loading the content into an appropriate
- * array and then passing through to panels_render_layout. 
+ * array and then passing through to panels_render_layout.
  *
- * if $incoming_content is NULL, default content will be applied. Use 
+ * if $incoming_content is NULL, default content will be applied. Use
  * an empty string to indicate no content.
+ * @render
  */
 function panels_render_display(&$display) {
   $layout = panels_get_layout($display->layout);
@@ -1560,8 +495,9 @@ function panels_render_display(&$display) {
     return NULL;
   }
 
+  // TODO: This may not be necessary now. Check this.
   panels_sanitize_display($display);
-  
+
   return panels_render_layout($layout, $display, $display->css_id, $display->layout_settings);
 }
 
@@ -1576,13 +512,14 @@ function panels_render_display(&$display) {
  *   A display object.
  * @return
  *   The rendered HTML for a panel.
+ * @render
  */
 function panels_render_panel($panes_in_panel, $display) {
   if (!empty($display->panel_settings)) {
-    $style = panels_get_panel_style($display->panel_settings['style']);
+    $style = panels_get_style($display->panel_settings['style']);
   }
   else {
-    $style = array('name' => 'default', 'module' => 'panels');
+    $style = panels_get_style('default');
   };
 
   // Store all panes in an array, sorted by their position in the panel.
@@ -1595,61 +532,487 @@ function panels_render_panel($panes_in_panel, $display) {
 
   // Retrieve the pid (can be a panel page id, a mini panel id, etc.), this
   // might be used (or even necessary) for some panel display styles.
+  // TODO: Got to fix this to use panel page name instead of pid, since pid is
+  // no longer guaranteed. This needs an API to be able to set the final id.
   $pid = 0;
   if (isset($display->owner) && is_object($display->owner) && isset($display->owner->pid)) {
     $panel_id = $display->owner->pid;
   }
-
-  return module_invoke($style['module'], 'panels_panel_style_render', $display, $style['name'], $panel_id, $panes);
+  
+  if ($function = $style['render panel']) {
+    return $function($display, $panel_id, $panes);
+  }
+  else {
+    // TODO: DEPRECATED. Leaving in to make the transition easier. This will disappear by
+    // alpha 11.
+    return module_invoke($style['module'], 'panels_panel_style_render', $display, $style['name'], $panel_id, $panes);
+  }
 }
+
+/**
+ * @defgroup panels_content Panels content and pane helper/info functions
+ * @{
+ */
+
+/**
+ * Determine visibility of a panel pane
+ *
+ * @param $pane
+ *   The pane object to test.
+ * @param $account
+ *   The account to test access against.
+ */
+function panels_pane_access($pane, $account = NULL) {
+  if (!$account) {
+    global $user;
+    $account = $user;
+  }
+
+  // Administrator privileges
+  if (user_access('view all pane', $account)) {
+    return TRUE;
+  }
+
+  // All views with an empty access setting are available to all roles.
+  if (!$pane->access || !is_array($pane->access)) {
+    return TRUE;
+  }
+
+  // Otherwise, check roles
+  static $roles = array();
+  if (!isset($roles[$account->uid])) {
+    $roles[$account->uid] = array_keys($account->roles);
+    $roles[$account->uid][] = $account->uid ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;
+  }
+
+  return array_intersect($pane->access, $roles[$account->uid]);
+}
+
+/**
+ * Get the function to call for a given operation on a content type.
+ *
+ * @param $type
+ *   The content type to check. May be the name (which loads the content type) or
+ *   an already loaded content type object.
+ * @param $name
+ *   The name of the function to retrieve; this will be set in the content type
+ *   definition. May be:
+ *   - render callback
+ *   - title callback
+ *   - add callback
+ *   - add validate callback
+ *   - add submit callback
+ *   - edit callback
+ *   - edit validate callback
+ *   - edit submit callback
+ */
+function panels_ct_function($type, $name) {
+  if (is_object($type)) {
+    $content_type = $type;
+  }
+  else {
+    $content_type = panels_get_content_type($type);
+  }
+
+  $function = $content_type[$name];
+  if (function_exists($function)) {
+    return $function;
+  }
+}
+
+/**
+ * Get the content from a given content type.
+ *
+ * @param $type
+ *   The content type. May be the name or an already loaded content type object.
+ * @param $conf
+ *   The configuration for the content type.
+ * @param $args
+ *   The arguments to the content type.
+ * @param $context
+ *   The panels_context object.
+ * @Param $incoming_content
+ *   Any incoming content, if this display is a wrapper.
+ */
+function panels_ct_get_content($type, $conf, $args, $context, $incoming_content) {
+  if ($function = panels_ct_function($type, 'render callback')) {
+    return $function($conf, $args, $context, $incoming_content);
+  }
+}
+
+/**
+ * Get the title from a given content type.
+ *
+ * @param $type
+ *   The content type. May be the name or an already loaded content type object.
+ * @param $conf
+ *   The configuration for the content type.
+ */
+function panels_ct_get_title($type, $conf) {
+  if ($function = panels_ct_function($type, 'title callback')) {
+    return $function($conf);
+  }
+}
+
+/**
+ * Get the form to add a new instance of a content type.
+ *
+ * @param $type
+ *   The content type. May be the name or an already loaded content type object.
+ * @param $id
+ *   The identifier for the content to add; this is specific to the type of
+ *   content.
+ * @param $parents
+ *   The #parents to be used on the form, because some form gadgets need to
+ *   know where they live.
+ */
+function panels_ct_get_add_form($type, $id, $parents) {
+  if ($function = panels_ct_function($type, 'add callback')) {
+    return $function($id, $parents);
+  }
+}
+
+/**
+ * Call the validate handler for the add form for a content type.
+ * @param $type
+ *   The content type. May be the name or an already loaded content type object.
+ * @param $form
+ *   The actual Forms API form that is being validated.
+ * @param $form_values
+ *   The actual Forms API values being validated.
+ */
+function panels_ct_validate_add_form($type, $form, $form_values) {
+  if ($function = panels_ct_function($type, 'add validate callback')) {
+    return $function($form, $form_values);
+  }
+}
+
+/**
+ * Call the submit handler for the add form for a content type.
+ * @param $type
+ *   The content type. May be the name or an already loaded content type object.
+ * @param $form_values
+ *   The actual Forms API values being validated.
+ */
+function panels_ct_submit_add_form($type, $form_values) {
+  if ($function = panels_ct_function($type, 'add submit callback')) {
+    return $function($form_values);
+  }
+}
+
+/**
+ * Get the form to edit an instance of a content type.
+ *
+ * @param $type
+ *   The content type. May be the name or an already loaded content type object.
+ * @param $id
+ *   The identifier for the content to add; this is specific to the type of
+ *   content.
+ * @param $parents
+ *   The #parents to be used on the form, because some form gadgets need to
+ *   know where they live.
+ */
+function panels_ct_get_edit_form($type, $conf, $parents) {
+  if ($function = panels_ct_function($type, 'edit callback')) {
+    return $function($conf, $parents);
+  }
+}
+
+/**
+ * Call the validate handler for the edit form for a content type.
+ * @param $type
+ *   The content type. May be the name or an already loaded content type object.
+ * @param $form
+ *   The actual Forms API form that is being validated.
+ * @param $form_values
+ *   The actual Forms API values being validated.
+ */
+function panels_ct_validate_edit_form($type, $form, $form_values) {
+  if ($function = panels_ct_function($type, 'edit validate callback')) {
+    return $function($form, $form_values);
+  }
+}
+
+/**
+ * Call the submit handler for the edit form for a content type.
+ * @param $type
+ *   The content type. May be the name or an already loaded content type object.
+ * @param $form_values
+ *   The actual Forms API values being validated.
+ */
+function panels_ct_submit_edit_form($type, $form_values) {
+  if ($function = panels_ct_function($type, 'edit submit callback')) {
+    return $function($form_values);
+  }
+}
+
+/**
+ * Get all of the individual types provided by a given content types. This
+ * would be all of the blocks for the block type, or all of the views for
+ * the view type.
+ *
+ * @param $type
+ *   The content type to load.
+ */
+function panels_ct_get_types($type) {
+  if (is_array($type)) {
+    $content_type = $type;
+  }
+  else {
+    $content_type = panels_get_content_type($type);
+  }
+
+  $function = $content_type['content_types'];
+  if (is_array($function)) {
+    return $function;
+  }
+
+  if (function_exists($function)) {
+    return $function($conf);
+  }
+}
+
+/**
+ * Get a list of panels available in the layout. @layout
+ */
+function panels_get_panels($layout, $display) {
+  if (!empty($layout['panels function']) && function_exists($layout['panels function'])) {
+    return $layout['panels function']($display, $display->layout_settings);
+  }
+  if (!empty($layout['panels'])) {
+    return $layout['panels'];
+  }
+  return array();
+}
+
+/**
+ * Get an array of all available content types that can be fed into the
+ * display editor for the add content list.
+ *
+ * @param $context
+ *   If a context is provided, content that requires that context can apepar.
+ * @param $
+ */
+function panels_get_available_content_types($context = NULL, $has_content = FALSE) {
+  $content_types = panels_get_content_types();
+  $available = array();
+
+  foreach ($content_types as $id => $type) {
+    // exclude items that require content if we're saying we don't
+    // provide it.
+    if (!empty($type['requires content']) && !$has_content) {
+      continue;
+    }
+
+    // Check to see if the content type can be used in this context.
+    if (!isset($type['required context']) ||
+        (is_array($type['required_context']) &&
+           in_array($context, $type['required_context'])) ||
+        ($type['required_context'] == $context)) {
+      $available[$id] = panels_ct_get_types($type);
+    }
+  }
+  return $available;
+}
+
+// ------------------------------------------------------------------
+// Functions to provide information about a panel or part of a panel.
+
+/**
+ * Get the content from a given pane.
+ *
+ * @param $pane
+ *   The pane to retrieve content from.
+ * @param $args
+ *   The arguments sent to the display.
+ * @param $context
+ *   The panels context.
+ * @param $incoming_content
+ *   Any incoming content if this display is a wrapper.
+ */
+function panels_get_pane_content($pane, $args = array(), $context = NULL, $incoming_content = '') {
+  if (!$context) {
+    $context = new panels_context;
+  }
+  if (!$incoming_content === '') {
+    $incoming_content = t('Incoming content will be displayed here.');
+  }
+
+  return panels_ct_get_content($pane->type, $pane->configuration, $args, $context, $incoming_content);
+}
+
+/**
+ * Get the title of a pane.
+ *
+ * @param $pane
+ *   The $pane object.
+ */
+function panels_get_pane_title($pane) {
+  return panels_ct_get_title($pane->type, $pane->configuration);
+}
+
+/**
+ * @} End of "defgroup panels_content".
+ */
 
 // ---------------------------------------------------------------------------
 // panels data loading
 
-function panels_load_includes($directory, $callback, $file = NULL) {
-  // Load all our module 'on behalfs'.
+/**
+ * Load plugins from a directory.
+ *
+ * @param $directory
+ *   The directory to choose; also the plugin type.
+ * @param $hook
+ *   The name of the hook to be invoked.
+ * @param $file
+ *   The file to load if we're looking for just one particular plugin.
+ *
+ * @return
+ *   An array of information created for this plugin.
+ */
+function panels_load_includes($directory, $hook, $file = NULL) {
+  // Load all our plugins.
   $path = panels_get_path($directory);
   $files = drupal_system_listing("$file" . '.inc$', $path, 'name', 0);
+  $info = array();
   foreach($files as $file) {
     require_once('./' . $file->filename);
-  }
-  $output = module_invoke_all($callback);
-  foreach ($files as $file) {
-    $function = 'panels_' . $file->name . '_' . $callback;
-    if (function_exists($function)) {
-      $result = $function();
-      if (isset($result) && is_array($result)) {
-        $output = array_merge($output, $result);
-      }
+    $result = _panels_process_plugin('panels', 'panels_' . $file->name, dirname($file->filename), $hook);
+    if (is_array($result)) {
+      $info = array_merge($info, $result);
     }
   }
-  return $output;
+  return $info;
 }
 
+/**
+ * Load plugin info for all hooks; this is handled separately from plugins
+ * from files. This is cached so we don't find ourselves building htis
+ * repeatedly.
+ *
+ * @param $hook
+ *   The hook being invoked.
+ *
+ * @return
+ *   An array of info supplied by any hook implementations.
+ */
+function panels_load_hooks($hook) {
+  $info = array();
+  foreach (module_implements($hook) as $module) {
+    $result = _panels_process_plugin($module, $module, drupal_get_path('module', $module), $hook);
+    if (is_array($result)) {
+      $info = array_merge($info, $result);
+    }
+  }
+  return $info;
+}
+
+/**
+ * Process a single hook implementation of a panels plugin.
+ *
+ * @param $module
+ *   The module that owns the hook.
+ * @param $identifier
+ *   Either the module or 'panels_' . $file->name
+ * @param $hook
+ *   The name of the hook being invoked.
+ */
+function _panels_process_plugin($module, $identifier, $path, $hook) {
+  $function = $identifier . '_' . $hook;
+  if (!function_exists($function)) {
+    return NULL;
+  }
+  $result = $function();
+  if (!isset($result) ||  !is_array($result)) {
+    return NULL;
+  }
+
+  // Fill in defaults.
+  foreach ($result as $name => $plugin) {
+    $result[$name]['module'] = $module;
+    $result[$name]['name'] = $name;
+    $result[$name]['path'] = $path;
+  }
+  return $result;
+}
+
+/**
+ * Fetch a group of plugins by name.
+ *
+ * @param $plugin
+ *   This is the name of the plugin, and also the name of the directory.
+ * @param $hook
+ *   This is the hook to call to get the info for the plugin.
+ *
+ * @return
+ *   An array of information arrays about the plugins received.
+ */
+function panels_get_plugins($plugin, $hook, $id = NULL) {
+  static $plugins = array();
+  static $all_hooks = array();
+  static $all_files = array();
+
+  // Always load all hooks if we need them.
+  if (!isset($all_hooks[$plugin])) {
+    $all_hooks[$plugin] = TRUE;
+    $plugins[$plugin] = panels_load_hooks($hook);
+    // TODO: DEPRECATED. Put in to make the transition easier! This WILL
+    // disappear by alpha 11.
+
+    if ($plugin == 'styles') {
+      $plugins[$plugin] = array_merge($plugins[$plugin], panels_load_hooks('panels_panel_style_info'));
+    }
+  }
+
+  // First, see if it's in our hooks before we even bother.
+  if ($id && array_key_exists($id, $plugins[$plugin])) {
+    return $plugins[$plugin][$id];
+  }
+
+  // Then see if we should load all files. We only do this if we're
+  // want a list of all plugins.
+  if (!$id && empty($all_files[$plugin])) {
+    $all_files[$plugin] = TRUE;
+    $plugins[$plugin] = array_merge($plugins[$plugin], panels_load_includes($plugin, $hook));
+  }
+
+  // If no id was requested, we are finished here:
+  if (!$id) {
+    return $plugins[$plugin];
+  }
+
+  // Check to see if we need to look for the file
+  if (!array_key_exists($id, $plugins[$plugin])) {
+    $result = panels_load_includes($plugin, $hook, $id);
+    // Set to either what was returned or NULL.
+    $plugins[$plugin][$id] = isset($result[$id]) ? $result[$id] : NULL;
+  }
+
+  // At this point we should either have the plugin, or a NULL.
+  return $plugins[$plugin][$id];
+}
+
+/**
+ * Fetch a layout plugin
+ *
+ * @param $layout
+ *   Name of a panel layout.
+ * @return
+ *   An array with information about the requested panel layout.
+ */
 function panels_get_layout($layout) {
-  return panels_get_layouts($layout);
+  return panels_get_plugins('layouts', 'panels_layouts', $layout);
 }
 
-function panels_get_layouts($layout = NULL) {
-  static $layouts = array();
-  static $all_layouts = FALSE;
-
-  if (!$all_layouts) {
-    if (!$layout) {
-      $layouts = panels_load_includes('layouts', 'panels_layouts');
-      $all_layouts = TRUE;
-    }
-    else if (!array_key_exists($layout, $layouts)) {
-      $temp_layouts = panels_load_includes('layouts', 'panels_layouts', $layout);
-      if (isset($temp_layouts[$layout])) {
-        $layouts[$layout] = $temp_layouts[$layout];
-      }
-    }
-  }
-  if ($layout) {
-    return isset($layouts[$layout]) ? $layouts[$layout] : NULL;
-  }
-  return $layouts;
+/**
+ * Fetch all layout plugins
+ *
+ * @return
+ *   An array of arrays with information about all available panel layouts.
+ */
+function panels_get_layouts() {
+  return panels_get_plugins('layouts', 'panels_layouts');
 }
 
 /**
@@ -1660,151 +1023,43 @@ function panels_get_layouts($layout = NULL) {
  * @return
  *   An array with information about the requested panel style.
  */
-function panels_get_panel_style($style) {
-  return panels_get_panel_styles($style);
+function panels_get_style($style) {
+  return panels_get_plugins('styles', 'panels_styles', $style);
 }
 
 /**
  * Collate information about all available panel styles.
  *
- * @param $style
- *   Name of a panel style.
  * @return
- *   An array of arrays with information about all available panel styles. If
- *   the $style parameter specified an available panel style, only this array
- *   would be returned.
+ *   An array of arrays with information about all available panel styles.
  */
-function panels_get_panel_styles($style = NULL) {
-  static $styles;
-  
-  if (!isset($styles)) {
-    foreach (module_list() as $module) {
-      $module_panel_styles = module_invoke($module, 'panels_panel_style_info');
-      if ($module_panel_styles) {
-        foreach ($module_panel_styles as $name => $panel_style_info) {
-          $styles[$name] = $panel_style_info;
-          $styles[$name]['name'] = $name;
-          $styles[$name]['module'] = $module;
-        }
-      }
-    }
-  }
-
-  if ($style) {
-    return isset($styles[$style]) ? $styles[$style] : NULL;
-  }
-
-  return $styles;
+function panels_get_styles() {
+  return panels_get_plugins('styles', 'panels_styles');
 }
 
+/**
+ * Fetch a content_type plugin
+ *
+ * @param $content type
+ *   Name of a panel content type.
+ * @return
+ *   An array with information about the requested panel content type.
+ */
 function panels_get_content_type($content_type) {
-  return panels_get_content_types($content_type);
-}
-
-function panels_get_content_types($content_type = NULL) {
-  static $content_types = array();
-  static $all_content_types = FALSE;
-
-  if (!$all_content_types) {
-    if (!$content_type) {
-      $content_types = panels_load_includes('content_types', 'panels_content_types');
-      $all_content_types = TRUE;
-    }
-    else if (!array_key_exists($content_type, $content_types)) {
-      $temp_content_types = panels_load_includes('content_types', 'panels_content_types', $content_type);
-      if (isset($temp_content_types[$content_type])) {
-        $content_types[$content_type] = $temp_content_types[$content_type];
-      }
-    }
-  }
-  if ($content_type) {
-    return isset($content_types[$content_type]) ? $content_types[$content_type] : NULL;
-  }
-  return $content_types;
+  return panels_get_plugins('content_types', 'panels_content_types', $content_type);
 }
 
 /**
- * Includes required JavaScript libraries:
- * jQuery, iutil, idrag, idrop, isortables
- * In addition to panels.js.
+ * Fetch all content type plugins
+ *
+ * @return
+ *   An array of arrays with information about all available panel content types.
  */
-function _panels_js_files() {
-  // while we don't use this directly some of our forms do.
-  drupal_add_js('misc/collapse.js');
-  drupal_add_js('misc/autocomplete.js');
-
-  drupal_add_js(panels_get_path('js/lib/dimensions.js'));
-  drupal_add_js(panels_get_path('js/lib/mc.js'));
-  drupal_add_js(panels_get_path('js/lib/form.js'));
-  drupal_add_js(array('panelsAjaxURL' => url('panels/ajax', NULL, NULL, TRUE)), 'setting');
-  drupal_add_js(panels_get_path('js/display_editor.js'));
-  drupal_add_css(panels_get_path('css/panels_dnd.css'));
-  drupal_add_css(panels_get_path('css/panels_admin.css'));
+function panels_get_content_types() {
+  return panels_get_plugins('content_types', 'panels_content_types');
 }
 
-// ---------------------------------------------------------------------------
-// Panels hooks
-
-/**
- * Implementation of hook_panels_panel_style_info().
- */
-function panels_panels_panel_style_info() {
-  return array(
-    'default' => array(
-      'label' => t('Default'),
-      'panels implementations' => array(),
-    ),
-    'list' => array(
-      'label' => t('List'),
-      'panels implementations' => array(),
-    ),
-  );
-}
-
-/**
- * Implementation of hook_panels_panel_style_render().
- */
-function panels_panels_panel_style_render($display, $style, $panel_id, $panes) {
-  switch ($style) {
-    case 'default':
-      return theme('panels_panel_default', $display, $panel_id, $panes);
-
-    case 'list':
-      return theme('panels_panel_list', $display, $panel_id, $panes);
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Panels theming functions
-
-function theme_panels_dnd($content) {
-  $output = "<div class=\"panels-dnd\" id=\"panels-dnd-main\">$content</div>";
-  return $output;
-}
-
-function theme_panels_panel_dnd($content, $area, $label, $footer) {
-  return "<div class=\"panels-display\" id=\"panel-pane-$area\">$footer<h2 class=\"label\">$label</h2>$content</div>";
-}
-
-function theme_panels_pane_dnd($block, $id, $label, $left_buttons = NULL, $buttons = NULL) {
-  if (!$block->subject) {
-    $block->subject = t('No title');
-  }
-  static $count = 0;
-  $output .= "<div class=\"grabber\">";
-  if ($buttons) {
-    $output .= "<span class='buttons'>$buttons</span>";
-  }
-  if ($left_buttons) {
-    $output .= "<span class='left_buttons'>$left_buttons</span>";
-  }
-  $output .= "<span class=\"text\">$label</span></div>";
-  $output .= '<div class="panel-pane-collapsible">';
-  $output .= theme('panels_pane_collapsible', $block);
-  $output .= '</div>';
-  return $output;
-}
-
+// @render
 function theme_panels_pane($block, $display) {
   if (!empty($block->content)) {
     $output = '<div class="panel-pane">';
@@ -1814,14 +1069,9 @@ function theme_panels_pane($block, $display) {
   return $output;
 }
 
-function theme_panels_pane_collapsible($block) {
-  $output .= '<h2 class="title">' . $block->subject . '</h2>';
-  $output .= '<div class="content">' . filter_xss_admin($block->content) . '</div>';
-  return $output;
-}
-
 /**
  * Print the layout link. Sends out to a theme function.
+ * @layout
  */
 function panels_print_layout_link($id, $layout, $link) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
@@ -1831,6 +1081,7 @@ function panels_print_layout_link($id, $layout, $link) {
   return theme('panels_layout_link', $title, $id, $image, $link);
 }
 
+// @layout
 function panels_print_layout_icon($id, $layout, $title = NULL) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
   $file = panels_get_path($layout['icon'], false, $layout['module']);
@@ -1839,6 +1090,7 @@ function panels_print_layout_icon($id, $layout, $title = NULL) {
 
 /**
  * Theme the layout link image
+ * @layout
  */
 function theme_panels_layout_link($title, $id, $image, $link) {
   $output .= '<div class="layout-link">';
@@ -1850,6 +1102,7 @@ function theme_panels_layout_link($title, $id, $image, $link) {
 
 /**
  * Theme the layout icon image
+ * @layout
  */
 function theme_panels_layout_icon($id, $image, $title = NULL) {
   $output .= '<div class="layout-icon">';
@@ -1862,68 +1115,11 @@ function theme_panels_layout_icon($id, $image, $title = NULL) {
 }
 
 /**
- * This is separate because it must be outside the <form> to work, and
- * everything in the form theme is inside the form.
- */
-function theme_panels_hidden() {
-  $close_text = t('Close Window');
-  $close_image = theme('image', panels_get_path('images/close.gif'), t('Close window'), t('Close window'));
-  $throbber_image = theme('image', panels_get_path('images/throbber.gif'), t('Loading...'), t('Loading'));
-  $output = <<<EOF
-<div class="panels-hidden">\n
-  <div id="panels-modal">\n
-    <div class="panels-modal-content">\n
-       <div class="modal-header">\n
-         <a class="close" href="#">$close_text $close_image</a>\n
-         <span class="modal-title">&nbsp;</span>\n
-       </div>\n
-       <div class="modal-content">\n
-       </div>\n
-    </div>\n
-  </div>\n
-  <div id="panels-throbber">\n
-    <div class="panels-throbber-wrapper">
-      $throbber_image\n
-    </div>
-  </div>\n
-</div>\n
-EOF;
-
-  return $output;
-}
-
-/**
- * Panel style: default (panes separated by whitespace).
- */
-function theme_panels_panel_default($display, $panel_id, $panes) {
-  $output = '';
-
-  foreach ($panes as $pane) {
-    if (isset($output)) {
-      $output .= '<div class="panel-separator"></div>';
-    }
-    $output .= theme('panels_pane', $pane, $display); 
-  }
-  return $output;
-}
-
-/**
- * Panel style: list of panes (panes are items in an unordered list).
- */
-function theme_panels_panel_list($display, $panel_id, $panes) {
-  $items = array();
-
-  foreach ($panes as $pane_id => $pane) {
-    $items[] = theme('panels_pane', $pane, $display);
-  }
-  return theme('item_list', $items);
-}
-
-/**
  * Helper function for autocompletion of node titles.
  * This is mostly stolen from clipper.
  */
 function panels_node_autocomplete($string) {
+  // TODO: Compare this to the nodequeue version, see which is better.
   if ($string != '') { // if there are node_types passed, we'll use those in a MySQL IN query.
     $result = db_query_range(db_rewrite_sql('SELECT n.title, u.name FROM {node} n INNER JOIN {users} u ON u.uid = n.uid WHERE LOWER(title) LIKE LOWER(\'%%%s%%\')'), $string, 0, 10);
     $prefix = count($array) ? implode(', ', $array) .', ' : '';
@@ -1940,37 +1136,5 @@ function panels_node_autocomplete($string) {
     drupal_set_header('Content-Type: text/javascript; charset=utf-8');
     print drupal_to_js($matches);
     exit();
-  }
-}
-
-/**
- * For PHP 4 compatibility. The array_intersect_key is used in the
- * panels_render_display function.
- *
- * Borrowed from http://php.net/manual/en/function.array-intersect-key.php#74956.
- */
-if (!function_exists('array_intersect_key')) {
-  function array_intersect_key($isec, $keys) {
-    $argc = func_num_args();
-    if ($argc > 2) {
-      for ($i = 1; !empty($isec) && $i < $argc; $i++) {
-        $arr = func_get_arg($i);
-        foreach (array_keys($isec) as $key) {
-          if (!isset($arr[$key])) {
-            unset($isec[$key]);
-          }
-        }
-      }
-      return $isec;
-    }
-    else {
-      $res = array();
-      foreach (array_keys($isec) as $key) {
-        if (isset($keys[$key])) {
-          $res[$key] = $isec[$key];
-        }
-      }
-      return $res;
-    }
   }
 }

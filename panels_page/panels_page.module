@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.30 2007/08/25 00:25:45 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -381,7 +381,7 @@ function panels_page_access($panel_page, $account = NULL) {
  * Settings for panel pages
  */
 function panels_page_settings() {
-  require_once drupal_get_path('module', 'panels') . '/panels_common.inc';
+  require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
   return drupal_get_form('panels_common_settings', 'panels_page');
 }
 
@@ -936,7 +936,7 @@ function panels_page_edit_content($panel_page) {
     $panel_page = panels_page_load($pid);
   }
 
-  require_once drupal_get_path('module', 'panels') . '/panels_common.inc';
+  require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
   $content_types = panels_common_get_allowed_types('panels_page');
 
   // Print this with theme('page') so that blocks are disabled while editing a display.
