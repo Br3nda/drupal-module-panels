@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.41 2007/08/29 22:02:03 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.42 2007/08/30 02:45:22 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -45,6 +45,14 @@ function panels_menu($may_cache) {
       'type' => MENU_CALLBACK
     );
     $items[] = array(
+      'path' => 'panels/common/ajax',
+      'title' => t('ajax'),
+      'callback' => 'panels_ajax_passthru',
+      'callback arguments' => array('panels_common_ajax'),
+      'access' => user_access('access content'),
+      'type' => MENU_CALLBACK
+    );
+    $items[] = array(
       'path' => 'panels/ajax/add-content',
       'title' => t('ajax'),
       'callback' => 'panels_ajax_passthru',
@@ -78,8 +86,37 @@ function panels_menu($may_cache) {
 function panels_ajax_passthru() {
   $args = func_get_args();
   $callback = array_shift($args);
-  include_once './' . panels_get_path('includes/display_edit.inc');
+
+  if (arg(1) == 'common') {
+    include_once './' . panels_get_path('includes/common.inc');
+  }
+  else {
+    include_once './' . panels_get_path('includes/display_edit.inc');
+  }
   return call_user_func_array($callback, $args);
+}
+
+/**
+ * Simple render function to make sure output is what we want.
+ * @ingroup panels_ajax
+ */
+function panels_ajax_render($output = NULL, $title = NULL, $url = NULL) {
+  if (!is_object($output)) {
+    $temp = new stdClass();
+    $temp->output = $output;
+    $temp->type = 'display';
+    $temp->title = $title;
+    $temp->url = $url;
+    $output = $temp;
+  }
+  if (!$output->output || !$output->type) {
+    $output->output = t('The input was invalid');
+    $output->type = 'display';
+    $output->title = t('Error');
+  }
+  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
+  print drupal_to_js($output);
+  exit;
 }
 
 /**

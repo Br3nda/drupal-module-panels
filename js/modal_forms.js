@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
+// $Id: modal_forms.js,v 1.1.2.2 2007/08/30 02:45:22 merlinofchaos Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -78,9 +78,24 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
     $('#modalContent span.modal-title').html(data.title);
     $('#modalContent div.modal-content').html(data.output);
 
+    var url = data.url;
+    if (!url) {
+      url = Drupal.settings.panelsAjaxURL + '/submit-form/' +  $('#panel-did').val();
+    }
+
     // Bind forms to ajax submit.
     $('div.panels-modal-content form').unbind('submit'); // be safe here.
-    $('div.panels-modal-content form').submit(Drupal.Panels.Subform.bindClickSubmit);
+    $('div.panels-modal-content form').submit(function() {
+      $(this).ajaxSubmit({
+        url: url,
+        data: '',
+        method: 'post',
+        after: Drupal.Panels.Subform.bindAjaxResponse,
+        dataType: 'json'
+      });
+      return false;
+      
+    });
 
     // Bind links to ajax links.
     $('a.panels-modal-add-config').click(Drupal.Panels.Subform.bindClickAddLink);
@@ -112,4 +127,34 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
     // dismiss the dialog
     $('#panels-modal').unmodalContent();
   } 
+  else {
+    // just dismiss the dialog.
+    $('#panels-modal').unmodalContent();
+  } 
+}
+
+Drupal.Panels.Subform.createModal = function() {
+  var html = ''
+  html += '<div class="panels-hidden">';
+  html += '  <div id="panels-modal">'
+  html += '    <div class="panels-modal-content">'
+  html += '      <div class="modal-header">';
+  html += '        <a class="close" href="#">';
+  html +=            Drupal.settings.panels.closeText + Drupal.settings.panels.closeImage;
+  html += '        </a>';
+  html += '        <span class="modal-title">&nbsp;</span>';
+  html += '      </div>';
+  html += '      <div class="modal-content">';
+  html += '      </div>';
+  html += '    </div>';
+  html += '  </div>';
+  html += '  <div id="panels-throbber">';
+  html += '    <div class="panels-throbber-wrapper">';
+  html +=        Drupal.settings.panels.throbber;
+  html += '    </div>';
+  html += '  </div>';
+  html += '</div>';
+
+  $('body').append(html);
+
 }

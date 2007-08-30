@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.2 2007/08/30 02:45:22 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -276,8 +276,8 @@ function panels_mini_edit_form($panel_mini) {
     '#default_value' => $panel_mini->title,
     '#title' => t('Mini panel title'),
     '#description' => t('The title for this mini panel. It can be overridden in the block configuration.'),
-  );
-  
+  ); 
+
   // Add the "panel settings" section of the form and the accompanying submit
   // handler.
   $form['left'] += panels_common_panel_settings($panel_mini->display, 'panels_mini', t('mini panel'));
@@ -293,10 +293,15 @@ function panels_mini_edit_form($panel_mini) {
   return $form;
 }
 
+function panels_mini_edit_form_validate($form_id, $form_values, $form) {
+  panels_common_panel_settings_validate($form_id, $form_values, $form['left']);
+}
+
 /**
  * Process submission of the mini panel edit form.
  */
 function panels_mini_edit_form_submit($form_id, $form_values) {
+  panels_common_panel_settings_submit($form_id, $form_values['left']);
   $panel_mini = $form_values['panel_mini'];
   $panel_mini->title  = $form_values['title'];
   $panel_mini->display->panel_settings = $form_values['panel_settings'];

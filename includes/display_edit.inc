@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.2 2007/08/30 02:45:22 merlinofchaos Exp $
 
 
 /**
@@ -396,27 +396,6 @@ function panels_show_pane($pane, $left_buttons, $buttons, $skin = TRUE) {
  * @defgroup panels_ajax Functions for panels ajax features
  * @{
  */
-
-/**
- * Simple render function to make sure output is what we want.
- */
-function panels_ajax_render($output = NULL, $title = NULL) {
-  if (!is_object($output)) {
-    $temp = new stdClass();
-    $temp->output = $output;
-    $temp->type = 'display';
-    $temp->title = $title;
-    $output = $temp;
-  }
-  if (!$output->output || !$output->type) {
-    $output->output = t('The input was invalid');
-    $output->type = 'display';
-    $output->title = t('Error');
-  }
-  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
-  print drupal_to_js($output);
-  exit;
-}
 
 /**
  * entry point into all the ajax stuff

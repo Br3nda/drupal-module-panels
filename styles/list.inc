@@ -1,5 +1,5 @@
 <?php
-// $Id: list.inc,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
+// $Id: list.inc,v 1.1.2.2 2007/08/30 02:45:22 merlinofchaos Exp $
 /**
  * @file styles/list.inc
  * Definition of the 'list' panel style.
@@ -37,7 +37,16 @@ function theme_panels_list_style($display, $panel_id, $panes) {
   foreach ($panes as $pane_id => $pane) {
     $items[] = theme('panels_pane', $pane, $display);
   }
-  return theme('item_list', $items);
+  return theme('item_list', $items, $display->panel_settings['style_settings']['list_type']);
 }
 
-// TODO: Present a settings form to choose between ordered/unordered.
+function panels_list_style_settings_form($style_settings) {
+  $form['list_type'] = array(
+    '#type' => 'select',
+    '#title' => t('List type'),
+    '#options' => array('ul' => t('Unordered'), 'ol' => t('Ordered')),
+    '#default_value' => isset($style_settings['list_type']) ? $style_settings['list_type'] : 'ul',
+  );
+
+  return $form;
+}
