@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.14 2007/08/24 02:37:08 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.15 2007/09/01 00:23:50 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -20,6 +20,7 @@ function panels_install() {
           path varchar(128),
           css_id varchar(128),
           css longtext,
+          arguments longtext,
           no_blocks int(1) DEFAULT 0,
           -- menu fields
           menu int(1) DEFAULT 0,
@@ -167,3 +168,8 @@ function panels_update_5204() {
   return $ret;
 }
 
+function panels_update_5205() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN arguments longtext");
+  return $ret;
+}

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.2 2007/09/01 00:23:50 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -75,19 +75,31 @@ function panels_page_menu($may_cache) {
     );
     $items[] = array(
       'path' => 'admin/panels/panel-page/disable',
-      'title' => t('Export'),
       'access' => $access,    
       'callback' => 'panels_page_disable_page',
       'weight' => -1,
-      'type' => MENU_LOCAL_TASK,
+      'type' => MENU_CALLBACK,
     );
     $items[] = array(
       'path' => 'admin/panels/panel-page/enable',
-      'title' => t('Export'),
       'access' => $access,    
       'callback' => 'panels_page_enable_page',
       'weight' => -1,
-      'type' => MENU_LOCAL_TASK,
+      'type' => MENU_CALLBACK,
+    );
+
+    // Ajax responder
+    $items[] = array(
+      'path' => 'panels/argument/ajax/add',
+      'access' => $access,    
+      'callback' => 'panels_page_ajax_argument_add',
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array(
+      'path' => 'panels/argument/ajax/edit',
+      'access' => $access,    
+      'callback' => 'panels_page_ajax_argument_edit',
+      'type' => MENU_CALLBACK,
     );
 
     // Get all panels and, if enabled, create menu items.
@@ -758,6 +770,12 @@ function panels_page_advanced_form($panel_page) {
     '#default_value' => $panel_page->css,
   );
 
+  $form['left']['arg-info'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => FALSE,
+    '#title' => t('Arguments'),
+  );
+
   $form['left']['menu-info'] = array(
     '#type' => 'fieldset',
     '#collapsible' => FALSE,
@@ -841,6 +859,70 @@ function panels_page_advanced_form($panel_page) {
     '#description' => t('If the Parent Menu Item is being defined by this panel (if you set the %type_field to either %tab or %menu), you can specify its title here.  If blank, the menu title will be used if that is defined, or the page title if not.', array('%type_field' => t('Parent Menu Item Type'), '%tab' => t('Tab'), '%menu' => t('Normal menu item'))),
   );
 
+  $form['left']['arg-info'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => FALSE,
+    '#title' => t('Arguments'),
+  );
+
+  $form['left']['arg-info']['arguments_table'] = array(
+    '#theme' => 'panels_page_arguments_form',
+    '#panel_name' => $panel_page->name,
+  );
+
+  $form['left']['arg-info']['arguments_table']['argument'] = array(
+    '#tree' => TRUE,
+  );
+
+  require_once drupal_get_path('module', 'panels') . '/includes/common.inc'; 
+  // Is this form being posted? If so, check cache.
+  if (!empty($_POST)) {
+    $arguments = panels_common_cache_get('arguments', $panel_page->name);
+  }
+  if (!isset($arguments)) {
+    $arguments = $panel_page->arguments;
+    panels_common_cache_set('arguments', $panel_page->name, $arguments);
+  }
+
+  if (isset($arguments) && is_array($arguments)) {
+    foreach ($arguments as $position => $argument) {
+      panels_page_add_argument_to_form( $form['left']['arg-info']['arguments_table']['argument'][$position], $position, $argument);
+    }
+  }
+
+  $form['arguments'] = array(
+    '#type' => 'value',
+    '#value' => $arguments,
+  );
+
+  // Store the order the choices are in so javascript can manipulate it.
+  $form['order'] = array(
+    '#type' => 'hidden',
+    '#id' => 'argument-order',
+    '#default_value' => $arguments ? implode(',', array_keys($arguments)) : '',
+  );
+
+  $form['left']['arg-info']['arguments_table']['buttons'] = array(
+    '#tree' => TRUE,
+  );
+
+  $args = panels_get_arguments();
+  $choices = array();
+  foreach ($args as $name => $arg) {
+    $choices[$name] = $arg['title'];
+  }
+
+  $form['left']['arg-info']['arguments_table']['buttons']['add_argument'] = array(
+    '#type' => 'select',
+    '#options' => $choices,
+  );
+
+  $form['left']['arg-info']['arguments_table']['buttons']['add_submit'] = array(
+    '#type' => 'submit',
+    '#attributes' => array('class' => 'argument-add'),
+    '#value' => t('Add argument'),
+  );
+
   $label = ($panel_page->pid == 'new') ? t('Next') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
@@ -857,6 +939,13 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
 
   $panel_page->css = $form_values['css'];
+  // ensure the arguments are arranged properly
+  $panel_page->arguments = array();
+  if ($form_values['order']) {
+    foreach (explode(',', $form_values['order']) as $position) {
+      $panel_page->arguments[] = $form_values['arguments'][$position];
+    }
+  }
   $panel_page->no_blocks = $form_values['no_blocks'];
   $panel_page->menu = $form_values['menu'];
   $panel_page->menu_tab = $form_values['menu_tab'];
@@ -872,6 +961,339 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
   drupal_set_message(t('Your changes have been saved.'));
   panels_page_save($panel_page);
 }
+
+
+/**
+ * Add an argument row to the form. Used both in the main form and by
+ * the ajax to add an item.
+ */
+function panels_page_add_argument_to_form(&$form, $position, $argument) {
+  $arg = panels_get_argument($argument['name']);
+  $form['title'] = array(
+    '#value' => check_plain($arg['title']),
+  );
+
+  $form['top'] = panels_add_button('go-top.png', t('Top'), 
+    t('Move this item to the top of the list'),
+    'argument-top',
+    'argument-top-' . $position
+  );
+
+  $form['up'] = panels_add_button('go-up.png', t('Up'), 
+    t('Move this item up'),
+    'argument-up',
+    'argument-up-' . $position
+  );
+
+  $form['down'] = panels_add_button('go-down.png', t('Down'), 
+    t('Move this item down'),
+    'argument-down',
+    'argument-down-' . $position
+  );
+
+  $form['bottom'] = panels_add_button('go-bottom.png', t('Bottom'), 
+    t('Move this item to the bottom of the list'),
+    'argument-bottom',
+    'argument-bottom-' . $position
+  );
+
+  $form['remove'] = panels_add_button('delete.png', t('Remove'), 
+    t('Remove this item'),
+    'argument-remove',
+    'argument-remove-' . $position
+  );
+
+  $form['settings'] = panels_add_button('configure.gif', t('Configure'), 
+    t('Configure this item'),
+    'argument-settings',
+    'argument-settings-' . $position
+  );
+}
+
+/**
+ * Theme the form item for the argument entry.
+ */
+function theme_argument_row($form, $position) {
+  $output = '<tr id="argument-row-' . $position . '" class="argument-row ' . ($position % 2 ? 'odd' : 'even') . '">';
+  $output .= '<td class="argument-title">&nbsp;' . drupal_render($form['title']) . '</td>';
+  $output .= '<td class="argument-operation">' . drupal_render($form['settings']) .
+    drupal_render($form['up']) .
+    drupal_render($form['down']) .
+    drupal_render($form['top']) .
+    drupal_render($form['bottom']) .
+    drupal_render($form['remove']) .
+  '</td>';
+  $output .= '</tr>';
+  return $output;
+}
+
+/**
+ * Add the arguments form to panel page settings
+ */
+function theme_panels_page_arguments_form($form) {
+  $output = '';
+
+  $output .= '<table id="argument-table">';
+  $output .= '<thead>';
+  $output .= '<tr>';
+  $output .= '<th class="argument-title">' . t('Argument') . '</th>';
+  $output .= '<th class="argument-operation">' . t('Operation') . '</th>';
+  $output .= '</thead>';
+  $output .= '<tbody>';
+
+  foreach (array_keys($form['argument']) as $id) {
+    if (!is_numeric($id)) {
+      continue;
+    }
+    $output .= theme('argument_row', $form['argument'][$id], $id);
+  }
+
+  $output .= '</tbody>';
+  $output .= '</table>';
+
+  // Display the add argument item.
+  $row = array();
+  $row[] = array('data' => drupal_render($form['buttons']['add_argument']), 'class' => 'argument-title');
+  $row[] = array('data' => drupal_render($form['buttons']['add_submit']), 'class' => 'argument-operation');
+
+  $output .= theme('table', array(), array($row), array('id' => 'argument-add-table'));
+
+  $settings = array(
+    'list' => array('argument-table' => array(
+      // The gadget that stores our the order of items.
+      'order' => 'input#argument-order',
+      // The buttons that do stuff.
+      'up' => 'input.argument-up',
+      'down' => 'input.argument-down',
+      'top' => 'input.argument-top',
+      'bottom' => 'input.argument-bottom',
+      'remove' => 'input.argument-remove',
+      'configure' => 'input.argument-settings',
+      'configure_path' => url('panels/argument/ajax/edit/' . $form['#panel_name'], NULL, NULL, TRUE),
+      
+      // The button that adds an item
+      'add' => 'input#edit-buttons-add-submit',
+      // Path for ajax on adding an item
+      'path' => url('panels/argument/ajax/add/' . $form['#panel_name'], NULL, NULL, TRUE),
+      // Which items to post when adding
+      'post' => array('#edit-buttons-add-argument', '#edit-buttons-add-submit'),
+      // Where to get the id of an item
+      'tr' => 'argument-row-',
+      'row_class' => 'tr.argument-row',
+    )),
+    'panels' => array(
+      'closeText' => t('Close Window'),
+      'closeImage' => theme('image', panels_get_path('images/close.gif'), t('Close window'), t('Close window')),
+      'throbber' => theme('image', panels_get_path('images/throbber.gif'), t('Loading...'), t('Loading')),
+    ),
+  );
+
+  drupal_add_js($settings, 'setting');
+  drupal_add_js(panels_get_path('js/list.js'));
+  drupal_add_js(panels_get_path('js/lib/dimensions.js'));
+  drupal_add_js(panels_get_path('js/lib/mc.js'));
+  drupal_add_js(panels_get_path('js/lib/form.js'));
+  drupal_add_js(panels_get_path('js/modal_forms.js'));
+  drupal_add_css(panels_get_path('css/panels_dnd.css'));
+
+  return $output;
+}
+
+/**
+ * Ajax entry point to add an argument
+ */
+function panels_page_ajax_argument_add($panel_name) {
+  // Figure out which argument we're adding
+  if (isset($_POST['buttons']['add_argument'])) {
+    $name = $_POST['buttons']['add_argument'];
+  }
+  else if (isset($_POST['argument']['name'])) {
+    $name = $_POST['argument']['name'];
+  }
+
+  if (empty($name)) {
+    panels_ajax_render();
+  }
+
+  // load the argument
+  $argument = panels_get_argument($name);
+
+  if (empty($argument)) {
+    panels_ajax_render();
+  }
+
+  // Retrieve our stored list of arguments from cache
+  require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
+  $arguments = panels_common_cache_get('arguments', $panel_name);
+
+  if (!isset($arguments)) {
+    panels_ajax_render();
+  }
+  
+  // Figure out the position for our new argument.
+  $position = 0;
+  if (!empty($arguments)) {
+    $position = max(array_keys($arguments)) + 1;
+  }
+
+  $form = drupal_retrieve_form('panels_page_edit_argument_form', $panel_name, $argument, $arguments, $position);
+  if ($_POST && $_POST['form_id'] == 'panels_page_edit_argument_form') {
+    $form['#programmed'] = TRUE;
+    $form['#post'] = $_POST;
+  }
+
+  $result = drupal_process_form('panels_page_edit_argument_form', $form);
+  if ($result) {
+    // successful submit
+
+    // Build a chunk of the form.
+    $arg_form['argument'] = array(
+      '#tree' => TRUE,
+    );
+    $settings = array('name' => $argument['name']);
+    panels_page_add_argument_to_form($arg_form['argument'], $position, $settings);
+
+    $arg_form = form_builder('dummy_form_id', $arg_form);
+    $output = new stdClass();
+    $output->type = $output->output = 'add';
+    $output->output = theme('argument_row', $arg_form['argument'], $position);
+    panels_ajax_render($output);
+  }
+  else {
+    $title = t('Add argument @argument', array('@argument' => $argument['title']));
+    $output = drupal_render_form('panels_page_edit_argument_form', $form);
+    panels_ajax_render($output, $title, url($_GET['q'], NULL, NULL, TRUE));
+  }
+}
+
+/**
+ * Ajax entry point to add an argument
+ */
+function panels_page_ajax_argument_edit($panel_name) {
+  // Figure out which argument we're adding
+  if (isset($_POST['position'])) {
+    $position = $_POST['position'];
+  }
+
+  // Retrieve our stored list of arguments from cache
+  require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
+  $arguments = panels_common_cache_get('arguments', $panel_name);
+
+  if (!isset($arguments)) {
+    panels_ajax_render();
+  }
+
+  $name = $arguments[$position]['name'];
+  if (empty($name)) {
+    panels_ajax_render();
+  }
+
+  // load the argument
+  $argument = panels_get_argument($name);
+
+  if (empty($argument)) {
+    panels_ajax_render();
+  }
+
+  $title = t('Edit argument @argument', array('@argument' => $argument['title']));
+
+  $form = drupal_retrieve_form('panels_page_edit_argument_form', $panel_name, $argument, $arguments, $position);
+  if ($_POST && $_POST['form_id'] == 'panels_page_edit_argument_form') {
+    $form['#programmed'] = TRUE;
+    $form['#post'] = $_POST;
+  }
+
+  $result = drupal_process_form('panels_page_edit_argument_form', $form);
+  if ($result) {
+    // successful submit
+    $output->type = $output->output = 'dismiss';
+    panels_ajax_render($output);
+  }
+  else {
+    $output = drupal_render_form('panels_page_edit_argument_form', $form);
+    panels_ajax_render($output, $title, url($_GET['q'], NULL, NULL, TRUE));
+  }
+}
+
+/**
+ * Form (for ajax use) to add an argument
+ */
+function panels_page_edit_argument_form($panel_name, $argument, $arguments, $position) {
+  $form['start_form'] = array('#value' => '<div class="modal-form">');
+  $form['description'] = array(
+    '#prefix' => '<div class="description">',
+    '#suffix' => '</div>',
+    '#value' => check_plain($argument['description']),
+  );
+
+  // Basic values required to orient ourselves
+  $form['panel_name'] = array(
+    '#type' => 'value',
+    '#value' => $panel_name,
+  );
+
+  $form['position'] = array(
+    '#type' => 'hidden',
+    '#value' => $position,
+  );
+
+  // Basic argument values
+  $form['argument']['#tree'] = TRUE;
+  $form['argument']['name'] = array(
+    '#type' => 'hidden',
+    '#value' => $argument['name'],
+  );
+
+  // Settings particular to this argument
+  $argument_settings = array();
+  if (isset($arguments[$position]['argument_settings'])) {
+    $argument_settings = $arguments[$position]['argument_settings'];
+  }
+
+  if (isset($argument['settings form']) && function_exists($argument['settings form'])) {
+    $form['argument']['argument_settings'] = $argument['settings form']($argument_settings);
+    $form['argument']['argument_settings']['#tree'] = TRUE;
+  }
+
+  $form['end_form'] = array('#value' => '</div>');
+
+  $form['next'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  return $form;
+}
+
+/**
+ * validate an argument edited/added via ajax
+ */
+function panels_page_edit_argument_form_validate($form_id, $form_values, $form) {
+  $argument = $form_values['argument'];
+
+  if (isset($argument['settings form validate']) && function_exists($argument['settings form validate'])) {
+    $argument['settings form validate']($form, $form_values['argument']['argument_settings']);
+  }
+}
+
+/**
+ * Updates an argument edited/added via ajax
+ */
+function panels_page_edit_argument_form_submit($form_id, $form_values) {
+  $argument = $form_values['argument'];
+  $position = $form_values['position'];
+
+  if (isset($argument['settings form submit']) && function_exists($argument['settings form submit'])) {
+    $argument['settings form submit']($form_values['argument_settings']);
+  }
+
+  $arguments = panels_common_cache_get('arguments', $form_values['panel_name']);
+  $arguments[$position] = $argument;
+
+  panels_common_cache_set('arguments', $form_values['panel_name'], $arguments);
+  return 'dismiss';
+}
+
+
 
 /**
  * Pass through to the panels layout editor.
@@ -1018,6 +1440,7 @@ function panels_page_import_form_submit($formid, $form) {
     drupal_set_message(t('Unable to get a panel page out of that.'));
   }
 }
+
 // ---------------------------------------------------------------------------
 // view panels page
 
@@ -1076,6 +1499,7 @@ function panels_page_load_all($displays = TRUE, $page_size = 0) {
 
   while ($page = db_fetch_object($result)) {
     $page->access = ($page->access ? explode(', ', $page->access) : array());
+    $page->arguments = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
     $page->type = t('Local');
     $pages[$page->name] = $page;
     $dids[] = $page->did;
@@ -1131,6 +1555,7 @@ function panels_page_load($pid) {
     }
 
     $cache[$pid]->access = ($cache[$pid]->access ? explode(', ', $cache[$pid]->access) : array());
+    $cache[$pid]->arguments = (!empty($cache[$pid]->arguments)) ? unserialize($cache[$pid]->arguments) : array();
 
     $cache[$pid]->display = panels_load_display($cache[$pid]->did);
   }
@@ -1144,6 +1569,7 @@ function panels_page_fields() {
   return array(
     "name" => "'%s'",
     "title" => "'%s'",
+    "arguments" => "'%s'",
     "access" => "'%s'",
     "path" => "'%s'",
     "css_id" => "'%s'",
@@ -1169,7 +1595,8 @@ function panels_page_save($panel_page) {
 
   // serialize the access string.
   $panel_page->access = implode(', ', $panel_page->access);
-  
+  $panel_page->arguments = serialize($panel_page->arguments);
+
   // Create strings for our query from the list of fields.
   $fields = panels_page_fields();
   foreach ($fields as $field => $value) {

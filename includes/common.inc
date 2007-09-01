@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.2 2007/08/30 02:45:22 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.3 2007/09/01 00:23:50 merlinofchaos Exp $
 
 /**
  * @file
@@ -173,6 +173,9 @@ function panels_common_get_layout_information($panel_implementation) {
   return $form;
 }
 
+// ------------------------------------------------------------------
+// Panels settings + ajax for modal popup
+
 /**
  * The panel settings fieldset that can optionally be added to
  * admin/panels/panel-%implementation%/%panel_id%/edit, if the panels
@@ -274,15 +277,8 @@ function panels_common_panel_settings_submit($form_id, $form_values) {
 }
 
 /**
- * Incoming menu function for ajax calls.
+ * AJAX incoming to deal with the style settings modal
  */
-function panels_common_ajax($module = NULL, $data = NULL, $info = NULL) {
-  if ($module == 'panel_settings') {
-    return panels_common_panel_settings_ajax($data, $info);
-  }
-  panels_ajax_render(t('An error occurred'), t('Error'));
-}
-
 function panels_common_panel_settings_ajax($did, $name) {
   $style = panels_get_style($name);
   $style_settings = panels_common_cache_get('style_settings', $did);
@@ -293,8 +289,6 @@ function panels_common_panel_settings_ajax($did, $name) {
     $form['#programmed'] = TRUE;
     $form['#post'] = $_POST;
   }
-
-//  drupal_prepare_form('panels_common_style_settings_form', $form);
 
   $result = drupal_process_form('panels_common_style_settings_form', $form);
   if ($result) { 
@@ -309,6 +303,9 @@ function panels_common_panel_settings_ajax($did, $name) {
   }
 }
 
+/**
+ * Form for the style settings modal.
+ */
 function panels_common_style_settings_form($did, $style, $style_settings) {
   $form['start_form'] = array('#value' => '<div class="modal-form">');
   $form['description'] = array(
@@ -371,6 +368,21 @@ function panels_common_style_settings_form_submit($form_id, $form_values) {
 
   panels_common_cache_set('style_settings', $form_values['did'], $form_values['style_settings']);
   return 'dismiss';
+}
+
+// ---------------------------------------------------------------------------
+// Ajax tools
+
+/**
+ * Incoming menu function for ajax calls. This routes to the proper 'module'
+ * -- we really only need this because common.inc relies on panels.module for
+ * its menu hook, and this way the code stays together.
+ */
+function panels_common_ajax($module = NULL, $data = NULL, $info = NULL) {
+  if ($module == 'panel_settings') {
+    return panels_common_panel_settings_ajax($data, $info);
+  }
+  panels_ajax_render(t('An error occurred'), t('Error'));
 }
 
 // ---------------------------------------------------------------------------

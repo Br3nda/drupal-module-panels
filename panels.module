@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.42 2007/08/30 02:45:22 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.43 2007/09/01 00:23:50 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -1072,6 +1072,28 @@ function panels_get_style($style) {
  */
 function panels_get_styles() {
   return panels_get_plugins('styles', 'panels_styles');
+}
+
+/**
+ * Collate information about a specific panel argument.
+ *
+ * @param $argument
+ *   Name of a panel argument.
+ * @return
+ *   An array with information about the requested panel argument.
+ */
+function panels_get_argument($argument) {
+  return panels_get_plugins('arguments', 'panels_arguments', $argument);
+}
+
+/**
+ * Collate information about all available panel arguments.
+ *
+ * @return
+ *   An array of arrays with information about all available panel arguments.
+ */
+function panels_get_arguments() {
+  return panels_get_plugins('arguments', 'panels_arguments');
 }
 
 /**

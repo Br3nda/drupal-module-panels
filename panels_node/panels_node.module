@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.2 2007/09/01 00:23:50 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -241,7 +241,7 @@ function panels_node_view($node, $teaser = FALSE, $page = FALSE) {
  * Settings for panel nodes
  */
 function panels_node_settings() {
-  require_once drupal_get_path('module', 'panels') . '/panels_common.inc';
+  require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
   return drupal_get_form('panels_common_settings', 'panels_node');
 }
 
@@ -269,7 +269,7 @@ function panels_node_edit_layout_settings($node) {
  */
 function panels_node_edit_content($node) {
   $display = panels_load_display($node->panels_node['did']);
-  require_once drupal_get_path('module', 'panels') . '/panels_common.inc';
+  require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
   $content_types = panels_common_get_allowed_types('panels_node');
 
   // Print this with theme('page') so that blocks are disabled while editing a display.
