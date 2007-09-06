@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.2 2007/08/30 02:45:22 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.3 2007/09/06 00:48:49 merlinofchaos Exp $
 
 
 /**
@@ -364,7 +364,7 @@ function panels_edit_layout_settings_form_submit($form_id, $form_values) {
  *   The form api #parents array for that this subform will live in.
  */
 function panels_get_pane_edit_form($pane, $parents) {
-  return panels_ct_get_edit_form($pane->type, $pane->configuration, $parents);
+  return panels_ct_get_edit_form($pane->type, $pane->subtype, $pane->configuration, $parents);
 }
 
 /**
@@ -524,14 +524,14 @@ function panels_ajax_add_config($did = NULL, $pid = NULL) {
     $cache->add_config = array($content_type_id, $conf, $panel_id, $title);
     panels_cache_set($display->did, $cache);
 
-    $text = drupal_get_form('panels_add_content_config_form', $cache, $content_type_id, $conf, $panel_id, $title);
+    $text = drupal_get_form('panels_add_content_config_form', $cache, $content_type_id, $type, $conf, $panel_id, $title);
     $output = panels_get('return');
     $output->output = $text;
   }
   panels_ajax_render($output);
 }
 
-function panels_add_content_config_form($display, $content_type_id = NULL, $conf = NULL, $panel_id = NULL, $title = NULL) {
+function panels_add_content_config_form($display, $content_type_id = NULL, $subtype = NULL, $conf = NULL, $panel_id = NULL, $title = NULL) {
   if (empty($content_type_id)) {
     $cache = panels_cache_get($display->did);
     if (isset($cache->add_config)) {
@@ -549,6 +549,11 @@ function panels_add_content_config_form($display, $content_type_id = NULL, $conf
   $form['type'] = array(
     '#type' => 'value',
     '#value' => $content_type_id,
+  );
+
+  $form['subtype'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $subtype,
   );
 
   $form['panel'] = array(
@@ -611,7 +616,6 @@ function panels_add_content_config_form_submit($form_id, $form) {
 
   $cache->display->content[$form['pid']] = (object) $form;
   $cache->display->panels[$form['panel']][] = $form['pid'];
-//  drupal_set_message('<pre>' . var_export($cache->display, true) . '</pre>');
 
   panels_cache_set($form['did'], $cache);
   // Set info for the javascript so it knows where to put the new pane.

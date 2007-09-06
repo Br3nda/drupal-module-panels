@@ -1,5 +1,5 @@
 <?php
-// $Id: custom.inc,v 1.2.6.10 2007/08/24 04:31:19 merlinofchaos Exp $
+// $Id: custom.inc,v 1.2.6.11 2007/09/06 00:48:49 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,7 +7,6 @@ function panels_custom_panels_content_types() {
   $items['custom'] = array(
     'title' => t('Custom'),
     'weight' => -10,
-    'single' => TRUE,
     'content_types' => 'panels_admin_content_types_custom',
     'render callback' => 'panels_content_custom',
     'add callback' => 'panels_admin_edit_custom',
@@ -59,7 +58,7 @@ function panels_admin_content_types_custom() {
 /**
  * Returns an edit form for the custom type.
  */
-function panels_admin_edit_custom($conf, $parents) {
+function panels_admin_edit_custom($id, $parents, $conf = NULL) {
   if (!is_array($conf)) {
     $conf = array('title' => '', 'body' => '', 'css_id' => '', 'css_class' => '');
   }

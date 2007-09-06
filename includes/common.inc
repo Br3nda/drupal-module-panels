@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.3 2007/09/01 00:23:50 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.4 2007/09/06 00:48:49 merlinofchaos Exp $
 
 /**
  * @file
@@ -105,8 +105,10 @@ function panels_common_settings_submit($form_id, $form_values) {
 /**
  * Based upon the settings, get the allowed types for this node.
  */
-function panels_common_get_allowed_types($module, $default_defaults = array(), $default_allowed_types = array()) {
-  $content_types = panels_get_available_content_types();
+function panels_common_get_allowed_types($module, $contexts = NULL, $has_content = FALSE, $default_defaults = array(), $default_allowed_types = array()) {
+
+  // Get a list of all types that are available
+
   $default_types = variable_get($module . '_defaults', $default_defaults);
   $allowed_types = variable_get($module .'_allowed_types', $default_allowed_types);
 
@@ -115,17 +117,9 @@ function panels_common_get_allowed_types($module, $default_defaults = array(), $
   if (!isset($default_types['other'])) {
     $default_types['other'] = TRUE;
   }
-  foreach ($content_types as $id => $types) {
-    foreach ($types as $type => $info) {
-      $key = $id . '-' . $type;
-      if (!isset($allowed_types[$key])) {
-        $allowed_types[$key] = isset($default_types[$id]) ? $default_types[$id] : $default_types['other'];
-      }
-      if (!$allowed_types[$key]) {
-        unset($content_types[$id][$type]);
-      }
-    }
-  }
+
+  $content_types = panels_get_available_content_types($contexts, $has_content, $allowed_types, $default_types);
+
   return $content_types;
 }
 

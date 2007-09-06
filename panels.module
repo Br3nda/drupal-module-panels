@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.43 2007/09/01 00:23:50 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.44 2007/09/06 00:48:48 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -267,20 +267,13 @@ function panels_edit_layout_settings($display, $finish, $destination) {
 // panels database functions
 
 /**
- * Forms the basis of a panel display and provides a constructur to ensure
- * that the display always has a valid context.
+ * Forms the basis of a panel display 
  */
 class panels_display {
   var $args = array();
   var $incoming_content = NULL;
-  var $context = NULL;
   var $css_id = NULL;
-
-  function panels_display($context = NULL) {
-    if (!isset($context)) {
-      $this->context = new panels_context();
-    }
-  }
+  var $context = array();
 }
 
 /**
@@ -294,6 +287,12 @@ class panels_context {
   function panels_context($type = 'none', $data = NULL) {
     $this->type = $type;
     $this->data = $data;
+  }
+
+  function is_type($type) {
+    $a = is_array($type) ? $type : array($type);
+    $b = is_array($this->type) ? $type : array($this->type);
+    return (bool) array_intersect($a, $b);
   }
 }
 
@@ -312,7 +311,7 @@ function panels_sanitize_display(&$display) {
   }
 
   if (!isset($display->context)) {
-    $display->context = new panels_context();
+    $display->context = array();
   }
 
   if (!isset($display->css_id)) {
@@ -322,11 +321,10 @@ function panels_sanitize_display(&$display) {
 
 
 /**
- * Creates a new display with the given context, so that users don't
- * have to mess with classes if they don't want to.
+ * Creates a new display, setting the ID to our magic new id.
  */
-function panels_new_display($context = NULL) {
-  $display = new panels_display($context);
+function panels_new_display() {
+  $display = new panels_display();
   $display->did = 'new';
   return $display;
 }
@@ -334,7 +332,7 @@ function panels_new_display($context = NULL) {
 /**
  * Load a display from the database and set a context.
  */
-function panels_load_displays($dids, $context = NULL) {
+function panels_load_displays($dids) {
   $displays = array();
   if (empty($dids) || !is_array($dids)) {
     return $displays;
@@ -345,7 +343,7 @@ function panels_load_displays($dids, $context = NULL) {
   $result = db_query("SELECT * FROM {panels_display} WHERE did IN ($subs)", $dids);
 
   while ($obj = db_fetch_array($result)) {
-    $display = new panels_display($context);
+    $display = new panels_display();
 
     foreach ($obj as $key => $value) {
       $display->$key = $value;
@@ -384,8 +382,8 @@ function panels_load_displays($dids, $context = NULL) {
 /**
  * Load a single display.
  */
-function panels_load_display($did, $context = NULL) {
-  $displays = panels_load_displays(array($did), $context);
+function panels_load_display($did) {
+  $displays = panels_load_displays(array($did));
   if (!empty($displays)) {
     return array_shift($displays);
   }
@@ -415,7 +413,7 @@ function panels_save_display(&$display) {
         unset($display->content[$pid]);
         $pane->pid = db_next_id("{panels_pane}_pid");
       }
-      db_query("INSERT INTO {panels_pane} (pid, did, panel, type, configuration, access, position) VALUES (%d, %d, '%s', '%s', '%s', '%s', %d)", $pane->pid, $display->did, $pane->panel, $pane->type, serialize($pane->configuration), !empty($pane->access) ? implode(', ', $pane->access) : '', $pane->position);
+      db_query("INSERT INTO {panels_pane} (pid, did, panel, type, subtype, configuration, access, position) VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', %d)", $pane->pid, $display->did, $pane->panel, $pane->type, $pane->subtype, serialize($pane->configuration), !empty($pane->access) ? implode(', ', $pane->access) : '', $pane->position);
       // and put it back so our pids and positions can be used
       $display->content[$pid] = $pane;
       $new_panes[] = $pid;
@@ -563,7 +561,26 @@ function panels_render_panel($panes_in_panel, $display) {
   $panes = array();
   foreach ($panes_in_panel as $pane_id => $pane) {
     if (panels_pane_access($pane)) {
-      $panes[$pane->position] = panels_get_pane_content($pane, $display->args, $display->context, $display->incoming_content);
+      // Identify which of our possible contexts apply.
+      $context = NULL;
+      if ($pane->subtype) {
+        $content_type = panels_ct_get_types($pane->type);
+        if (!empty($content_type[$pane->subtype]['required context'])) {
+          foreach ($display->context as $candidate) {
+            if ($candidate->is_type($content_type[$pane->subtype]['required context'])) {
+              $context = $candidate;
+              break;
+            }
+          }
+
+          // Don't display this pane if a context is required and not found.
+          if (!$context) {
+            continue;
+          }
+        }
+      }
+
+      $panes[$pane->position] = panels_get_pane_content($pane, $display->args, $context, $display->incoming_content);
     }
   }
 
@@ -684,10 +701,14 @@ function panels_ct_get_content($type, $conf, $args, $context, $incoming_content)
  *   The content type. May be the name or an already loaded content type object.
  * @param $conf
  *   The configuration for the content type.
+ * @param $context
+ *   The panels_context object.
+ * @Param $incoming_content
+ *   Any incoming content, if this display is a wrapper.
  */
-function panels_ct_get_title($type, $conf) {
+function panels_ct_get_title($type, $conf, $context = NULL, $incoming_content = NULL) {
   if ($function = panels_ct_function($type, 'title callback')) {
-    return $function($conf);
+    return $function($conf, $context, $incoming_content);
   }
 }
 
@@ -749,9 +770,9 @@ function panels_ct_submit_add_form($type, $form_values) {
  *   The #parents to be used on the form, because some form gadgets need to
  *   know where they live.
  */
-function panels_ct_get_edit_form($type, $conf, $parents) {
+function panels_ct_get_edit_form($type, $subtype, $conf, $parents) {
   if ($function = panels_ct_function($type, 'edit callback')) {
-    return $function($conf, $parents);
+    return $function($subtype, $parents, $conf);
   }
 }
 
@@ -828,25 +849,50 @@ function panels_get_panels($layout, $display) {
  *
  * @param $context
  *   If a context is provided, content that requires that context can apepar.
- * @param $
+ * @param $has_content
+ *   Whether or not the display will have incoming content
+ * @param $allowed_types
+ *   An array of content allowed keyed boy content_type . '-' . sub_type
+ * @param $default_types
+ *   A default allowed/denied status for content that isn't known about
  */
-function panels_get_available_content_types($context = NULL, $has_content = FALSE) {
+function panels_get_available_content_types($contexts = NULL, $has_content = FALSE, $allowed_types = NULL, $default_types = NULL) {
   $content_types = panels_get_content_types();
   $available = array();
 
   foreach ($content_types as $id => $type) {
-    // exclude items that require content if we're saying we don't
-    // provide it.
-    if (!empty($type['requires content']) && !$has_content) {
-      continue;
-    }
+    foreach (panels_ct_get_types($type) as $cid => $cinfo) {
+      // exclude items that require content if we're saying we don't
+      // provide it.
+      if (!empty($cinfo['requires content']) && !$has_content) {
+        continue;
+      }
 
-    // Check to see if the content type can be used in this context.
-    if (!isset($type['required context']) ||
-        (is_array($type['required_context']) &&
-           in_array($context, $type['required_context'])) ||
-        ($type['required_context'] == $context)) {
-      $available[$id] = panels_ct_get_types($type);
+      // Check to see if the content type can be used in this context.
+      if (isset($cinfo['required context'])) {
+        if (empty($contexts)) {
+          continue;
+        }
+        foreach ($contexts as $context) {
+          if (!$context->is_type($cinfo['required_context'])) {
+            continue;
+          }
+        }
+      }
+
+      // Check to see if the passed-in allowed types allows this content.
+      if ($allowed_types) {
+        $key = $id . '-' . $cid;
+        if (!isset($allowed_types[$key])) {
+          $allowed_types[$key] = isset($default_types[$id]) ? $default_types[$id] : $default_types['other'];
+        }
+        if (!$allowed_types[$key]) {
+          continue;
+        }
+      }
+
+      // If we made it through all the tests, then we can use this content.
+      $available[$id][$cid] = $cinfo;
     }
   }
   return $available;
@@ -884,8 +930,8 @@ function panels_get_pane_content($pane, $args = array(), $context = NULL, $incom
  * @param $pane
  *   The $pane object.
  */
-function panels_get_pane_title($pane) {
-  return panels_ct_get_title($pane->type, $pane->configuration);
+function panels_get_pane_title($pane, $context = NULL, $incoming_content = NULL) {
+  return panels_ct_get_title($pane->type, $pane->configuration, $context, $incoming_content);
 }
 
 /**

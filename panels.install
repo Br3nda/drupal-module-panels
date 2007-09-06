@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.15 2007/09/01 00:23:50 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.16 2007/09/06 00:48:48 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -168,8 +168,17 @@ function panels_update_5204() {
   return $ret;
 }
 
+// Add the arguments field
 function panels_update_5205() {
   $ret = array();
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN arguments longtext");
+  return $ret;
+}
+
+// Add a field so that panes can remember their subtype so we can retrieve
+// context information about it.
+function panels_update_5206() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN subtype varchar(64)");
   return $ret;
 }

@@ -151,6 +151,11 @@ div.panels-display .pane-add {
 .panels-modal-content .modal-form {
 }
 
+.panels-modal-content .form-checkboxes .form-item {
+  float: left;
+  width: 24%;
+}
+
 .panels-hidden,
 .panels-js-only {
   display: none;
@@ -206,6 +211,10 @@ a.close img {
 .panels-modal-content .form-item label.option {
   width: auto;
   float: none;
+}
+
+.panels-modal-content .form-item .description {
+  clear: left;
 }
 
 .panels-modal-content .form-item .description .tips {

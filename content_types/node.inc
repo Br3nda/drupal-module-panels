@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.2.6.12 2007/08/24 03:00:25 merlinofchaos Exp $
+// $Id: node.inc,v 1.2.6.13 2007/09/06 00:48:49 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -74,7 +74,7 @@ function panels_admin_content_types_node() {
 /**
  * Returns the form for a new node.
  */
-function panels_admin_add_node($id) {
+function panels_admin_add_node($id, $parents) {
   $conf = array();
   $form = panels_admin_edit_node($conf);
   $form['nid'] = array(
@@ -94,7 +94,7 @@ function panels_admin_add_node($id) {
 /**
  * Returns an edit form for the custom type.
  */
-function panels_admin_edit_node($conf) {
+function panels_admin_edit_node($id, $parents, $conf) {
   $form['nid'] = array(
     '#type' => 'value',
     '#default_value' => $conf['nid'],

@@ -103,3 +103,17 @@
 #panels-edit-display .helperclass {
   margin: .5em;
 }
+
+table .argument-operation {
+  text-align: right;
+  padding-right: 6px;
+}
+
+table .argument-operation input {
+  padding: 0;
+  margin: 0;
+  position: relative;
+  top: 3px;
+}
+
+  

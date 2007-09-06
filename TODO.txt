@@ -24,14 +24,19 @@ modules
 
 panels common
     o update settings to use categories like the 'add content' popup now does.
+    o Clean up and better document this code
 
 panels page
-    o panels page 'default' panels
-    o allow panel-page to use $arg/$node/$node-type/$user substitution like Views
-    o allow panel-page to get a context; allow modules to provide this context.
+    X panels page 'default' panels
+    X allow panel-page to use $arg/$node/$node-type/$user substitution like Views
+    X allow panel-page to get a context; allow modules to provide this context.
     X allow panel-page to do menu item & tab like Views.
     X provide 'edit' tab for panels pages
     X allow setting to not display blocks
+    o Clone panels page
+
+mini panels
+    o Allow mini panels to require an argument (and thus be just panel content)
 
 content types
     o Allow creating new custom blocks.
@@ -52,6 +57,10 @@ content types
       more fluidly
     X give views.inc setting to NOT use arguments.
     X unify title overriding.
+    X node_content type 
+    o taxonomy term types
+    o user types
+    o views context sensitive conversions
 
 layouts
     X Allow each layout to have settings
@@ -64,8 +73,20 @@ icons
     X Find add content icon
     X Create icons for content types
 
+Flexible layout
+    o Allow fixed width sidebars
+    o Use a slider to control widths
+
+Styles:
+    o Convert DND to a style
+    o Rounded corners style
+
+Arguments:
+    o taxonomy argument
+    o user argument
+
 panels API
-    - Provide method to directly edit/configure an individual content block if viewer has permissions
+    X Provide method to directly edit/configure an individual content block if viewer has permissions
     X Provide method to control pane visibility. Make sure this is controllable from the admin so that not all users can get to it.
     X Change add content to be per panel
     X Make Cancel actually cancel
@@ -77,13 +98,18 @@ panels API
     X Allow API to accept context
     X Allow API to accept content
     X Allow API to accept arguments
+    o Change DND layout to load content via ajax; this adds both robustness and rendering speed.
 
 General:
     o CSS class/id name cleanup and unification.
     o Make sure core blocks that require context are labelled as such.
 
+
 Documentation
     o Creating new panel modules that use the API
     o Creating new content types
     o Creating new layouts
+    o Creating new styles
+    o Creating new arguments
+    o Themeing panels
     o Doing interesting things with Panels
