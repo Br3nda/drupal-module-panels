@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.3 2007/09/06 00:48:50 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.4 2007/09/06 18:15:36 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -270,51 +270,6 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = a
 }
 
 /**
- * Get the title for a panel page, given a context.
- */
-function panels_page_get_title($panel_page, $context = 'page', $default_title = NULL) {
-  if ($context == 'menu-parent' && $panel_page->menu_parent_title) {
-    return $panel_page->menu_parent_title;
-  }
-
-  if (in_array($context, array('menu', 'menu-parent')) && $panel_page->menu_title) {
-    return $panel_page->menu_title;
-  }
-  
-  if ($panel_page->contexts) {
-    $substitutions = array();
-    $title = NULL;
-    foreach ($panel_page->contexts as $id => $context) {
-      $argument = panels_get_argument($panel_page->arguments[$id]['name']);
-
-      $substitutions['%' . ($id + 1)] = $argument['title function']($context);
-      if (!empty($panel_page->arguments[$id]['title'])) {
-        $title = $panel_page->arguments[$id]['title'];
-      }
-    }
-
-    if ($title) {
-      if ($substitutions) {
-        $title = strtr($title, $substitutions);
-      }
-
-      return $title;
-    }
-  }
-
-  if ($panel_page->title) {
-    return $panel_page->title;
-  }
-
-  if (is_null($default_title)) {
-    return t('No title');
-  }
-  else {
-    return $default_title;
-  }
-}
-
-/**
  * Create a menu item for a panel page.
  */
 function _panels_page_create_menu_item(&$items, $panel_page, $path, $access, $args = array()) {
@@ -413,6 +368,64 @@ function panels_page_access($panel_page, $account = NULL) {
   return array_intersect($panel_page->access, $roles[$account->uid]);
 }
 
+
+/**
+ * Get the title for a panel page, given a context.
+ */
+function panels_page_get_title($panel_page, $context = 'page', $default_title = NULL) {
+  if ($context == 'menu-parent' && $panel_page->menu_parent_title) {
+    return $panel_page->menu_parent_title;
+  }
+
+  if (in_array($context, array('menu', 'menu-parent')) && $panel_page->menu_title) {
+    return $panel_page->menu_title;
+  }
+  
+  if ($panel_page->contexts) {
+    $substitutions = array();
+    $title = NULL;
+    foreach ($panel_page->contexts as $id => $context) {
+      $argument = panels_get_argument($panel_page->arguments[$id]['name']);
+
+      $substitutions['%' . ($id + 1)] = $argument['title function']($context);
+      if (!empty($panel_page->arguments[$id]['title'])) {
+        $title = $panel_page->arguments[$id]['title'];
+      }
+    }
+
+    if ($title) {
+      if ($substitutions) {
+        $title = strtr($title, $substitutions);
+      }
+
+      return $title;
+    }
+  }
+
+  if ($panel_page->title) {
+    return $panel_page->title;
+  }
+
+  if (is_null($default_title)) {
+    return t('No title');
+  }
+  else {
+    return $default_title;
+  }
+}
+
+/**
+ * Figure out if a panel is the current page; mostly useful in theming.
+ */
+function panels_page_get_current($page = NULL) {
+  static $cache = NULL;
+  if (isset($page)) {
+    $cache = $page;
+  }
+
+  return $cache;
+}
+
 // ---------------------------------------------------------------------------
 // panel page administrative pages
 
@@ -480,6 +493,9 @@ function panels_page_view_page($panel_page) {
   $panel_page->display->args = $args;
   $panel_page->display->context = $panel_page->contexts;
   $panel_page->display->css_id = $panel_page->css_id;
+
+  // Set this as 'current' so that other stuff can utilize it.
+  panels_page_get_current($panel_page);
 
   $output = panels_render_display($panel_page->display);
 
