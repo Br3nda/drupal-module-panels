@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.1 2007/09/06 00:48:50 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.2 2007/09/08 02:12:12 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -133,6 +133,9 @@ function panels_page_edit($panel_page) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
+
+  $panel_page->display = panels_load_display($panel_page->did);
+
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   return drupal_get_form('panels_page_edit_form', $panel_page);
 }
@@ -544,11 +547,53 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
   $panel_page->css = $form_values['css'];
   // ensure the arguments are arranged properly
   $panel_page->arguments = array();
+
   if (isset($form_values['order']) && $form_values['order'] !== '') {
     foreach (explode(',', $form_values['order']) as $position) {
-      $panel_page->arguments[] = $form_values['arguments'][$position];
+      // We retain the original position here because we need argument IDs.
+      $panel_page->arguments[$position] = $form_values['arguments'][$position];
     }
   }
+
+  // Match up our displays, carry them forward and add new ones.
+  $old_displays = $panel_page->displays;
+  $panel_page->displays = array();
+
+  foreach ($panel_page->arguments as $id => $argument) {
+    $def = panels_get_argument($argument['name']);
+    if (function_exists($def['displays'])) {
+      // Figure out which instance of this particular argument type we're using.
+
+      $displays = $def['displays']($argument['argument_settings'], $argument['id']);
+      foreach ($displays as $did => $info) {
+        $pdid = "argument_$id" . '-' . $did;
+        if (isset($old_displays[$pdid])) {
+          $panel_page->displays[$pdid] = $old_displays[$pdid];
+          unset($old_displays[$pdid]);
+          // ensure titles get updated if necessary
+          $panel_page->displays[$pdid]['title'] = $info['title'];
+        }
+        else {
+          $panel_page->displays[$pdid] = array(
+            'did' => 'new',
+            'title' => $info['title'],
+            'default' => "argument_$id" . '-' . $info['default'],
+            'argument_id' => $id,
+          );
+        }
+      }
+    }
+  }
+
+
+  // Remove remaining old displays.
+  foreach ($old_displays as $id => $info) {
+    if (is_numeric($info['did'])) {
+      panels_display_delete($info['did']);
+      drupal_set_message(t('Removed unused display @title', $info['title']));
+    }
+  }
+  
   $panel_page->no_blocks = $form_values['no_blocks'];
   $panel_page->menu = $form_values['menu'];
   $panel_page->menu_tab = $form_values['menu_tab'];
@@ -573,7 +618,7 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
 function panels_page_add_argument_to_form(&$form, $position, $argument) {
   $arg = panels_get_argument($argument['name']);
   $form['title'] = array(
-    '#value' => check_plain($arg['title']),
+    '#value' => check_plain($arg['title'] . ' ' . $argument['id']),
   );
 
   $form['top'] = panels_add_button('go-top.png', t('Top'), 
@@ -616,8 +661,8 @@ function panels_page_add_argument_to_form(&$form, $position, $argument) {
 /**
  * Theme the form item for the argument entry.
  */
-function theme_argument_row($form, $position) {
-  $output = '<tr id="argument-row-' . $position . '" class="argument-row ' . ($position % 2 ? 'even' : 'odd') . '">';
+function theme_argument_row($form, $position, $count) {
+  $output = '<tr id="argument-row-' . $position . '" class="argument-row ' . ($count % 2 ? 'even' : 'odd') . '">';
   $output .= '<td class="argument-title">&nbsp;' . drupal_render($form['title']) . '</td>';
   $output .= '<td class="argument-operation">' . drupal_render($form['settings']) .
     drupal_render($form['up']) .
@@ -644,11 +689,12 @@ function theme_panels_page_arguments_form($form) {
   $output .= '</thead>';
   $output .= '<tbody>';
 
+  $count = 0;
   foreach (array_keys($form['argument']) as $id) {
     if (!is_numeric($id)) {
       continue;
     }
-    $output .= theme('argument_row', $form['argument'][$id], $id);
+    $output .= theme('argument_row', $form['argument'][$id], $id, $count++);
   }
 
   $output .= '</tbody>';
@@ -729,6 +775,14 @@ function panels_page_ajax_argument_add($panel_name) {
   require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
   $arguments = panels_common_cache_get('arguments', $panel_name);
 
+  // Figure out which instance of this argument we're creating
+  $id = 1;
+  foreach ($arguments as $arg) {
+    if ($arg['name'] == $name) {
+      $id++;
+    }
+  }
+
   if (!isset($arguments)) {
     panels_ajax_render();
   }
@@ -738,6 +792,8 @@ function panels_page_ajax_argument_add($panel_name) {
   if (!empty($arguments)) {
     $position = max(array_keys($arguments)) + 1;
   }
+
+  $arguments[$position]['id'] = $id;
 
   $form = drupal_retrieve_form('panels_page_edit_argument_form', $panel_name, $argument, $arguments, $position);
   if ($_POST && $_POST['form_id'] == 'panels_page_edit_argument_form') {
@@ -753,13 +809,13 @@ function panels_page_ajax_argument_add($panel_name) {
     $arg_form['argument'] = array(
       '#tree' => TRUE,
     );
-    $settings = array('name' => $argument['name']);
+    $settings = array('name' => $argument['name'], 'id' => $id);
     panels_page_add_argument_to_form($arg_form['argument'], $position, $settings);
 
     $arg_form = form_builder('dummy_form_id', $arg_form);
     $output = new stdClass();
     $output->type = $output->output = 'add';
-    $output->output = theme('argument_row', $arg_form['argument'], $position);
+    $output->output = theme('argument_row', $arg_form['argument'], $position, $position);
     $output->position = $position;
     panels_ajax_render($output);
   }
@@ -867,6 +923,11 @@ function panels_page_edit_argument_form($panel_name, $argument, $arguments, $pos
     '#description' => t('Enter a title to use when this argument is present. You may use %# substitution to get the title for the given argument, where # is the argument position. i.e, use %1 for the first argument, %2 for the next argument, and so on.'),
   );
   
+  $form['argument']['id'] = array(
+    '#type' => 'value',
+    '#value' => $arguments[$position]['id'],
+  );
+
   // Settings particular to this argument
   $argument_settings = array();
   if (isset($arguments[$position]['argument_settings'])) {
@@ -916,15 +977,11 @@ function panels_page_edit_argument_form_submit($form_id, $form_values) {
   return 'dismiss';
 }
 
-
-
-/**
- * Pass through to the panels layout editor.
- */
-function panels_page_edit_layout($panel_page) {
+function panel_page_fetch_panel_page($panel_page, $did) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
+
   // If we visit this page on a default panel, we have to make it real.
   if ($panel_page->pid == 'new') {
     $pid = panels_page_save($panel_page);
@@ -933,29 +990,44 @@ function panels_page_edit_layout($panel_page) {
     $panel_page = panels_page_load($pid);
   }
 
+  if (empty($did)) {
+    $panel_page->display = panels_load_display($panel_page->did);
+  }
+  else {
+    $panel_page->display = panels_page_fetch_display($panel_page, $did);
+  }
+
+  return $panel_page;
+}
+
+/**
+ * Pass through to the panels layout editor.
+ */
+function panels_page_edit_layout($panel_page, $did = NULL) {
+  $panel_page = panel_page_fetch_panel_page($panel_page, $did);
+
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
-  return panels_edit_layout($panel_page->display, t('Save'), "admin/panels/panel-page/$panel_page->name/edit/layout");
+ 
+  $dest = "admin/panels/panel-page/$panel_page->name/edit/layout";
+  if ($did) {
+    $dest .= "/$did";
+  }
+  return panels_edit_layout($panel_page->display, t('Save'), $dest);
 }
 
 /**
  * Pass through to the panels layout settings editor.
  */
-function panels_page_edit_layout_settings($panel_page, $next = NULL) {
-  if (!is_object($panel_page)) {
-    $panel_page = panels_page_load($panel_page);
-  }
-  // If we visit this page on a default panel, we have to make it real.
-  if ($panel_page->pid == 'new') {
-    $pid = panels_page_save($panel_page);
-    // reload because not everything gets properly reset on save and we need
-    // ids that were created.
-    $panel_page = panels_page_load($pid);
-  }
+function panels_page_edit_layout_settings($panel_page, $did = NULL, $next = NULL) {
+  $panel_page = panel_page_fetch_panel_page($panel_page, $did);
 
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   if (empty($next)) {
     $button = t('Save');
     $dest = "admin/panels/panel-page/$panel_page->name/edit/settings";
+    if ($did) {
+      $dest .= "/$did";
+    }
   }
   else {
     $button = t('Next');
@@ -969,25 +1041,18 @@ function panels_page_edit_layout_settings($panel_page, $next = NULL) {
 /**
  * Pass through to the panels content editor.
  */
-function panels_page_edit_content($panel_page) {
-  if (!is_object($panel_page)) {
-    $panel_page = panels_page_load($panel_page);
-  }
-
-  // If we visit this page on a default panel, we have to make it real.
-  if ($panel_page->pid == 'new') {
-    $pid = panels_page_save($panel_page);
-    // reload because not everything gets properly reset on save and we need
-    // ids that were created.
-    $panel_page = panels_page_load($pid);
-  }
+function panels_page_edit_content($panel_page, $did = NULL) {
+  $panel_page = panel_page_fetch_panel_page($panel_page, $did);
 
   // Collect a list of contexts required by the arguments on this page.
   $contexts = array();
-  foreach ($panel_page->arguments as $argument) {
+  foreach ($panel_page->arguments as $id => $argument) {
     $def = panels_get_argument($argument['name']);
-    $contexts[] = $def['context']();
+    $contexts[$id] = $def['context']();
+    $contexts[$id]->title = $def['title'] . ' ' . $argument['id'];
   }
+
+  $panel_page->display->context = $contexts;
 
   // Get a list of available content.
   require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
@@ -998,7 +1063,11 @@ function panels_page_edit_content($panel_page) {
   // messes up the drag & drop.
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
 
-  $output = panels_edit($panel_page->display, "admin/panels/panel-page/$panel_page->name/edit/content", $content_types);
+  $dest = "admin/panels/panel-page/$panel_page->name/edit/content";
+  if ($did) {
+    $dest .= "/$did";
+  }
+  $output = panels_edit($panel_page->display, $dest, $content_types);
 
   print theme('page', $output, FALSE);
 }

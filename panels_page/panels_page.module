@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.4 2007/09/06 18:15:36 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.5 2007/09/08 02:12:12 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -192,6 +192,7 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = a
     'weight' => -10,
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
+/*
   $items[] = array(
     'path' => $base . '/edit',
     'title' => t('Edit'),
@@ -201,14 +202,15 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = a
     'weight' => -5,
     'type' => MENU_LOCAL_TASK,
   );
+*/
   $items[] = array(
     'path' => $base . '/edit/general',
-    'title' => t('General'),
+    'title' => t('Settings'),
     'access' => $access,    
     'callback' => 'panels_page_passthru',
     'callback arguments' => array('panels_page_edit', $page->name),
     'weight' => -5,
-    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'type' => MENU_LOCAL_TASK,
   );
   $items[] = array(
     'path' => $base . '/edit/advanced',
@@ -219,6 +221,8 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = a
     'weight' => -4,
     'type' => MENU_LOCAL_TASK,
   );
+
+  // Set up for the 'default' display.
   $items[] = array(
     'path' => $base . '/edit/layout',
     'title' => t('Layout'),
@@ -229,18 +233,16 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = a
     'type' => MENU_LOCAL_TASK,
   );
 
-  $layout = panels_get_layout($page->display->layout);
-  if (!empty($layout['settings form'])) {
-    $items[] = array(
-      'path' => $base . '/edit/settings',
-      'title' => t('Layout settings'),
-      'access' => $access,    
-      'callback' => 'panels_page_passthru',
-      'callback arguments' => array('panels_page_edit_layout_settings', $page->name),
-      'weight' => -3,
-      'type' => MENU_LOCAL_TASK,
-    );
-  }
+  $items[] = array(
+    'path' => $base . '/edit/settings',
+    'title' => t('Layout settings'),
+    'access' => $access,    
+    'callback' => 'panels_page_passthru',
+    'callback arguments' => array('panels_page_edit_layout_settings', $page->name, NULL),
+    'weight' => -3,
+    'type' => MENU_LOCAL_TASK,
+  );
+
   $items[] = array(
     'path' => $base . '/edit/content',
     'title' => t('Content'),
@@ -250,13 +252,78 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = a
     'weight' => -1,
     'type' => MENU_LOCAL_TASK,
   );
+
+  $items[] = array(
+    'path' => $base . '/edit/layout/default',
+    'title' => t('Default'),
+    'access' => $access,    
+    'callback' => 'panels_page_passthru',
+    'callback arguments' => array('panels_page_edit_layout', $page->name),
+    'weight' => -3,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
+  $items[] = array(
+    'path' => $base . '/edit/settings/default',
+    'title' => t('Default'),
+    'access' => $access,    
+    'callback' => 'panels_page_passthru',
+    'callback arguments' => array('panels_page_edit_layout_settings', $page->name, NULL),
+    'weight' => -3,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
+  $items[] = array(
+    'path' => $base . '/edit/content/default',
+    'title' => t('Default'),
+    'access' => $access,    
+    'callback' => 'panels_page_passthru',
+    'callback arguments' => array('panels_page_edit_content', $page->name),
+    'weight' => -1,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
+  if (!empty($page->displays)) {
+    foreach ($page->displays as $display_id => $info) {
+      $items[] = array(
+        'path' => $base . '/edit/layout/' . $display_id,
+        'title' => $info['title'],
+        'access' => $access,    
+        'callback' => 'panels_page_passthru',
+        'callback arguments' => array('panels_page_edit_layout', $page->name, $display_id),
+        'weight' => -3,
+        'type' => MENU_LOCAL_TASK,
+      );
+
+      $items[] = array(
+        'path' => $base . '/edit/settings/' . $display_id,
+        'title' => $info['title'],
+        'access' => $access,    
+        'callback' => 'panels_page_passthru',
+        'callback arguments' => array('panels_page_edit_layout_settings', $page->name, $display_id),
+        'weight' => -3,
+        'type' => MENU_LOCAL_TASK,
+      );
+
+      $items[] = array(
+        'path' => $base . '/edit/content/' . $display_id,
+        'title' => $info['title'],
+        'access' => $access,    
+        'callback' => 'panels_page_passthru',
+        'callback arguments' => array('panels_page_edit_content', $page->name, $display_id),
+        'weight' => -1,
+        'type' => MENU_LOCAL_TASK,
+      );
+    }
+  }
+
   $items[] = array(
     'path' => $base . '/export',
     'title' => t('Export'),
     'access' => $access,    
     'callback' => 'panels_page_passthru',
     'callback arguments' => array('drupal_get_form', 'panels_page_edit_export', $page->name),
-    'weight' => -1,
+    'weight' => -9,
     'type' => MENU_LOCAL_TASK,
   );
   $items[] = array(
@@ -381,13 +448,14 @@ function panels_page_get_title($panel_page, $context = 'page', $default_title = 
     return $panel_page->menu_title;
   }
   
-  if ($panel_page->contexts) {
+  if ($panel_page->context) {
     $substitutions = array();
     $title = NULL;
-    foreach ($panel_page->contexts as $id => $context) {
+    $count = 1;
+    foreach ($panel_page->context as $id => $context) {
       $argument = panels_get_argument($panel_page->arguments[$id]['name']);
 
-      $substitutions['%' . ($id + 1)] = $argument['title function']($context);
+      $substitutions['%' . ($count++)] = $argument['title function']($context);
       if (!empty($panel_page->arguments[$id]['title'])) {
         $title = $panel_page->arguments[$id]['title'];
       }
@@ -465,43 +533,53 @@ function panels_page_view_page($panel_page) {
   $args = func_get_args();
   array_shift($args); // remove the name.
 
-  $panel_page->contexts = array();
+  $panel_page->context = array();
   if ($panel_page->arguments) {
+    $count = 0;
     foreach ($panel_page->arguments as $i => $argument) {
       $def = panels_get_argument($argument['name']);
       $context = NULL;
-      if (function_exists($def['context']) && isset($args[$i])) {
-        $context = $def['context']($args[$i], $argument['argument_settings']);
+      if (function_exists($def['context']) && isset($args[$count])) {
+        $context = $def['context']($args[$count], $argument['argument_settings']);
       }
-
+      $count++;
       if (!empty($context)) {
-        $panel_page->contexts[$i] = $context;
-      }
-      else {
-        // handle default case
-        if ($argument['default'] == '404') {
-          return drupal_not_found();
+        $context->title = $def['title'] . ' ' . $argument['id'];
+        $panel_page->context[$i] = $context;
+        if (function_exists($def['choose display']) && 
+            $d = $def['choose display']($argument['argument_settings'], $context)) {
+          $display_candidate = "argument_$i" . '-' . $d;
         }
-        // Handle 'new display' case.
+      }
+      else if ($argument['default'] == '404') {
+        return drupal_not_found();
       }
     }
   }
 
-  // This is the first point at which it is save to add items to the display
+  // Figure out which display to use.
+  if (isset($display_candidate)) {
+    $display = panels_page_fetch_display($panel_page, $display_candidate);
+  }
+  else {
+    $display = panels_load_display($panel_page->did);
+  }
+
+  // This is the first point at which it is safe to add items to the display
   // as the argument handling, above, may choose which display is actually
   // used.
-  $panel_page->display->args = $args;
-  $panel_page->display->context = $panel_page->contexts;
-  $panel_page->display->css_id = $panel_page->css_id;
+  $display->args = $args;
+  $display->context = $panel_page->context;
+  $display->css_id = $panel_page->css_id;
 
   // Set this as 'current' so that other stuff can utilize it.
   panels_page_get_current($panel_page);
 
-  $output = panels_render_display($panel_page->display);
+  $output = panels_render_display($display);
 
   // set title afterward to ensure title is retained.
   if ($output == NULL) {
-    watchdog('panels', t('Unable to find requested layout %s', array('%s' => check_plain($panel_page->display->layout))));
+    watchdog('panels', t('Unable to find requested layout %s', array('%s' => check_plain($display->layout))));
     return drupal_not_found();
   }
 
@@ -518,13 +596,57 @@ function panels_page_view_page($panel_page) {
   }
 }
 
+/**
+ * Load a display based upon information from the $displays list.
+ */
+function panels_page_fetch_display($panel_page, $id) {
+  $info = $panel_page->displays[$id];
+
+  // If the 'display' is set it's the result of an export/default
+  if (isset($info['display'])) {
+    return $info['display'];
+  }
+
+  if (is_numeric($info['did'])) {
+    return panels_load_display($info['did']);
+  }
+
+  // At this point the display does not yet exist, which means we need to
+  // create one and save the panel page to reflect this.
+
+  // Arguments can provide their own default to use as a template
+  if (!empty($info['default']) && is_numeric($panel_page->displays[$info['default']]['did'])) {
+    $original = panels_load_display($panel_page->displays[$info['default']]['did']);
+  }
+
+  if (!isset($original)) {
+    if (empty($panel_page->display)) {
+      $original = panels_load_display($panel_page->did);
+    }
+    else {
+      $original = $panel_page->display;
+    }
+  }
+
+  // Make a copy of the display; using the export forces all the IDs properly.  
+  $code = panels_export_display($original);
+  $original = eval($code);
+
+  panels_save_display($display);
+  $panel_page->displays[$id]['did'] = $display->did;
+
+  // TODO: Having to clone this sucks.
+  panels_page_save(drupal_clone($panel_page));
+  return $display;
+}
+
 // ---------------------------------------------------------------------------
 // Database functions
 
 /**
  * Fetch all panel pages in the system. This function does not cache.
  */
-function panels_page_load_all($displays = TRUE, $page_size = 0) {
+function panels_page_load_all( $page_size = 0) {
   $pages = $dids = array();
   $query = "SELECT * FROM {panels_page}";
   if ($page_size) {
@@ -537,18 +659,10 @@ function panels_page_load_all($displays = TRUE, $page_size = 0) {
   while ($page = db_fetch_object($result)) {
     $page->access = ($page->access ? explode(', ', $page->access) : array());
     $page->arguments = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
+    $page->displays = (!empty($page->displays)) ? unserialize($page->displays) : array();
+    $page->contexts = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
     $page->type = t('Local');
     $pages[$page->name] = $page;
-    $dids[] = $page->did;
-  }
-
-  if ($displays && $dids) {
-    $displays = panels_load_displays($dids);
-    foreach ($pages as $name => $page) {
-      if (!empty($displays[$page->did])) {
-        $pages[$name]->display = $displays[$page->did];
-      }
-    }
   }
 
   $status = variable_get('panel_page_defaults', array());
@@ -572,7 +686,7 @@ function panels_page_load_all($displays = TRUE, $page_size = 0) {
 /**
  * Load a panel page and its associated display
  */
-function panels_page_load($pid) {
+function panels_page_load($pid, $load_display = FALSE) {
   static $cache = array();
   if (!array_key_exists($pid, $cache)) {
     if (!is_numeric($pid)) {
@@ -593,8 +707,12 @@ function panels_page_load($pid) {
 
     $cache[$pid]->access = ($cache[$pid]->access ? explode(', ', $cache[$pid]->access) : array());
     $cache[$pid]->arguments = (!empty($cache[$pid]->arguments)) ? unserialize($cache[$pid]->arguments) : array();
+    $cache[$pid]->displays = (!empty($cache[$pid]->displays)) ? unserialize($cache[$pid]->displays) : array();
+    $cache[$pid]->contexts = (!empty($cache[$pid]->contexts)) ? unserialize($cache[$pid]->contexts) : array();
 
-    $cache[$pid]->display = panels_load_display($cache[$pid]->did);
+    if ($load_display) {
+      $cache[$pid]->display = panels_load_display($cache[$pid]->did);
+    }
   }
   return $cache[$pid];
 }
@@ -607,6 +725,8 @@ function panels_page_fields() {
     "name" => "'%s'",
     "title" => "'%s'",
     "arguments" => "'%s'",
+    "displays" => "'%s'",
+    "contexts" => "'%s'",
     "access" => "'%s'",
     "path" => "'%s'",
     "css_id" => "'%s'",
@@ -633,6 +753,8 @@ function panels_page_save($panel_page) {
   // serialize the access string.
   $panel_page->access = $panel_page->access ? implode(', ', $panel_page->access) : '';
   $panel_page->arguments = serialize($panel_page->arguments);
+  $panel_page->displays = serialize($panel_page->displays);
+  $panel_page->contexts = serialize($panel_page->contexts);
 
   // Create strings for our query from the list of fields.
   $fields = panels_page_fields();

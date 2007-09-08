@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.3 2007/09/06 00:48:49 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.4 2007/09/08 02:12:12 merlinofchaos Exp $
 
 
 /**
@@ -312,6 +312,12 @@ function panels_edit_layout_settings_form($display, $finish, $destination) {
   if (!empty($layout['settings form']) && function_exists($layout['settings form'])) {
     $form['layout_settings'] = $layout['settings form']($display, $layout, $display->layout_settings);
   }
+  else {
+    $form['layout_settings'] = array(
+      '#value' => t('This layout has no settings.'),
+    );
+    return $form;
+  }
 
   $form['layout_settings']['#tree'] = TRUE;
 
@@ -363,8 +369,8 @@ function panels_edit_layout_settings_form_submit($form_id, $form_values) {
  * @param $parents
  *   The form api #parents array for that this subform will live in.
  */
-function panels_get_pane_edit_form($pane, $parents) {
-  return panels_ct_get_edit_form($pane->type, $pane->subtype, $pane->configuration, $parents);
+function panels_get_pane_edit_form($pane, $contexts, $parents) {
+  return panels_ct_get_edit_form($pane->type, $pane->subtype, $contexts, $pane->configuration, $parents);
 }
 
 /**
@@ -517,7 +523,7 @@ function panels_ajax_add_config($did = NULL, $pid = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
     $display = $cache->display;
     list($content_type_id, $panel_id, $type) = explode('-', $pid, 3);
-    $conf = panels_ct_get_add_form($content_type_id, $type, array('configuration'));
+    $conf = panels_ct_get_add_form($content_type_id, $type, $display->context, array('configuration'));
     $types = panels_ct_get_types($content_type_id);
     $title = $types[$type]['title'];
 
@@ -684,7 +690,7 @@ function panels_edit_pane_config_form($display, $pid = NULL) {
   );
 
   $return->title = t('Configure !s', array('!s' => panels_get_pane_title($pane)));
-  $form['configuration'] = panels_get_pane_edit_form($pane, array('configuration'));
+  $form['configuration'] = panels_get_pane_edit_form($pane, $display->context, array('configuration'));
   $form['configuration']['#tree'] = true;
 
   if (user_access('administer pane visibility')) {

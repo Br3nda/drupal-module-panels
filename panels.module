@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.44 2007/09/06 00:48:48 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.45 2007/09/08 02:12:12 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -287,6 +287,7 @@ class panels_context {
   function panels_context($type = 'none', $data = NULL) {
     $this->type = $type;
     $this->data = $data;
+    $this->title = t('Unknown context');
   }
 
   function is_type($type) {
@@ -330,7 +331,7 @@ function panels_new_display() {
 }
 
 /**
- * Load a display from the database and set a context.
+ * Load a display from the database
  */
 function panels_load_displays($dids) {
   $displays = array();
@@ -428,8 +429,14 @@ function panels_save_display(&$display) {
  * Delete a display
  */
 function panels_delete_display($display) {
-  db_query("DELETE FROM {panels_display} WHERE did = %d", $display->did);
-  db_query("DELETE FROM {panels_pane} WHERE did = %d", $display->did);
+  if (is_object($display)) {
+    $did = $display->did;
+  }
+  else {
+    $did = $display;
+  }
+  db_query("DELETE FROM {panels_display} WHERE did = %d", $did);
+  db_query("DELETE FROM {panels_pane} WHERE did = %d", $did);
 }
 
 /**
@@ -453,7 +460,7 @@ function panels_export_display($display) {
   foreach ($display->content as $pane) {
     $id = 'new-' . ++$counter;
     $output .= '$pane = new stdClass()'  . ";\n";
-    $fields = array('panel', 'type', 'access', 'configuration');
+    $fields = array('panel', 'type', 'subtype', 'access', 'configuration');
     foreach ($fields as $field) {
       $output .= '  $pane->' . $field . ' = ' . var_export($pane->$field, TRUE) . ";\n";
     }
@@ -559,6 +566,7 @@ function panels_render_panel($panes_in_panel, $display) {
 
   // Store all panes in an array, sorted by their position in the panel.
   $panes = array();
+
   foreach ($panes_in_panel as $pane_id => $pane) {
     if (panels_pane_access($pane)) {
       // Identify which of our possible contexts apply.
@@ -566,15 +574,11 @@ function panels_render_panel($panes_in_panel, $display) {
       if ($pane->subtype) {
         $content_type = panels_ct_get_types($pane->type);
         if (!empty($content_type[$pane->subtype]['required context'])) {
-          foreach ($display->context as $candidate) {
-            if ($candidate->is_type($content_type[$pane->subtype]['required context'])) {
-              $context = $candidate;
-              break;
-            }
+          if (isset($pane->configuration['context']) && isset($display->context[$pane->configuration['context']])) {
+            $context = $display->context[$pane->configuration['context']];
           }
-
           // Don't display this pane if a context is required and not found.
-          if (!$context) {
+          else {
             continue;
           }
         }
@@ -713,6 +717,35 @@ function panels_ct_get_title($type, $conf, $context = NULL, $incoming_content = 
 }
 
 /**
+ * Create the basic config form
+ */
+function panels_ct_conf_form($type, $id, $contexts, $conf) {
+  $content_type = panels_ct_get_types($type);
+  if (!empty($content_type[$id]['required context']) && is_array($contexts)) {
+    // See which of these contexts are valid
+    foreach ($contexts as $cid => $context) {
+      if ($context->is_type($content_type[$id]['required context'])) {
+        $options[$cid] = $context->title;
+      }
+    }
+  }
+
+  $form = array();
+  if (!empty($options)) {
+    $form['context'] = array(
+      '#type' => 'select',
+      '#options' => $options,
+      '#title' => t('Context'),
+      '#description' => t('Multiple contexts are valid for this pane; one must be chosen.'),
+      '#default_value' => $conf['context'],
+    );
+  }
+
+
+  return $form;
+}
+
+/**
  * Get the form to add a new instance of a content type.
  *
  * @param $type
@@ -720,14 +753,22 @@ function panels_ct_get_title($type, $conf, $context = NULL, $incoming_content = 
  * @param $id
  *   The identifier for the content to add; this is specific to the type of
  *   content.
+ * @param $contexts
+ *   A list of possible contexts.
  * @param $parents
  *   The #parents to be used on the form, because some form gadgets need to
  *   know where they live.
  */
-function panels_ct_get_add_form($type, $id, $parents) {
+function panels_ct_get_add_form($type, $id, $contexts, $parents) {
+  $form = panels_ct_conf_form($type, $id, $contexts, array());
+
   if ($function = panels_ct_function($type, 'add callback')) {
-    return $function($id, $parents);
+    $result = $function($id, $parents);
+    if (is_array($result)) {
+      $form += $result;
+    }
   }
+  return $form;
 }
 
 /**
@@ -770,10 +811,16 @@ function panels_ct_submit_add_form($type, $form_values) {
  *   The #parents to be used on the form, because some form gadgets need to
  *   know where they live.
  */
-function panels_ct_get_edit_form($type, $subtype, $conf, $parents) {
+function panels_ct_get_edit_form($type, $subtype, $contexts, $conf, $parents) {
+  $form = panels_ct_conf_form($type, $subtype, $contexts, $conf);
+
   if ($function = panels_ct_function($type, 'edit callback')) {
-    return $function($subtype, $parents, $conf);
+    $result = $function($subtype, $parents, $conf);
+    if (is_array($result)) {
+      $form += $result;
+    }
   }
+  return $form;
 }
 
 /**

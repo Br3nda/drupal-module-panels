@@ -1,5 +1,5 @@
 <?php
-// $Id: node_content.inc,v 1.1.2.1 2007/09/06 00:48:49 merlinofchaos Exp $
+// $Id: node_content.inc,v 1.1.2.2 2007/09/08 02:12:12 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -9,7 +9,7 @@ function panels_node_content_panels_content_types() {
     'weight' => -10,
     'content_types' => 'panels_admin_content_types_node_content',
     'render callback' => 'panels_content_node_content',
-    'add callback' => 'panels_admin_add_node_content',
+    'add callback' => 'panels_admin_edit_node_content',
     'edit callback' => 'panels_admin_edit_node_content',
     'title callback' => 'panels_admin_title_node_content',
   );
@@ -25,29 +25,28 @@ function panels_content_node_content($conf, $panel_args, $context) {
   $block->module = 'node';
   $block->delta = $node->nid;
 
-  if (empty($conf['override_title'])) {
-    if (empty($node)) {
-      $block->subject = t('Node title placeholder.');
-    }
-    else {
-      $block->subject = check_plain($node->title);
-    }
+  if (empty($node)) {
+    $block->delta = 'placeholder';
+    $block->subject = t('Node title placeholder.');
+    $block->content = t('Node content goes here.');
   }
   else {
+    if (!empty($conf['identifier'])) {
+      $node->panel_identifier = $conf['identifier'];
+    }
+
+    $block->subject = check_plain($node->title);
+
+    unset($node->title);
+    $block->content = node_view($node, $conf['teaser'], FALSE, $conf['links']);
+  }
+
+  if (!empty($conf['override_title'])) {
     $block->subject = filter_xss_admin($conf['override_title_text']);
   }
 
   if (!empty($conf['link']) && $node) {
     $block->subject = l($block->subject, "node/$node->nid", NULL, NULL, NULL, NULL, TRUE);
-  }
-
-  unset($node->title);
-
-  if (empty($node)) {
-    $block->content = t('Node content goes here.');
-  }
-  else {
-    $block->content = node_view($node, $conf['teaser'], FALSE, $conf['links']);
   }
 
   return $block;
@@ -108,6 +107,13 @@ function panels_admin_edit_node_content($id, $parents, $conf = array()) {
     '#default_value' => $conf['links'],
     '#title' => t('Display links'),
     '#description' => t('Check here to display the links with the post.')
+  );
+
+  $form['identifier'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['identifier'],
+    '#title' => t('Identifier'),
+    '#description' => t('Whatever is placed here will appear in $node->panel_identifier to make it easier to theme a node or part of a node as necessary.')
   );
 
   return $form;
