@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.2.6.14 2007/09/11 18:26:45 merlinofchaos Exp $
+// $Id: node.inc,v 1.2.6.15 2007/09/11 22:09:22 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -35,7 +35,9 @@ function panels_content_node($conf, $panel_args) {
 
   // Support node translation
   if (module_exists('translation')) {
-    $nid = module_invoke('translation', 'node_nid', $nid, $GLOBALS['locale']);
+    if ($translation = module_invoke('translation', 'node_nid', $nid, $GLOBALS['locale'])) {
+      $nid = $translation;
+    }
   }
 
   $node = node_load($nid);
