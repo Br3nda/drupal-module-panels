@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.2 2007/09/08 02:12:12 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.3 2007/09/11 22:08:24 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -7,7 +7,7 @@ function panels_page_list_page() {
   $layouts = panels_get_layouts();
   foreach (panels_page_load_all() as $panel_page) {
     $ops = array(
-      l(t('Edit'), "admin/panels/panel-page/$panel_page->name/edit"),
+      l(t('Edit'), "admin/panels/panel-page/$panel_page->name/edit/general"),
       l(t('Export'), "admin/panels/panel-page/$panel_page->name/export"),
     );
     if ($panel_page->type != t('Default')) {
@@ -278,7 +278,7 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
 
   $panel_page->title  = $form_values['title'];
-  $panel_page->name  = $form_values['name'];
+  $panel_page->name  = preg_replace("/[\W]+/", '', $form_values['name']);
   $panel_page->css_id = $form_values['css_id'];
   $panel_page->path  = $form_values['path'];
 

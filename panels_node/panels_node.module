@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.3 2007/09/11 20:30:17 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.4 2007/09/11 22:08:24 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -143,7 +143,7 @@ function panels_node_form(&$node, &$param) {
     '#default_value' => $node->title,
   );
 
-  if (!empty($type->body_label))
+  if (!empty($type->body_label)) {
     $form['body'] = array(
       '#type' => 'textarea',
       '#title' => check_plain($type->body_label),
