@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.2.6.13 2007/09/06 00:48:49 merlinofchaos Exp $
+// $Id: node.inc,v 1.2.6.14 2007/09/11 18:26:45 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -74,9 +74,8 @@ function panels_admin_content_types_node() {
 /**
  * Returns the form for a new node.
  */
-function panels_admin_add_node($id, $parents) {
-  $conf = array();
-  $form = panels_admin_edit_node($conf);
+function panels_admin_add_node($id, $parents, $conf = array()) {
+  $form = panels_admin_edit_node($id, $parents, $conf);
   $form['nid'] = array(
     '#prefix' => '<div class="no-float">',
     '#suffix' => '</div>',

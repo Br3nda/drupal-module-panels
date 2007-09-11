@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.17 2007/09/06 00:48:49 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.18 2007/09/11 18:26:45 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -110,8 +110,7 @@ function panels_admin_content_types_views() {
 /**
  * Returns the form for a new view.
  */
-function panels_admin_add_views($id, $parents) {
-  $conf = array();
+function panels_admin_add_views($id, $parents, $conf = array()) {
   $view = views_get_view($id);
   if (!$view) { 
     return;
@@ -128,7 +127,7 @@ function panels_admin_add_views($id, $parents) {
   $conf['type'] = 'embed';
   $conf['pager_id'] = 1;
   $conf['use_pager'] = 0;
-  return panels_admin_edit_views($conf);
+  return panels_admin_edit_views($id, $parents, $conf);
 }
 
 /**

@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.6.14 2007/09/06 00:48:49 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.6.15 2007/09/11 18:26:45 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -91,10 +91,9 @@ function panels_admin_content_types_block() {
 /**
  * Returns the form for a new block.
  */
-function panels_admin_add_block($id, $parents) {
-  $conf = array();
+function panels_admin_add_block($id, $parents, $conf = array()) {
   list($conf['module'], $conf['delta']) = explode('-', $id, 2);
-  return panels_admin_edit_block($conf);
+  return panels_admin_edit_block($id, $parents, $conf);
 }
 
 /**
