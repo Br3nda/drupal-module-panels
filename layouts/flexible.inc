@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.3 2007/08/29 22:02:04 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.4 2007/09/11 20:11:27 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -177,6 +177,10 @@ function theme_panels_flexible($id, $content, $settings) {
 
   if ($id) {
     $idstr = " id='$id'";
+    $idcss = "#$id";
+  }
+  else {
+    $idcss = "div.panel-flexible";
   }
 
   $css = '';
@@ -202,11 +206,11 @@ function theme_panels_flexible($id, $content, $settings) {
       $output .= "<div class=\"panel-col panel-col-$col $class\">\n";
       $output .= "<div class=\"inside\">" . $content["row_${row}_$col"] . "</div>\n";
       $output .= "</div>\n"; // panel-col-$col
-      $css .= "div.panel-flexible div.panel-row-$row div.panel-col-$col { width: " . intval($settings["row_$row"]["width_$col"]) . "%; }\n";
+      $css .= "$idcss div.panel-row-$row div.panel-col-$col { width: " . (intval($settings["row_$row"]["width_$col"]) - .02) . "%; }\n";
     }
     $output .= "</div>\n"; // panel-row-$row
   }
   $output .= "</div>\n"; // panel-flexible
-  drupal_set_html_head("<style type=\"text/css\" media=\"all\">$css</style>\n");
+  drupal_set_html_head("<style type=\"text/css\" media=\"all\">\n$css</style>\n");
   return $output;
 }

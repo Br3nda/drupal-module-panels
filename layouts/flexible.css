@@ -1,7 +1,11 @@
-/* $Id: flexible.css,v 1.1.2.2 2007/08/24 02:49:06 merlinofchaos Exp $ */
+/* $Id: flexible.css,v 1.1.2.3 2007/09/11 20:11:27 merlinofchaos Exp $ */
 
 .panel-flexible { 
   overflow: hidden; 
+}
+
+.panel-flexible {
+  width: 99.9%;
 }
 
 .panel-flexible .panel-col { 
@@ -15,19 +19,20 @@
   padding: 0;
   margin: 0;
   padding-bottom: .5em;
+  width: 99.9%;
 }
 
 .panel-flexible .panel-col-first .inside { 
-  margin-right: .5em;
+  padding-right: .5em;
 }
 
 .panel-flexible .panel-col-inside .inside { 
-  margin-right: .5em;
-  margin-left: .5em;
+  padding-right: .5em;
+  padding-left: .5em;
 }
 
 .panel-flexible .panel-col-last .inside { 
-  margin-left: .5em;
+  padding-left: .5em;
 }
 
 #panels-edit-display .panel-pane,
