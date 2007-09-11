@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.4 2007/09/08 02:12:12 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.5 2007/09/11 23:03:57 merlinofchaos Exp $
 
 
 /**
@@ -509,9 +509,11 @@ function panels_add_content($cache, $panel_id) {
     foreach ($weights as $category => $weight) {
       $output .= '<h3 class="panels-section-title">' . $category . '</h3>';
       $output .= '<div class="panels-section-decorator"></div>';
-      natcasesort($titles[$category]);
-      foreach ($titles[$category] as $id => $title) {
-        $output .= $categories[$category][$id];
+      if (is_array($titles[$category])) {
+        natcasesort($titles[$category]);
+        foreach ($titles[$category] as $id => $title) {
+          $output .= $categories[$category][$id];
+        }
       }
     }
   }
