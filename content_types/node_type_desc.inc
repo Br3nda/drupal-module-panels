@@ -1,12 +1,12 @@
 <?php
-// $Id: node_type_desc.inc,v 1.1.2.1 2007/09/06 00:48:49 merlinofchaos Exp $
+// $Id: node_type_desc.inc,v 1.1.2.2 2007/09/11 20:51:22 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
 function panels_node_type_desc_panels_content_types() {
   if (module_exists('comment')) {
     $items['node_type_desc'] = array(
-      'title' => t('Node comment form'),
+      'title' => t('Node type description'),
       'content_types' => 'panels_admin_content_types_node_type_desc',
       'render callback' => 'panels_content_node_type_desc',
       'add callback' => 'panels_admin_edit_node_type_desc',
