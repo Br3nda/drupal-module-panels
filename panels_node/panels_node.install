@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.install,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
+// $Id: panels_node.install,v 1.1.2.2 2007/09/11 20:30:17 merlinofchaos Exp $
 
 /**
  * Install the panels node tables
@@ -20,5 +20,6 @@ EOT
  */
 function panels_node_uninstall() {
   // TODO: Delete all actual nodes that are panels_nodes.
+  db_query("DELETE FROM {node} WHERE type = 'panel'");
   db_query("DROP TABLE {panels_node}");
 }
