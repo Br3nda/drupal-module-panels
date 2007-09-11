@@ -1,5 +1,5 @@
 <?php
-// $Id: custom.inc,v 1.2.6.11 2007/09/06 00:48:49 merlinofchaos Exp $
+// $Id: custom.inc,v 1.2.6.12 2007/09/11 20:42:49 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -21,8 +21,9 @@ function panels_custom_panels_content_types() {
  * based on the module and delta supplied in the configuration.
  */
 function panels_content_custom($conf) {
-  $block->module = 'panels';
-  $block->delta = strip_tags($conf['title']);
+  static $delta = 0;
+  $block->module = 'custom';
+  $block->delta = ++$delta;
   $block->subject = filter_xss_admin($conf['title']);
   $block->content = theme('panels_custom_content', check_markup($conf['body'], $conf['format'], FALSE), check_plain($conf['css_id']), check_plain($conf['css_class']));
   return $block;
