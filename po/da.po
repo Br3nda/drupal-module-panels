@@ -1,0 +1,396 @@
+# Danish translation of Drupal (panels.module)
+# Copyright 2007 Morten Wulff <wulff@ratatosk.net>
+msgid ""
+msgstr ""
+"Project-Id-Version: Danish translation of Drupal (panels.module) $Id: da.po,v 1.1.2.1 2007/09/12 13:37:16 wulff Exp $\n"
+"POT-Creation-Date: 2007-09-12 13:59+0200\n"
+"PO-Revision-Date: 2007-09-12 15:36+0100\n"
+"Last-Translator: Morten Wulff <wulff@ratatosk.net>\n"
+"Language-Team: Danish <l10n@drupaldanmark.dk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: Danish\n"
+"X-Poedit-Country: DENMARK\n"
+
+#: panels.module:11
+msgid "<p>You may peruse a list of your current panels layouts and edit them, or click add to create a new page.</p>"
+msgstr "<p>Du kan gennemse en liste af eksiterende paneler eller klikke for at tilføje en ny side.</p>"
+
+#: panels.module:13
+msgid "<p>Choose a layout for your new page from the list below.</p>"
+msgstr "<p>Vælg et layout fra listen herunder.</p>"
+
+#: panels.module:60
+#: panels.info:0
+msgid "Panels"
+msgstr "Paneler"
+
+#: panels.module:63
+msgid "Create pages on your site that are 2 or 3 columns"
+msgstr "Opret sider der har 2 eller 3 spalter"
+
+#: panels.module:67
+msgid "List"
+msgstr "Vis"
+
+#: panels.module:75;82
+msgid "Add"
+msgstr "Tilføj"
+
+#: panels.module:89
+msgid "Edit panels"
+msgstr "Rediger paneler"
+
+#: panels.module:96
+msgid "Delete panels"
+msgstr "Slet paneler"
+
+#: panels.module:105
+msgid "Autocomplete node"
+msgstr "Autofuldfør indholdselement"
+
+#: panels.module:199
+msgid "Edit"
+msgstr "Rediger"
+
+#: panels.module:200;228
+msgid "Delete"
+msgstr "Slet"
+
+#: panels.module:205
+msgid "Panel title"
+msgstr "Paneltitel"
+
+#: panels.module:206
+msgid "URL"
+msgstr "URL"
+
+#: panels.module:207
+msgid "Operations"
+msgstr "Handlinger"
+
+#: panels.module:225
+msgid "Are you sure you want to delete %title?"
+msgstr "Ønsker du at slette %title?"
+
+#: panels.module:227
+msgid "This action cannot be undone."
+msgstr "Denne handling kan ikke fortrydes."
+
+#: panels.module:228
+msgid "Cancel"
+msgstr "Annuller"
+
+#: panels.module:308
+msgid "Add content"
+msgstr "Tilføj indhold"
+
+#: panels.module:310
+msgid "Select an area to add content to, then select a type of content and click the appropriate button. The content will be added."
+msgstr "Vælg hvilket område du vil føje indhold til, vælg hvilken type du vil tilføje og klik på den relevante knap."
+
+#: panels.module:319
+msgid "Area"
+msgstr "Område"
+
+#: panels.module:358
+msgid "General information"
+msgstr "Generel information"
+
+#: panels.module:375
+msgid "Page title"
+msgstr "Sidetitel"
+
+#: panels.module:376
+msgid "The page title for this panels layout"
+msgstr "Panelets sidetitel"
+
+#: panels.module:382
+#: content_types/custom.inc:90
+msgid "CSS ID"
+msgstr "CSS ID"
+
+#: panels.module:383
+msgid "The CSS ID to apply to this page"
+msgstr "Sidens CSS ID"
+
+#: panels.module:394
+msgid "Access"
+msgstr "Adgang"
+
+#: panels.module:397
+msgid "Only the checked roles will be able to see this panel in any form; if no roles are checked, access will not be restricted."
+msgstr "Kun de valgte rolle kan se panelet. Hvis ingen roller er valgt har alle adgang."
+
+#: panels.module:403
+msgid "Path"
+msgstr "Sti"
+
+#: panels.module:404
+msgid "The URL path to give this page, i.e, path/to/page"
+msgstr "Sidens URL (f.eks. sti/til/side)"
+
+#: panels.module:508
+msgid "Save"
+msgstr "Gem"
+
+#: panels.module:527
+msgid "This area has no content."
+msgstr "Området har intet indhold."
+
+#: panels.module:550
+msgid "Configure"
+msgstr "Konfigurer"
+
+#: panels.module:599
+msgid "The panels has been saved."
+msgstr "Paneler gemt."
+
+#: panels.module:607
+msgid "Delete this item"
+msgstr "Slet element"
+
+#: panels.module:613
+msgid "Move item up"
+msgstr "Flyt element op"
+
+#: panels.module:614
+msgid "Move item down"
+msgstr "Flyt element ned"
+
+#: panels.module:749
+msgid "Unable to find requested layout %s"
+msgstr "Kan ikke finde layoutet %s"
+
+#: panels.module:853
+msgid "by %user"
+msgstr "af %user"
+
+#: panels.module:749;0
+msgid "panels"
+msgstr "paneler"
+
+#: panels.module:21
+msgid "create panels"
+msgstr "opret paneler"
+
+#: panels.module:21
+msgid "access all panels"
+msgstr "tilgå alle paneler"
+
+#: panels.info:0
+msgid "Create pages that are divided into areas of the page."
+msgstr "Opret sider der er inddelt i underområdet."
+
+#: content_types/block.inc:75
+#: content_types/views.inc:123
+msgid "Block"
+msgstr "Blok"
+
+#: content_types/block.inc:79;86
+msgid "Add block"
+msgstr "Tilføj blok"
+
+#: content_types/block.inc:107
+msgid "Override title"
+msgstr "Tilsidesæt titel"
+
+#: content_types/block.inc:108
+msgid "If checked, the block title will be overridden with the override title text."
+msgstr "Erstat bloktitlen med teksten i \"tilsidesæt titel\"."
+
+#: content_types/block.inc:113
+msgid "Override title text"
+msgstr "Tilsidesæt titeltekst"
+
+#: content_types/custom.inc:50
+msgid "Enter an optional title for custom content you define"
+msgstr "Indtast en titel for tilpasset indhold"
+
+#: content_types/custom.inc:57;64
+msgid "Add custom"
+msgstr "Tilføj tilpasset"
+
+#: content_types/custom.inc:73;74
+msgid "Title"
+msgstr "Titel"
+
+#: content_types/custom.inc:78
+msgid "Body"
+msgstr "Indhold"
+
+#: content_types/custom.inc:91
+msgid "CSS ID of this custom content."
+msgstr "CSS ID for tilpasset indhold."
+
+#: content_types/custom.inc:98
+msgid "CSS class"
+msgstr "CSS klasse"
+
+#: content_types/custom.inc:99
+msgid "CSS class of this custom content."
+msgstr "CSS klasse for tilpasset indhold."
+
+#: content_types/node.inc:42
+msgid "Enter the title or NID of a post"
+msgstr "Indtast node ID for indlæg"
+
+#: content_types/node.inc:50;57
+msgid "Add post"
+msgstr "Tilføj indlæg"
+
+#: content_types/node.inc:68
+msgid "Unable to find \"%s\""
+msgstr "Kan ikke finde \"%s\""
+
+#: content_types/node.inc:82
+msgid "Teaser"
+msgstr "Smagsprøve"
+
+#: content_types/node.inc:85
+msgid "Check here to show only the node teaser"
+msgstr "Vis kun smagsprøver"
+
+#: content_types/node.inc:90
+msgid "Display links"
+msgstr "Vis links"
+
+#: content_types/node.inc:91
+msgid "Check here to display the links with the post."
+msgstr "Vis links"
+
+#: content_types/node.inc:96
+msgid "Suppress node title"
+msgstr "Skjul titel"
+
+#: content_types/node.inc:97
+msgid "Check here to suppress the node title."
+msgstr "Skjul titel"
+
+#: content_types/views.inc:86
+msgid "Choose a view from the views module"
+msgstr "Vælg en visning"
+
+#: content_types/views.inc:90;97
+msgid "Add view"
+msgstr "Tilføj visning"
+
+#: content_types/views.inc:121
+msgid "View type"
+msgstr "Visningstype"
+
+#: content_types/views.inc:122
+msgid "Select which type of the view to display."
+msgstr "Vælg hvilken udgave af visning der skal vises."
+
+#: content_types/views.inc:123
+msgid "Page"
+msgstr "Side"
+
+#: content_types/views.inc:123
+msgid "Embedded"
+msgstr "Indlejret"
+
+#: content_types/views.inc:128
+msgid "Pager ID"
+msgstr "Sideskifter-ID"
+
+#: content_types/views.inc:130
+msgid "Select the numeric pager ID to use, or 0 to not have use paging. Select \"1\" if you aren't sure what this means"
+msgstr "Vælg et numerisk sideskifter-ID, eller angiv 0 for ikke at bruge sideskift. Vælg \"1\" hvis du er i tvivl om hvad dette betyder."
+
+#: content_types/views.inc:136
+msgid "Posts to Display"
+msgstr "Antal indlæg"
+
+#: content_types/views.inc:138
+msgid "Select the number of posts to display, or 0 to display all results."
+msgstr "Vælg hvor mange indlæg der skal vises, eller 0 for at vise alle indlæg."
+
+#: content_types/views.inc:144
+msgid "View arguments"
+msgstr "Argumenter til visning"
+
+#: content_types/views.inc:146
+msgid "Arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You can use %0, %1, %2, etc, to use arguments from the actual URL. For example, if your panel URL is foo/bar, and someone hits foo/bar/5 use %2 to get the 5."
+msgstr "Argumenter der skal sendes til visningen som om de er en del af URLen på formen arg1/arg2/arg3. Du kan bruge %0, %1, %2, osv. for at bruge argumenter fra den aktuelle URL."
+
+#: content_types/views.inc:152
+msgid "Override URL"
+msgstr "Tilsidesæt URL"
+
+#: content_types/views.inc:154
+msgid "If this is set, override the View URL; this can sometimes be useful to set to the panel URL"
+msgstr "Tilsidesæt visnings-URL; det kan nogle gange være nyttigt at bruge panel-URLen i stedet."
+
+#: content_types/views.inc:160
+msgid "Display view title"
+msgstr "Vis titel på visning"
+
+#: content_types/views.inc:161
+msgid "If checked, the title of the view will be displayed."
+msgstr "Vis visningens titel."
+
+#: layouts/threecol_25_50_25.inc:8
+msgid "Three column 25/50/25"
+msgstr "Tre spalter 25/50/25"
+
+#: layouts/threecol_25_50_25.inc:12
+#: layouts/threecol_25_50_25_stacked.inc:14
+#: layouts/threecol_33_34_33.inc:13
+#: layouts/threecol_33_34_33_stacked.inc:14
+#: layouts/twocol.inc:13
+#: layouts/twocol_stacked.inc:14
+msgid "Left side"
+msgstr "Venstre side"
+
+#: layouts/threecol_25_50_25.inc:12
+#: layouts/threecol_25_50_25_stacked.inc:14
+#: layouts/threecol_33_34_33.inc:13
+#: layouts/threecol_33_34_33_stacked.inc:14
+msgid "Middle column"
+msgstr "Midterste spalte"
+
+#: layouts/threecol_25_50_25.inc:12
+#: layouts/threecol_25_50_25_stacked.inc:14
+#: layouts/threecol_33_34_33.inc:13
+#: layouts/threecol_33_34_33_stacked.inc:14
+#: layouts/twocol.inc:13
+#: layouts/twocol_stacked.inc:14
+msgid "Right side"
+msgstr "Højre side"
+
+#: layouts/threecol_25_50_25_stacked.inc:10
+msgid "Three column 25/50/25 stacked"
+msgstr "Tre spalter 25/50/25 stablet"
+
+#: layouts/threecol_25_50_25_stacked.inc:14
+#: layouts/threecol_33_34_33_stacked.inc:14
+#: layouts/twocol_stacked.inc:14
+msgid "Top"
+msgstr "Top"
+
+#: layouts/threecol_25_50_25_stacked.inc:14
+#: layouts/threecol_33_34_33_stacked.inc:14
+#: layouts/twocol_stacked.inc:14
+msgid "Bottom"
+msgstr "Bund"
+
+#: layouts/threecol_33_34_33.inc:9
+msgid "Three column 33/34/33"
+msgstr "Tre spalter 33/34/33"
+
+#: layouts/threecol_33_34_33_stacked.inc:10
+msgid "Three column 33/34/33 stacked"
+msgstr "Tre spalter 33/34/33 stablet"
+
+#: layouts/twocol.inc:9
+msgid "Two column"
+msgstr "To spalter"
+
+#: layouts/twocol_stacked.inc:10
+msgid "Two column stacked"
+msgstr "To spalter stablet"
+
