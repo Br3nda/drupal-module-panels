@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.45 2007/09/08 02:12:12 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.46 2007/09/12 17:59:55 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -73,6 +73,14 @@ function panels_menu($may_cache) {
       'title' => t('ajax'),
       'callback' => 'panels_ajax_passthru',
       'callback arguments' => array('panels_ajax_configure'),
+      'access' => user_access('access content'),
+      'type' => MENU_CALLBACK
+    );
+    $items[] = array(
+      'path' => 'panels/ajax/panel_settings',
+      'title' => t('ajax'),
+      'callback' => 'panels_ajax_passthru',
+      'callback arguments' => array('panels_common_panel_settings_ajax'),
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK
     );
@@ -209,6 +217,35 @@ function panels_cache_set($did, $cache) {
  */
 function panels_cache_clear($did) {
   cache_clear_all(session_id() . ':' . $did, 'cache');
+}
+
+// ---------------------------------------------------------------------------
+// cache handling stuff for non-display objects.
+
+/**
+ * Get an object from cache.
+ */
+function panels_common_cache_get($obj, $did) {
+  static $cache = array();
+  if (!array_key_exists($did, $cache)) {
+    $data = cache_get(session_id() . ":$obj:$did", 'cache');
+    $cache[$did] = unserialize($data->data);
+  }
+  return $cache[$did];
+}
+
+/**
+ * Save the edited display into the cache.
+ */
+function panels_common_cache_set($obj, $did, $cache) {
+  cache_set(session_id() . ":$obj:$did", 'cache', serialize($cache), time() + 86400);
+}
+
+/**
+ * Clear a display from the cache; used if the editing is aborted.
+ */
+function panels_common_cache_clear($did) {
+  cache_clear_all(session_id() . ":$obj:$did", 'cache');
 }
 
 /**
@@ -474,6 +511,26 @@ function panels_export_display($display) {
 }
 
 /**
+ * Render a display by loading the content into an appropriate
+ * array and then passing through to panels_render_layout.
+ *
+ * if $incoming_content is NULL, default content will be applied. Use
+ * an empty string to indicate no content.
+ * @render
+ */
+function panels_render_display(&$display) {
+  $layout = panels_get_layout($display->layout);
+  if (!$layout) {
+    return NULL;
+  }
+
+  // TODO: This may not be necessary now. Check this.
+  panels_sanitize_display($display);
+
+  return panels_render_layout($layout, $display, $display->css_id, $display->layout_settings);
+}
+
+/**
  * For external use: Given a layout ID and a $content array, return the
  * panel display. The content array is filled in based upon the content
  * available in the layout. If it's a two column with a content
@@ -521,26 +578,6 @@ function panels_render_layout($layout, $content, $css_id = NULL, $settings = arr
   $output = theme($layout['theme'], check_plain($css_id), $content, $settings);
 
   return $output;
-}
-
-/**
- * Render a display by loading the content into an appropriate
- * array and then passing through to panels_render_layout.
- *
- * if $incoming_content is NULL, default content will be applied. Use
- * an empty string to indicate no content.
- * @render
- */
-function panels_render_display(&$display) {
-  $layout = panels_get_layout($display->layout);
-  if (!$layout) {
-    return NULL;
-  }
-
-  // TODO: This may not be necessary now. Check this.
-  panels_sanitize_display($display);
-
-  return panels_render_layout($layout, $display, $display->css_id, $display->layout_settings);
 }
 
 /**
@@ -596,15 +633,8 @@ function panels_render_panel($panes_in_panel, $display) {
   if (isset($display->owner) && is_object($display->owner) && isset($display->owner->pid)) {
     $panel_id = $display->owner->pid;
   }
-  
-  if ($function = $style['render panel']) {
-    return $function($display, $panel_id, $panes);
-  }
-  else {
-    // TODO: DEPRECATED. Leaving in to make the transition easier. This will disappear by
-    // alpha 11.
-    return module_invoke($style['module'], 'panels_panel_style_render', $display, $style['name'], $panel_id, $panes);
-  }
+
+  return theme($style['render panel'], $display, $panel_id, $panes, $display->panel_settings['style_settings']);
 }
 
 /**

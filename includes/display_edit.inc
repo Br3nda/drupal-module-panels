@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.5 2007/09/11 23:03:57 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.6 2007/09/12 17:59:55 merlinofchaos Exp $
 
 
 /**
@@ -26,7 +26,6 @@ function _panels_edit($display, $destination, $content_types = NULL) {
     panels_cache_set($did, $cache);
   }
 
-//  drupal_set_message('<pre>' . check_plain(var_export($display, true)) . '</pre>');
   $output = drupal_get_form('panels_edit_display', $display, $destination);
   $hidden = theme('panels_hidden');
   return $output . $hidden;
@@ -312,15 +311,11 @@ function panels_edit_layout_settings_form($display, $finish, $destination) {
   if (!empty($layout['settings form']) && function_exists($layout['settings form'])) {
     $form['layout_settings'] = $layout['settings form']($display, $layout, $display->layout_settings);
   }
-  else {
-    $form['layout_settings'] = array(
-      '#value' => t('This layout has no settings.'),
-    );
-    return $form;
-  }
 
   $form['layout_settings']['#tree'] = TRUE;
 
+  $form += panels_common_panel_settings($display);
+  
   $form['variables'] = array(
     '#type' => 'value',
     '#value' => array($display, $finish, $destination),
@@ -334,11 +329,14 @@ function panels_edit_layout_settings_form($display, $finish, $destination) {
     '#type' => 'submit',
     '#value' => $finish,
   );
+
+
   return $form;
 }
 
 function panels_edit_layout_settings_form_validate($form_id, $form_values, $form) {
   list($display, $finish, $destination) = $form_values['variables'];
+  panels_common_panel_settings_validate($form_id, $form_values, $form);
   $layout = $form_values['layout'];
   if (!empty($layout['settings validate']) && function_exists($layout['settings validate'])) {
     $layout['settings validate']($form_values['layout_settings'], $form['layout_settings'], $display, $layout, $display->layout_settings);
@@ -347,6 +345,7 @@ function panels_edit_layout_settings_form_validate($form_id, $form_values, $form
 
 function panels_edit_layout_settings_form_submit($form_id, $form_values) {
   list($display, $finish, $destination) = $form_values['variables'];
+  panels_common_panel_settings_submit($form_id, $form_values);
 
   $layout = $form_values['layout'];
   if (!empty($layout['settings submit']) && function_exists($layout['settings submit'])) {
@@ -355,6 +354,8 @@ function panels_edit_layout_settings_form_submit($form_id, $form_values) {
 
   if ($form_values['op'] == $finish) {
     $display->layout_settings = $form_values['layout_settings'];
+    $display->panel_settings = $form_values['panel_settings'];
+
     panels_save_display($display);
     drupal_set_message("Your layout settings have been saved.");
     return $destination;
@@ -790,6 +791,202 @@ function panels_edit_submit_subform($display) {
     $return->output = theme('status_messages') . $return->output;
   }
   return $return;
+}
+
+// ------------------------------------------------------------------
+// Panels settings + ajax for modal popup
+
+/**
+ * The panel settings fieldset that can optionally be added to
+ * admin/panels/panel-%implementation%/%panel_id%/edit, if the panels
+ * implementation wants to support panel settings.
+ */
+function panels_common_panel_settings($display, $panels_implementation = '', $label = '') {
+  $panel_settings = $display->panel_settings;
+  $style = panels_get_style((!empty($panel_settings['style'])) ? $panel_settings['style'] : 'default');
+
+  // Let the user choose between panel styles that are available for any
+  // panels implementation or specifically to this one.
+  $options = array();
+  foreach (panels_get_styles() as $name => $properties) {
+    $implementations = $properties['panels implementations'];
+    if (!empty($properties['hidden'])) {
+      continue;
+    }
+
+    if (!is_array($implementations) || count($implementations) == 0 || in_array($panels_implementation, $implementations)) {
+      // TODO: 'label' is deprecated, will go away.
+      $options[$name] = empty($properties['title']) ? $properties['label'] : $properties['title'];
+    }
+  }
+
+  $form = array();
+
+  $form['display'] = array('#type' => 'value', '#value' => $display);
+
+  $form['panel_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Panel settings'),
+    '#tree' => TRUE,
+  );
+
+  $form['panel_settings']['style'] = array(
+    '#type' => 'select',
+    '#title' => t('Panel style'),
+    '#options' => $options,
+    '#description' => t(
+      'The style in which the panes of each panel in this %panels-label will be displayed.',
+      array('%panels-label' => $label)
+    ),
+    '#id' => 'panel-settings-style',
+    '#default_value' => $style['name'],
+  );
+
+  // Is this form being posted? If so, check cache.
+  if (!empty($_POST)) {
+    $style_settings = panels_common_cache_get('style_settings', $display->did);
+  }
+  if (!isset($style_settings)) {
+    $style_settings = $panel_settings['style_settings'];
+    panels_common_cache_set('style_settings', $display->did, $style_settings);
+  }
+  $form['panel_settings']['style_settings'] = array(
+    '#type' => 'value',
+    '#value' => $style_settings,
+  );
+  $form['panel_settings']['edit_style'] = array(
+    '#type' => 'submit',
+    '#id' => 'panels-style-settings',
+    '#value' => t('Edit style settings'),
+  );
+  
+  // while we don't use this directly some of our forms do.
+  drupal_add_js('misc/collapse.js');
+  drupal_add_js('misc/autocomplete.js');
+
+  $ajax = array('panels' => array(
+    'ajaxURL' => url('panels/ajax/panel_settings/' . $display->did, NULL, NULL, TRUE),
+    'closeText' => t('Close Window'),
+    'closeImage' => theme('image', panels_get_path('images/close.gif'), t('Close window'), t('Close window')),
+    'throbber' => theme('image', panels_get_path('images/throbber.gif'), t('Loading...'), t('Loading')),
+  ));
+
+  $form['panel_settings']['did'] = array(
+    '#type' => 'value',
+    '#value' => $display->did,
+  );
+
+  drupal_add_js(panels_get_path('js/lib/dimensions.js'));
+  drupal_add_js(panels_get_path('js/lib/mc.js'));
+  drupal_add_js(panels_get_path('js/lib/form.js'));
+  drupal_add_js($ajax, 'setting');
+  drupal_add_js(panels_get_path('js/edit_settings.js'));
+  drupal_add_js(panels_get_path('js/modal_forms.js'));
+  drupal_add_css(panels_get_path('css/panels_dnd.css'));
+
+  return $form;
+}
+
+function panels_common_panel_settings_validate($form_id, $form_values, $form) {
+  $settings = panels_common_cache_get('style_settings', $form_values['panel_settings']['did']);
+  form_set_value($form['panel_settings']['style_settings'], $settings);
+}
+
+function panels_common_panel_settings_submit($form_id, $form_values) {
+  panels_common_cache_clear('style_settings', $form_values['panel_settings']['did']);
+}
+
+/**
+ * AJAX incoming to deal with the style settings modal
+ */
+function panels_common_panel_settings_ajax($did, $name) {
+  $style = panels_get_style($name);
+  $style_settings = panels_common_cache_get('style_settings', $did);
+  
+  $form = drupal_retrieve_form('panels_common_style_settings_form', $did, $style, $style_settings);
+  if ($_POST) {
+    $form['#programmed'] = TRUE;
+    $form['#post'] = $_POST;
+  }
+
+  $result = drupal_process_form('panels_common_style_settings_form', $form);
+  if ($result) { 
+    // successful submit
+    $output = new stdClass();
+    $output->type = $output->output = 'dismiss';
+    panels_ajax_render($output);
+  }
+  else {
+    $output = drupal_render_form('panels_common_style_settings_form', $form);
+    panels_ajax_render($output, t('Edit style settings for @style', array('@style' => $style['title'])), url($_GET['q'], NULL, NULL, TRUE));
+  }
+}
+
+/**
+ * Form for the style settings modal.
+ */
+function panels_common_style_settings_form($did, $style, $style_settings) {
+  $form['start_form'] = array('#value' => '<div class="modal-form">');
+  $form['description'] = array(
+    '#prefix' => '<div class="description">',
+    '#suffix' => '</div>',
+    '#value' => check_plain($style['description']),
+  );
+
+  if (isset($style['settings form']) && function_exists($style['settings form'])) {
+    $form['style_settings'] = $style['settings form']($style_settings);
+    $form['style_settings']['#tree'] = TRUE;
+  }
+  else {
+    $form['markup'] = array(
+      '#value' => t('This style does not have any settings.'),
+    );
+  }
+  $form['end_form'] = array('#value' => '</div>');
+
+  if (!isset($form['markup'])) {
+    $form['style'] = array(
+      '#type' => 'value',
+      '#value' => $style,
+    );
+
+    $form['did'] = array(
+      '#type' => 'value',
+      '#value' => $did,
+    );
+
+    $form['next'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Allows panel styles to validate their style settings.
+ */
+function panels_common_style_settings_form_validate($form_id, $form_values, $form) {
+  $style = $form_values['style'];
+
+  if (isset($style['settings form validate']) && function_exists($style['settings form validate'])) {
+    $style['settings form validate']($form, $form_values['style_settings']);
+  }
+}
+
+/**
+ * Allows panel styles to validate their style settings.
+ */
+function panels_common_style_settings_form_submit($form_id, $form_values) {
+  $style = $form_values['style'];
+
+  if (isset($style['settings form submit']) && function_exists($style['settings form submit'])) {
+    $style['settings form submit']($form_values['style_settings']);
+  }
+
+  panels_common_cache_set('style_settings', $form_values['did'], $form_values['style_settings']);
+  return 'dismiss';
 }
 
 /**

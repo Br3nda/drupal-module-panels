@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.5 2007/09/08 02:12:12 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.6 2007/09/12 17:59:55 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -747,8 +747,10 @@ function panels_page_fields() {
  * Save a panel page. 
  */
 function panels_page_save($panel_page) {
-  // Save the display.
-  $display = panels_save_display($panel_page->display);
+  // Save the display if one was given to us.
+  if (!empty($panel_page->display)) {
+    $display = panels_save_display($panel_page->display);
+  }
 
   // serialize the access string.
   $panel_page->access = $panel_page->access ? implode(', ', $panel_page->access) : '';

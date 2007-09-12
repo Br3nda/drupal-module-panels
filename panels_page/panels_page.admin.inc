@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.3 2007/09/11 22:08:24 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.4 2007/09/12 17:59:55 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -245,6 +245,10 @@ function panels_page_edit_form($panel_page) {
     '#value' => $label,
   );  
 
+  // Add the "panel settings" section of the form and the accompanying submit
+  // handler.
+  require_once drupal_get_path('module', 'panels') .'/includes/common.inc';
+
   return $form;
 }
 
@@ -277,6 +281,7 @@ function panels_page_edit_form_validate($form_id, $form_values, $form) {
 function panels_page_edit_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
 
+  $panel_page->display->panel_settings = $form_values['panel_settings'];
   $panel_page->title  = $form_values['title'];
   $panel_page->name  = preg_replace("/[\W]+/", '', $form_values['name']);
   $panel_page->css_id = $form_values['css_id'];

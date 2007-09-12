@@ -1,5 +1,5 @@
 <?php
-// $Id: list.inc,v 1.1.2.2 2007/08/30 02:45:22 merlinofchaos Exp $
+// $Id: list.inc,v 1.1.2.3 2007/09/12 17:59:56 merlinofchaos Exp $
 /**
  * @file styles/list.inc
  * Definition of the 'list' panel style.
@@ -22,22 +22,15 @@ function panels_list_panels_styles() {
 }
 
 /**
- * Implementation of hook_panels_panel_style_render().
- */
-function panels_list_style_render_panel($display, $panel_id, $panes) {
-  return theme('panels_list_style', $display, $panel_id, $panes);
-}
-
-/**
  * Panel style: list of panes (panes are items in an unordered list).
  */
-function theme_panels_list_style($display, $panel_id, $panes) {
+function theme_panels_list_style_render_panel($display, $panel_id, $panes, $settings) {
   $items = array();
 
   foreach ($panes as $pane_id => $pane) {
     $items[] = theme('panels_pane', $pane, $display);
   }
-  return theme('item_list', $items, $display->panel_settings['style_settings']['list_type']);
+  return theme('item_list', $items, $settings['list_type']);
 }
 
 function panels_list_style_settings_form($style_settings) {

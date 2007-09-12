@@ -5,6 +5,7 @@ o = TODO
 - = Skipped/postponed
 
 ajax/js
+    o remove panels_hidden, use only javascript
     o Remove 'panels_set' and use the broken up drupal_get_form functions
       rather than drupal_get_form for our multi-step stuff.
     o Add permission checking to all the ajax functions
@@ -13,7 +14,7 @@ ajax/js
     X Make sure the icons on the 'change layout' page are clickable
     X Loading animation for panels-modal
     X Make the titlebar outside of the overflow in the modal
-    - Change show/hide to use AJAX. 
+    o Change show/hide to use AJAX. 
     X Write my own drag & drop
 
 modules
@@ -79,7 +80,7 @@ Flexible layout
 
 Styles:
     o Convert DND to a style
-    o Rounded corners style
+    X Rounded corners style
 
 Arguments:
     o taxonomy argument
@@ -98,12 +99,10 @@ panels API
     X Allow API to accept context
     X Allow API to accept content
     X Allow API to accept arguments
-    o Change DND layout to load content via ajax; this adds both robustness and rendering speed.
 
 General:
     o CSS class/id name cleanup and unification.
     o Make sure core blocks that require context are labelled as such.
-
 
 Documentation
     o Creating new panel modules that use the API
