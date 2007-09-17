@@ -1,5 +1,5 @@
 <?php
-// $Id: node_content.inc,v 1.1.2.2 2007/09/08 02:12:12 merlinofchaos Exp $
+// $Id: node_content.inc,v 1.1.2.3 2007/09/17 19:11:49 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -14,6 +14,22 @@ function panels_node_content_panels_content_types() {
     'title callback' => 'panels_admin_title_node_content',
   );
   return $items;
+}
+
+/**
+ * Return all content types available.
+ */
+function panels_admin_content_types_node_content() {
+  return array(
+    'content' => array(
+      'title' => t('Node content'),
+      'icon' => 'icon_node.png',
+      'path' => panels_get_path('content_types/node'),
+      'description' => t('The content of the referenced node.'),
+      'required context' => 'node',
+      'category' => array(t('Node context'), -9),
+    ),
+  );
 }
 
 /**
@@ -38,7 +54,7 @@ function panels_content_node_content($conf, $panel_args, $context) {
     $block->subject = check_plain($node->title);
 
     unset($node->title);
-    $block->content = node_view($node, $conf['teaser'], FALSE, $conf['links']);
+    $block->content = panels_admin_node_content($node, $conf);
   }
 
   if (!empty($conf['override_title'])) {
@@ -52,26 +68,63 @@ function panels_content_node_content($conf, $panel_args, $context) {
   return $block;
 }
 
-/**
- * Return all content types available.
- */
-function panels_admin_content_types_node_content() {
-  return array(
-    'content' => array(
-      'title' => t('Node content'),
-      'icon' => 'icon_node.png',
-      'path' => panels_get_path('content_types/node'),
-      'description' => t('The content of the referenced node.'),
-      'required context' => 'node',
-      'category' => array(t('Node context'), -9),
-    ),
-  );
+function panels_admin_node_content($node, $conf) {
+  // Remove the delimiter (if any) that separates the teaser from the body.
+  $node->body = str_replace('<!--break-->', '', $node->body);
+
+  // The 'view' hook can be implemented to overwrite the default function
+  // to display nodes.
+  if (node_hook($node, 'view')) {
+    $node = node_invoke($node, 'view', $conf['teaser'], $conf['page']);
+  }
+  else {
+    $node = node_prepare($node, $conf['teaser']);
+  }
+
+  if (empty($conf['no_extras'])) {
+  // Allow modules to make their own additions to the node.
+    node_invoke_nodeapi($node, 'view', $conf['teaser'], $conf['page']);
+  }
+
+  if ($conf['links']) {
+    $node->links = module_invoke_all('link', 'node', $node, $conf['teaser']);
+
+    foreach (module_implements('link_alter') AS $module) {
+      $function = $module .'_link_alter';
+      $function($node, $node->links);
+    }
+  }
+
+  // Set the proper node part, then unset unused $node part so that a bad
+  // theme can not open a security hole.
+  $content = drupal_render($node->content);
+  if ($conf['teaser']) {
+    $node->teaser = $content;
+    unset($node->body);
+  }
+  else {
+    $node->body = $content;
+    unset($node->teaser);
+  }
+
+  // Allow modules to modify the fully-built node.
+  node_invoke_nodeapi($node, 'alter', $conf['teaser'], $conf['page']);
+
+  return theme('node', $node, $conf['teaser'], $conf['page']);
 }
 
 /**
  * Returns an edit form for the custom type.
  */
 function panels_admin_edit_node_content($id, $parents, $conf = array()) {
+  if ($conf == array()) {
+    $conf = array(
+      'links' => TRUE,
+      'page' => TRUE,
+      'no_extras' => TRUE,
+    );
+  }
+
   $form['aligner_start'] = array(
     '#value' => '<div class="option-text-aligner">',
   );
@@ -102,11 +155,24 @@ function panels_admin_edit_node_content($id, $parents, $conf = array()) {
     '#default_value' => $conf['teaser'],
     '#description' => t('Check here to show only the node teaser.'),
   );
+  $form['page'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $conf['page'],
+    '#title' => t('Node page'),
+    '#description' => t('Check here if the node is being displayed on a page by itself.')
+  );
   $form['links'] = array(
     '#type' => 'checkbox',
     '#default_value' => $conf['links'],
     '#title' => t('Display links'),
     '#description' => t('Check here to display the links with the post.')
+  );
+
+  $form['no_extras'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $conf['no_extras'],
+    '#title' => t('No extras'),
+    '#description' => t('Check here to disable additions that modules might make to the node, such as file attachments and CCK fields; this should just display the basic teaser or body.')
   );
 
   $form['identifier'] = array(

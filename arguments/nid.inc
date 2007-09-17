@@ -1,5 +1,5 @@
 <?php
-// $Id: nid.inc,v 1.1.2.3 2007/09/08 02:12:12 merlinofchaos Exp $
+// $Id: nid.inc,v 1.1.2.4 2007/09/17 19:11:49 merlinofchaos Exp $
 /** 
  * @file arguments/nid.inc
  * 
@@ -22,7 +22,7 @@ function panels_nid_panels_arguments() {
 /**
  * Discover if this argument gives us the node we crave.
  */
-function panels_nid_context($arg = NULL, $conf = NULL) {
+function panels_nid_context($arg = NULL, $conf = NULL, $context = NULL, $index = 0) {
   // If unset it wants a generic, unfilled context.
   if (!isset($arg)) {
     return new panels_context('node', NULL);
@@ -90,6 +90,7 @@ function panels_nid_displays($conf, $id) {
   if (!empty($conf['own_default'])) {
     $displays['default'] = array(
       'title' => t('Node ID @id Default', array('@id' => $id)),
+      'context' => 'node',
     );
   }
 
@@ -103,6 +104,7 @@ function panels_nid_displays($conf, $id) {
         'title' => t('Node ID @id @type', array('@id' => $id, '@type' => $options[$type])),
         // Tell it to base the template for this display off of the default.
         'default' => 'default',
+        'context' => 'node',
       );
     }
   }
@@ -137,5 +139,9 @@ function panels_nid_choose_display($conf, $context) {
 function panels_nid_title($context) {
   if (isset($context->data->title)) {
     return $context->data->title;
+  }
+
+  if (isset($context->page_title)) {
+    return $context->page_title;
   }
 }

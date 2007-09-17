@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.46 2007/09/12 17:59:55 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.47 2007/09/17 19:11:48 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -329,7 +329,7 @@ class panels_context {
 
   function is_type($type) {
     $a = is_array($type) ? $type : array($type);
-    $b = is_array($this->type) ? $type : array($this->type);
+    $b = is_array($this->type) ? $this->type : array($this->type);
     return (bool) array_intersect($a, $b);
   }
 }
@@ -559,20 +559,11 @@ function panels_render_layout($layout, $content, $css_id = NULL, $settings = arr
   else {
     drupal_add_css(panels_get_path($layout['css'], false, $layout['module']));
   }
+
   // This now comes after the CSS is added, because panels-within-panels must
   // have their CSS added in the right order; inner content before outer content.
   if (is_object($content)) {
-    $display = $content;
-    $content = array();
-    // Loop through all panels, put all panes that belong to the current panel
-    // in an array, then render the panel.
-    foreach ($display->panels as $panel_name => $pids) {
-      $panels = array(); 
-      foreach ($pids as $pid) {
-        $panels[$pid] = $display->content[$pid];
-      }
-      $content[$panel_name] = panels_render_panel($panels, $display);
-    }
+    $content = panels_render_panes($content);
   }
 
   $output = theme($layout['theme'], check_plain($css_id), $content, $settings);
@@ -581,19 +572,91 @@ function panels_render_layout($layout, $content, $css_id = NULL, $settings = arr
 }
 
 /**
+ * Render all the panes in a display into a $content array to be used by
+ * the display theme function.
+ */
+function panels_render_panes($display) {
+  // First, render all the panes into little boxes. We do this here because
+  // some panes request to be rendered after other panes (primarily so they
+  // can do the leftovers of forms).
+  $panes = array();
+  $later = array();
+
+  foreach ($display->content as $pid => $pane) {
+    // If the user can't see this pane, do not render it.
+    if (!panels_pane_access($pane)) {
+      continue;
+    }
+
+    // If this pane wants to render last, add it to the $later array.
+    $content_type = panels_get_content_type($pane->type);
+
+    if (!empty($content_type['render last'])) {
+      $later[$pid] = $pane;
+      continue;
+    }
+  
+    $panes[$pid] = panels_render_pane($display, $pane);
+  }
+
+  foreach ($later as $pid => $pane) {
+    $panes[$pid] = panels_render_pane($display, $pane);
+  }
+
+  // Loop through all panels, put all panes that belong to the current panel
+  // in an array, then render the panel. Primarily this ensures that the
+  // panes are in the proper order.
+  $content = array();
+  foreach ($display->panels as $panel_name => $pids) {
+    $panel = array(); 
+    foreach ($pids as $pid) {
+      if (!empty($panes[$pid])) { 
+        $panel[$pid] = $panes[$pid];
+      }
+    }
+    $content[$panel_name] = panels_render_panel($display, $panel);
+  }
+
+  return $content;
+}
+
+/**
+ * Render a single pane, identifying its context, and put it into
+ * the $panes array.
+ */
+function panels_render_pane(&$display, $pane) {
+  // Identify which of our possible contexts apply.
+  $context = NULL;
+  if ($pane->subtype) {
+    $content_type = panels_ct_get_types($pane->type);
+    if (!empty($content_type[$pane->subtype]['required context'])) {
+      if (isset($pane->configuration['context']) && isset($display->context[$pane->configuration['context']])) {
+        $context = &$display->context[$pane->configuration['context']];
+      }
+      // Don't display this pane if a context is required and not found.
+      else {
+        return;
+      }
+    }
+  }
+
+  return panels_get_pane_content($pane, $display->args, $context, $display->incoming_content);
+}
+
+/**
  * Render a panel, by storing the content of each pane in an appropriate array
  * and then passing through to the theme function that will render the panel
  * in the configured panel style.
  *
- * @param $panes
- *   An array of panes that are assigned to the panel that's being rendered.
  * @param $display
  *   A display object.
+ * @param $panes
+ *   An array of panes that are assigned to the panel that's being rendered.
  * @return
  *   The rendered HTML for a panel.
  * @render
  */
-function panels_render_panel($panes_in_panel, $display) {
+function panels_render_panel($display, $panes) {
   if (!empty($display->panel_settings)) {
     $style = panels_get_style($display->panel_settings['style']);
   }
@@ -601,35 +664,11 @@ function panels_render_panel($panes_in_panel, $display) {
     $style = panels_get_style('default');
   };
 
-  // Store all panes in an array, sorted by their position in the panel.
-  $panes = array();
-
-  foreach ($panes_in_panel as $pane_id => $pane) {
-    if (panels_pane_access($pane)) {
-      // Identify which of our possible contexts apply.
-      $context = NULL;
-      if ($pane->subtype) {
-        $content_type = panels_ct_get_types($pane->type);
-        if (!empty($content_type[$pane->subtype]['required context'])) {
-          if (isset($pane->configuration['context']) && isset($display->context[$pane->configuration['context']])) {
-            $context = $display->context[$pane->configuration['context']];
-          }
-          // Don't display this pane if a context is required and not found.
-          else {
-            continue;
-          }
-        }
-      }
-
-      $panes[$pane->position] = panels_get_pane_content($pane, $display->args, $context, $display->incoming_content);
-    }
-  }
-
   // Retrieve the pid (can be a panel page id, a mini panel id, etc.), this
   // might be used (or even necessary) for some panel display styles.
   // TODO: Got to fix this to use panel page name instead of pid, since pid is
   // no longer guaranteed. This needs an API to be able to set the final id.
-  $pid = 0;
+  $panel_id = 0;
   if (isset($display->owner) && is_object($display->owner) && isset($display->owner->pid)) {
     $panel_id = $display->owner->pid;
   }
@@ -946,13 +985,14 @@ function panels_get_available_content_types($contexts = NULL, $has_content = FAL
       }
 
       // Check to see if the content type can be used in this context.
-      if (isset($cinfo['required context'])) {
+      if (!empty($cinfo['required context'])) {
         if (empty($contexts)) {
           continue;
         }
         foreach ($contexts as $context) {
-          if (!$context->is_type($cinfo['required_context'])) {
-            continue;
+          if (!$context->is_type($cinfo['required context'])) {
+            // This context does not match; continue the foreach above us.
+            continue 2;
           }
         }
       }
@@ -1014,6 +1054,46 @@ function panels_get_pane_title($pane, $context = NULL, $incoming_content = NULL)
 /**
  * @} End of "defgroup panels_content".
  */
+
+// ---------------------------------------------------------------------------
+// panels argument helpers
+
+function panels_argument_function($type, $name) {
+  if (is_object($type)) {
+    $argument = $type;
+  }
+  else {
+    $argument = panels_get_argument($type);
+  }
+
+  $function = $argument[$name];
+  if (function_exists($function)) {
+    return $function;
+  }
+}
+
+function panels_argument_get_context($type, $arg, $conf, $selector, $index = 0) {
+  $argument = panels_get_argument($type);
+  if ($function = $argument['context']) {
+    $context = $function($arg, $conf, $selector, $index);
+    if ($context) {
+      $context->title = $argument['title'] . ' ' . $conf['id'];
+      return $context;
+    }
+  }
+}
+
+function panels_argument_get_title($type, $context) {
+  if ($function = panels_argument_function($type, 'title function')) {
+    return $function($context);
+  }
+}
+
+function panels_argument_choose_display($type, $conf, $context) {
+  if ($function = panels_argument_function($type, 'choose display')) {
+    return $function($conf, $context);
+  }
+}
 
 // ---------------------------------------------------------------------------
 // panels data loading

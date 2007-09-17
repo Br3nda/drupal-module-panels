@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.6 2007/09/12 17:59:55 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.7 2007/09/17 19:11:49 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -114,8 +114,6 @@ function panels_page_menu($may_cache) {
     // Get all panels and, if enabled, create menu items.
     foreach ($panels as $panel_page) {
       if (empty($panel_page->disabled)) {
-// TODO: Verify we don't need this anymore.
-//        $panel_page->access = ($panel_page->access ? explode(', ', $panel_page->access) : array());
         // Only create menu items based on the path if it's not a variable path.
         if (strpos($panel_page->path, '%') === FALSE) {
           panels_page_menu_items($items, $panel_page->path, $panel_page, FALSE, array($panel_page->name));  
@@ -146,12 +144,27 @@ function panels_page_menu($may_cache) {
         // It's a MATCH! Construct the URL
         if ($match) {
           $args = array($panel_page);
+          reset($panel_page->arguments);
+          $count = 0;
           foreach ($path as $id => $chunk) {
-            if ($chunk == '%') {       
-              // TODO: Here is where we can perform validation
-              $path[$id] = arg($id);
-              $args[] = arg($id);
+            if ($chunk != '%') {
+              continue;
             }
+            // For arguments that are embedded in the URL, we require the
+            // argument handler to return a context, if there is an argument handler.
+            $argument = current($panel_page->arguments);
+            if ($argument) {
+              $context = panels_argument_get_context(
+                $argument['name'], arg($id), $argument['argument_settings'], NULL, $count);
+              if (!$context) {
+                break;
+              }
+              $panel_page->context[$count] = $context;
+              $count++;                
+            }
+            $path[$id] = arg($id);
+            $args[] = arg($id);
+            next($panel_page->arguments);
           }
           panels_page_menu_items($items, implode('/', $path), $panel_page, FALSE, $args);  
         }
@@ -453,9 +466,7 @@ function panels_page_get_title($panel_page, $context = 'page', $default_title = 
     $title = NULL;
     $count = 1;
     foreach ($panel_page->context as $id => $context) {
-      $argument = panels_get_argument($panel_page->arguments[$id]['name']);
-
-      $substitutions['%' . ($count++)] = $argument['title function']($context);
+      $substitutions['%' . ($count++)] = panels_argument_get_title($panel_page->arguments[$id]['name'], $context);
       if (!empty($panel_page->arguments[$id]['title'])) {
         $title = $panel_page->arguments[$id]['title'];
       }
@@ -533,22 +544,24 @@ function panels_page_view_page($panel_page) {
   $args = func_get_args();
   array_shift($args); // remove the name.
 
-  $panel_page->context = array();
+  if (empty($panel_page->context)) {
+    $panel_page->context = array();
+  }
+
+  $form = NULL;
   if ($panel_page->arguments) {
     $count = 0;
     foreach ($panel_page->arguments as $i => $argument) {
-      $def = panels_get_argument($argument['name']);
-      $context = NULL;
-      if (function_exists($def['context']) && isset($args[$count])) {
-        $context = $def['context']($args[$count], $argument['argument_settings']);
-      }
+      $context = panels_argument_get_context($argument['name'], $args[$count], $argument['argument_settings'], $args, $count);
       $count++;
       if (!empty($context)) {
-        $context->title = $def['title'] . ' ' . $argument['id'];
         $panel_page->context[$i] = $context;
-        if (function_exists($def['choose display']) && 
-            $d = $def['choose display']($argument['argument_settings'], $context)) {
+        $d = panels_argument_choose_display($argument['name'], $argument['argument_settings'], $context);
+        if ($d) {
           $display_candidate = "argument_$i" . '-' . $d;
+        }
+        if (isset($context->form_id)) {
+          $form = $context;
         }
       }
       else if ($argument['default'] == '404') {
@@ -575,7 +588,14 @@ function panels_page_view_page($panel_page) {
   // Set this as 'current' so that other stuff can utilize it.
   panels_page_get_current($panel_page);
 
-  $output = panels_render_display($display);
+  if ($form) {
+    $form->data['#theme'] = 'panels_page_render_form';
+    $form->data['#display'] = $display;
+    $output = drupal_render_form($form->form_id, $form->data);
+  }
+  else {
+    $output = panels_render_display($display);
+  }
 
   // set title afterward to ensure title is retained.
   if ($output == NULL) {
@@ -594,6 +614,15 @@ function panels_page_view_page($panel_page) {
   else {
     return $output;
   }
+}
+
+/**
+ * Theme function to render our panel as a form. We need to do this so that
+ * the entire display is inside the form.
+ */
+function theme_panels_page_render_form($form) {
+  $form['#children'] = panels_render_display($form['#display']);
+  return theme('form', $form);
 }
 
 /**
@@ -744,6 +773,20 @@ function panels_page_fields() {
 }
 
 /**
+ * Sanitize a panel prior to saving it.
+ */
+function panels_page_sanitize($page) {
+  foreach (array('arguments', 'displays', 'contexts') as $id) {
+    if (empty($page->$id)) {
+      $page->$id = array();
+    }
+  }
+
+  return $page;
+}
+
+
+/**
  * Save a panel page. 
  */
 function panels_page_save($panel_page) {
@@ -751,26 +794,30 @@ function panels_page_save($panel_page) {
   if (!empty($panel_page->display)) {
     $display = panels_save_display($panel_page->display);
   }
+  // Ensure empty values get translated correctly. Also make sure we don't
+  // mess up the original.
+  $page = drupal_clone(panels_page_sanitize($panel_page));
 
   // serialize the access string.
-  $panel_page->access = $panel_page->access ? implode(', ', $panel_page->access) : '';
-  $panel_page->arguments = serialize($panel_page->arguments);
-  $panel_page->displays = serialize($panel_page->displays);
-  $panel_page->contexts = serialize($panel_page->contexts);
+  $page->access = $page->access ? implode(', ', $page->access) : '';
+
+  $page->arguments = serialize($page->arguments);
+  $page->displays = serialize($page->displays);
+  $page->contexts = serialize($page->contexts);
 
   // Create strings for our query from the list of fields.
   $fields = panels_page_fields();
   foreach ($fields as $field => $value) {
-    if (isset($panel_page->$field)) {
+    if (isset($page->$field)) {
       $f[] = $field;
       $q[] = $value;
-      $v[] = $panel_page->$field;
+      $v[] = $page->$field;
     }
   }
 
-  if ($panel_page->pid && $panel_page->pid != 'new') {
-    if (empty($panel_page->name)) {
-      $panel_page->name = 'panel_page_' . $panel_page->pid;
+  if ($page->pid && $page->pid != 'new') {
+    if (empty($page->name)) {
+      $page->name = 'panel_page_' . $page->pid;
     }
     $query = '';
     foreach ($f as $id => $field) {
@@ -780,25 +827,25 @@ function panels_page_save($panel_page) {
       $query .= "$f[$id] = " . $q[$id];
     }
 
-    $v[] = $panel_page->pid;
+    $v[] = $page->pid;
     db_query("UPDATE {panels_page} SET $query WHERE pid = %d", $v);
   }
   else {
-    $panel_page->pid = db_next_id("{panels_page}_pid");
+    $page->pid = db_next_id("{panels_page}_pid");
     // Tack our pid and did onto the query. These aren't listed as 'fields' because
     // they can't be updated; once set they are permanent.
-    $v[] = $panel_page->pid;
+    $v[] = $page->pid;
     $v[] = $display->did;
 
-    if (empty($panel_page->name)) {
-      $panel_page->name = 'panel_page_' . $panel_page->pid;
+    if (empty($page->name)) {
+      $page->name = 'panel_page_' . $page->pid;
     }
     // Yes, this is kind of long but it's a lot easier to match up values.
     db_query("INSERT INTO {panels_page} ( " . implode(', ', $f) . ", pid, did) VALUES (" . implode(', ', $q) . ", %d, %d)", $v);
   }
 
   menu_rebuild();
-  return $panel_page->pid;
+  return $page->pid;
 }
 
 /**

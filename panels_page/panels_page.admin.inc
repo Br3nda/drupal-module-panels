@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.4 2007/09/12 17:59:55 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.5 2007/09/17 19:11:49 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -121,7 +121,9 @@ function panels_page_add_page($layout = NULL) {
   $panel_page->display->layout = $layout;
   $panel_page->pid = 'new';
   $panel_page->did = 'new';
-  return panels_page_edit($panel_page);
+
+  drupal_set_title(t('Add panel page'));
+  return drupal_get_form('panels_page_edit_form', $panel_page);
 }
 
 
@@ -584,17 +586,17 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
             'title' => $info['title'],
             'default' => "argument_$id" . '-' . $info['default'],
             'argument_id' => $id,
+            'context' => $info['context'],
           );
         }
       }
     }
   }
 
-
   // Remove remaining old displays.
   foreach ($old_displays as $id => $info) {
     if (is_numeric($info['did'])) {
-      panels_display_delete($info['did']);
+      panels_delete_display($info['did']);
       drupal_set_message(t('Removed unused display @title', $info['title']));
     }
   }
@@ -1000,6 +1002,12 @@ function panel_page_fetch_panel_page($panel_page, $did) {
   }
   else {
     $panel_page->display = panels_page_fetch_display($panel_page, $did);
+
+    // Some displays might have an alternate context string which could be
+    // important.
+    if (isset($panel_page->displays[$did]['context'])) {
+      $panel_page->display->display_context = $panel_page->displays[$did]['context'];
+    }
   }
 
   return $panel_page;
@@ -1052,9 +1060,7 @@ function panels_page_edit_content($panel_page, $did = NULL) {
   // Collect a list of contexts required by the arguments on this page.
   $contexts = array();
   foreach ($panel_page->arguments as $id => $argument) {
-    $def = panels_get_argument($argument['name']);
-    $contexts[$id] = $def['context']();
-    $contexts[$id]->title = $def['title'] . ' ' . $argument['id'];
+    $contexts[$id] = panels_argument_get_context($argument['name'], NULL, $argument['argument_settings'], $panel_page->display->display_context);
   }
 
   $panel_page->display->context = $contexts;
