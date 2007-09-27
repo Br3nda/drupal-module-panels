@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.47 2007/09/17 19:11:48 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.48 2007/09/27 20:53:39 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -790,17 +790,27 @@ function panels_ct_get_title($type, $conf, $context = NULL, $incoming_content = 
  */
 function panels_ct_conf_form($type, $id, $contexts, $conf) {
   $content_type = panels_ct_get_types($type);
+  $count = 0;
+  $saved_cid = NULL;
   if (!empty($content_type[$id]['required context']) && is_array($contexts)) {
     // See which of these contexts are valid
     foreach ($contexts as $cid => $context) {
       if ($context->is_type($content_type[$id]['required context'])) {
         $options[$cid] = $context->title;
+        $saved_cid = $cid;
+        $count++;
       }
     }
   }
 
   $form = array();
-  if (!empty($options)) {
+  if ($count == 1) {
+    $form['context'] = array(
+      '#type' => 'value',
+      '#value' => $saved_cid,
+    );
+  }
+  else if (!empty($options)) {
     $form['context'] = array(
       '#type' => 'select',
       '#options' => $options,
