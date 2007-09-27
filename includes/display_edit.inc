@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.6 2007/09/12 17:59:55 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.7 2007/09/27 21:16:49 merlinofchaos Exp $
 
 
 /**
@@ -325,6 +325,16 @@ function panels_edit_layout_settings_form($display, $finish, $destination) {
     '#type' => 'value',
     '#value' => $layout,
   );
+
+  // Always show a Save button even if they sent in a Next or something similar
+  // button.
+  if ($finish !== t('Save')) {
+    $form['save'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+    );
+  }
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => $finish,
@@ -352,13 +362,15 @@ function panels_edit_layout_settings_form_submit($form_id, $form_values) {
     $layout['settings submit']($form_values['layout_settings'], $display, $layout, $display->layout_settings);
   }
 
-  if ($form_values['op'] == $finish) {
+  if ($form_values['op'] == $finish || $form_values['op'] == t('Save')) {
     $display->layout_settings = $form_values['layout_settings'];
     $display->panel_settings = $form_values['panel_settings'];
 
     panels_save_display($display);
     drupal_set_message("Your layout settings have been saved.");
-    return $destination;
+    if ($form_values['op'] == $finish) {
+      return $destination;
+    }
   }
 }
 
