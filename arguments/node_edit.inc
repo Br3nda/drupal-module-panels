@@ -1,20 +1,20 @@
 <?php
-// $Id: node_add.inc,v 1.1.2.2 2007/09/27 19:25:51 merlinofchaos Exp $
+// $Id: node_edit.inc,v 1.1.2.1 2007/09/27 19:25:51 merlinofchaos Exp $
 /** 
  * @file arguments/nid.inc
  * 
- * Plugin to provide an argument handler for a Node add form
+ * Plugin to provide an argument handler for a Node edit form
  */
 
-function panels_node_add_panels_arguments() {
-  $args['node_add'] = array(
-    'title' => t("Node add form"),
-    'description' => t('Displays the node add form for a content type.'),
-    'context' => 'panels_node_add_context',
-    'settings form' => 'panels_node_add_settings_form',
-    'title function' => 'panels_node_add_title',
-    'displays' => 'panels_node_add_displays',
-    'choose display' => 'panels_node_add_choose_display',
+function panels_node_edit_panels_arguments() {
+  $args['node_edit'] = array(
+    'title' => t("Node edit form"),
+    'description' => t('Displays the node edit form for a node.'),
+    'context' => 'panels_node_edit_context',
+    'settings form' => 'panels_node_edit_settings_form',
+    'title function' => 'panels_node_edit_title',
+    'displays' => 'panels_node_edit_displays',
+    'choose display' => 'panels_node_edit_choose_display',
   );
   return $args;
 }
@@ -22,47 +22,56 @@ function panels_node_add_panels_arguments() {
 /**
  * Discover if this argument gives us the node we crave.
  */
-function panels_node_add_context($arg = NULL, $conf = NULL, $context = NULL, $index = 0) {
+function panels_node_edit_context($arg = NULL, $conf = NULL, $context = NULL, $index = 0) {
   // If unset it wants a generic, unfilled context.
   if (!isset($arg)) {
-    return new panels_context(array('form', 'node_add', 'node_form'), NULL);
+    return new panels_context(array('form', 'node_edit', 'node_form', 'node'), NULL);
   }
 
-  if (empty($conf['types'][$arg])) {
+  if (empty($arg) || !is_numeric($arg)) {
     return FALSE;
   }
 
-  $context = panels_node_add_form($arg);
+  $node = node_load($arg);
+  if (empty($node) || !node_access('update', $node)) {
+    return FALSE;
+  }
+
+  if (empty($conf['types'][$node->type])) {
+    return FALSE;
+  }
+
+  $context = panels_node_edit_form($node);
   return $context;
 }
 
 /**
- * A version of node_add that creates a context.
+ * A version of node_edit that creates a context.
  */
-function panels_node_add_form($type) {
-  global $user;
-
-  $types = node_get_types();
-  $type = str_replace('-', '_', $type);
-  // If a node type has been specified, validate its existence.
-  if (isset($types[$type]) && node_access('create', $type)) {
-    // Initialize settings:
-    $node = array('uid' => $user->uid, 'name' => $user->name, 'type' => $type);
-
-    $form = drupal_retrieve_form($type . '_node_form', $node);
-    drupal_process_form($type . '_node_form', $form);
-    $context = new panels_context(array('form', 'node_add', 'node_form'), $form);
-    $context->form_id = $type . '_node_form';
-    $context->form_title = t('Submit @name', array('@name' => $types[$type]->name));
-    $context->node_type = $type;
-    return $context;
+function panels_node_edit_form($node) {
+  if ($_POST['op'] == t('Delete')) {
+    // Note: we redirect from node/nid/edit to node/nid/delete to make the tabs disappear.
+    if ($_REQUEST['destination']) {
+      $destination = drupal_get_destination();
+      unset($_REQUEST['destination']);
+    }
+    drupal_goto('node/'. $node->nid .'/delete', $destination);
   }
+
+  $form = drupal_retrieve_form($node->type . '_node_form', $node);
+  drupal_process_form($node->type . '_node_form', $form);
+  $context = new panels_context(array('form', 'node_edit', 'node_form', 'node'), $form);
+  $context->form_id = $node->type . '_node_form';
+  $context->form_title = check_plain($node->title);
+  $context->node_type = $node->type;
+
+  return $context;
 }
 
 /**
  * Settings form for the argument
  */
-function panels_node_add_settings_form($conf) {
+function panels_node_edit_settings_form($conf) {
   $options = array();
   foreach (node_get_types() as $type => $info) {
     $options[$type] = $info->name;
@@ -99,11 +108,11 @@ function panels_node_add_settings_form($conf) {
 /**
  * What additional displays does this argument provide?
  */
-function panels_node_add_displays($conf, $id) {
+function panels_node_edit_displays($conf, $id) {
   $displays = array();
   if (!empty($conf['own_default'])) {
     $displays['default'] = array(
-      'title' => t('Node add form @id Default', array('@id' => $id)),
+      'title' => t('Node edit form @id Default', array('@id' => $id)),
       'context' => 'node',
     );
   }
@@ -115,7 +124,7 @@ function panels_node_add_displays($conf, $id) {
     }
     foreach (array_keys(array_filter($conf['displays'])) as $type) {
       $displays[$type] = array(
-        'title' => t('Node add form @id @type', array('@id' => $id, '@type' => $options[$type])),
+        'title' => t('Node edit form @id @type', array('@id' => $id, '@type' => $options[$type])),
         // Tell it to base the template for this display off of the default.
         'default' => 'default',
         'context' => 'node',
@@ -129,7 +138,7 @@ function panels_node_add_displays($conf, $id) {
 /**
  * Based upon the settings and the context, choose which display to use.
  */
-function panels_node_add_choose_display($conf, $context) {
+function panels_node_edit_choose_display($conf, $context) {
   if (empty($context->data)) {
     return;
   }
@@ -150,7 +159,7 @@ function panels_node_add_choose_display($conf, $context) {
 /**
  * Determine the title for substitution with this context
  */
-function panels_node_add_title($context) {
+function panels_node_edit_title($context) {
   if (isset($context->data->title)) {
     return $context->data->title;
   }
