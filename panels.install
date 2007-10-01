@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.17 2007/09/08 02:12:11 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.18 2007/10/01 20:42:21 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -7,9 +7,68 @@
 function panels_install() {
   switch ($GLOBALS['db_type']) {
     case 'pgsql':
+      db_query(<<<EOT
+        CREATE TABLE {panels_page} (
+          pid integer NOT NULL DEFAULT 0,
+          name varchar(255) UNIQUE,
+          did integer,
+          title varchar(128),
+          access varchar(128),
+          path varchar(128),
+          css_id varchar(128),
+          css text,
+          arguments text,
+          displays text,
+          contexts text,
+          no_blocks boolean DEFAULT FALSE,
+          -- menu fields
+          menu boolean DEFAULT FALSE,
+          menu_tab boolean,
+          menu_tab_weight smallint,
+          menu_title varchar(255),
+          menu_tab_default boolean,
+          menu_tab_default_parent_type varchar(10),
+          menu_parent_title varchar(255),
+          menu_parent_tab_weight smallint,
+          PRIMARY KEY (pid)
+        );
+EOT
+      );
+      db_query("CREATE SEQUENCE {panels_page}_pid_seq;");
+      db_query("CREATE INDEX {panels_page}_path_idx ON {panels_page} (path);");
+
+      db_query(<<<EOT
+        CREATE TABLE {panels_display} (
+          did integer NOT NULL DEFAULT 0,
+          name varchar(255) UNIQUE,
+          layout varchar(32),
+          layout_settings text,
+          panel_settings text,
+          PRIMARY KEY (did)
+        );
+EOT
+      );
+      db_query("CREATE SEQUENCE {panels_display}_id_seq;");
+      db_query("CREATE INDEX {panels_display}_name_idx ON {panels_page} (name);");
+
+      db_query(<<<EOT
+        CREATE TABLE {panels_pane} (
+          pid integer NOT NULL DEFAULT 0,
+          did integer NOT NULL DEFAULT 0,
+          panel varchar(32),
+          type varchar(32),
+          subtype varchar(64),
+          access varchar(128),
+          configuration text,
+          position smallint
+        );
+EOT
+      );
+      db_query("CREATE SEQUENCE {panels_pane}_pid_seq;");
+      db_query("CREATE INDEX {panels_pane}_did_idx ON {panels_pane} (did);");
+      break;
     case 'mysql':
     case 'mysqli':
-    default:
       db_query(<<<EOT
         CREATE TABLE {panels_page} (
           pid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
@@ -70,9 +129,22 @@ EOT
 }
 
 function panels_uninstall() {
-  db_query("DROP TABLE IF EXISTS {panels_display}");
-  db_query("DROP TABLE IF EXISTS {panels_pane}");
-  db_query("DROP TABLE IF EXISTS {panels_page}");
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+      db_query("DROP SEQUENCE {panels_page}_pid_seq");
+      db_query("DROP SEQUENCE {panels_pane}_pid_seq");
+      db_query("DROP SEQUENCE {panels_display}_id_seq");
+      db_query("DROP TABLE {panels_display}");
+      db_query("DROP TABLE {panels_pane}");
+      db_query("DROP TABLE {panels_page}");
+      break;
+    case 'mysql':
+    case 'mysqli':
+      db_query("DROP TABLE IF EXISTS {panels_display}");
+      db_query("DROP TABLE IF EXISTS {panels_pane}");
+      db_query("DROP TABLE IF EXISTS {panels_page}");
+      break;
+  }
 }
 
 /**

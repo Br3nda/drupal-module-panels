@@ -1,15 +1,25 @@
 <?php
-// $Id: panels_mini.install,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos Exp $
+// $Id: panels_mini.install,v 1.1.2.2 2007/10/01 20:42:21 merlinofchaos Exp $
 
 /**
  * Implementation of hook_install().
  */
 function panels_mini_install() {
-  switch ($GLOBALS['dbtype']) {
+  switch ($GLOBALS['db_type']) {
     case 'pgsql':
+      db_query(<<<EOT
+        CREATE TABLE {panels_mini} (
+          pid integer NOT NULL DEFAULT 0,
+          did integer,
+          title varchar(128),
+          PRIMARY KEY (pid)
+        );
+EOT
+      );
+      db_query("CREATE SEQUENCE {panels_mini}_pid_seq;");
+      break;
     case 'mysql':
     case 'mysqli':
-    default:
       db_query(<<<EOT
         CREATE TABLE {panels_mini} (
           pid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
@@ -18,6 +28,7 @@ function panels_mini_install() {
         )/*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
+      break;
   }
 }
 
@@ -35,5 +46,14 @@ function panels_mini_uninstall() {
   }
   
   // Finally, delete all mini panels.
-  db_query("DROP TABLE IF EXISTS {panels_mini}");
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+      db_query("DROP TABLE {panels_mini}");
+      db_query("DROP SEQUENCE {panels_mini}_pid_seq");
+      break;
+    case 'mysql':
+    case 'mysqli':
+      db_query("DROP TABLE IF EXISTS {panels_mini}");
+      break;
+  }
 }

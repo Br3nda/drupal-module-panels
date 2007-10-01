@@ -1,18 +1,34 @@
 <?php
-// $Id: panels_node.install,v 1.1.2.2 2007/09/11 20:30:17 merlinofchaos Exp $
+// $Id: panels_node.install,v 1.1.2.3 2007/10/01 20:42:21 merlinofchaos Exp $
 
 /**
  * Install the panels node tables
  */
 function panels_node_install() {
-  db_query(<<<EOT
-    CREATE TABLE {panels_node} (
-      nid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
-      css_id varchar(255),
-      did int(10)
-    );
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+      db_query(<<<EOT
+        CREATE TABLE {panels_node} (
+          nid integer NOT NULL DEFAULT 0,
+          css_id varchar(255),
+          did integer,
+          PRIMARY KEY (nid)
+        );
 EOT
-  );
+      );
+      break;
+    case 'mysql':
+    case 'mysqli':
+      db_query(<<<EOT
+        CREATE TABLE {panels_node} (
+          nid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
+          css_id varchar(255),
+          did int(10)
+        );
+EOT
+      );
+      break;
+  }
 }
 
 /**
@@ -21,5 +37,13 @@ EOT
 function panels_node_uninstall() {
   // TODO: Delete all actual nodes that are panels_nodes.
   db_query("DELETE FROM {node} WHERE type = 'panel'");
-  db_query("DROP TABLE {panels_node}");
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+      db_query("DROP TABLE {panels_node}");
+      break;
+    case 'mysql':
+    case 'mysqli':
+      db_query("DROP TABLE IF EXISTS {panels_node}");
+      break;
+  }
 }
