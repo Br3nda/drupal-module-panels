@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.49 2007/10/01 20:11:46 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.50 2007/10/01 20:13:14 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -540,6 +540,7 @@ function panels_render_display(&$display) {
     $function = $module . '_panels_post_render';
     $function($display);
   }
+  return $output;
 }
 
 /**
