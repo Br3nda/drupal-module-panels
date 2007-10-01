@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.50 2007/10/01 20:13:14 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.51 2007/10/01 20:18:59 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -527,10 +527,12 @@ function panels_render_display(&$display) {
   // TODO: This may not be necessary now. Check this.
   panels_sanitize_display($display);
 
+  $output = '';
+
   // Let modules act just prior to render.
   foreach (module_implements('panels_pre_render') as $module) {
     $function = $module . '_panels_pre_render';
-    $function($display);
+    $output .= $function($display);
   }
 
   $output = panels_render_layout($layout, $display, $display->css_id, $display->layout_settings);
@@ -538,7 +540,7 @@ function panels_render_display(&$display) {
   // Let modules act just prior to render.
   foreach (module_implements('panels_post_render') as $module) {
     $function = $module . '_panels_post_render';
-    $function($display);
+    $output .= $function($display);
   }
   return $output;
 }
