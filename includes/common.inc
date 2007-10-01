@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.6 2007/09/12 17:59:55 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.7 2007/10/01 20:11:47 merlinofchaos Exp $
 
 /**
  * @file
@@ -32,7 +32,7 @@ function panels_common_settings($module_name = 'panels_common') {
     '#options' => $default_options,
     '#default_value' => array_keys(array_filter($default_types)),
   );
-  
+
   if ($skip) {
     $form['markup'] = array('#value' => t('<p>Click Submit to be presented with a complete list of available content types set to the defaults you selected.</p>'));
     $form['skip'] = array('#type' => 'value', '#value' => TRUE);
@@ -41,9 +41,9 @@ function panels_common_settings($module_name = 'panels_common') {
     // Rebuild the entire list, setting appropriately from defaults. Give
     // each type its own checkboxes set unless it's 'single' in which
     // case it can go into our fake other set.
-    $available_content_types = panels_get_available_content_types();
+    $available_content_types = panels_get_all_content_types();
     $allowed_content_types = variable_get($module_name . '_allowed_types', array());
-    
+
     foreach ($available_content_types as $id => $types) {
       foreach ($types as $type => $info) {
         $key = $id . '-' . $type;
@@ -89,7 +89,7 @@ function panels_common_settings($module_name = 'panels_common') {
   return $form;
 }
 
-/** 
+/**
  * Submit hook for panels_common_settings
  */
 function panels_common_settings_submit($form_id, $form_values) {
@@ -154,7 +154,7 @@ function panels_common_get_layout_information($panel_implementation) {
       $content .= '</ol>';
     }
     else {
-      $content .= t('Empty');      
+      $content .= t('Empty');
     }
     $content .= '</dd>';
   }

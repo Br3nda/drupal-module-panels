@@ -1,5 +1,5 @@
 <?php
-// $Id: node_comment_form.inc,v 1.1.2.1 2007/09/06 00:48:49 merlinofchaos Exp $
+// $Id: node_comment_form.inc,v 1.1.2.2 2007/10/01 20:11:47 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,6 +7,7 @@ function panels_node_comment_form_panels_content_types() {
   if (module_exists('comment')) {
     $items['node_comment_form'] = array(
       'title' => t('Node comment form'),
+      'single' => TRUE, // only provides a single content type
       'content_types' => 'panels_admin_content_types_node_comment_form',
       'render callback' => 'panels_content_node_comment_form',
       'add callback' => 'panels_admin_edit_node_comment_form',

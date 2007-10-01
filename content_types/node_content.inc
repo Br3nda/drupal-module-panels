@@ -1,5 +1,5 @@
 <?php
-// $Id: node_content.inc,v 1.1.2.3 2007/09/17 19:11:49 merlinofchaos Exp $
+// $Id: node_content.inc,v 1.1.2.4 2007/10/01 20:11:47 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,6 +7,7 @@ function panels_node_content_panels_content_types() {
   $items['node_content'] = array(
     'title' => t('Node content'),
     'weight' => -10,
+    'single' => TRUE, // only provides a single content type
     'content_types' => 'panels_admin_content_types_node_content',
     'render callback' => 'panels_content_node_content',
     'add callback' => 'panels_admin_edit_node_content',

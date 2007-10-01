@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.5 2007/09/17 19:11:49 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.6 2007/10/01 20:11:47 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -155,7 +155,7 @@ function panels_page_edit_form($panel_page) {
   );
 
   $form['panel_page'] = array(
-    '#type' => 'value', 
+    '#type' => 'value',
     '#value' => $panel_page
   );
 
@@ -187,7 +187,7 @@ function panels_page_edit_form($panel_page) {
     '#value' => check_plain($layout['title']),
   );
   $content = '<dl class="content-list">';
-  
+
   foreach (panels_get_panels($layout, $panel_page->display) as $panel_id => $title) {
     $content .= "<dt>$title</dt><dd>";
     if ($panel_page->display->panels[$panel_id]) {
@@ -198,7 +198,7 @@ function panels_page_edit_form($panel_page) {
       $content .= '</ol>';
     }
     else {
-      $content .= t('Empty');      
+      $content .= t('Empty');
     }
     $content .= '</dd>';
   }
@@ -245,7 +245,7 @@ function panels_page_edit_form($panel_page) {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => $label,
-  );  
+  );
 
   // Add the "panel settings" section of the form and the accompanying submit
   // handler.
@@ -327,7 +327,7 @@ function panels_page_advanced_form($panel_page) {
   );
 
   $form['panel_page'] = array(
-    '#type' => 'value', 
+    '#type' => 'value',
     '#value' => $panel_page
   );
 
@@ -487,7 +487,7 @@ function panels_page_advanced_form($panel_page) {
     '#tree' => TRUE,
   );
 
-  require_once drupal_get_path('module', 'panels') . '/includes/common.inc'; 
+  require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
   // Is this form being posted? If so, check cache.
   if (!empty($_POST)) {
     $arguments = panels_common_cache_get('arguments', $panel_page->name);
@@ -525,6 +525,8 @@ function panels_page_advanced_form($panel_page) {
     $choices[$name] = $arg['title'];
   }
 
+  asort($choices);
+
   $form['left']['arg-info']['arguments_table']['buttons']['add_argument'] = array(
     '#type' => 'select',
     '#options' => $choices,
@@ -540,7 +542,7 @@ function panels_page_advanced_form($panel_page) {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => $label,
-  );  
+  );
 
   return $form;
 }
@@ -600,7 +602,7 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
       drupal_set_message(t('Removed unused display @title', $info['title']));
     }
   }
-  
+
   $panel_page->no_blocks = $form_values['no_blocks'];
   $panel_page->menu = $form_values['menu'];
   $panel_page->menu_tab = $form_values['menu_tab'];
@@ -628,37 +630,37 @@ function panels_page_add_argument_to_form(&$form, $position, $argument) {
     '#value' => check_plain($arg['title'] . ' ' . $argument['id']),
   );
 
-  $form['top'] = panels_add_button('go-top.png', t('Top'), 
+  $form['top'] = panels_add_button('go-top.png', t('Top'),
     t('Move this item to the top of the list'),
     'argument-top',
     'argument-top-' . $position
   );
 
-  $form['up'] = panels_add_button('go-up.png', t('Up'), 
+  $form['up'] = panels_add_button('go-up.png', t('Up'),
     t('Move this item up'),
     'argument-up',
     'argument-up-' . $position
   );
 
-  $form['down'] = panels_add_button('go-down.png', t('Down'), 
+  $form['down'] = panels_add_button('go-down.png', t('Down'),
     t('Move this item down'),
     'argument-down',
     'argument-down-' . $position
   );
 
-  $form['bottom'] = panels_add_button('go-bottom.png', t('Bottom'), 
+  $form['bottom'] = panels_add_button('go-bottom.png', t('Bottom'),
     t('Move this item to the bottom of the list'),
     'argument-bottom',
     'argument-bottom-' . $position
   );
 
-  $form['remove'] = panels_add_button('delete.png', t('Remove'), 
+  $form['remove'] = panels_add_button('delete.png', t('Remove'),
     t('Remove this item'),
     'argument-remove',
     'argument-remove-' . $position
   );
 
-  $form['settings'] = panels_add_button('configure.gif', t('Configure'), 
+  $form['settings'] = panels_add_button('configure.gif', t('Configure'),
     t('Configure this item'),
     'argument-settings',
     'argument-settings-' . $position
@@ -726,7 +728,7 @@ function theme_panels_page_arguments_form($form) {
       'remove' => 'input.argument-remove',
       'configure' => 'input.argument-settings',
       'configure_path' => url('panels/argument/ajax/edit/' . $form['#panel_name'], NULL, NULL, TRUE),
-      
+
       // The button that adds an item
       'add' => 'input#edit-buttons-add-submit',
       // Path for ajax on adding an item
@@ -793,7 +795,7 @@ function panels_page_ajax_argument_add($panel_name) {
   if (!isset($arguments)) {
     panels_ajax_render();
   }
-  
+
   // Figure out the position for our new argument.
   $position = 0;
   if (!empty($arguments)) {
@@ -929,7 +931,7 @@ function panels_page_edit_argument_form($panel_name, $argument, $arguments, $pos
     '#default_value' => $arguments[$position]['title'],
     '#description' => t('Enter a title to use when this argument is present. You may use %# substitution to get the title for the given argument, where # is the argument position. i.e, use %1 for the first argument, %2 for the next argument, and so on.'),
   );
-  
+
   $form['argument']['id'] = array(
     '#type' => 'value',
     '#value' => $arguments[$position]['id'],
@@ -1020,7 +1022,7 @@ function panels_page_edit_layout($panel_page, $did = NULL) {
   $panel_page = panel_page_fetch_panel_page($panel_page, $did);
 
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
- 
+
   $dest = "admin/panels/panel-page/$panel_page->name/edit/layout";
   if ($did) {
     $dest .= "/$did";

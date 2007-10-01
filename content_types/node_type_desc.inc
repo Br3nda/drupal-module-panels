@@ -1,5 +1,5 @@
 <?php
-// $Id: node_type_desc.inc,v 1.1.2.2 2007/09/11 20:51:22 merlinofchaos Exp $
+// $Id: node_type_desc.inc,v 1.1.2.3 2007/10/01 20:11:47 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -8,6 +8,7 @@ function panels_node_type_desc_panels_content_types() {
     $items['node_type_desc'] = array(
       'title' => t('Node type description'),
       'content_types' => 'panels_admin_content_types_node_type_desc',
+      'single' => TRUE, // only provides a single content type
       'render callback' => 'panels_content_node_type_desc',
       'add callback' => 'panels_admin_edit_node_type_desc',
       'edit callback' => 'panels_admin_edit_node_type_desc',

@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.6.15 2007/09/11 18:26:45 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.6.16 2007/10/01 20:11:47 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -31,7 +31,7 @@ function panels_content_block($conf) {
   $block->module = $conf['module'];
   $block->delta = $conf['delta'];
   if ($conf['override_title']) {
-    $block->subject = check_plain($conf['override_title_text']);
+    $block->subject = filter_xss_admin($conf['override_title_text']);
   }
 
   // Test for block visibility
@@ -153,7 +153,7 @@ function panels_admin_edit_block($id, $parents, $conf) {
 
 function panels_admin_submit_block(&$form_values) {
   if (!empty($form_values['block_settings'])) {
-    module_invoke($form_values['module'], 'block', 'save', $form_values['delta'], $form_values['block_settings']); 
+    module_invoke($form_values['module'], 'block', 'save', $form_values['delta'], $form_values['block_settings']);
   }
 }
 
@@ -191,7 +191,7 @@ function panels_admin_title_block($conf) {
 
 function panels_default_block_info($module, $delta, &$info) {
   $core_modules = array('aggregator', 'book', 'CVS', 'help', 'node', 'profile', 'taxonomy', 'user', 'block', 'color', 'drupal', 'legacy', 'path', 'search', 'throttle', 'watchdog', 'blog', 'comment', 'filter', 'locale', 'ping', 'statistics', 'tracker', 'blogapi', 'contact', 'forum', 'menu', 'poll', 'system', 'upload');
-  
+
   if (in_array($module, $core_modules)) {
     $info['icon'] = 'icon_core_block.png';
     $info['category'] = array(t('Core blocks'), -5);

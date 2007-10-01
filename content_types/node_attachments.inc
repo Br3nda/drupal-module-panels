@@ -1,5 +1,5 @@
 <?php
-// $Id: node_attachments.inc,v 1.1.2.1 2007/09/27 19:25:52 merlinofchaos Exp $
+// $Id: node_attachments.inc,v 1.1.2.2 2007/10/01 20:11:47 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,6 +7,7 @@ function panels_node_attachments_panels_content_types() {
   if (module_exists('comment')) {
     $items['node_attachments'] = array(
       'title' => t('Node type description'),
+      'single' => TRUE, // only provides a single content type
       'content_types' => 'panels_admin_content_types_node_attachments',
       'render callback' => 'panels_content_node_attachments',
       'add callback' => 'panels_admin_edit_node_attachments',
