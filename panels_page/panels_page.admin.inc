@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.6 2007/10/01 20:11:47 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.7 2007/10/02 21:01:57 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -1111,7 +1111,7 @@ function panels_page_import_page() {
   if ($_POST['form_id'] == 'panels_page_edit_form') {
     $panel_page = $_SESSION['pp_import'];
     drupal_set_title(t('Import panel page "@s"', array('@s' => $panel_page->title)));
-    return panels_page_edit($panel_page);
+    return drupal_get_form('panels_page_edit_form', $panel_page);
   }
 
   return drupal_get_form('panels_page_import_form');

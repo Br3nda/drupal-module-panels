@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.53 2007/10/01 20:52:51 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.54 2007/10/02 21:01:56 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -489,33 +489,41 @@ function panels_delete_display($display) {
 /**
  * Export a display into code
  */
-function panels_export_display($display) {
+function panels_export_display($display, $prefix = '') {
   $output = '';
-  $output .= '$display = new stdClass()' . ";\n";
-  $output .= '$display->did = \'new\'' . ";\n";
+  $output .= $prefix . '$display = new stdClass()' . ";\n";
+  $output .= $prefix . '$display->did = \'new\'' . ";\n";
   $fields = array('name', 'layout', 'layout_settings', 'panel_settings');
   foreach ($fields as $field) {
-    $output .= '$display->' . $field . ' = ' . var_export($display->$field, TRUE) . ";\n";
+    $output .= $prefix . '$display->' . $field . ' = ' . panels_var_export($display->$field, $prefix) . ";\n";
   }
 
-  $output .= '$display->content = array()' . ";\n";
-  $output .= '$display->panels = array()' . ";\n";
+  $output .= $prefix . '$display->content = array()' . ";\n";
+  $output .= $prefix . '$display->panels = array()' . ";\n";
   $panels = array();
 
   $counter = 0;
   $counters = array();
   foreach ($display->content as $pane) {
     $id = 'new-' . ++$counter;
-    $output .= '$pane = new stdClass()'  . ";\n";
+    $output .= $prefix . '$pane = new stdClass()'  . ";\n";
     $fields = array('panel', 'type', 'subtype', 'access', 'configuration');
     foreach ($fields as $field) {
-      $output .= '  $pane->' . $field . ' = ' . var_export($pane->$field, TRUE) . ";\n";
+      $output .= $prefix . '  $pane->' . $field . ' = ' . panels_var_export($pane->$field, "$prefix  ") . ";\n";
     }
-    $output .= '$display->content[\'' . $id . '\'] = $pane' . ";\n";
+    $output .= $prefix . '$display->content[\'' . $id . '\'] = $pane' . ";\n";
     if (!isset($counters[$pane->panel])) {
       $counters[$pane->panel] = 0;
     }
-    $output .= '$display->panels[\'' . $pane->panel . '\'][' . $counters[$pane->panel]++ .'] = \'' . $id . "';\n";
+    $output .= $prefix . '$display->panels[\'' . $pane->panel . '\'][' . $counters[$pane->panel]++ .'] = \'' . $id . "';\n";
+  }
+  return $output;
+}
+
+function panels_var_export($object, $prefix = '') {
+  $output = var_export($object, TRUE);
+  if ($prefix) {
+    $output = str_replace("\n", "\n$prefix", $output);
   }
   return $output;
 }
@@ -1373,6 +1381,28 @@ function panels_get_content_type($content_type) {
  */
 function panels_get_content_types() {
   return panels_get_plugins('content_types', 'panels_content_types');
+}
+
+/**
+ * Fetch a relationship plugin
+ *
+ * @param $content type
+ *   Name of a panel content type.
+ * @return
+ *   An array with information about the requested panel content type.
+ */
+function panels_get_relationship($relationship) {
+  return panels_get_plugins('relationships', 'panels_relationships', $relationship);
+}
+
+/**
+ * Fetch all content type plugins
+ *
+ * @return
+ *   An array of arrays with information about all available panel content types.
+ */
+function panels_get_relationships() {
+  return panels_get_plugins('relationships', 'panels_relationships');
 }
 
 // @render

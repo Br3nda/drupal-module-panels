@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.8 2007/10/01 20:11:47 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.9 2007/10/02 21:01:57 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -667,6 +667,8 @@ function panels_page_fetch_display($panel_page, $id) {
   $panel_page->displays[$id]['did'] = $display->did;
 
   // TODO: Having to clone this sucks.
+  // TODO: I don't think we need to clone this anymore.
+
   panels_page_save(drupal_clone($panel_page));
   return $display;
 }
@@ -800,6 +802,14 @@ function panels_page_save($panel_page) {
   // mess up the original.
   $page = drupal_clone(panels_page_sanitize($panel_page));
 
+  // Check to see if we need to save any imported displays.
+  foreach ($page->displays as $did => $info) {
+    if (isset($info['display'])) {
+      $d = panels_save_display($info['display']);
+      $page->displays[$did]['did'] = $d->did;
+      unset($page->displays[$did]['did']);
+    }
+  }
   // serialize the access string.
   $page->access = $page->access ? implode(', ', $page->access) : '';
 
@@ -869,11 +879,26 @@ function panels_page_export($panel_page) {
   $output .= '$page = new stdClass()' . ";\n";
   $output .= '$page->pid = \'new\'' . ";\n";
   foreach ($fields as $field => $q) {
-    $output .= '  $page->' . $field . ' = ' . var_export($panel_page->$field, TRUE) . ";\n";
+    if ($field == 'displays') {
+      continue;
+    }
+
+    $output .= '  $page->' . $field . ' = ' . panels_var_export($panel_page->$field, '  ') . ";\n";
   }
-  $output .= panels_export_display($panel_page->display);
+  // Export the primary display
+  $display = panels_load_display($panel_page->did);
+  $output .= panels_export_display($display);
   $output .= '$page->display = $display' . ";\n";
 
+  // Export all secondary displays
+  $output .= '$page->displays = array()' . ";\n";
+  foreach ($panel_page->displays as $did => $info) {
+    $output .= '  $page->displays[\'' . $did . "']['title'] = '" . check_plain($info['title']) . "';\n";
+    $output .= '  $page->displays[\'' . $did . "']['argument_id'] = '" . check_plain($info['argument_id']) . "';\n";
+    $display = panels_load_display($info['did']);
+    $output .= panels_export_display($display, '    ');
+    $output .= '  $page->displays[\'' . $did . "']['display'] =  \$display;\n";
+  }
   return $output;
 }
 

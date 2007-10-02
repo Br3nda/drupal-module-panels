@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.18 2007/09/11 18:26:45 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.19 2007/10/02 21:01:56 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -55,6 +55,7 @@ function panels_content_views($conf, $panel_args) {
     $block->module = 'views';
     $block->delta = $view->name;
 
+    $view_type = $conf['type'] == 'embed' ? 'page' : $conf['type'];
     $title = $conf['override_title'] ? $conf['override_title_text'] : views_get_title($view, $view_type);
     if (!empty($conf['link_to_view'])) {
       $title = l($title, views_get_url($view, $args));
@@ -64,7 +65,6 @@ function panels_content_views($conf, $panel_args) {
     }
     $block->subject = $title;
 
-    $view_type = $conf['type'] == 'embed' ? 'page' : $conf['type'];
     $pager_id = empty($conf['use_pager']) ? 0 : intval($conf['pager_id']);
     $block->content = views_build_view($conf['type'], $view, $args, $pager_id, intval($conf['nodes_per_page']));
   }
