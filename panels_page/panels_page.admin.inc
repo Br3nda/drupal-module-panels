@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.7 2007/10/02 21:01:57 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.8 2007/10/03 22:52:49 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -472,12 +472,6 @@ function panels_page_advanced_form($panel_page) {
     '#description' => t('If the Parent Menu Item is being defined by this panel (if you set the %type_field to either %tab or %menu), you can specify its title here.  If blank, the menu title will be used if that is defined, or the page title if not.', array('%type_field' => t('Parent Menu Item Type'), '%tab' => t('Tab'), '%menu' => t('Normal menu item'))),
   );
 
-  $form['left']['arg-info'] = array(
-    '#type' => 'fieldset',
-    '#collapsible' => FALSE,
-    '#title' => t('Arguments'),
-  );
-
   $form['left']['arg-info']['arguments_table'] = array(
     '#theme' => 'panels_page_arguments_form',
     '#panel_name' => $panel_page->name,
@@ -537,6 +531,18 @@ function panels_page_advanced_form($panel_page) {
     '#attributes' => array('class' => 'argument-add'),
     '#value' => t('Add argument'),
   );
+
+  // Relationships, which are closely tied to arguments.
+  $form['left']['arg-info']['relationships_table'] = array(
+    '#theme' => 'panels_page_relationships_form',
+    '#panel_name' => $panel_page->name
+  );
+
+  $form['left']['arg-info']['relationships_table']['buttons']['add_relationship'] = array(
+    '#type' => 'select',
+    '#options' => panels_get_relevant_relationships(panels_argument_get_contexts($arguments)),
+  );
+
 
   $label = ($panel_page->pid == 'new') ? t('Next') : t('Save');
   $form['submit'] = array(
@@ -1052,6 +1058,16 @@ function panels_page_edit_layout_settings($panel_page, $did = NULL, $next = NULL
   return panels_edit_layout_settings($panel_page->display, $button, $dest);
 }
 
+/**
+ * TODO: MOVE THIS
+ * Get a bunch of empty contexts for this page
+ */
+function panels_page_get_contexts($page) {
+  // Get contexts from arguments
+  $contexts = panels_argument_get_contexts($page->arguments, $page->display->display_context);
+  // Get contexts from relationships
+    
+}
 
 /**
  * Pass through to the panels content editor.
@@ -1060,10 +1076,7 @@ function panels_page_edit_content($panel_page, $did = NULL) {
   $panel_page = panel_page_fetch_panel_page($panel_page, $did);
 
   // Collect a list of contexts required by the arguments on this page.
-  $contexts = array();
-  foreach ($panel_page->arguments as $id => $argument) {
-    $contexts[$id] = panels_argument_get_context($argument['name'], NULL, $argument['argument_settings'], $panel_page->display->display_context);
-  }
+  $contexts = panels_argument_get_contexts($panel_page->arguments, $panel_page->display->display_context);
 
   $panel_page->display->context = $contexts;
 

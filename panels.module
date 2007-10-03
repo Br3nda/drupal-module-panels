@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.54 2007/10/02 21:01:56 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.55 2007/10/03 22:52:49 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -1157,6 +1157,48 @@ function panels_argument_choose_display($type, $conf, $context) {
   }
 }
 
+/**
+ * Retreive a list of empty contexts for all arguments
+ */
+function panels_argument_get_contexts($arguments, $display_context = NULL) {
+  $contexts = array();
+  foreach ($arguments as $id => $argument) {
+    $contexts[$id] = panels_argument_get_context($argument['name'], NULL, $argument['argument_settings'], $display_context);
+  }
+  return $contexts;
+}
+
+// ---------------------------------------------------------------------------
+// panels relationship helpers
+
+/**
+ * Fetch all relevant relationships
+ *
+ * @param $contexts
+ *   An array of contexts used to figure out which relationships are relevant.
+ *
+ * @return
+ *   An array of relationship keys that are relevant for the given set of
+ * arguments.
+ */
+function panels_get_relevant_relationships($contexts) {
+  $relevant = array();
+  $relationships = panels_get_relationships();
+
+  // Go through each relationship
+  foreach ($relationships as $rid => $relationship) {
+    // For each relationship, see if there is a context that satisfies it.
+    foreach ($contexts as $context) {
+      if ($context->is_type($relationship['required context'])) {
+        $relevant[$rid] = $relationship['title'];
+        continue 2;
+      }
+    }
+  }
+
+  return $relevant;
+}
+
 // ---------------------------------------------------------------------------
 // panels data loading
 
@@ -1389,17 +1431,17 @@ function panels_get_content_types() {
  * @param $content type
  *   Name of a panel content type.
  * @return
- *   An array with information about the requested panel content type.
+ *   An array with information about the requested relationship
  */
 function panels_get_relationship($relationship) {
   return panels_get_plugins('relationships', 'panels_relationships', $relationship);
 }
 
 /**
- * Fetch all content type plugins
+ * Fetch all relationship plugins
  *
  * @return
- *   An array of arrays with information about all available panel content types.
+ *   An array of arrays with information about all available relationships.
  */
 function panels_get_relationships() {
   return panels_get_plugins('relationships', 'panels_relationships');

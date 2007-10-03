@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.3 2007/09/12 17:59:55 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.4 2007/10/03 22:52:49 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -108,19 +108,15 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
       'type' => MENU_LOCAL_TASK,
     );
 
-    $display = panels_load_display($panel_mini->did);
-    $layout = panels_get_layout($display->layout);
-    if (!empty($layout['settings form'])) {
-      $items[] = array(
-        'path' => $base .'/edit/settings',
-        'title' => t('Layout settings'),
-        'access' => $access,    
-        'callback' => 'panels_mini_edit_layout_settings',
-        'callback arguments' => array($panel_mini->pid),
-        'weight' => -3,
-        'type' => MENU_LOCAL_TASK,
-      );
-    }
+    $items[] = array(
+      'path' => $base .'/edit/settings',
+      'title' => t('Layout settings'),
+      'access' => $access,    
+      'callback' => 'panels_mini_edit_layout_settings',
+      'callback arguments' => array($panel_mini->pid),
+      'weight' => -3,
+      'type' => MENU_LOCAL_TASK,
+    );
 
     $items[] = array(
       'path' => $base .'/edit/content',
