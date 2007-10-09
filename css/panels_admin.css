@@ -104,7 +104,8 @@
   margin: .5em;
 }
 
-table .argument-operation {
+table .argument-operation,
+table .relationship-operation {
   text-align: right;
   padding-right: 6px;
 }

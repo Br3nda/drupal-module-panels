@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.1.2.2 2007/10/01 20:11:46 merlinofchaos Exp $
+// $Id: term.inc,v 1.1.2.3 2007/10/09 23:22:53 merlinofchaos Exp $
 /**
  * @file arguments/term.inc
  *
@@ -22,7 +22,7 @@ function panels_term_panels_arguments() {
 
 
 /**
- * Discover if this argument gives us the node we crave.
+ * Discover if this argument gives us the term we crave.
  */
 function panels_term_context($arg = NULL, $conf = NULL, $context = NULL, $index = 0) {
   // If unset it wants a generic, unfilled context.

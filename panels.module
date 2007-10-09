@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.55 2007/10/03 22:52:49 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.56 2007/10/09 23:22:53 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -235,13 +235,18 @@ function panels_cache_clear($did) {
 /**
  * Get an object from cache.
  */
-function panels_common_cache_get($obj, $did) {
+function panels_common_cache_get($obj, $did, $skip_cache = FALSE) {
   static $cache = array();
-  if (!array_key_exists($did, $cache)) {
-    $data = cache_get(session_id() . ":$obj:$did", 'cache');
-    $cache[$did] = unserialize($data->data);
+  $key = "$obj:$did";
+  if ($skip_cache) {
+    unset($cache[$key]);
   }
-  return $cache[$did];
+
+  if (!array_key_exists($key, $cache)) {
+    $data = cache_get(session_id() . ":$obj:$did", 'cache');
+    $cache[$key] = unserialize($data->data);
+  }
+  return $cache[$key];
 }
 
 /**
@@ -823,36 +828,12 @@ function panels_ct_get_title($type, $conf, $context = NULL, $incoming_content = 
  */
 function panels_ct_conf_form($type, $id, $contexts, $conf) {
   $content_type = panels_ct_get_types($type);
-  $count = 0;
-  $saved_cid = NULL;
-  if (!empty($content_type[$id]['required context']) && is_array($contexts)) {
-    // See which of these contexts are valid
-    foreach ($contexts as $cid => $context) {
-      if ($context->is_type($content_type[$id]['required context'])) {
-        $options[$cid] = $context->title;
-        $saved_cid = $cid;
-        $count++;
-      }
-    }
-  }
 
   $form = array();
-  if ($count == 1) {
-    $form['context'] = array(
-      '#type' => 'value',
-      '#value' => $saved_cid,
-    );
-  }
-  else if (!empty($options)) {
-    $form['context'] = array(
-      '#type' => 'select',
-      '#options' => $options,
-      '#title' => t('Context'),
-      '#description' => t('Multiple contexts are valid for this pane; one must be chosen.'),
-      '#default_value' => $conf['context'],
-    );
-  }
 
+  if (!empty($content_type[$id]['required context']) && is_array($contexts)) {
+    $form['context'] = panels_context_selector($contexts, $content_type[$id]['required context'], $conf['context']);
+  }
 
   return $form;
 }
@@ -1029,14 +1010,8 @@ function panels_get_available_content_types($contexts = NULL, $has_content = FAL
 
       // Check to see if the content type can be used in this context.
       if (!empty($cinfo['required context'])) {
-        if (empty($contexts)) {
+        if (!panels_context_filter($contexts, $cinfo['required context'])) {
           continue;
-        }
-        foreach ($contexts as $context) {
-          if (!$context->is_type($cinfo['required context'])) {
-            // This context does not match; continue the foreach above us.
-            continue 2;
-          }
         }
       }
 
@@ -1134,12 +1109,13 @@ function panels_argument_function($type, $name) {
   }
 }
 
-function panels_argument_get_context($type, $arg, $conf, $selector, $index = 0) {
-  $argument = panels_get_argument($type);
-  if ($function = $argument['context']) {
-    $context = $function($arg, $conf, $selector, $index);
+function panels_argument_get_context($argument, $arg) {
+  if ($function = panels_argument_function($argument['name'], 'context')) {
+    $context = $function($arg, $argument['argument_settings']);
     if ($context) {
-      $context->title = $argument['title'] . ' ' . $conf['id'];
+      $context->title = $argument['identifier'];
+      $context->page_title = $argument['title'];
+      $context->substitute_title = panels_argument_get_title($argument['name'], $context);
       return $context;
     }
   }
@@ -1158,18 +1134,54 @@ function panels_argument_choose_display($type, $conf, $context) {
 }
 
 /**
+ * Determine a unique context ID for an argument
+ */
+function panels_argument_context_id($argument) {
+  return "argument_$argument[name]_$argument[id]";
+}
+
+/**
  * Retreive a list of empty contexts for all arguments
  */
-function panels_argument_get_contexts($arguments, $display_context = NULL) {
+function panels_argument_get_contexts($arguments) {
   $contexts = array();
-  foreach ($arguments as $id => $argument) {
-    $contexts[$id] = panels_argument_get_context($argument['name'], NULL, $argument['argument_settings'], $display_context);
+  foreach ($arguments as $argument) {
+    $context = panels_argument_get_context($argument, NULL);
+    if ($context) {
+      $contexts[panels_argument_context_id($argument)] = $context;
+    }
   }
   return $contexts;
 }
 
 // ---------------------------------------------------------------------------
 // panels relationship helpers
+
+/**
+ * TODO: Have several of these. Can generalize.
+ *
+ * instead:
+ * function panels_plugin_get_function($plugin, $type, $function_name)
+ */
+function panels_relationship_function($type, $name) {
+  if (is_object($type)) {
+    $relationship = $type;
+  }
+  else {
+    $relationship = panels_get_relationship($type);
+  }
+
+  $function = $relationship[$name];
+  if (function_exists($function)) {
+    return $function;
+  }
+}
+
+function panels_relationship_get_title($type, $context) {
+  if ($function = panels_relationship_function($type, 'title function')) {
+    return $function($context);
+  }
+}
 
 /**
  * Fetch all relevant relationships
@@ -1188,15 +1200,166 @@ function panels_get_relevant_relationships($contexts) {
   // Go through each relationship
   foreach ($relationships as $rid => $relationship) {
     // For each relationship, see if there is a context that satisfies it.
-    foreach ($contexts as $context) {
-      if ($context->is_type($relationship['required context'])) {
-        $relevant[$rid] = $relationship['title'];
-        continue 2;
-      }
+    if (panels_context_filter($contexts, $relationship['required context'])) {
+      $relevant[$rid] = $relationship['title'];
+      continue;
     }
   }
 
   return $relevant;
+}
+
+/**
+ * Fetch all active relationships
+ *
+ * @param $relationships
+ *   An keyed array of relationship data including:
+ *   - name: name of relationship
+ *   - context: context id relationship belongs to.
+ *
+ * @param $contexts
+ *   A keyed array of contexts used to figure out which relationships
+ *   are relevant. New contexts will be added to this.
+ *
+ */
+function panels_relationship_get_contexts($relationships, &$contexts) {
+  $return = array();
+
+  foreach ($relationships as $rdata) {
+    if (empty($contexts[$rdata['context']])) {
+      continue;
+    }
+    $relationship = panels_get_relationship($rdata['name']);
+    // If the relationship can't be found or its context can't be found,
+    // ignore.
+    if (!$relationship) {
+      continue;
+    }
+
+    $cid = panels_relationship_context_id($rdata);
+    if ($context = panels_relationship_get_context($rdata, $contexts[$rdata['context']])) {
+      $contexts[$cid] = $context;
+    }
+  }
+}
+
+/**
+ * Determine a unique context ID for an argument
+ */
+function panels_relationship_context_id($relationship) {
+  return "relationship_$relationship[name]_$relationship[id]";
+}
+
+/**
+ * Fetch a context from a relationship, given the context input.
+ */
+function panels_relationship_get_context($relationship, $arg) {
+  if ($function = panels_relationship_function($relationship['name'], 'context')) {
+    $context = $function($arg, $relationship['relationship_settings']);
+    if ($context) {
+      $context->title = $relationship['identifier'];
+      $context->page_title = $relationship['title'];
+      $context->substitute_title = panels_relationship_get_title($relationship['name'], $context);
+      return $context;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// panels context helpers
+
+/**
+ * Return a keyed array of context that match the given 'required context'
+ * filters.
+ *
+ * @param $contexts
+ *   A keyed array of all available contexts.
+ * @param $required
+ *   The required context string or array.
+ *
+ * @return
+ *   A keyed array of contexts.
+ */
+function panels_context_filter($contexts, $required) {
+  $result = array();
+
+  // See which of these contexts are valid
+  foreach ($contexts as $cid => $context) {
+    if ($context->is_type($required)) {
+      $result[$cid] = $context;
+    }
+  }
+
+  return $result;
+}
+
+/**
+ * Create a select box to choose possible contexts. This only creates a
+ * selector if there is actually a choice.
+ *
+ * @param $contexts
+ *   A keyed array of all available contexts.
+ * @param $required
+ *   The required context string or array.
+ *
+ * @return
+ *   A form element, or NULL if there are no contexts that satisfy the
+ *   requirements.
+ */
+function panels_context_selector($contexts, $required, $default) {
+  $filtered = panels_context_filter($contexts, $required);
+  $count = count($filtered);
+
+  $form = array();
+
+  if ($count == 1) {
+    $keys = array_keys($filtered);
+    return array(
+      '#type' => 'value',
+      '#value' => $keys[0],
+    );
+  }
+
+  if ($count > 1) {
+    // If there's more than one to choose from, create a select widget.
+    foreach ($filtered as $cid => $context) {
+      $options[$cid] = $context->title;
+    }
+    return array(
+      '#type' => 'select',
+      '#options' => $options,
+      '#title' => t('Context'),
+      '#description' => t('Multiple contexts are valid for this pane; one must be chosen.'),
+      '#default_value' => $default,
+    );
+  }
+}
+
+/**
+ * Return a keyed array of context that match the given 'required context'
+ * filters.
+ *
+ * @param $contexts
+ *   A keyed array of all available contexts.
+ * @param $required
+ *   An array of required context strings or arrays.
+ *
+ * @return
+ *   An array of keyed arrays of matching contexts.
+ */
+function panels_context_filter_multiple($contexts, $required) {
+  $result = array();
+
+/*
+  // See which of these contexts are valid
+  foreach ($contexts as $cid => $context) {
+    if ($context->is_type($required)) {
+      $result[$cid] = $context;
+    }
+  }
+*/
+
+  return $result;
 }
 
 // ---------------------------------------------------------------------------

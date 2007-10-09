@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.9 2007/10/02 21:01:57 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.10 2007/10/09 23:22:54 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -111,6 +111,22 @@ function panels_page_menu($may_cache) {
       'type' => MENU_CALLBACK,
     );
 
+    // Ajax responder
+    $items[] = array(
+      'path' => 'panels/relationship/ajax/add',
+      'access' => $access,
+      'callback' => 'panels_page_passthru',
+      'callback arguments' => array('panels_page_ajax_relationship_add'),
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array(
+      'path' => 'panels/relationship/ajax/edit',
+      'access' => $access,
+      'callback' => 'panels_page_passthru',
+      'callback arguments' => array('panels_page_ajax_relationship_edit'),
+      'type' => MENU_CALLBACK,
+    );
+
     // Get all panels and, if enabled, create menu items.
     foreach ($panels as $panel_page) {
       if (empty($panel_page->disabled)) {
@@ -154,8 +170,7 @@ function panels_page_menu($may_cache) {
             // argument handler to return a context, if there is an argument handler.
             $argument = current($panel_page->arguments);
             if ($argument) {
-              $context = panels_argument_get_context(
-                $argument['name'], arg($id), $argument['argument_settings'], NULL, $count);
+              $context = panels_argument_get_context($argument, arg($id));
               if (!$context) {
                 break;
               }
@@ -177,7 +192,7 @@ function panels_page_menu($may_cache) {
 /**
  * Helper function to add a menu item for a panel.
  */
-function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = array()) {
+function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = array(), $all = TRUE) {
   $view_access = panels_page_access($page);
   $access = user_access('create panel-pages');
 
@@ -194,6 +209,10 @@ function panels_page_menu_items(&$items, $base, $page, $basic = FALSE, $args = a
   }
   else {
     _panels_page_create_menu_item($items, $page, $base, $view_access, $args);
+  }
+
+  if (!$all) {
+    return;
   }
 
   $items[] = array(
@@ -466,9 +485,9 @@ function panels_page_get_title($panel_page, $context = 'page', $default_title = 
     $title = NULL;
     $count = 1;
     foreach ($panel_page->context as $id => $context) {
-      $substitutions['%' . ($count++)] = panels_argument_get_title($panel_page->arguments[$id]['name'], $context);
-      if (!empty($panel_page->arguments[$id]['title'])) {
-        $title = $panel_page->arguments[$id]['title'];
+      $substitutions['%' . ($count++)] = $context->substitute_title;
+      if (!empty($context->page_title)) {
+        $title = $context->page_title;
       }
     }
 
@@ -548,14 +567,16 @@ function panels_page_view_page($panel_page) {
     $panel_page->context = array();
   }
 
+  // TODO: Generalize this, move into arguments section.
+  // TODO: page->contexts should be page->relationships.
   $form = NULL;
   if ($panel_page->arguments) {
     $count = 0;
     foreach ($panel_page->arguments as $i => $argument) {
-      $context = panels_argument_get_context($argument['name'], $args[$count], $argument['argument_settings'], $args, $count);
+      $context = panels_argument_get_context($argument, $args[$count]);
       $count++;
       if (!empty($context)) {
-        $panel_page->context[$i] = $context;
+        $panel_page->context[panels_argument_context_id($argument)] = $context;
         $d = panels_argument_choose_display($argument['name'], $argument['argument_settings'], $context);
         if ($d) {
           $display_candidate = "argument_$i" . '-' . $d;
@@ -569,6 +590,9 @@ function panels_page_view_page($panel_page) {
       }
     }
   }
+
+  // Get additional contexts from relationships
+  panels_relationship_get_contexts($panel_page->contexts, $panel_page->context);
 
   // Figure out which display to use.
   if (isset($display_candidate)) {

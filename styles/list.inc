@@ -1,5 +1,5 @@
 <?php
-// $Id: list.inc,v 1.1.2.3 2007/09/12 17:59:56 merlinofchaos Exp $
+// $Id: list.inc,v 1.1.2.4 2007/10/09 23:22:54 merlinofchaos Exp $
 /**
  * @file styles/list.inc
  * Definition of the 'list' panel style.
@@ -30,7 +30,7 @@ function theme_panels_list_style_render_panel($display, $panel_id, $panes, $sett
   foreach ($panes as $pane_id => $pane) {
     $items[] = theme('panels_pane', $pane, $display);
   }
-  return theme('item_list', $items, $settings['list_type']);
+  return theme('item_list', $items, NULL, $settings['list_type']);
 }
 
 function panels_list_style_settings_form($style_settings) {

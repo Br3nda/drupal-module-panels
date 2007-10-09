@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.2 2007/09/06 00:48:50 merlinofchaos Exp $
+// $Id: list.js,v 1.1.2.3 2007/10/09 23:22:54 merlinofchaos Exp $
 
 /**
  * List object
@@ -65,6 +65,13 @@ Drupal.list = function(base, settings) {
   }
 
   var changeOrder = function(item, how) {
+    // If there isn't an order field, don't process this.
+    if (!settings.order) {
+      return;
+    }
+
+    console.log(settings.order);
+
     var order_text = $(settings.order).val();
     if (order_text == '') {
       var order = [];
@@ -134,7 +141,7 @@ Drupal.list = function(base, settings) {
 
   // Set as a function so we can be both a closure and called later
   // when more items get added.
-  var bindButtons = function() {
+  this.bindButtons = function() {
     if (settings.remove) {
       $(settings.remove + ':not(.list-processed)')
         .addClass('list-processed')
@@ -292,7 +299,21 @@ Drupal.list = function(base, settings) {
           $('#' + base + ' tbody').append(data.output);
 
           changeOrder(data.position, 'add');
-          bindButtons();
+
+          // If we're told we have extra things to put out there, do so.
+          // Must be done prior to button binding.
+          if (settings.replace) {
+            for (i in settings.replace) {
+              if (data[settings.replace[i]]) {
+                $(i).html(data[settings.replace[i]]);
+              }
+            }
+          }
+
+          // Run a bind for every list we know about
+          for (list in Drupal.list.lists) {
+            Drupal.list.lists[list].bindButtons();
+          }
 
           Drupal.unfreezeHeight();
 
@@ -311,6 +332,7 @@ Drupal.list = function(base, settings) {
               $(settings.clear[i]).val('');
             }
           }
+
           $('#panels-modal').unmodalContent();
           return;
         case 'dismiss':
@@ -386,16 +408,19 @@ Drupal.list = function(base, settings) {
   if (settings.focus) {
     $(settings.focus).get(0).focus();
   }
-  this.bindButtons = bindButtons();
+  this.bindButtons();
 }
 
 
 Drupal.list.autoAttach = function() {
   if (Drupal.settings && Drupal.settings.list) {
+    Drupal.list.lists = {};
+
     for (var base in Drupal.settings.list) {
       if (!$('#'+ base + '.list-processed').size()) {
         var settings = Drupal.settings.list[base];
         var list = new Drupal.list(base, settings);
+        Drupal.list.lists[base] = list;
         $('#'+ base).addClass('list-processed');
       }
     }
