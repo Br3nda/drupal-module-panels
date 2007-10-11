@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.19 2007/10/02 21:01:56 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.20 2007/10/11 20:14:27 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -66,7 +66,7 @@ function panels_content_views($conf, $panel_args) {
     $block->subject = $title;
 
     $pager_id = empty($conf['use_pager']) ? 0 : intval($conf['pager_id']);
-    $block->content = views_build_view($conf['type'], $view, $args, $pager_id, intval($conf['nodes_per_page']));
+    $block->content = views_build_view($conf['type'], $view, $args, $pager_id, intval($conf['nodes_per_page']), 0, intval($conf['offset']));
   }
   return $block;
 }
@@ -198,6 +198,14 @@ function panels_admin_edit_views($id, $parents, $conf) {
     '#title' => t('Num posts'),
     '#size' => 4,
     '#description' => t('Select the number of posts to display, or 0 to display all results.'),
+  );
+
+  $form['offset'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['offset'],
+    '#title' => t('Offset'),
+    '#size' => 4,
+    '#description' => t('Offset in the node list or 0 to start at 1st item.'),
   );
 
   $form['panel_args'] = array(
