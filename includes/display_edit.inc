@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.8 2007/10/11 20:12:33 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.9 2007/10/11 22:22:03 merlinofchaos Exp $
 
 
 /**
@@ -810,7 +810,7 @@ function panels_edit_submit_subform($display) {
 
 /**
  */
-function panels_common_panel_settings($display, $panels_implementation = '', $label = '') {
+function panels_common_panel_settings($display) {
   $panel_settings = $display->panel_settings;
   $style = panels_get_style((!empty($panel_settings['style'])) ? $panel_settings['style'] : 'default');
 
@@ -818,15 +818,12 @@ function panels_common_panel_settings($display, $panels_implementation = '', $la
   // panels implementation or specifically to this one.
   $options = array();
   foreach (panels_get_styles() as $name => $properties) {
-    $implementations = $properties['panels implementations'];
     if (!empty($properties['hidden'])) {
       continue;
     }
 
-    if (!is_array($implementations) || count($implementations) == 0 || in_array($panels_implementation, $implementations)) {
-      // TODO: 'label' is deprecated, will go away.
-      $options[$name] = empty($properties['title']) ? $properties['label'] : $properties['title'];
-    }
+    // TODO: 'label' is deprecated, will go away.
+    $options[$name] = empty($properties['title']);
   }
 
   $form = array();
@@ -843,10 +840,7 @@ function panels_common_panel_settings($display, $panels_implementation = '', $la
     '#type' => 'select',
     '#title' => t('Panel style'),
     '#options' => $options,
-    '#description' => t(
-      'The style in which the panes of each panel in this %panels-label will be displayed.',
-      array('%panels-label' => $label)
-    ),
+    '#description' => t('The style in which the panes of each panel will be displayed.'),
     '#id' => 'panel-settings-style',
     '#default_value' => $style['name'],
   );
