@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.4 2007/09/11 20:11:27 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.5 2007/10/11 20:23:24 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -49,7 +49,7 @@ function panels_flexible_settings_form($display, $layout, &$settings) {
   }
 
   $form['instructions'] = array(
-    '#value' => t('<p>Here you may determine the number of rows and columns your layout may have. Each row can have its own number of columns, and each column can have its width set independently. The widths are set in percentages, and for each row the widths must add up to 100%. When changing the number of rows or columns, click Save to update the form so you can set the widths for new cells properly.</p><p><strong>Note: Removing cells which contain panes will cause those panes to be disappear. Please move any content you wish to keep.</p>'),
+    '#value' => t('<p>Here you may determine the number of rows and columns your layout may have. Each row can have its own number of columns, and each column can have its width set independently. The widths are set in percentages, and for each row the widths must add up to 100%. When changing the number of rows or columns, click Save to update the form so you can set the widths for new cells properly.</p><p><strong>Note: Removing cells which contain panes will cause those panes to be disappear. Please move any content you wish to keep.</strong></p>'),
   );
   $form['rows'] = array(
     '#type' => 'textfield',
