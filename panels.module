@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.57 2007/10/11 00:32:28 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.58 2007/10/11 18:11:02 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -1009,7 +1009,7 @@ function panels_get_available_content_types($contexts = NULL, $has_content = FAL
       }
 
       // Check to see if the content type can be used in this context.
-      if (!empty($cinfo['required context'])) {
+      if (!empty($cinfo['required context']) && !empty($contexts)) {
         if (!panels_context_filter($contexts, $cinfo['required context'])) {
           continue;
         }
