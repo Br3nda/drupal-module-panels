@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.18 2007/10/01 20:42:21 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.19 2007/10/11 00:32:28 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -48,7 +48,7 @@ EOT
         );
 EOT
       );
-      db_query("CREATE SEQUENCE {panels_display}_id_seq;");
+      db_query("CREATE SEQUENCE {panels_display}_did_seq;");
       db_query("CREATE INDEX {panels_display}_name_idx ON {panels_page} (name);");
 
       db_query(<<<EOT
@@ -133,7 +133,7 @@ function panels_uninstall() {
     case 'pgsql':
       db_query("DROP SEQUENCE {panels_page}_pid_seq");
       db_query("DROP SEQUENCE {panels_pane}_pid_seq");
-      db_query("DROP SEQUENCE {panels_display}_id_seq");
+      db_query("DROP SEQUENCE {panels_display}_did_seq");
       db_query("DROP TABLE {panels_display}");
       db_query("DROP TABLE {panels_pane}");
       db_query("DROP TABLE {panels_page}");
@@ -263,5 +263,15 @@ function panels_update_5207() {
   $ret = array();
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN displays longtext");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN contexts longtext");
+  return $ret;
+}
+
+// Correct the mistaken {panels_display}_id when it should be {panels_display}_did
+function panels_update_5208() {
+  $ret = array();
+  $count = db_result(db_query("SELECT MAX(did) FROM {panels_display}"));
+  $ret[] = update_sql("DELETE FROM {sequences} WHERE name = '{panels_display}_did'");
+  $ret[] = update_sql("DELETE FROM {sequences} WHERE name = '{panels_display}_id'");
+  $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_display}_did', $count)");
   return $ret;
 }
