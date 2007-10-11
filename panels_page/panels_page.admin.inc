@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.9 2007/10/09 23:22:54 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.10 2007/10/11 20:19:18 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -279,7 +279,6 @@ function panels_page_edit_form_validate($form_id, $form_values, $form) {
 function panels_page_edit_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
 
-  $panel_page->display->panel_settings = $form_values['panel_settings'];
   $panel_page->title  = $form_values['title'];
   $panel_page->name  = preg_replace("/[\W]+/", '', $form_values['name']);
   $panel_page->css_id = $form_values['css_id'];
