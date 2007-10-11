@@ -1,5 +1,5 @@
 <?php
-// $Id: node_edit.inc,v 1.1.2.1 2007/09/27 19:25:51 merlinofchaos Exp $
+// $Id: node_edit.inc,v 1.1.2.2 2007/10/11 20:12:33 merlinofchaos Exp $
 /** 
  * @file arguments/nid.inc
  * 
@@ -143,8 +143,8 @@ function panels_node_edit_choose_display($conf, $context) {
     return;
   }
 
-  if (!empty($conf['displays'][$context->data->type])) {
-    return $context->data->type;
+  if (!empty($conf['displays'][$context->data['#node']->type])) {
+    return $context->data['#node']->type;
   }
 
   // Please note that 'default' is a special display.
