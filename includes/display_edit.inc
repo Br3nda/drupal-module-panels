@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.9 2007/10/11 22:22:03 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.10 2007/10/14 00:52:57 merlinofchaos Exp $
 
 
 /**
@@ -818,12 +818,9 @@ function panels_common_panel_settings($display) {
   // panels implementation or specifically to this one.
   $options = array();
   foreach (panels_get_styles() as $name => $properties) {
-    if (!empty($properties['hidden'])) {
-      continue;
+    if (empty($properties['hidden'])) {
+      $options[$name] = $properties['title'];
     }
-
-    // TODO: 'label' is deprecated, will go away.
-    $options[$name] = empty($properties['title']);
   }
 
   $form = array();
