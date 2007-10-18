@@ -1,5 +1,5 @@
 <?php
-// $Id: node_add.inc,v 1.1.2.3 2007/10/11 20:12:33 merlinofchaos Exp $
+// $Id: node_add.inc,v 1.1.2.4 2007/10/18 22:27:18 merlinofchaos Exp $
 /** 
  * @file arguments/nid.inc
  * 
@@ -114,12 +114,14 @@ function panels_node_add_displays($conf, $id) {
       $options[$type] = $info->name;
     }
     foreach (array_keys(array_filter($conf['displays'])) as $type) {
-      $displays[$type] = array(
-        'title' => t('Node add form @id @type', array('@id' => $id, '@type' => $options[$type])),
-        // Tell it to base the template for this display off of the default.
-        'default' => 'default',
-        'context' => 'node',
-      );
+      if (!empty($options[$type])) {
+        $displays[$type] = array(
+          'title' => t('Node add form @id @type', array('@id' => $id, '@type' => $options[$type])),
+          // Tell it to base the template for this display off of the default.
+          'default' => 'default',
+          'context' => 'node',
+        );
+      }
     }
   }
 

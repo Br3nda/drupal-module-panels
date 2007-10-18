@@ -1,5 +1,5 @@
 <?php
-// $Id: term_list.inc,v 1.1.2.1 2007/10/09 23:22:53 merlinofchaos Exp $
+// $Id: term_list.inc,v 1.1.2.2 2007/10/18 22:27:18 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -80,7 +80,7 @@ function panels_admin_content_types_term_list() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Terms related to an existing term; may be child, siblings or top level.'),
-      'required context' => 'term',
+      'required context' => new panels_required_context('term'),
       'category' => array(t('Term context'), -9),
     ),
   );

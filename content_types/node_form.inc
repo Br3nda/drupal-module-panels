@@ -1,5 +1,5 @@
 <?php
-// $Id: node_form.inc,v 1.1.2.1 2007/09/27 19:25:52 merlinofchaos Exp $
+// $Id: node_form.inc,v 1.1.2.2 2007/10/18 22:27:18 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -25,7 +25,7 @@ function panels_admin_content_types_node_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Publishing options on the Node form.'),
-      'required context' => 'node_form',
+      'required context' => new panels_required_context('node_form'),
       'category' => array(t('Form'), -9),
     ),
     'author' => array(
@@ -33,7 +33,7 @@ function panels_admin_content_types_node_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Author information on the Node form.'),
-      'required context' => 'node_form',
+      'required context' => new panels_required_context('node_form'),
       'category' => array(t('Form'), -9),
     ),
     'input_format' => array(
@@ -41,7 +41,7 @@ function panels_admin_content_types_node_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Input format for the body field on a node.'),
-      'required context' => 'node_form',
+      'required context' => new panels_required_context('node_form'),
       'category' => array(t('Form'), -9),
     ),
     'log' => array(
@@ -49,7 +49,7 @@ function panels_admin_content_types_node_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Log message for the node.'),
-      'required context' => 'node_form',
+      'required context' => new panels_required_context('node_form'),
       'category' => array(t('Form'), -9),
     ),
   );
@@ -59,7 +59,7 @@ function panels_admin_content_types_node_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Comment settings on the Node form.'),
-      'required context' => 'node_form',
+      'required context' => new panels_required_context('node_form'),
       'category' => array(t('Form'), -9),
     );
   }
@@ -69,7 +69,7 @@ function panels_admin_content_types_node_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('menu settings on the Node form.'),
-      'required context' => 'node_form',
+      'required context' => new panels_required_context('node_form'),
       'category' => array(t('Form'), -9),
     );
   }
@@ -79,7 +79,7 @@ function panels_admin_content_types_node_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Publishing options on the Node form.'),
-      'required context' => 'node_form',
+      'required context' => new panels_required_context('node_form'),
       'category' => array(t('Form'), -9),
     );
   }
@@ -89,7 +89,7 @@ function panels_admin_content_types_node_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('File attachments on the Node form.'),
-      'required context' => 'node_form',
+      'required context' => new panels_required_context('node_form'),
       'category' => array(t('Form'), -9),
     );
   }
@@ -99,7 +99,7 @@ function panels_admin_content_types_node_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Taxonomy categories for the node.'),
-      'required context' => 'node_form',
+      'required context' => new panels_required_context('node_form'),
       'category' => array(t('Form'), -9),
     );
   }
@@ -109,7 +109,7 @@ function panels_admin_content_types_node_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Book options for the node.'),
-      'required context' => 'node_form',
+      'required context' => new panels_required_context('node_form'),
       'category' => array(t('Form'), -9),
     );
   }

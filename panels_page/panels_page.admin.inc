@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.10 2007/10/11 20:19:18 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.11 2007/10/18 22:27:18 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -868,8 +868,9 @@ function panels_page_ajax_argument_add($panel_name) {
 
   $form = drupal_retrieve_form('panels_page_edit_argument_form', $panel_name, $argument, $arguments, $position);
   if ($_POST && $_POST['form_id'] == 'panels_page_edit_argument_form') {
-    $form['#programmed'] = TRUE;
-    $form['#post'] = $_POST;
+    $form['#redirect'] = FALSE;
+//    $form['#programmed'] = TRUE;
+//    $form['#post'] = $_POST;
   }
 
   $arguments = drupal_process_form('panels_page_edit_argument_form', $form);
@@ -926,7 +927,7 @@ function panels_page_ajax_argument_add($panel_name) {
  * Ajax entry point to add an argument
  */
 function panels_page_ajax_argument_edit($panel_name) {
-  // Figure out which argument we're adding
+  // Figure out which argument we're editing
   if (isset($_POST['position'])) {
     $position = $_POST['position'];
   }
@@ -954,8 +955,9 @@ function panels_page_ajax_argument_edit($panel_name) {
 
   $form = drupal_retrieve_form('panels_page_edit_argument_form', $panel_name, $argument, $arguments, $position);
   if ($_POST && $_POST['form_id'] == 'panels_page_edit_argument_form') {
-    $form['#programmed'] = TRUE;
-    $form['#post'] = $_POST;
+    $form['#redirect'] = FALSE;
+//    $form['#programmed'] = TRUE;
+//    $form['#post'] = $_POST;
   }
 
   $result = drupal_process_form('panels_page_edit_argument_form', $form);
@@ -1243,8 +1245,9 @@ function panels_page_ajax_relationship_add($panel_name) {
 
   $form = drupal_retrieve_form('panels_page_edit_relationship_form', $panel_name, $relationship, $relationships, $position, $contexts);
   if ($_POST && $_POST['form_id'] == 'panels_page_edit_relationship_form') {
-    $form['#programmed'] = TRUE;
-    $form['#post'] = $_POST;
+    $form['#redirect'] = FALSE;
+//    $form['#programmed'] = TRUE;
+//    $form['#post'] = $_POST;
   }
 
   $relationships = drupal_process_form('panels_page_edit_relationship_form', $form);
@@ -1314,8 +1317,9 @@ function panels_page_ajax_relationship_edit($panel_name) {
   
   $form = drupal_retrieve_form('panels_page_edit_relationship_form', $panel_name, $relationship, $relationships, $position, $contexts);
   if ($_POST && $_POST['form_id'] == 'panels_page_edit_relationship_form') {
-    $form['#programmed'] = TRUE;
-    $form['#post'] = $_POST;
+    $form['#redirect'] = FALSE;
+//    $form['#programmed'] = TRUE;
+//    $form['#post'] = $_POST;
   }
 
   $result = drupal_process_form('panels_page_edit_relationship_form', $form);

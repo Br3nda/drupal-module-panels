@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.58 2007/10/11 18:11:02 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.59 2007/10/18 22:27:18 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -350,6 +350,61 @@ class panels_context {
 }
 
 /**
+ * This is used to explain to Panels what context is required.
+ */
+class panels_required_context {
+  var $keywords = '';
+
+  function panels_required_context() {
+    $this->keywords = func_get_args();
+  }
+
+  function filter($contexts) {
+    $result = array();
+
+    // See which of these contexts are valid
+    foreach ($contexts as $cid => $context) {
+      if ($context->is_type($this->keywords)) {
+        $result[$cid] = $context;
+      }
+    }
+
+    return $result;
+  }
+
+  function select($contexts, $context) {
+    if (empty($context) || empty($contexts[$context])) {
+      return;
+    }
+    return $contexts[$context];
+  }
+}
+
+class panels_optional_context extends panels_required_context {
+  function panels_optional_context() {
+    $this->keywords = func_get_args();
+  }
+
+  /**
+   * Add the 'empty' context which is possible for optional
+   */
+  function add_empty(&$contexts) {
+    $contexts['empty'] = new panels_context('none');
+    $contexts['empty']->title = t('No context');
+  }
+
+  function filter($contexts) {
+    $this->add_empty($contexts);
+    return parent::filter($contexts);
+  }
+
+  function select($contexts) {
+    $this->add_empty($contexts);
+    return parent::select($contexts);
+  }
+}
+
+/**
  * Clean up a display and make sure it has some required information if
  * it doesn't already exist. Currently we wrequire a context, an incoming
  * content and a css_id.
@@ -667,12 +722,11 @@ function panels_render_pane(&$display, $pane) {
   $context = NULL;
   if ($pane->subtype) {
     $content_type = panels_ct_get_types($pane->type);
+    // If the pane requires a context, fetch it; if no context is returned,
+    // do not display the pane.
     if (!empty($content_type[$pane->subtype]['required context'])) {
-      if (isset($pane->configuration['context']) && isset($display->context[$pane->configuration['context']])) {
-        $context = &$display->context[$pane->configuration['context']];
-      }
-      // Don't display this pane if a context is required and not found.
-      else {
+      $context = panels_context_select($display->context, $content_type[$pane->subtype]['required context'], $pane->configuration['context']);
+      if (!$context) {
         return;
       }
     }
@@ -1281,13 +1335,11 @@ function panels_relationship_get_context($relationship, $arg) {
  *   A keyed array of contexts.
  */
 function panels_context_filter($contexts, $required) {
+  // TODO: Multiples
   $result = array();
 
-  // See which of these contexts are valid
-  foreach ($contexts as $cid => $context) {
-    if ($context->is_type($required)) {
-      $result[$cid] = $context;
-    }
+  if (is_object($required)) {
+    $result = $required->filter($contexts);
   }
 
   return $result;
@@ -1307,6 +1359,7 @@ function panels_context_filter($contexts, $required) {
  *   requirements.
  */
 function panels_context_selector($contexts, $required, $default) {
+  // TODO: Multiples.
   $filtered = panels_context_filter($contexts, $required);
   $count = count($filtered);
 
@@ -1333,6 +1386,25 @@ function panels_context_selector($contexts, $required, $default) {
       '#default_value' => $default,
     );
   }
+}
+
+/**
+ * Choose a context based upon the selection made via panels_context_filter
+ *
+ * @param $contexts
+ *   A keyed array of all available contexts
+ * @param $required
+ *   The required context object provided by the plugin
+ * @param $context
+ *   The selection made using panels_context_selector
+ */
+function panels_context_select($contexts, $required, $context) {
+  // TODO: Multiples.
+  if (!is_object($required)) {
+    return;
+  }
+
+  return $required->select($contexts, $context);
 }
 
 /**

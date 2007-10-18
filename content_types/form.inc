@@ -1,5 +1,5 @@
 <?php
-// $Id: form.inc,v 1.1.2.2 2007/10/01 20:11:47 merlinofchaos Exp $
+// $Id: form.inc,v 1.1.2.3 2007/10/18 22:27:18 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -29,7 +29,7 @@ function panels_admin_content_types_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('The general parts of a form.'),
-      'required context' => 'form',
+      'required context' => new panels_required_context('form'),
       'category' => array(t('Form'), -9),
     ),
   );
