@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.59 2007/10/18 22:27:18 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.60 2007/10/19 00:03:44 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -1335,6 +1335,18 @@ function panels_relationship_get_context($relationship, $arg) {
  *   A keyed array of contexts.
  */
 function panels_context_filter($contexts, $required) {
+  if (is_array($required)) {
+    $result = array();
+    foreach ($required as $r) {
+      $result = array_merge($result, _panels_context_filter($contexts, $r));
+    }
+    return $result;
+  }
+
+  return _panels_context_filter($contexts, $required);
+}
+
+function _panels_context_filter($contexts, $required) {
   // TODO: Multiples
   $result = array();
 
@@ -1359,7 +1371,19 @@ function panels_context_filter($contexts, $required) {
  *   requirements.
  */
 function panels_context_selector($contexts, $required, $default) {
-  // TODO: Multiples.
+  if (is_array($required)) {
+    $result = array();
+    $count = 1;
+    foreach ($required as $r) {
+      $result[] = _panels_context_selector($contexts, $r, $default, $count++);
+    }
+    return $result;
+  }
+
+  return _panels_context_selector($contexts, $required, $default);
+}
+
+function _panels_context_selector($contexts, $required, $default, $num = 0) {
   $filtered = panels_context_filter($contexts, $required);
   $count = count($filtered);
 
@@ -1381,7 +1405,7 @@ function panels_context_selector($contexts, $required, $default) {
     return array(
       '#type' => 'select',
       '#options' => $options,
-      '#title' => t('Context'),
+      '#title' => $num ? t('Context %count', array('%count' => $num)) : t('Context'),
       '#description' => t('Multiple contexts are valid for this pane; one must be chosen.'),
       '#default_value' => $default,
     );
@@ -1399,39 +1423,22 @@ function panels_context_selector($contexts, $required, $default) {
  *   The selection made using panels_context_selector
  */
 function panels_context_select($contexts, $required, $context) {
-  // TODO: Multiples.
+  if (is_array($required)) {
+    $result = array();
+    foreach ($required as $r) {
+      $result[] = _panels_context_select($contexts, $r, $context);
+    }
+    return $result;
+  }
+
+  return _panels_context_select($contexts, $required, $context);
+}
+
+function _panels_context_select($contexts, $required, $context) {
   if (!is_object($required)) {
     return;
   }
-
   return $required->select($contexts, $context);
-}
-
-/**
- * Return a keyed array of context that match the given 'required context'
- * filters.
- *
- * @param $contexts
- *   A keyed array of all available contexts.
- * @param $required
- *   An array of required context strings or arrays.
- *
- * @return
- *   An array of keyed arrays of matching contexts.
- */
-function panels_context_filter_multiple($contexts, $required) {
-  $result = array();
-
-/*
-  // See which of these contexts are valid
-  foreach ($contexts as $cid => $context) {
-    if ($context->is_type($required)) {
-      $result[$cid] = $context;
-    }
-  }
-*/
-
-  return $result;
 }
 
 // ---------------------------------------------------------------------------

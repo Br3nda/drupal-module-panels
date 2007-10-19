@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.11 2007/10/18 22:27:18 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.12 2007/10/19 00:03:44 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -863,7 +863,7 @@ function panels_page_ajax_argument_add($panel_name) {
 
   $arguments[$position]['id'] = $id;
   if (empty($arguments[$position]['identifier'])) {
-    $arguments[$position]['identifier'] = $argument['title'] . ' ' . $id;
+    $arguments[$position]['identifier'] = $argument['title'] . ($id > 1 ? ' ' . $id : '');
   }
 
   $form = drupal_retrieve_form('panels_page_edit_argument_form', $panel_name, $argument, $arguments, $position);
@@ -1234,7 +1234,7 @@ function panels_page_ajax_relationship_add($panel_name) {
 
   $relationships[$position]['id'] = $id;
   if (empty($relationships[$position]['identifier'])) { 
-    $relationships[$position]['identifier'] = $relationship['title'] . ' ' . $id;
+    $relationships[$position]['identifier'] = $relationship['title'] . ($id > 1 ? ' ' . $id : '');
   }
 
   // fake $page
