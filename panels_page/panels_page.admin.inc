@@ -1,15 +1,27 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.12 2007/10/19 00:03:44 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.13 2007/10/19 21:05:44 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
 function panels_page_list_page() {
   $layouts = panels_get_layouts();
+  $items = array();
+  $sorts = array();
+
+  $header = array(
+    array('data' => t('Page title'), 'field' => 'title', 'sort' => 'asc'),
+    array('data' => t('Type'), 'field' => 'type'),
+    t('Layout'),
+    array('data' => t('URL'), 'field' => 'url'),
+    t('Operations'),
+  );
+
   foreach (panels_page_load_all() as $panel_page) {
-    $ops = array(
-      l(t('Edit'), "admin/panels/panel-page/$panel_page->name/edit/general"),
-      l(t('Export'), "admin/panels/panel-page/$panel_page->name/export"),
-    );
+    $ops = array();
+    if (empty($panel_page->disabled)) {
+      $ops[] = l(t('Edit'), "admin/panels/panel-page/$panel_page->name/edit/general");
+      $ops[] = l(t('Export'), "admin/panels/panel-page/$panel_page->name/export");
+    }
     if ($panel_page->type != t('Default')) {
       $ops[] = l(t('Delete'), "admin/panels/panel-page/$panel_page->name/delete");
     }
@@ -26,19 +38,43 @@ function panels_page_list_page() {
     $item = array();
     $item[] = check_plain(panels_page_get_title($panel_page));
     $item[] = $panel_page->type; // this is safe as it's always programmatic
+    
+    if (empty($panel_page->display)) {
+      $panel_page->display = panels_load_display($panel_page->did);
+    }
+
     $item[] = check_plain($layouts[$panel_page->display->layout]['title']);
     $item[] = $path;
     $item[] = implode(' | ', $ops);
     $items[] = $item;
+    $ts = tablesort_init($header);
+    switch ($ts['sql']) {
+      case 'title':
+      default:
+        $sorts[] = $item[0];
+        break;
+      case 'type':
+        $sorts[] = $panel_page->type . $item[0];
+        break;
+      case 'url':
+        $sorts[] = $panel_page->path;
+        break;
+    }
   }
-  $header = array(
-    t('Page title'),
-    t('Type'),
-    t('Layout'),
-    t('URL'),
-    t('Operations'),
-  );
-  $output = theme('table', $header, $items);
+  
+  if (strtolower($ts['sort']) == 'desc') {
+    arsort($sorts);
+  }
+  else {
+    asort($sorts);
+  }
+
+  $i = array();
+  foreach ($sorts as $id => $title) {
+    $i[] = $items[$id];
+  }
+
+  $output = theme('table', $header, $i);
   return $output;
 }
 
@@ -136,7 +172,9 @@ function panels_page_edit($panel_page) {
     $panel_page = panels_page_load($panel_page);
   }
 
-  $panel_page->display = panels_load_display($panel_page->did);
+  if (empty($panel_page->display)) {
+    $panel_page->display = panels_load_display($panel_page->did);
+  }
 
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   return drupal_get_form('panels_page_edit_form', $panel_page);

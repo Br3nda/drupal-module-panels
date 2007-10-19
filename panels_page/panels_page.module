@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.10 2007/10/09 23:22:54 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.11 2007/10/19 21:05:44 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -599,7 +599,7 @@ function panels_page_view_page($panel_page) {
     $display = panels_page_fetch_display($panel_page, $display_candidate);
   }
   else {
-    $display = panels_load_display($panel_page->did);
+    $display = !empty($panel_page->display) ? $panel_page->display : panels_load_display($panel_page->did);
   }
 
   // This is the first point at which it is safe to add items to the display
@@ -703,7 +703,7 @@ function panels_page_fetch_display($panel_page, $id) {
 /**
  * Fetch all panel pages in the system. This function does not cache.
  */
-function panels_page_load_all( $page_size = 0) {
+function panels_page_load_all($page_size = 0) {
   $pages = $dids = array();
   $query = "SELECT * FROM {panels_page}";
   if ($page_size) {
@@ -910,7 +910,7 @@ function panels_page_export($panel_page) {
     $output .= '  $page->' . $field . ' = ' . panels_var_export($panel_page->$field, '  ') . ";\n";
   }
   // Export the primary display
-  $display = panels_load_display($panel_page->did);
+  $display = !empty($panel_page->display) ? $panel_page->display : panels_load_display($panel_page->did);
   $output .= panels_export_display($display);
   $output .= '$page->display = $display' . ";\n";
 
@@ -919,7 +919,7 @@ function panels_page_export($panel_page) {
   foreach ($panel_page->displays as $did => $info) {
     $output .= '  $page->displays[\'' . $did . "']['title'] = '" . check_plain($info['title']) . "';\n";
     $output .= '  $page->displays[\'' . $did . "']['argument_id'] = '" . check_plain($info['argument_id']) . "';\n";
-    $display = panels_load_display($info['did']);
+    $display = !empty($info['display']) ? $info['display'] : panels_load_display($info['did']);
     $output .= panels_export_display($display, '    ');
     $output .= '  $page->displays[\'' . $did . "']['display'] =  \$display;\n";
   }

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.60 2007/10/19 00:03:44 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.61 2007/10/19 21:05:44 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -1256,7 +1256,6 @@ function panels_get_relevant_relationships($contexts) {
     // For each relationship, see if there is a context that satisfies it.
     if (panels_context_filter($contexts, $relationship['required context'])) {
       $relevant[$rid] = $relationship['title'];
-      continue;
     }
   }
 
