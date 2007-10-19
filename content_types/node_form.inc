@@ -1,5 +1,5 @@
 <?php
-// $Id: node_form.inc,v 1.1.2.2 2007/10/18 22:27:18 merlinofchaos Exp $
+// $Id: node_form.inc,v 1.1.2.3 2007/10/19 00:15:40 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -265,7 +265,7 @@ function panels_content_node_form($conf, $panel_args, &$context) {
         }
       }
       else {
-        $block->content = t('Input body_filter.');
+        $block->content = t('Input format.');
       }
       break;
   }
@@ -303,12 +303,13 @@ function panels_admin_edit_node_form($id, $parents, $conf = array()) {
 
   $form['id'] = array(
     '#type' => 'value',
-    '#value' => $id
+    '#value' => $id,
   );
 
   return $form;
 }
 
 function panels_admin_title_node_form($conf, $context) {
-  return t('Node form');
+  $choices = panels_admin_content_types_node_form();
+  return $choices[$conf['id']]['title'];
 }
