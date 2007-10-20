@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.11 2007/10/19 21:05:44 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.12 2007/10/20 21:03:07 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -485,6 +485,10 @@ function panels_page_get_title($panel_page, $context = 'page', $default_title = 
     $title = NULL;
     $count = 1;
     foreach ($panel_page->context as $id => $context) {
+      if (empty($context->data)) {
+        // empty contexts can't provide titles
+        continue;
+      }
       $substitutions['%' . ($count++)] = $context->substitute_title;
       if (!empty($context->page_title)) {
         $title = $context->page_title;
@@ -575,7 +579,7 @@ function panels_page_view_page($panel_page) {
     foreach ($panel_page->arguments as $i => $argument) {
       $context = panels_argument_get_context($argument, $args[$count]);
       $count++;
-      if (!empty($context)) {
+      if (!empty($context) && !empty($context->data)) {
         $panel_page->context[panels_argument_context_id($argument)] = $context;
         $d = panels_argument_choose_display($argument['name'], $argument['argument_settings'], $context);
         if ($d) {
