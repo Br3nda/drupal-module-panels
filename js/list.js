@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.3 2007/10/09 23:22:54 merlinofchaos Exp $
+// $Id: list.js,v 1.1.2.4 2007/10/20 20:43:59 merlinofchaos Exp $
 
 /**
  * List object
@@ -70,7 +70,7 @@ Drupal.list = function(base, settings) {
       return;
     }
 
-    console.log(settings.order);
+//    console.log(settings.order);
 
     var order_text = $(settings.order).val();
     if (order_text == '') {
