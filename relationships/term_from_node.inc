@@ -1,5 +1,5 @@
 <?php
-// $Id: term_from_node.inc,v 1.1.2.1 2007/10/20 23:15:08 merlinofchaos Exp $
+// $Id: term_from_node.inc,v 1.1.2.2 2007/10/22 23:48:50 merlinofchaos Exp $
 /**
  * @file relationships/term_from_node.inc
  *
@@ -45,7 +45,7 @@ function panels_term_from_node_settings_form($conf) {
     $options[$vid] = $vocabulary->name;
   }
   $form['vid'] = array(
-    '#title' => t('Vocabularies'),
+    '#title' => t('Vocabulary'),
     '#type' => 'select',
     '#options' => $options,
     '#default_value' => $conf['vid'],
