@@ -1,5 +1,5 @@
 <?php
-// $Id: term_from_node.inc,v 1.1.2.2 2007/10/22 23:48:50 merlinofchaos Exp $
+// $Id: term_from_node.inc,v 1.1.2.3 2007/10/25 02:23:20 merlinofchaos Exp $
 /**
  * @file relationships/term_from_node.inc
  *
@@ -9,8 +9,9 @@
 function panels_term_from_node_panels_relationships() {
   $args['term_from_node'] = array(
     'title' => t("Term from node"),
+    'keyword' => 'term',
     'description' => t('Adds a taxonomy term from a node context; if multiple terms are selected, this will get the "first" term only.'),
-    'required context' => new panels_required_context('node'),
+    'required context' => new panels_required_context(t('Node'), 'node'),
     'context' => 'panels_term_from_node_context',
     'settings form' => 'panels_term_from_node_settings_form',
     'settings form validate' => 'panels_term_from_node_settings_form_validate',

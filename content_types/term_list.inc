@@ -1,5 +1,5 @@
 <?php
-// $Id: term_list.inc,v 1.1.2.2 2007/10/18 22:27:18 merlinofchaos Exp $
+// $Id: term_list.inc,v 1.1.2.3 2007/10/25 02:23:19 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -26,8 +26,8 @@ function panels_content_term_list($conf, $panel_args, $context) {
   $term = isset($context->data) ? drupal_clone($context->data) : NULL;
   $block->module = 'term-list';
 
+  $options = panels_admin_term_list_options();
   if ($term) {
-    $options = panels_admin_term_list_options();
     $block->subject = $options[$conf['type']];
     $block->delta = $conf['type'];
     switch ($conf['type']) {
@@ -58,7 +58,7 @@ function panels_content_term_list($conf, $panel_args, $context) {
     }
   }
   else {
-    $block->subject = t('Term description');
+    $block->subject = t('"@term" @type', array('@term' => $context->identifier, '@type' => strtolower($options[$conf['type']])));
     $block->content = t('Term description goes here.');
     $block->delta = 'unknown';
   }
@@ -80,7 +80,7 @@ function panels_admin_content_types_term_list() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Terms related to an existing term; may be child, siblings or top level.'),
-      'required context' => new panels_required_context('term'),
+      'required context' => new panels_required_context(t('Term'), 'term'),
       'category' => array(t('Term context'), -9),
     ),
   );

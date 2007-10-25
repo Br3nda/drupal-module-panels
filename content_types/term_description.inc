@@ -1,5 +1,5 @@
 <?php
-// $Id: term_description.inc,v 1.1.2.2 2007/10/18 22:27:18 merlinofchaos Exp $
+// $Id: term_description.inc,v 1.1.2.3 2007/10/25 02:23:19 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -32,7 +32,7 @@ function panels_content_term_description($conf, $panel_args, $context) {
     $block->delta = $term->tid;
   }
   else {
-    $block->subject = t('Term description');
+    $block->subject = t('"@s" description', array('@s' => $context->identifier));
     $block->content = t('Term description goes here.');
     $block->delta = 'unknown';
   }
@@ -54,7 +54,7 @@ function panels_admin_content_types_term_description() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('Term description.'),
-      'required context' => new panels_required_context('term'),
+      'required context' => new panels_required_context(t('Term'), 'term'),
       'category' => array(t('Term context'), -9),
     ),
   );

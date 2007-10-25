@@ -1,18 +1,19 @@
 <?php
-// $Id: node_edit.inc,v 1.1.2.2 2007/10/11 20:12:33 merlinofchaos Exp $
-/** 
+// $Id: node_edit.inc,v 1.1.2.3 2007/10/25 02:23:19 merlinofchaos Exp $
+/**
  * @file arguments/nid.inc
- * 
+ *
  * Plugin to provide an argument handler for a Node edit form
  */
 
 function panels_node_edit_panels_arguments() {
   $args['node_edit'] = array(
     'title' => t("Node edit form"),
+    'keyword' => 'node', // keyword to use for %substitution
     'description' => t('Displays the node edit form for a node.'),
     'context' => 'panels_node_edit_context',
     'settings form' => 'panels_node_edit_settings_form',
-    'title function' => 'panels_node_edit_title',
+    'settings form submit' => 'panels_node_edit_settings_form_submit',
     'displays' => 'panels_node_edit_displays',
     'choose display' => 'panels_node_edit_choose_display',
   );
@@ -24,48 +25,25 @@ function panels_node_edit_panels_arguments() {
  */
 function panels_node_edit_context($arg = NULL, $conf = NULL, $context = NULL, $index = 0) {
   // If unset it wants a generic, unfilled context.
-  if (!isset($arg)) {
-    return new panels_context(array('form', 'node_edit', 'node_form', 'node'), NULL);
+  if ($empty) {
+    return panels_context_create_empty('node_edit_form');
   }
 
-  if (empty($arg) || !is_numeric($arg)) {
+  if (!is_numeric($arg)) {
     return FALSE;
   }
 
   $node = node_load($arg);
-  if (empty($node) || !node_access('update', $node)) {
+  if (!$node) {
     return FALSE;
   }
 
-  if (empty($conf['types'][$node->type])) {
+  if (array_filter($conf['types']) && empty($conf['types'][$node->type])) {
     return FALSE;
   }
 
-  $context = panels_node_edit_form($node);
-  return $context;
-}
-
-/**
- * A version of node_edit that creates a context.
- */
-function panels_node_edit_form($node) {
-  if ($_POST['op'] == t('Delete')) {
-    // Note: we redirect from node/nid/edit to node/nid/delete to make the tabs disappear.
-    if ($_REQUEST['destination']) {
-      $destination = drupal_get_destination();
-      unset($_REQUEST['destination']);
-    }
-    drupal_goto('node/'. $node->nid .'/delete', $destination);
-  }
-
-  $form = drupal_retrieve_form($node->type . '_node_form', $node);
-  drupal_process_form($node->type . '_node_form', $form);
-  $context = new panels_context(array('form', 'node_edit', 'node_form', 'node'), $form);
-  $context->form_id = $node->type . '_node_form';
-  $context->form_title = check_plain($node->title);
-  $context->node_type = $node->type;
-
-  return $context;
+  // This will perform a node_access check, so we don't have to.
+  return panels_context_create('node_edit_form', $node);
 }
 
 /**
@@ -104,6 +82,28 @@ function panels_node_edit_settings_form($conf) {
 
   return $form;
 }
+/**
+ * There appears to be a bit of a bug with the way we're handling forms; it causes
+ * 'checkboxes' to get invalid values added to them when empty. This takes care
+ * of that.
+ */
+function panels_node_edit_settings_form_submit(&$values) {
+  $types = node_get_types();
+  if (!empty($values['types'])) {
+    foreach ($values['types'] as $type => $value) {
+      if (empty($types[$type])) {
+        unset($values['types'][$type]);
+      }
+    }
+  }
+  if (!empty($values['displays'])) {
+    foreach ($values['displays'] as $type => $value) {
+      if (empty($types[$type])) {
+        unset($values['displays'][$type]);
+      }
+    }
+  }
+}
 
 /**
  * What additional displays does this argument provide?
@@ -139,12 +139,12 @@ function panels_node_edit_displays($conf, $id) {
  * Based upon the settings and the context, choose which display to use.
  */
 function panels_node_edit_choose_display($conf, $context) {
-  if (empty($context->data)) {
+  if (empty($context->form)) {
     return;
   }
 
-  if (!empty($conf['displays'][$context->data['#node']->type])) {
-    return $context->data['#node']->type;
+  if (!empty($conf['displays'][$context->node_type])) {
+    return $context->node_type;
   }
 
   // Please note that 'default' is a special display.
@@ -156,20 +156,3 @@ function panels_node_edit_choose_display($conf, $context) {
   return;
 }
 
-/**
- * Determine the title for substitution with this context
- */
-function panels_node_edit_title($context) {
-  if (isset($context->data->title)) {
-    return $context->data->title;
-  }
-
-  if (isset($context->page_title)) {
-    return $context->page_title;
-  }
-
-  if (isset($context->form_title)) {
-    return $context->form_title;
-  }
-
-}

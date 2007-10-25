@@ -1,5 +1,5 @@
 <?php
-// $Id: term_parent.inc,v 1.1.2.1 2007/10/20 22:57:01 merlinofchaos Exp $
+// $Id: term_parent.inc,v 1.1.2.2 2007/10/25 02:23:20 merlinofchaos Exp $
 /**
  * @file relationships/term_parent.inc
  *
@@ -9,8 +9,9 @@
 function panels_term_parent_panels_relationships() {
   $args['term_parent'] = array(
     'title' => t("Term parent"),
+    'keyword' => 'term_parent',
     'description' => t('Adds a taxonomy term parent from a term context.'),
-    'required context' => new panels_required_context('term'),
+    'required context' => new panels_required_context(t('Node'), 'term'),
     'context' => 'panels_term_parent_context',
     'settings form' => 'panels_term_parent_settings_form',
     'settings form validate' => 'panels_term_parent_settings_form_validate',

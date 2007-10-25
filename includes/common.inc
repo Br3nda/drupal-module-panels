@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.7 2007/10/01 20:11:47 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.8 2007/10/25 02:23:20 merlinofchaos Exp $
 
 /**
  * @file
@@ -11,6 +11,7 @@
  * any modules that don't already ahve special requirements.
  */
 function panels_common_settings($module_name = 'panels_common') {
+  panels_load_include('plugins');
   $content_types = panels_get_content_types();
   $default_types = variable_get($module_name . '_default', NULL);
   if (!isset($default_types)) {
@@ -128,6 +129,7 @@ function panels_common_get_allowed_types($module, $contexts = NULL, $has_content
  */
 function panels_common_get_layout_information($panel_implementation) {
   $form = array();
+  panels_load_include('plugins');
   $layout = panels_get_layout($panel_implementation->display->layout);
 
   $form = array(

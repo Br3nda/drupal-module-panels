@@ -1,18 +1,19 @@
 <?php
-// $Id: nid.inc,v 1.1.2.4 2007/09/17 19:11:49 merlinofchaos Exp $
-/** 
+// $Id: nid.inc,v 1.1.2.5 2007/10/25 02:23:19 merlinofchaos Exp $
+/**
  * @file arguments/nid.inc
- * 
+ *
  * Plugin to provide an argument handler for a node id
  */
 
 function panels_nid_panels_arguments() {
   $args['nid'] = array(
     'title' => t("Node ID"),
+    'keyword' => 'node', // keyword to use for %substitution
     'description' => t('Restricts the argument to a node id.'),
     'context' => 'panels_nid_context',
     'settings form' => 'panels_nid_settings_form',
-    'title function' => 'panels_nid_title',
+    'settings form submit' => 'panels_nid_settings_form_submit',
     'displays' => 'panels_nid_displays',
     'choose display' => 'panels_nid_choose_display',
   );
@@ -22,10 +23,10 @@ function panels_nid_panels_arguments() {
 /**
  * Discover if this argument gives us the node we crave.
  */
-function panels_nid_context($arg = NULL, $conf = NULL, $context = NULL, $index = 0) {
+function panels_nid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   // If unset it wants a generic, unfilled context.
-  if (!isset($arg)) {
-    return new panels_context('node', NULL);
+  if ($empty) {
+    return panels_context_create_empty('node');
   }
 
   if (!is_numeric($arg)) {
@@ -37,11 +38,11 @@ function panels_nid_context($arg = NULL, $conf = NULL, $context = NULL, $index =
     return FALSE;
   }
 
-  if (empty($conf['types'][$node->type])) {
+  if (array_filter($conf['types']) && empty($conf['types'][$node->type])) {
     return FALSE;
   }
 
-  return new panels_context('node', $node);
+  return panels_context_create('node', $node);
 }
 
 /**
@@ -80,6 +81,29 @@ function panels_nid_settings_form($conf) {
   );
 
   return $form;
+}
+
+/**
+ * There appears to be a bit of a bug with the way we're handling forms; it causes
+ * 'checkboxes' to get invalid values added to them when empty. This takes care
+ * of that.
+ */
+function panels_nid_settings_form_submit(&$values) {
+  $types = node_get_types();
+  if (!empty($values['types'])) {
+    foreach ($values['types'] as $type => $value) {
+      if (empty($types[$type])) {
+        unset($values['types'][$type]);
+      }
+    }
+  }
+  if (!empty($values['displays'])) {
+    foreach ($values['displays'] as $type => $value) {
+      if (empty($types[$type])) {
+        unset($values['displays'][$type]);
+      }
+    }
+  }
 }
 
 /**
@@ -131,17 +155,4 @@ function panels_nid_choose_display($conf, $context) {
 
   // Empty return says to use the default display.
   return;
-}
-
-/**
- * Determine the title for substitution with this context
- */
-function panels_nid_title($context) {
-  if (isset($context->data->title)) {
-    return $context->data->title;
-  }
-
-  if (isset($context->page_title)) {
-    return $context->page_title;
-  }
 }

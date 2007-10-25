@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.12 2007/10/20 21:03:07 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.13 2007/10/25 02:23:20 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -147,6 +147,7 @@ function panels_page_menu($may_cache) {
       $url[$panel_page->path] = TRUE;
     }
 
+    $plugins_loaded = FALSE;
     foreach ($panels as $panel_page) {
       if (strpos($panel_page->path, '%') !== FALSE) {
         $path = explode('/', $panel_page->path);
@@ -161,7 +162,6 @@ function panels_page_menu($may_cache) {
         if ($match) {
           $args = array($panel_page);
           reset($panel_page->arguments);
-          $count = 0;
           foreach ($path as $id => $chunk) {
             if ($chunk != '%') {
               continue;
@@ -170,12 +170,16 @@ function panels_page_menu($may_cache) {
             // argument handler to return a context, if there is an argument handler.
             $argument = current($panel_page->arguments);
             if ($argument) {
+              // Try to avoid loading the plugins code unless necessary.
+              if (!$plugins_loaded) {
+                panels_load_include('plugins');
+                $plugins_loaded = TRUE;
+              }
               $context = panels_argument_get_context($argument, arg($id));
               if (!$context) {
                 break;
               }
-              $panel_page->context[$count] = $context;
-              $count++;
+              $panel_page->context[panels_argument_context_id($argument)] = $context;
             }
             $path[$id] = arg($id);
             $args[] = arg($id);
@@ -470,6 +474,8 @@ function panels_page_access($panel_page, $account = NULL) {
 
 /**
  * Get the title for a panel page, given a context.
+ *
+ * TODO: Retool this so we rely primarily on the contexts to get a title.
  */
 function panels_page_get_title($panel_page, $context = 'page', $default_title = NULL) {
   if ($context == 'menu-parent' && $panel_page->menu_parent_title) {
@@ -481,6 +487,7 @@ function panels_page_get_title($panel_page, $context = 'page', $default_title = 
   }
 
   if ($panel_page->context) {
+    panels_load_include('plugins');
     $substitutions = array();
     $title = NULL;
     $count = 1;
@@ -489,9 +496,11 @@ function panels_page_get_title($panel_page, $context = 'page', $default_title = 
         // empty contexts can't provide titles
         continue;
       }
-      $substitutions['%' . ($count++)] = $context->substitute_title;
-      if (!empty($context->page_title)) {
-        $title = $context->page_title;
+      if ($keyword = $context->get_keyword()) {
+        $substitutions["%$keyword"] = $context->get_title();
+      }
+      if ($page_title = $context->get_page_title()) {
+        $title = $page_title;
       }
     }
 
@@ -535,7 +544,7 @@ function panels_page_get_current($page = NULL) {
  * Settings for panel pages
  */
 function panels_page_settings() {
-  require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
+  panels_load_include('common');
   return drupal_get_form('panels_common_settings', 'panels_page');
 }
 
@@ -546,7 +555,8 @@ function panels_page_passthru() {
   $args = func_get_args();
   $callback = array_shift($args);
 
-  include_once './' . panels_get_path('panels_page/panels_page.admin.inc');
+  panels_load_include('panels_page.admin', 'panels_page/');
+  panels_load_include('plugins');
   return call_user_func_array($callback, $args);
 }
 
@@ -571,16 +581,27 @@ function panels_page_view_page($panel_page) {
     $panel_page->context = array();
   }
 
+  panels_load_include('plugins');
+
   // TODO: Generalize this, move into arguments section.
-  // TODO: page->contexts should be page->relationships.
   $form = NULL;
   if ($panel_page->arguments) {
     $count = 0;
     foreach ($panel_page->arguments as $i => $argument) {
-      $context = panels_argument_get_context($argument, $args[$count]);
+
+      // For % arguments embedded in the URL, our context is already loaded.
+      // There is no need to go and load it again.
+      $id = panels_argument_context_id($argument);
+      if (empty($panel_page->context[$id])) {
+        $context = panels_argument_get_context($argument, $args[$count]);
+      }
+      else {
+        $context = $panel_page->context[$id];
+      }
       $count++;
+
       if (!empty($context) && !empty($context->data)) {
-        $panel_page->context[panels_argument_context_id($argument)] = $context;
+        $panel_page->context[$id] = $context;
         $d = panels_argument_choose_display($argument['name'], $argument['argument_settings'], $context);
         if ($d) {
           $display_candidate = "argument_$i" . '-' . $d;
@@ -595,8 +616,9 @@ function panels_page_view_page($panel_page) {
     }
   }
 
+
   // Get additional contexts from relationships
-  panels_relationship_get_contexts($panel_page->contexts, $panel_page->context);
+  panels_relationship_get_contexts($panel_page->relationships, $panel_page->context);
 
   // Figure out which display to use.
   if (isset($display_candidate)) {
@@ -619,9 +641,9 @@ function panels_page_view_page($panel_page) {
   panels_page_get_current($panel_page);
 
   if ($form) {
-    $form->data['#theme'] = 'panels_page_render_form';
-    $form->data['#display'] = $display;
-    $output = drupal_render_form($form->form_id, $form->data);
+    $form->form['#theme'] = 'panels_page_render_form';
+    $form->form['#display'] = $display;
+    $output = drupal_render_form($form->form_id, $form->form);
   }
   else {
     $output = panels_render_display($display);
@@ -722,6 +744,7 @@ function panels_page_load_all($page_size = 0) {
     $page->arguments = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
     $page->displays = (!empty($page->displays)) ? unserialize($page->displays) : array();
     $page->contexts = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
+    $page->relationships = (!empty($page->relationships)) ? unserialize($page->relationships) : array();
     $page->type = t('Local');
     $pages[$page->name] = $page;
   }
@@ -745,7 +768,7 @@ function panels_page_load_all($page_size = 0) {
 }
 
 /**
- * Load a panel page and its associated display
+ * Load a panel page
  */
 function panels_page_load($pid, $load_display = FALSE) {
   static $cache = array();
@@ -770,6 +793,7 @@ function panels_page_load($pid, $load_display = FALSE) {
     $cache[$pid]->arguments = (!empty($cache[$pid]->arguments)) ? unserialize($cache[$pid]->arguments) : array();
     $cache[$pid]->displays = (!empty($cache[$pid]->displays)) ? unserialize($cache[$pid]->displays) : array();
     $cache[$pid]->contexts = (!empty($cache[$pid]->contexts)) ? unserialize($cache[$pid]->contexts) : array();
+    $cache[$pid]->relationships = (!empty($cache[$pid]->relationships)) ? unserialize($cache[$pid]->relationships) : array();
 
     if ($load_display) {
       $cache[$pid]->display = panels_load_display($cache[$pid]->did);
@@ -788,6 +812,7 @@ function panels_page_fields() {
     "arguments" => "'%s'",
     "displays" => "'%s'",
     "contexts" => "'%s'",
+    "relationships" => "'%s'",
     "access" => "'%s'",
     "path" => "'%s'",
     "css_id" => "'%s'",
@@ -817,7 +842,6 @@ function panels_page_sanitize($page) {
   return $page;
 }
 
-
 /**
  * Save a panel page.
  */
@@ -844,6 +868,7 @@ function panels_page_save($panel_page) {
   $page->arguments = serialize($page->arguments);
   $page->displays = serialize($page->displays);
   $page->contexts = serialize($page->contexts);
+  $page->relationships = serialize($page->relationships);
 
   // Create strings for our query from the list of fields.
   $fields = panels_page_fields();

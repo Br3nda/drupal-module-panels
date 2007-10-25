@@ -1,6 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.10 2007/10/14 00:52:57 merlinofchaos Exp $
-
+// $Id: display_edit.inc,v 1.1.2.11 2007/10/25 02:23:20 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
@@ -130,7 +129,7 @@ function theme_panels_edit_display($form) {
       $left_buttons = NULL;
       $buttons = drupal_render($form['button'][$pid]['configure']);
       $buttons .= drupal_render($form['button'][$pid]['delete']);
-      $content[$pane->panel] .= panels_show_pane($pane, $left_buttons, $buttons);
+      $content[$pane->panel] .= panels_show_pane($display, $pane, $left_buttons, $buttons);
     }
     $content[$panel_id] = theme('panels_panel_dnd', $content[$panel_id], $panel_id, $title, drupal_render($form['panels'][$panel_id]['add']));
   }
@@ -315,7 +314,7 @@ function panels_edit_layout_settings_form($display, $finish, $destination) {
   $form['layout_settings']['#tree'] = TRUE;
 
   $form += panels_common_panel_settings($display);
-  
+
   $form['variables'] = array(
     '#type' => 'value',
     '#value' => array($display, $finish, $destination),
@@ -399,8 +398,8 @@ function panels_get_pane_edit_form($pane, $contexts, $parents) {
  *   If true, provide the outside div. Used to provide an easy way to get
  *   just the innards for ajax replacement
  */
-function panels_show_pane($pane, $left_buttons, $buttons, $skin = TRUE) {
-  $block = panels_get_pane_content($pane);
+function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE) {
+  $block = panels_render_pane($display, $pane);
   $title = panels_get_pane_title($pane);
 
   $output = theme('panels_pane_dnd', $block, $pane->pid, $title, $left_buttons, $buttons);
@@ -655,7 +654,7 @@ function panels_add_content_config_form_submit($form_id, $form) {
   $buttons = form_builder('dummy', $buttons);
 
   // Render the new pane for the javascript.
-  $return->output = panels_show_pane($cache->display->content[$form['pid']], NULL, drupal_render($buttons));
+  $return->output = panels_show_pane($display, $cache->display->content[$form['pid']], NULL, drupal_render($buttons));
 
   panels_set('return', $return);
   return FALSE;
@@ -705,6 +704,7 @@ function panels_edit_pane_config_form($display, $pid = NULL) {
   );
 
   $return->title = t('Configure !s', array('!s' => panels_get_pane_title($pane)));
+
   $form['configuration'] = panels_get_pane_edit_form($pane, $display->context, array('configuration'));
   $form['configuration']['#tree'] = true;
 
@@ -759,7 +759,7 @@ function panels_edit_pane_config_form_submit($form_id, $form) {
   $return->type = 'replace';
   $return->id = $form['pid'];
 
-  $block = panels_get_pane_content($cache->display->content[$form['pid']]);
+  $block = panels_render_pane($cache->display, $cache->display->content[$form['pid']]);
   if (!$block->subject) {
     $block->subject = t('No title');
   }
@@ -859,7 +859,7 @@ function panels_common_panel_settings($display) {
     '#id' => 'panels-style-settings',
     '#value' => t('Edit style settings'),
   );
-  
+
   // while we don't use this directly some of our forms do.
   drupal_add_js('misc/collapse.js');
   drupal_add_js('misc/autocomplete.js');
@@ -902,15 +902,14 @@ function panels_common_panel_settings_submit($form_id, $form_values) {
 function panels_common_panel_settings_ajax($did, $name) {
   $style = panels_get_style($name);
   $style_settings = panels_common_cache_get('style_settings', $did);
-  
+
   $form = drupal_retrieve_form('panels_common_style_settings_form', $did, $style, $style_settings);
   if ($_POST) {
-    $form['#programmed'] = TRUE;
-    $form['#post'] = $_POST;
+    $form['#redirect'] = FALSE;
   }
 
   $result = drupal_process_form('panels_common_style_settings_form', $form);
-  if ($result) { 
+  if ($result) {
     // successful submit
     $output = new stdClass();
     $output->type = $output->output = 'dismiss';

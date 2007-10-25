@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.1.2.3 2007/10/09 23:22:53 merlinofchaos Exp $
+// $Id: term.inc,v 1.1.2.4 2007/10/25 02:23:19 merlinofchaos Exp $
 /**
  * @file arguments/term.inc
  *
@@ -9,10 +9,11 @@
 function panels_term_panels_arguments() {
   $args['term'] = array(
     'title' => t("Taxonomy term"),
+    'keyword' => 'term', // keyword to use for %substitution
     'description' => t('Restricts the argument to a taxonomy term.'),
     'context' => 'panels_term_context',
     'settings form' => 'panels_term_settings_form',
-    'settings form validate' => 'panels_term_settings_form_validate',
+    'settings form submit' => 'panels_term_settings_form_submit',
     'title function' => 'panels_term_title',
     'displays' => 'panels_term_displays',
     'choose display' => 'panels_term_choose_display',
@@ -24,10 +25,14 @@ function panels_term_panels_arguments() {
 /**
  * Discover if this argument gives us the term we crave.
  */
-function panels_term_context($arg = NULL, $conf = NULL, $context = NULL, $index = 0) {
+function panels_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   // If unset it wants a generic, unfilled context.
-  if (!isset($arg)) {
-    return new panels_context('term', NULL);
+  if ($empty) {
+    return panels_context_create_empty('term');
+  }
+
+  if (!is_numeric($arg)) {
+    return FALSE;
   }
 
   switch ($conf['input_form']) {
@@ -51,11 +56,11 @@ function panels_term_context($arg = NULL, $conf = NULL, $context = NULL, $index 
     return FALSE;
   }
 
-  if (empty($conf['vids'][$term->vid])) {
+  if (array_filter($conf['vids']) && empty($conf['vids'][$term->vid])) {
     return FALSE;
   }
 
-  return new panels_context('term', $term);
+  return panels_context_create('term', $term);
 }
 
 /**
@@ -110,6 +115,29 @@ function panels_term_settings_form($conf) {
   );
 
   return $form;
+}
+
+/**
+ * There appears to be a bit of a bug with the way we're handling forms; it causes
+ * 'checkboxes' to get invalid values added to them when empty. This takes care
+ * of that.
+ */
+function panels_term_settings_form_submit(&$values) {
+  $vocs = taxonomy_get_vocabularies();
+  if (!empty($values['vids'])) {
+    foreach ($values['vids'] as $vid => $value) {
+      if (empty($vocs[$vid])) {
+        unset($values['vids'][$vid]);
+      }
+    }
+  }
+  if (!empty($values['displays'])) {
+    foreach ($values['displays'] as $vid => $value) {
+      if (empty($vocs[$vid])) {
+        unset($values['displays'][$vid]);
+      }
+    }
+  }
 }
 
 /**

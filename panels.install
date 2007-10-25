@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.19 2007/10/11 00:32:28 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.20 2007/10/25 02:23:19 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -20,6 +20,7 @@ function panels_install() {
           arguments text,
           displays text,
           contexts text,
+          relationships text,
           no_blocks boolean DEFAULT FALSE,
           -- menu fields
           menu boolean DEFAULT FALSE,
@@ -82,6 +83,7 @@ EOT
           arguments longtext,
           displays longtext,
           contexts longtext,
+          relationships longtext,
           no_blocks int(1) DEFAULT 0,
           -- menu fields
           menu int(1) DEFAULT 0,
@@ -161,7 +163,7 @@ function panels_update_1000() {
   $ret[] = update_sql("ALTER TABLE {panels_page} CHANGE COLUMN did pid int(10) NOT NULL DEFAULT 0;");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN did int(10) NOT NULL DEFAULT 0 AFTER pid");
   $ret[] = update_sql("UPDATE {panels_page} SET did = pid");
-  
+
   $max_pid = db_result(db_query("SELECT MAX(pid) FROM {panels_page}"));
   if ($max_pid) {
     $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_page}_pid', $max_pid)");
@@ -190,7 +192,7 @@ EOT
   $max_did = 0;
   while ($display = db_fetch_object($result)) {
     $ret[] = update_sql("INSERT INTO {panels_display} VALUES ($display->did, '$display->layout')");
-    if ($display->did > $max_did) { 
+    if ($display->did > $max_did) {
       $max_did = $display->did;
     }
   }
@@ -273,5 +275,106 @@ function panels_update_5208() {
   $ret[] = update_sql("DELETE FROM {sequences} WHERE name = '{panels_display}_did'");
   $ret[] = update_sql("DELETE FROM {sequences} WHERE name = '{panels_display}_id'");
   $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_display}_did', $count)");
+  return $ret;
+}
+
+// Update argument, relationship and context code to be more correct.
+function panels_update_5209() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN relationships longtext");
+  $result = db_query("SELECT * FROM {panels_page}");
+  panels_load_include('plugins');
+
+  while ($page = db_fetch_object($result)) {
+    $args = unserialize($page->arguments);
+    $arguments = $ids = $keywords = array();
+    if (!empty($args)) {
+      // Update each argument
+      foreach ($args as $id => $argument) {
+        $name = $argument['name'];
+        $info = panels_get_argument($name);
+        if (!$info) {
+          continue;
+        }
+        // Make sure the id is valid
+        if (empty($argument['id'])) {
+          if (empty($ids[$name])) {
+            $ids[$name] = 1;
+          }
+          else {
+            $ids[$name]++;
+          }
+
+          $argument['id'] = $ids[$name];
+        }
+
+        // Give it an identifier if it doesn't already have one
+        if (empty($argument['identifier'])) {
+          $argument['identifier'] = $info['title'] . ($id > 1 ? ' ' . $id : '');
+          error_log($argument['identifier']);
+        }
+
+        // Give it a unique keyword if it doesn't already have one
+        if (empty($argument['keyword'])) {
+          $keyword = $base = $info['keyword'];
+          $count = 0;
+          while (!empty($keywords[$keyword])) {
+            $keyword = $base . '_' . ++$count;
+          }
+          $keywords[$keyword] = TRUE;
+          $argument['keyword'] = $keyword;
+          error_log($argument['keyword']);
+        }
+        $arguments[$id] = $argument;
+      }
+    }
+    // Move old relationships (stored as contexts) to relationships, where
+    // the belong
+    $rels = unserialize($page->contexts);
+    $relationships = $ids = array(); // Not resetting $keywords!
+    if (!empty($rels)) {
+      foreach ($rels as $id => $relationship) {
+        $name = $relationship['name'];
+        $info = panels_get_relationship($name);
+        if (!$info) {
+          continue;
+        }
+        // Make sure the id is valid
+        if (empty($relationship['id'])) {
+          if (empty($ids[$name])) {
+            $ids[$name] = 1;
+          }
+          else {
+            $ids[$name]++;
+          }
+
+          $relationship['id'] = $ids[$name];
+        }
+
+        // Give it an identifier if it doesn't already have one
+        if (empty($relationship['identifier'])) {
+          $relationship['identifier'] = $info['title'] . ($id > 1 ? ' ' . $id : '');
+        }
+
+        // Give it a unique keyword if it doesn't already have one
+        if (empty($relationship['keyword'])) {
+          $keyword = $base = $info['keyword'];
+          $count = 0;
+          while (!empty($keywords[$keyword])) {
+            $keyword = $base . '_' . ++$count;
+          }
+          $keywords[$keyword] = TRUE;
+          $relationship['keyword'] = $keyword;
+        }
+        $relationships[$id] = $relationship;
+      }
+    }
+    db_query("UPDATE {panels_page} " .
+      "SET arguments = '%s', " .
+      "relationships = '%s', " .
+      "contexts = '%s' " .
+      "WHERE pid = $page->pid", serialize($arguments), serialize($relationships), serialize(array()), $page->pid
+    );
+  }
   return $ret;
 }

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.14 2007/10/22 23:48:50 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.15 2007/10/25 02:23:20 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -38,7 +38,7 @@ function panels_page_list_page() {
     $item = array();
     $item[] = check_plain(panels_page_get_title($panel_page));
     $item[] = $panel_page->type; // this is safe as it's always programmatic
-    
+
     if (empty($panel_page->display)) {
       $panel_page->display = panels_load_display($panel_page->did);
     }
@@ -61,7 +61,7 @@ function panels_page_list_page() {
         break;
     }
   }
-  
+
   if (strtolower($ts['sort']) == 'desc') {
     arsort($sorts);
   }
@@ -339,10 +339,16 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   }
 }
 
-function panels_page_edit_advanced($panel_page) {
-  if (!is_object($panel_page)) {
-    $panel_page = panels_page_load($panel_page);
+function panels_page_edit_advanced($name) {
+  if (!empty($_POST)) {
+    // TODO: Combine these two caches?
+    $panel_page = panels_common_cache_get('panel_page', $name);
   }
+  else {
+    $panel_page = panels_page_load($name);
+    panels_common_cache_set('panel_page', $name, $panel_page);
+  }
+
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   return drupal_get_form('panels_page_advanced_form', $panel_page);
 }
@@ -514,35 +520,22 @@ function panels_page_advanced_form($panel_page) {
     '#tree' => TRUE,
   );
 
-  // Is this form being posted? If so, check cache.
-  if (!empty($_POST)) {
-    // TODO: Combine these two caches?
-    $panel_page->arguments = $arguments = panels_common_cache_get('arguments', $panel_page->name);
-    $panel_page->contexts = $relationships = panels_common_cache_get('relationships', $panel_page->name);
-  }
-  if (!isset($arguments)) {
-    $arguments = $panel_page->arguments;
-    panels_common_cache_set('arguments', $panel_page->name, $arguments);
-    $relationships = $panel_page->contexts;
-    panels_common_cache_set('relationships', $panel_page->name, $relationships);
-  }
-
-  if (isset($arguments) && is_array($arguments)) {
-    foreach ($arguments as $position => $argument) {
+  if (!empty($panel_page->arguments)) {
+    foreach ($panel_page->arguments as $position => $argument) {
       panels_page_add_argument_to_form( $form['left']['arg-info']['arguments_table']['argument'][$position], $position, $argument);
     }
   }
 
   $form['arguments'] = array(
     '#type' => 'value',
-    '#value' => $arguments,
+    '#value' => $panel_page->arguments,
   );
 
   // Store the order the choices are in so javascript can manipulate it.
   $form['order'] = array(
     '#type' => 'hidden',
     '#id' => 'argument-order',
-    '#default_value' => $arguments ? implode(',', array_keys($arguments)) : '',
+    '#default_value' => $panel_page->arguments ? implode(',', array_keys($panel_page->arguments)) : '',
   );
 
   $form['left']['arg-info']['arguments_table']['buttons'] = array(
@@ -570,10 +563,10 @@ function panels_page_advanced_form($panel_page) {
 
   // ---------------------------------------------------
   // Relationships, which are closely tied to arguments.
-  
+
   $form['relationships'] = array(
     '#type' => 'value',
-    '#value' => $relationships,
+    '#value' => $panel_page->relationships,
   );
 
   $form['left']['arg-info']['relationships_table'] = array(
@@ -590,13 +583,13 @@ function panels_page_advanced_form($panel_page) {
   $form['relationship_order'] = array(
     '#type' => 'hidden',
     '#id' => 'relationship-order',
-    '#default_value' => $arguments ? implode(',', array_keys($relationships)) : '',
+    '#default_value' => $panel_page->relationships ? implode(',', array_keys($panel_page->relationships)) : '',
   );
 
   $available_relationships = panels_get_relevant_relationships(panels_page_get_contexts($panel_page));
 
-  if (!empty($available_relationships) || !empty($relationships)) {
-    panels_page_add_relationship_table($form['left']['arg-info']['relationships_table'], $available_relationships, $relationships);
+  if (!empty($available_relationships) || !empty($panel_page->relationships)) {
+    panels_page_add_relationship_table($form['left']['arg-info']['relationships_table'], $available_relationships, $panel_page->relationships);
   }
 
   $label = ($panel_page->pid == 'new') ? t('Next') : t('Save');
@@ -652,11 +645,11 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
   }
 
   // Organize relationships
-  $panel_page->contexts = array();
+  $panel_page->relationships = array();
   if (isset($form_values['relationship_order']) && $form_values['relationship_order'] !== '') {
     foreach (explode(',', $form_values['relationship_order']) as $position) {
       // We retain the original position here because we need relationship IDs.
-      $panel_page->contexts[$position] = $form_values['relationships'][$position];
+      $panel_page->relationships[$position] = $form_values['relationships'][$position];
     }
   }
 
@@ -713,6 +706,7 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
 
   drupal_set_message(t('Your changes have been saved.'));
   panels_page_save($panel_page);
+  panels_common_cache_clear('panel_page', $panel_page->name);
 }
 
 
@@ -855,10 +849,45 @@ function theme_panels_page_arguments_form($form) {
   return $output;
 }
 
+// TODO: Move this somewhere more appropriate
+function panels_page_get_arg_id($arguments, $name) {
+  // Figure out which instance of this argument we're creating
+  $id = 0;
+  foreach ($arguments as $arg) {
+    if ($arg['name'] == $name) {
+      if ($arg['id'] > $id) {
+        $id = $arg['id'];
+      }
+    }
+  }
+  return $id;
+}
+
+function panels_page_get_keyword($page, $word) {
+  // Create a complete set of keywords
+  $keywords = array();
+  foreach (array('arguments', 'relationships', 'contexts') as $type) {
+    foreach ($page->$type as $info) {
+      $keywords[$info['keyword']] = TRUE;
+    }
+  }
+
+  $keyword = $word;
+  $count = 0;
+  while ($keywords[$keyword]) {
+    $keyword = $word . '_' . ++$count;
+  }
+  return $keyword;
+}
 /**
  * Ajax entry point to add an argument
  */
 function panels_page_ajax_argument_add($panel_name) {
+  $panel_page = panels_common_cache_get('panel_page', $panel_name);
+  if (!$panel_page) {
+    drupal_ajax_render();
+  }
+
   // Figure out which argument we're adding
   if (isset($_POST['buttons']['add_argument'])) {
     $name = $_POST['buttons']['add_argument'];
@@ -876,50 +905,41 @@ function panels_page_ajax_argument_add($panel_name) {
 
   // load the argument
   $argument = panels_get_argument($name);
-
   if (empty($argument)) {
     panels_ajax_render();
   }
 
-  // Retrieve our stored list of arguments from cache
-  $arguments = panels_common_cache_get('arguments', $panel_name);
-
-  // Figure out which instance of this argument we're creating
-  $id = 1;
-  foreach ($arguments as $arg) {
-    if ($arg['name'] == $name) {
-      $id++;
-    }
-  }
-
-  if (!isset($arguments)) {
-    panels_ajax_render();
-  }
+  // Give this argument an id, which is really just the nth version
+  // of this particular argument.
+  $id = panels_page_get_arg_id($panel_page->arguments, $name) + 1;
 
   // Figure out the position for our new argument.
-  $position = 0;
-  if (!empty($arguments)) {
-    $position = max(array_keys($arguments)) + 1;
-  }
+  $position = empty($panel_page->arguments) ? 0 : max(array_keys($panel_page->arguments)) + 1;
 
-  $arguments[$position]['id'] = $id;
-  if (empty($arguments[$position]['identifier'])) {
-    $arguments[$position]['identifier'] = $argument['title'] . ($id > 1 ? ' ' . $id : '');
-  }
+  // Create the basis for our new argument.
+  $panel_page->arguments[$position] = array(
+    'identifier' => $argument['title'] . ($id > 1 ? ' ' . $id : ''),
+    'keyword' => panels_page_get_keyword($panel_page, $argument['keyword']),
+    'id' => $id,
+  );
 
-  $form = drupal_retrieve_form('panels_page_edit_argument_form', $panel_name, $argument, $arguments, $position);
+  // Process the form.
+  $form = drupal_retrieve_form('panels_page_edit_argument_form', $panel_page, $argument, $position);
   $form['#redirect'] = FALSE;
 
-  $arguments = drupal_process_form('panels_page_edit_argument_form', $form);
-  if ($arguments) {
+  $arg = drupal_process_form('panels_page_edit_argument_form', $form);
+  if ($arg) {
     // successful submit
+    // Store the changed arguments
+    $panel_page->arguments[$position] = $arg;
+    panels_common_cache_set('panel_page', $panel_name, $panel_page);
 
-    // Build a chunk of the form.
+    // Build a chunk of the form for display
     $arg_form['argument'] = array(
       '#tree' => TRUE,
     );
 
-    panels_page_add_argument_to_form($arg_form['argument'], $position, $arguments[$position]);
+    panels_page_add_argument_to_form($arg_form['argument'], $position, $arg);
     $arg_form = form_builder('dummy_form_id', $arg_form);
 
     // Build the relationships table so we can ajax it in.
@@ -932,18 +952,11 @@ function panels_page_ajax_argument_add($panel_name) {
       '#tree' => TRUE,
     );
 
-    $page = panels_page_load($panel_name);
-
-    $page->arguments = $arguments;
-    $page->contexts = panels_common_cache_get('relationships', $panel_name);
-
-    $contexts = panels_page_get_contexts($page);
-
-    $available_relationships = panels_get_relevant_relationships($contexts);
+    $available_relationships = panels_get_relevant_relationships(panels_page_get_contexts($panel_page));
 
     $output = new stdClass();
     if (!empty($available_relationships)) {
-      panels_page_add_relationship_table($rel_form, $available_relationships, $page->contexts);
+      panels_page_add_relationship_table($rel_form, $available_relationships, $panel_page->relationships);
       $rel_form = form_builder('dummy_form_id', $rel_form);
       $output->relationships_table = drupal_render($rel_form);
     }
@@ -968,15 +981,16 @@ function panels_page_ajax_argument_edit($panel_name) {
   if (isset($_POST['position'])) {
     $position = $_POST['position'];
   }
-
-  // Retrieve our stored list of arguments from cache
-  $arguments = panels_common_cache_get('arguments', $panel_name);
-
-  if (!isset($arguments)) {
-    panels_ajax_render();
+  else {
+    drupal_ajax_render();
   }
 
-  $name = $arguments[$position]['name'];
+  $panel_page = panels_common_cache_get('panel_page', $panel_name);
+  if (!$panel_page) {
+    drupal_ajax_render();
+  }
+
+  $name = $panel_page->arguments[$position]['name'];
   if (empty($name)) {
     panels_ajax_render();
   }
@@ -990,12 +1004,15 @@ function panels_page_ajax_argument_edit($panel_name) {
 
   $title = t('Edit argument @argument', array('@argument' => $argument['title']));
 
-  $form = drupal_retrieve_form('panels_page_edit_argument_form', $panel_name, $argument, $arguments, $position);
+  $form = drupal_retrieve_form('panels_page_edit_argument_form', $panel_page, $argument, $position);
   $form['#redirect'] = FALSE;
 
-  $result = drupal_process_form('panels_page_edit_argument_form', $form);
-  if ($result) {
+  $arg = drupal_process_form('panels_page_edit_argument_form', $form);
+  if ($arg) {
     // successful submit
+    $panel_page->arguments[$position] = $arg;
+    panels_common_cache_set('panel_page', $panel_name, $panel_page);
+
     $output->type = $output->output = 'dismiss';
     panels_ajax_render($output);
   }
@@ -1008,12 +1025,9 @@ function panels_page_ajax_argument_edit($panel_name) {
 /**
  * Form (for ajax use) to add an argument
  */
-function panels_page_edit_argument_form($panel_name, $argument, $arguments, $position) {
+function panels_page_edit_argument_form($panel_page, $argument, $position) {
   // Basic values required to orient ourselves
-  $form['panel_name'] = array(
-    '#type' => 'value',
-    '#value' => $panel_name,
-  );
+  $arg = $panel_page->arguments[$position];
 
   $form['position'] = array(
     '#type' => 'hidden',
@@ -1039,37 +1053,49 @@ function panels_page_edit_argument_form($panel_name, $argument, $arguments, $pos
     '#type' => 'select',
     '#title' => t('Default'),
     '#options' => array(
-      '404' => t('Display page not found.'),
       'ignore' => t('Ignore it; content that requires this context will not be available.'),
+      '404' => t('Display page not found.'),
     ),
-    '#default_value' => $arguments[$position]['default'],
+    '#default_value' => $arg['default'],
     '#description' => t('If the argument is missing or is not valid, select how this should behave.'),
   );
 
   $form['argument']['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
-    '#default_value' => $arguments[$position]['title'],
-    '#description' => t('Enter a title to use when this argument is present. You may use %# substitution to get the title for the given argument, where # is the argument position. i.e, use %1 for the first argument, %2 for the next argument, and so on.'),
+    '#default_value' => $arg['title'],
+    '#description' => t('Enter a title to use when this argument is present. You may use %KEYWORD substitution, where the keyword is specified by the administrator.'),
   );
 
   $form['argument']['id'] = array(
     '#type' => 'value',
-    '#value' => $arguments[$position]['id'],
+    '#value' => $arg['id'],
   );
 
   $form['argument']['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
     '#description' => t('Enter a title to identify this relationship on administrative screens.'),
-    '#default_value' => $arguments[$position]['identifier'],
+    '#default_value' => $arg['identifier'],
+  );
+
+  $form['argument']['keyword'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Keyword'),
+    '#description' => t('Enter a keyword to use for substitution in titles.'),
+    '#default_value' => $arg['keyword'],
   );
 
   // Settings particular to this argument
   $argument_settings = array();
-  if (isset($arguments[$position]['argument_settings'])) {
-    $argument_settings = $arguments[$position]['argument_settings'];
+  if (isset($arg['argument_settings'])) {
+    $argument_settings = $arg['argument_settings'];
   }
+
+  $form['arg'] = array(
+    '#type' => 'value',
+    '#value' => $argument,
+  );
 
   if (isset($argument['settings form']) && function_exists($argument['settings form'])) {
     $form['argument']['argument_settings'] = $argument['settings form']($argument_settings);
@@ -1089,10 +1115,10 @@ function panels_page_edit_argument_form($panel_name, $argument, $arguments, $pos
  * validate an argument edited/added via ajax
  */
 function panels_page_edit_argument_form_validate($form_id, $form_values, $form) {
-  $argument = $form_values['argument'];
+  $argument = $form_values['arg'];
 
   if (isset($argument['settings form validate']) && function_exists($argument['settings form validate'])) {
-    $argument['settings form validate']($form, $form_values['argument']['argument_settings']);
+    $argument['settings form validate']($form['argument']['argument_settings'], $form_values['argument']['argument_settings']);
   }
 }
 
@@ -1100,22 +1126,19 @@ function panels_page_edit_argument_form_validate($form_id, $form_values, $form) 
  * Updates an argument edited/added via ajax
  */
 function panels_page_edit_argument_form_submit($form_id, $form_values) {
-  $argument = $form_values['argument'];
+  $argument = $form_values['arg'];
   $position = $form_values['position'];
 
   if (isset($argument['settings form submit']) && function_exists($argument['settings form submit'])) {
-    $argument['settings form submit']($form_values['argument_settings']);
+    $argument['settings form submit']($form_values['argument']['argument_settings']);
   }
 
-  $arguments = panels_common_cache_get('arguments', $form_values['panel_name']);
-  $arguments[$position] = $argument;
-
-  panels_common_cache_set('arguments', $form_values['panel_name'], $arguments);
-  return $arguments;
+  // Because we're being all ajaxy, our caller will save this for us.
+  return $form_values['argument'];
 }
 
-// ----
-// relationships
+// ---------------------------------------------------------------------------
+// relationships -- highly resemble arguments.
 
 /**
  * Add an argument row to the form. Used both in the main form and by
@@ -1224,6 +1247,11 @@ function theme_panels_page_relationships_form($form) {
  * Ajax entry point to add an relationship
  */
 function panels_page_ajax_relationship_add($panel_name) {
+  $panel_page = panels_common_cache_get('panel_page', $panel_name);
+  if (!$panel_page) {
+    drupal_ajax_render();
+  }
+
   // Figure out which relationship we're adding
   if (isset($_POST['buttons']['add_relationship'])) {
     $name = $_POST['buttons']['add_relationship'];
@@ -1237,63 +1265,46 @@ function panels_page_ajax_relationship_add($panel_name) {
     panels_ajax_render();
   }
 
-  // load the relationship
   $relationship = panels_get_relationship($name);
-
   if (empty($relationship)) {
     panels_ajax_render();
   }
 
-  // Retrieve our stored list of relationships from cache
-  $arguments = panels_common_cache_get('arguments', $panel_name);
-  $relationships = panels_common_cache_get('relationships', $panel_name);
-
-  if (!isset($relationships)) {
-    panels_ajax_render();
-  }
-
-  // Figure out which instance of this relationship we're creating
-  $id = 1;
-  foreach ($relationships as $arg) {
-    if ($arg['name'] == $name) {
-      $id++;
-    }
-  }
+  // Give this argument an id, which is really just the nth version
+  // of this particular relationship.
+  $id = panels_page_get_arg_id($panel_page->relationships, $name) + 1;
 
   // Figure out the position for our new relationship.
-  $position = 0;
-  if (!empty($relationships)) {
-    $position = max(array_keys($relationships)) + 1;
-  }
+  $position = empty($panel_page->relationships) ? 0 : max(array_keys($panel_page->relationships)) + 1;
 
-  $relationships[$position]['id'] = $id;
-  if (empty($relationships[$position]['identifier'])) { 
-    $relationships[$position]['identifier'] = $relationship['title'] . ($id > 1 ? ' ' . $id : '');
-  }
+  // Create the basis for our new relationship.
+  $panel_page->relationships[$position] = array(
+    'identifier' => $relationship['title'] . ($id > 1 ? ' ' . $id : ''),
+    'keyword' => panels_page_get_keyword($panel_page, $relationship['keyword']),
+    'id' => $id,
+  );
 
-  // fake $page
-  $page = new stdClass();
-  $page->arguments = $arguments;
-  $page->contexts = $relationships;
-  $contexts = panels_page_get_contexts($page);
+  $contexts = panels_page_get_contexts($panel_page);
 
-  $form = drupal_retrieve_form('panels_page_edit_relationship_form', $panel_name, $relationship, $relationships, $position, $contexts);
+  $form = drupal_retrieve_form('panels_page_edit_relationship_form', $panel_page, $relationship, $position, $contexts);
   if ($_POST && $_POST['form_id'] == 'panels_page_edit_relationship_form') {
     $form['#redirect'] = FALSE;
-//    $form['#programmed'] = TRUE;
-//    $form['#post'] = $_POST;
   }
 
-  $relationships = drupal_process_form('panels_page_edit_relationship_form', $form);
-  if ($relationships) {
+  $rel = drupal_process_form('panels_page_edit_relationship_form', $form);
+  if ($rel) {
     // successful submit
 
-    // Build a chunk of the form.
+    // Save changes
+    $panel_page->relationships[$position] = $rel;
+    panels_common_cache_set('panel_page', $panel_name, $panel_page);
+
+    // Build a chunk of the form to merge into the displayed form
     $arg_form['relationship'] = array(
       '#tree' => TRUE,
     );
 
-    panels_page_add_relationship_to_form($arg_form['relationship'], $position, $relationships[$position]);
+    panels_page_add_relationship_to_form($arg_form['relationship'], $position, $rel);
     $arg_form = form_builder('dummy_form_id', $arg_form);
 
     $output = new stdClass();
@@ -1313,52 +1324,47 @@ function panels_page_ajax_relationship_add($panel_name) {
  * Ajax entry point to add an relationship
  */
 function panels_page_ajax_relationship_edit($panel_name) {
+  $panel_page = panels_common_cache_get('panel_page', $panel_name);
+  if (!$panel_page) {
+    drupal_ajax_render();
+  }
+
   // Figure out which relationship we're adding
   if (isset($_POST['position'])) {
     $position = $_POST['position'];
   }
 
-  // Retrieve our stored list of relationships from cache
-  $arguments = panels_common_cache_get('arguments', $panel_name);
-  $relationships = panels_common_cache_get('relationships', $panel_name);
-
-  if (!isset($relationships)) {
-    panels_ajax_render();
-  }
-
-  $name = $relationships[$position]['name'];
+  $name = $panel_page->relationships[$position]['name'];
   if (empty($name)) {
     panels_ajax_render();
   }
 
   // load the relationship
   $relationship = panels_get_relationship($name);
-
   if (empty($relationship)) {
     panels_ajax_render();
   }
 
   $title = t('Edit relationship @relationship', array('@relationship' => $relationship['title']));
 
-  // fake $page
-  $page = new stdClass();
-  $page->arguments = $arguments;
-  $page->contexts = $relationships;
-  $contexts = panels_page_get_contexts($page);
+  $contexts = panels_page_get_contexts($panel_page);
 
   // Remove this context, because we can't really allow circular contexts.
-  unset($contexts[panels_relationship_context_id($relationships[$position])]);
-  
-  $form = drupal_retrieve_form('panels_page_edit_relationship_form', $panel_name, $relationship, $relationships, $position, $contexts);
+  unset($contexts[panels_relationship_context_id($panel_page->relationships[$position])]);
+
+  $form = drupal_retrieve_form('panels_page_edit_relationship_form', $panel_page, $relationship, $position, $contexts);
   if ($_POST && $_POST['form_id'] == 'panels_page_edit_relationship_form') {
     $form['#redirect'] = FALSE;
-//    $form['#programmed'] = TRUE;
-//    $form['#post'] = $_POST;
   }
 
-  $result = drupal_process_form('panels_page_edit_relationship_form', $form);
-  if ($result) {
+  $re = drupal_process_form('panels_page_edit_relationship_form', $form);
+  if ($re) {
     // successful submit
+
+    // Save changes
+    $panel_page->relationships[$position] = $rel;
+    panels_common_cache_set('panel_page', $panel_name, $panel_page);
+
     $output->type = $output->output = 'dismiss';
     panels_ajax_render($output);
   }
@@ -1371,13 +1377,8 @@ function panels_page_ajax_relationship_edit($panel_name) {
 /**
  * Form (for ajax use) to add an argument
  */
-function panels_page_edit_relationship_form($panel_name, $relationship, $relationships, $position, $contexts) {
-  // Basic values required to orient ourselves
-  $form['panel_name'] = array(
-    '#type' => 'value',
-    '#value' => $panel_name,
-  );
-
+function panels_page_edit_relationship_form($panel_page, $relationship, $position, $contexts) {
+  $rel = $panel_page->relationships[$position];
   $form['position'] = array(
     '#type' => 'hidden',
     '#value' => $position,
@@ -1394,36 +1395,36 @@ function panels_page_edit_relationship_form($panel_name, $relationship, $relatio
   // Basic relationship values
   $form['relationship']['#tree'] = TRUE;
 
-  $form['relationship']['context'] = panels_context_selector($contexts, $relationship['required context'], $relationships[$position]['context']);
+  $form['relationship']['context'] = panels_context_selector($contexts, $relationship['required context'], $rel['context']);
 
   $form['relationship']['name'] = array(
     '#type' => 'hidden',
     '#value' => $relationship['name'],
   );
 
-  $form['relationship']['title'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Title'),
-    '#default_value' => $relationships[$position]['title'],
-    '#description' => t('Enter a title to use when this relationship is present. You may use %# substitution to get the title for the given relationship, where # is the relationship position. i.e, use %1 for the first relationship, %2 for the next relationship, and so on.'),
-  );
-
   $form['relationship']['id'] = array(
     '#type' => 'value',
-    '#value' => $relationships[$position]['id'],
+    '#value' => $rel['id'],
   );
 
   $form['relationship']['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
     '#description' => t('Enter a title to identify this relationship on administrative screens.'),
-    '#default_value' => $relationships[$position]['identifier'],
+    '#default_value' => $rel['identifier'],
+  );
+
+  $form['relationship']['keyword'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Keyword'),
+    '#description' => t('Enter a keyword to use for substitution in titles.'),
+    '#default_value' => $rel['keyword'],
   );
 
   // Settings particular to this relationship
   $relationship_settings = array();
-  if (isset($relationships[$position]['relationship_settings'])) {
-    $relationship_settings = $relationships[$position]['relationship_settings'];
+  if (isset($rel['relationship_settings'])) {
+    $relationship_settings = $rel['relationship_settings'];
   }
 
   if (isset($relationship['settings form']) && function_exists($relationship['settings form'])) {
@@ -1447,7 +1448,7 @@ function panels_page_edit_relationship_form_validate($form_id, $form_values, $fo
   $relationship = $form_values['relationship'];
 
   if (isset($relationship['settings form validate']) && function_exists($relationship['settings form validate'])) {
-    $relationship['settings form validate']($form, $form_values['relationship']['relationship_settings']);
+    $relationship['settings form validate']($form['relationship']['relationship_settings'], $form_values['relationship']['relationship_settings']);
   }
 }
 
@@ -1456,17 +1457,12 @@ function panels_page_edit_relationship_form_validate($form_id, $form_values, $fo
  */
 function panels_page_edit_relationship_form_submit($form_id, $form_values) {
   $relationship = $form_values['relationship'];
-  $position = $form_values['position'];
 
   if (isset($relationship['settings form submit']) && function_exists($relationship['settings form submit'])) {
     $relationship['settings form submit']($form_values['relationship_settings']);
   }
 
-  $relationships = panels_common_cache_get('relationships', $form_values['panel_name']);
-  $relationships[$position] = $relationship;
-
-  panels_common_cache_set('relationships', $form_values['panel_name'], $relationships);
-  return $relationships;
+  return $relationship;
 }
 
 /**
@@ -1548,8 +1544,8 @@ function panels_page_get_contexts($page) {
   $contexts = panels_argument_get_contexts($page->arguments, $page->display->display_context);
 
   // add contexts from relationships
-  if (!empty($page->contexts)) {
-    panels_relationship_get_contexts($page->contexts, $contexts);
+  if (!empty($page->relationships)) {
+    panels_relationship_get_contexts($page->relationships, $contexts);
   }
 
   return $contexts;
@@ -1563,7 +1559,6 @@ function panels_page_edit_content($panel_page, $did = NULL) {
 
   // Collect a list of contexts required by the arguments on this page.
   $contexts = panels_page_get_contexts($panel_page);
-
   $panel_page->display->context = $contexts;
 
   // Get a list of available content.

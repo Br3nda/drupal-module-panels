@@ -1,18 +1,19 @@
 <?php
-// $Id: node_add.inc,v 1.1.2.4 2007/10/18 22:27:18 merlinofchaos Exp $
-/** 
+// $Id: node_add.inc,v 1.1.2.5 2007/10/25 02:23:19 merlinofchaos Exp $
+/**
  * @file arguments/nid.inc
- * 
+ *
  * Plugin to provide an argument handler for a Node add form
  */
 
 function panels_node_add_panels_arguments() {
   $args['node_add'] = array(
     'title' => t("Node add form"),
+    'keyword' => 'node_type', // keyword to use for %substitution
     'description' => t('Displays the node add form for a content type.'),
     'context' => 'panels_node_add_context',
     'settings form' => 'panels_node_add_settings_form',
-    'title function' => 'panels_node_add_title',
+    'settings form submit' => 'panels_node_add_settings_form_submit',
     'displays' => 'panels_node_add_displays',
     'choose display' => 'panels_node_add_choose_display',
   );
@@ -25,38 +26,14 @@ function panels_node_add_panels_arguments() {
 function panels_node_add_context($arg = NULL, $conf = NULL, $context = NULL, $index = 0) {
   // If unset it wants a generic, unfilled context.
   if (!isset($arg)) {
-    return new panels_context(array('form', 'node_add', 'node_form'), NULL);
+    return panels_context_create_empty('node_add_form');
   }
 
-  if (empty($conf['types'][$arg])) {
+  if (array_filter($conf['types']) && empty($conf['types'][$arg])) {
     return FALSE;
   }
 
-  $context = panels_node_add_form($arg);
-  return $context;
-}
-
-/**
- * A version of node_add that creates a context.
- */
-function panels_node_add_form($type) {
-  global $user;
-
-  $types = node_get_types();
-  $type = str_replace('-', '_', $type);
-  // If a node type has been specified, validate its existence.
-  if (isset($types[$type]) && node_access('create', $type)) {
-    // Initialize settings:
-    $node = array('uid' => $user->uid, 'name' => $user->name, 'type' => $type);
-
-    $form = drupal_retrieve_form($type . '_node_form', $node);
-    drupal_process_form($type . '_node_form', $form);
-    $context = new panels_context(array('form', 'node_add', 'node_form'), $form);
-    $context->form_id = $type . '_node_form';
-    $context->form_title = t('Submit @name', array('@name' => $types[$type]->name));
-    $context->node_type = $type;
-    return $context;
-  }
+  return panels_context_create('node_add_form', $arg);
 }
 
 /**
@@ -97,6 +74,50 @@ function panels_node_add_settings_form($conf) {
 }
 
 /**
+ * There appears to be a bit of a bug with the way we're handling forms; it causes
+ * 'checkboxes' to get invalid values added to them when empty. This takes care
+ * of that.
+ */
+function panels_node_add_settings_form_submit(&$values) {
+  $types = node_get_types();
+  if (!empty($values['types'])) {
+    foreach ($values['types'] as $type => $value) {
+      if (empty($types[$type])) {
+        unset($values['types'][$type]);
+      }
+    }
+  }
+  if (!empty($values['displays'])) {
+    foreach ($values['displays'] as $type => $value) {
+      if (empty($types[$type])) {
+        unset($values['displays'][$type]);
+      }
+    }
+  }
+}
+
+/**
+ * Based upon the settings and the context, choose which display to use.
+ */
+function panels_node_add_choose_display($conf, $context) {
+  if (empty($context->form)) {
+    return;
+  }
+
+  if (!empty($conf['displays'][$context->node_type])) {
+    return $context->node_type;
+  }
+
+  // Please note that 'default' is a special display.
+  if (!empty($conf['own_default'])) {
+    return 'default';
+  }
+
+  // Empty return says to use the default display.
+  return;
+}
+
+/**
  * What additional displays does this argument provide?
  */
 function panels_node_add_displays($conf, $id) {
@@ -126,43 +147,4 @@ function panels_node_add_displays($conf, $id) {
   }
 
   return $displays;
-}
-
-/**
- * Based upon the settings and the context, choose which display to use.
- */
-function panels_node_add_choose_display($conf, $context) {
-  if (empty($context->data)) {
-    return;
-  }
-
-  if (!empty($conf['displays'][$context->data['#node']->type])) {
-    return $context->data['#node']->type;
-  }
-
-  // Please note that 'default' is a special display.
-  if (!empty($conf['own_default'])) {
-    return 'default';
-  }
-
-  // Empty return says to use the default display.
-  return;
-}
-
-/**
- * Determine the title for substitution with this context
- */
-function panels_node_add_title($context) {
-  if (isset($context->data->title)) {
-    return $context->data->title;
-  }
-
-  if (isset($context->page_title)) {
-    return $context->page_title;
-  }
-
-  if (isset($context->form_title)) {
-    return $context->form_title;
-  }
-
 }

@@ -1,5 +1,5 @@
 <?php
-// $Id: form.inc,v 1.1.2.3 2007/10/18 22:27:18 merlinofchaos Exp $
+// $Id: form.inc,v 1.1.2.4 2007/10/25 02:23:19 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -29,7 +29,7 @@ function panels_admin_content_types_form() {
       'icon' => 'icon_node.png',
       'path' => panels_get_path('content_types/node'),
       'description' => t('The general parts of a form.'),
-      'required context' => new panels_required_context('form'),
+      'required context' => new panels_required_context(t('Form'), 'form'),
       'category' => array(t('Form'), -9),
     ),
   );
@@ -42,16 +42,16 @@ function panels_admin_content_types_form() {
 function panels_content_form($conf, $panel_args, &$context) {
   $block->module = 'form';
 
-  if (isset($context->data)) {
+  if (isset($context->form)) {
     $block->subject = $context->form_title;
     if (!empty($context->form_id)) {
       // If this is a form, drupal_render it.
-      $block->content = drupal_render($context->data);
+      $block->content = drupal_render($context->form);
     }
     else {
       // Otherwise just spit back what we were given. This is probably an
       // error message or something.
-      $block->content = $context->data;
+      $block->content = $context->form;
     }
     $block->delta = $context->form_id;
   }

@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.20 2007/10/11 20:14:27 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.21 2007/10/25 02:23:19 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -24,7 +24,7 @@ function panels_views_panels_content_types() {
  * Output function for the 'views' content type. Outputs a views
  * based on the module and delta supplied in the configuration.
  */
-function panels_content_views($conf, $panel_args) {
+function panels_content_views($conf, $panel_args, &$contexts) {
   $view = views_get_view($conf['view']);
   if ($view) {
     if (function_exists('views_access') && !views_access($view)) {
@@ -47,7 +47,15 @@ function panels_content_views($conf, $panel_args) {
     if ($conf['panel_args'] && is_array($panel_args)) {
       $args = array_merge($panel_args, $args);
     }
-    
+
+    if (is_array($conf['context'])) {
+      foreach ($conf['context'] as $count => $cid) {
+        if ($cid != 'any' && !empty($contexts[$count]) && isset($contexts[$count]->argument)) {
+          array_splice($args, $count, 0, array($contexts[$count]->argument));
+        }
+      }
+    }
+
     if ($conf['url']) {
       $view->url = $conf['url'];
     }
@@ -75,31 +83,57 @@ function panels_content_views($conf, $panel_args) {
  */
 function panels_admin_content_types_views() {
   $types = array();
+  $views = array();
+  $args = array();
+  views_load_cache();
+  $arginfo = _views_get_arguments();
 
+  $result = db_query("SELECT * FROM {view_argument}");
+  while ($arg = db_fetch_array($result)) {
+    $args[$arg['vid']][$arg['position']] = $arg;
+  }
   $result = db_query("SELECT * FROM {view_view}");
   while ($view = db_fetch_object($result)) {
+    $view->argument = $args[$view->vid];
+
     $title = views_get_title($view, 'admin');
     $icon = !empty($view->block) ? 'icon_views_block.png' : 'icon_views_page.png';
+
+    $contexts = array();
+    if (!empty($view->argument)) {
+      foreach ($view->argument as $arg) {
+        $contexts[] = new panels_optional_context($arginfo[$arg['type']]['name'], 'any');
+      }
+    }
     $types[$view->name] = array(
       'title' => strip_tags($title ? $title : $view->name),
       'icon' => $icon,
       'description' => filter_xss_admin($view->description),
+      'required context' => $contexts,
       'category' => array(t('Views'), -1),
     );
+    $views[$view->name] = TRUE;
   }
 
   views_load_cache();
   $default_views = _views_get_default_views();
   $views_status = variable_get('views_defaults', array());
   foreach ($default_views as $view) {
-    if (!$views[$view->name] && 
+    if (!$views[$view->name] &&
       ($views_status[$view->name] == 'enabled' || (!$views_status[$view->name] && !$view->disabled))) {
       $title = views_get_title($view, 'admin');
       $icon = !empty($view->block) ? 'icon_views_block.png' : 'icon_views_page.png';
+      $contexts = array();
+      if (!empty($view->argument)) {
+        foreach ($view->argument as $arg) {
+          $contexts[] = new panels_optional_context($arginfo[$arg['type']]['name'], 'any');
+        }
+      }
       $types[$view->name] = array(
         'title' => strip_tags($title ? $title : $view->name),
         'icon' => $icon,
         'description' => filter_xss_admin($view->description),
+        'required context' => $contexts,
         'category' => array(t('Views'), -1),
       );
     }
@@ -112,7 +146,7 @@ function panels_admin_content_types_views() {
  */
 function panels_admin_add_views($id, $parents, $conf = array()) {
   $view = views_get_view($id);
-  if (!$view) { 
+  if (!$view) {
     return;
   }
   $conf['view'] = $id;
@@ -164,7 +198,7 @@ function panels_admin_edit_views($id, $parents, $conf) {
   $form['aligner_stop'] = array(
     '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
   );
-  
+
   $form['link_to_view'] = array(
     '#type' => 'checkbox',
     '#default_value' => $conf['link_to_view'],
@@ -212,7 +246,7 @@ function panels_admin_edit_views($id, $parents, $conf) {
     '#type' => 'checkbox',
     '#title' => t('Send arguments'),
     '#default_value' => $conf['panel_args'],
-    '#description' => t('Select this to send all arguments from the panel directly to the view. If checked, the panel arguments will precede any additional arguments passed in through the Arguments field below.'),
+    '#description' => t('Select this to send all arguments from the panel directly to the view. If checked, the panel arguments will come after any context arguments above and precede any additional arguments passed in through the Arguments field below.'),
   );
 
   $form['args'] = array(
