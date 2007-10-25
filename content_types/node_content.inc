@@ -1,5 +1,5 @@
 <?php
-// $Id: node_content.inc,v 1.1.2.7 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: node_content.inc,v 1.1.2.8 2007/10/25 22:33:03 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -48,7 +48,7 @@ function panels_content_node_content($conf, $panel_args, $context) {
 
   if (empty($node)) {
     $block->delta = 'placeholder';
-    $block->subject = t('Node title placeholder.');
+    $block->subject = t('Node title.');
     $block->content = t('Node content goes here.');
   }
   else {
@@ -56,18 +56,14 @@ function panels_content_node_content($conf, $panel_args, $context) {
       $node->panel_identifier = $conf['identifier'];
     }
 
-    $block->subject = check_plain($node->title);
+    $block->subject = $node->title;
 
     unset($node->title);
     $block->content = panels_admin_node_content($node, $conf);
   }
 
-  if (!empty($conf['override_title'])) {
-    $block->subject = filter_xss_admin($conf['override_title_text']);
-  }
-
   if (!empty($conf['link']) && $node) {
-    $block->subject = l($block->subject, "node/$node->nid", NULL, NULL, NULL, NULL, TRUE);
+    $block->subject_link = $conf['link'];
   }
 
   return $block;
@@ -191,5 +187,5 @@ function panels_admin_edit_node_content($id, $parents, $conf = array()) {
 }
 
 function panels_admin_title_node_content($conf, $context) {
-  return t('Node content');
+  return t('"@s" content', array('@s' => $context->identifier));
 }

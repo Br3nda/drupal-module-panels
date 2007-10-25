@@ -1,5 +1,5 @@
 <?php
-// $Id: node_comments.inc,v 1.1.2.4 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: node_comments.inc,v 1.1.2.5 2007/10/25 22:33:03 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -25,12 +25,7 @@ function panels_content_node_comments($conf, $panel_args, $context) {
   $block->module = 'comments';
   $block->delta = $node->nid;
 
-  if (empty($conf['override_title'])) {
-    $block->subject = t('Comments');
-  }
-  else {
-    $block->subject = filter_xss_admin($conf['override_title_text']);
-  }
+  $block->subject = t('Comments');
   if (empty($node)) {
     $block->content = t('Node comments go here.');
   }
@@ -71,26 +66,6 @@ function panels_admin_edit_node_comments($id, $parents, $conf = array()) {
     );
   }
 
-  $form['aligner_start'] = array(
-    '#value' => '<div class="option-text-aligner">',
-  );
-  $form['override_title'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => $conf['override_title'],
-    '#title' => t('Override title'),
-    '#id' => 'override-title-checkbox',
-  );
-  $form['override_title_text'] = array(
-    '#type' => 'textfield',
-    '#default_value' => $conf['override_title_text'],
-    '#size' => 35,
-    '#id' => 'override-title-textfield',
-  );
-
-  $form['aligner_stop'] = array(
-    '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
-  );
-
   $form['mode'] = array(
     '#type' => 'select',
     '#title' => t('Mode'),
@@ -118,7 +93,7 @@ function panels_admin_edit_node_comments($id, $parents, $conf = array()) {
 }
 
 function panels_admin_title_node_comments($conf, $context) {
-  return t('Node comments');
+  return t('"@s" comments', array('@s' => $context->identifier));
 }
 
 /**

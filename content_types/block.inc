@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.6.16 2007/10/01 20:11:47 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.6.17 2007/10/25 22:33:03 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -30,9 +30,6 @@ function panels_content_block($conf) {
 
   $block->module = $conf['module'];
   $block->delta = $conf['delta'];
-  if ($conf['override_title']) {
-    $block->subject = filter_xss_admin($conf['override_title_text']);
-  }
 
   // Test for block visibility
   $result = db_query("SELECT pages, visibility FROM {blocks} WHERE module = '%s' AND delta = %d", $block->module, $block->delta);
@@ -107,25 +104,6 @@ function panels_admin_edit_block($id, $parents, $conf) {
   $form['delta'] = array(
     '#type' => 'value',
     '#value' => $conf['delta'],
-  );
-  $form['aligner_start'] = array(
-    '#value' => '<div class="option-text-aligner">',
-  );
-  $form['override_title'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => $conf['override_title'],
-    '#title' => t('Override title'),
-    '#id' => 'override-title-checkbox',
-  );
-  $form['override_title_text'] = array(
-    '#type' => 'textfield',
-    '#default_value' => $conf['override_title_text'],
-    '#size' => 35,
-    '#id' => 'override-title-textfield',
-  );
-
-  $form['aligner_stop'] = array(
-    '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
   );
 
   // Module-specific block configurations.

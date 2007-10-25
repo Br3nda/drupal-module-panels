@@ -1,5 +1,5 @@
 <?php
-// $Id: term_list.inc,v 1.1.2.3 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: term_list.inc,v 1.1.2.4 2007/10/25 22:33:03 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -58,13 +58,8 @@ function panels_content_term_list($conf, $panel_args, $context) {
     }
   }
   else {
-    $block->subject = t('"@term" @type', array('@term' => $context->identifier, '@type' => strtolower($options[$conf['type']])));
     $block->content = t('Term description goes here.');
     $block->delta = 'unknown';
-  }
-
-  if (!empty($conf['override_title'])) {
-    $block->subject = filter_xss_admin($conf['override_title_text']);
   }
 
   return $block;
@@ -105,26 +100,6 @@ function panels_admin_edit_term_list($id, $parents, $conf = array()) {
     $conf = array('title' => '', 'type' => 'child', 'list_type' => 'ul');
   }
 
-  $form['aligner_start'] = array(
-    '#value' => '<div class="option-text-aligner">',
-  );
-  $form['override_title'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => $conf['override_title'],
-    '#title' => t('Override title'),
-    '#id' => 'override-title-checkbox',
-  );
-  $form['override_title_text'] = array(
-    '#type' => 'textfield',
-    '#default_value' => $conf['override_title_text'],
-    '#size' => 35,
-    '#id' => 'override-title-textfield',
-  );
-
-  $form['aligner_stop'] = array(
-    '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
-  );
-
   $form['type'] = array(
     '#type' => 'radios',
     '#title' => t('Which terms'),
@@ -146,5 +121,5 @@ function panels_admin_edit_term_list($id, $parents, $conf = array()) {
 
 function panels_admin_title_term_list($conf, $context) {
   $options = panels_admin_term_list_options();
-  return $options[$conf['type']];
+  return t('"@s" @type', array('@s' => $context->identifier, '@type' => strtolower($choices[$options[$conf['type']]])));
 }

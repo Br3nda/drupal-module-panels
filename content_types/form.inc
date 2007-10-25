@@ -1,5 +1,5 @@
 <?php
-// $Id: form.inc,v 1.1.2.4 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: form.inc,v 1.1.2.5 2007/10/25 22:33:03 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -61,40 +61,9 @@ function panels_content_form($conf, $panel_args, &$context) {
     $block->delta = 'unknown';
   }
 
-  if (!empty($conf['override_title'])) {
-    $block->subject = filter_xss_admin($conf['override_title_text']);
-  }
-
   return $block;
 }
 
-/**
- * Returns an edit form for the custom type.
- */
-function panels_admin_edit_form($id, $parents, $conf = array()) {
-  $form['aligner_start'] = array(
-    '#value' => '<div class="option-text-aligner">',
-  );
-  $form['override_title'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => $conf['override_title'],
-    '#title' => t('Override title'),
-    '#id' => 'override-title-checkbox',
-  );
-  $form['override_title_text'] = array(
-    '#type' => 'textfield',
-    '#default_value' => $conf['override_title_text'],
-    '#size' => 35,
-    '#id' => 'override-title-textfield',
-  );
-
-  $form['aligner_stop'] = array(
-    '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
-  );
-
-  return $form;
-}
-
 function panels_admin_title_form($conf, $context) {
-  return t('Form');
+  return t('"@s" base form', array('@s' => $context->identifier));
 }

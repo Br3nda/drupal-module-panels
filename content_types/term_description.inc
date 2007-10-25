@@ -1,5 +1,5 @@
 <?php
-// $Id: term_description.inc,v 1.1.2.3 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: term_description.inc,v 1.1.2.4 2007/10/25 22:33:03 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -26,19 +26,14 @@ function panels_content_term_description($conf, $panel_args, $context) {
   $term = isset($context->data) ? drupal_clone($context->data) : NULL;
   $block->module = 'node_type';
 
+  $block->subject = $term->name;
   if ($term) {
-    $block->subject = check_plain($term->name);
-    $block->content = check_plain($term->description);
+    $block->content = filter_admin_xss($term->description);
     $block->delta = $term->tid;
   }
   else {
-    $block->subject = t('"@s" description', array('@s' => $context->identifier));
     $block->content = t('Term description goes here.');
     $block->delta = 'unknown';
-  }
-
-  if (!empty($conf['override_title'])) {
-    $block->subject = filter_xss_admin($conf['override_title_text']);
   }
 
   return $block;
@@ -60,33 +55,6 @@ function panels_admin_content_types_term_description() {
   );
 }
 
-/**
- * Returns an edit form for the custom type.
- */
-function panels_admin_edit_term_description($id, $parents, $conf = array()) {
-  $form['aligner_start'] = array(
-    '#value' => '<div class="option-text-aligner">',
-  );
-  $form['override_title'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => $conf['override_title'],
-    '#title' => t('Override title'),
-    '#id' => 'override-title-checkbox',
-  );
-  $form['override_title_text'] = array(
-    '#type' => 'textfield',
-    '#default_value' => $conf['override_title_text'],
-    '#size' => 35,
-    '#id' => 'override-title-textfield',
-  );
-
-  $form['aligner_stop'] = array(
-    '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
-  );
-
-  return $form;
-}
-
 function panels_admin_title_term_description($conf, $context) {
-  return t('Term description');
+  return t('"@s" term description', array('@s' => $context->identifier));
 }

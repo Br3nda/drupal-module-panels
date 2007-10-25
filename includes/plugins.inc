@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.1 2007/10/25 02:23:20 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.2 2007/10/25 22:33:03 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -188,12 +188,40 @@ function panels_ct_get_title($type, $conf, $context = NULL, $incoming_content = 
  * TODO: This is in the wrong place, it should be part of the master form.
  */
 function panels_ct_conf_form($type, $id, $contexts, $conf) {
-  $content_type = panels_ct_get_types($type);
+  $content_type = panels_get_content_type($type);
+  $subtype = panels_ct_get_types($type);
 
   $form = array();
 
-  if (!empty($content_type[$id]['required context']) && is_array($contexts)) {
-    $form['context'] = panels_context_selector($contexts, $content_type[$id]['required context'], $conf['context']);
+  if (!empty($subtype[$id]['required context']) && is_array($contexts)) {
+    $form['context'] = panels_context_selector($contexts, $subtype[$id]['required context'], $conf['context']);
+  }
+
+  if (empty($content_type['no title override'])) {
+    $form['aligner_start'] = array(
+      '#value' => '<div class="option-text-aligner">',
+    );
+    $form['override_title'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => $conf['override_title'],
+      '#title' => t('Override title'),
+      '#id' => 'override-title-checkbox',
+    );
+    $form['override_title_text'] = array(
+      '#type' => 'textfield',
+      '#default_value' => $conf['override_title_text'],
+      '#size' => 35,
+      '#id' => 'override-title-textfield',
+    );
+    $form['aligner_stop'] = array(
+      '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
+    );
+    $form['override_title_markup'] = array(
+      '#prefix' => '<div class="description">',
+      '#suffix' => '</div>',
+      '#value' =>  t('You may use %keywords from contexts, as well as %title to contain the original title.'),
+    );
+
   }
 
   return $form;
@@ -445,8 +473,14 @@ function panels_get_pane_content($pane, $args = array(), $context = NULL, $incom
  * @param $pane
  *   The $pane object.
  */
-function panels_get_pane_title($pane, $context = NULL, $incoming_content = NULL) {
-  return panels_ct_get_title($pane->type, $pane->configuration, $context, $incoming_content);
+function panels_get_pane_title(&$pane, $context = NULL, $incoming_content = NULL) {
+  if (empty($pane->context)) {
+    $pane->context = panels_pane_select_context($pane, $display->context);
+    if ($pane->context === FALSE) {
+      return FALSE;
+    }
+  }
+  return panels_ct_get_title($pane->type, $pane->configuration, $pane->context, $incoming_content);
 }
 
 /**
@@ -753,6 +787,25 @@ function panels_context_load_plugins($contexts) {
       $loaded[$context->plugin] = TRUE;
     }
   }
+}
+
+/**
+ * Fetch keywords for use in string substitutions.
+ *
+ * @param $contexts
+ *   An array of contexts.
+ *
+ * @return
+ *   An array of keyword substitutions suitable for @code{strtr()}
+ */
+function panels_context_get_keywords($contexts) {
+  $keywords = array();
+  foreach ($contexts as $id => $context) {
+    if ($keyword = $context->get_keyword()) {
+      $keywords["%$keyword"] = $context->get_title();
+    }
+  }
+  return $keywords;
 }
 
 /**

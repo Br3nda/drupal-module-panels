@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.13 2007/10/25 02:23:20 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.14 2007/10/25 22:33:03 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -478,6 +478,14 @@ function panels_page_access($panel_page, $account = NULL) {
  * TODO: Retool this so we rely primarily on the contexts to get a title.
  */
 function panels_page_get_title($panel_page, $context = 'page', $default_title = NULL) {
+  $title = _panels_page_get_title($panel_page, $context, $default_title);
+  if ($panel_page->keywords) {
+    $title = strtr($title, $panel_page->keywords);
+  }
+  return $title;
+}
+
+function _panels_page_get_title($panel_page, $context, $default_title) {
   if ($context == 'menu-parent' && $panel_page->menu_parent_title) {
     return $panel_page->menu_parent_title;
   }
@@ -487,17 +495,11 @@ function panels_page_get_title($panel_page, $context = 'page', $default_title = 
   }
 
   if ($panel_page->context) {
-    panels_load_include('plugins');
-    $substitutions = array();
     $title = NULL;
-    $count = 1;
     foreach ($panel_page->context as $id => $context) {
       if (empty($context->data)) {
         // empty contexts can't provide titles
         continue;
-      }
-      if ($keyword = $context->get_keyword()) {
-        $substitutions["%$keyword"] = $context->get_title();
       }
       if ($page_title = $context->get_page_title()) {
         $title = $page_title;
@@ -505,10 +507,6 @@ function panels_page_get_title($panel_page, $context = 'page', $default_title = 
     }
 
     if ($title) {
-      if ($substitutions) {
-        $title = strtr($title, $substitutions);
-      }
-
       return $title;
     }
   }
@@ -620,6 +618,7 @@ function panels_page_view_page($panel_page) {
   // Get additional contexts from relationships
   panels_relationship_get_contexts($panel_page->relationships, $panel_page->context);
 
+  $panel_page->keywords = panels_context_get_keywords($panel_page->context);
   // Figure out which display to use.
   if (isset($display_candidate)) {
     $display = panels_page_fetch_display($panel_page, $display_candidate);
@@ -633,6 +632,7 @@ function panels_page_view_page($panel_page) {
   // used.
   $display->args = $args;
   $display->context = $panel_page->context;
+  $display->keywords = $panel_page->keywords;
   $display->css_id = $panel_page->css_id;
   $display->owner = $panel_page;
   $display->type = 'panel_page';

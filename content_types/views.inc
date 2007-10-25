@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.21 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.22 2007/10/25 22:33:03 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -64,14 +64,10 @@ function panels_content_views($conf, $panel_args, &$contexts) {
     $block->delta = $view->name;
 
     $view_type = $conf['type'] == 'embed' ? 'page' : $conf['type'];
-    $title = $conf['override_title'] ? $conf['override_title_text'] : views_get_title($view, $view_type);
+    $block->subject = views_get_title($view, $view_type);
     if (!empty($conf['link_to_view'])) {
-      $title = l($title, views_get_url($view, $args));
+      $block->subject_link = views_get_url($view, $args);
     }
-    else {
-      $title = filter_xss_admin($title);
-    }
-    $block->subject = $title;
 
     $pager_id = empty($conf['use_pager']) ? 0 : intval($conf['pager_id']);
     $block->content = views_build_view($conf['type'], $view, $args, $pager_id, intval($conf['nodes_per_page']), 0, intval($conf['offset']));
@@ -178,25 +174,6 @@ function panels_admin_edit_views($id, $parents, $conf) {
     '#title' => t('View type'),
     '#description' => t('Select which type of the view to display.'),
     '#options' => array('page' => t('Page'), 'block' => t('Block'), 'embed' => t('Embedded')),
-  );
-
-  $form['aligner_start'] = array(
-    '#value' => '<div class="option-text-aligner">',
-  );
-  $form['override_title'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => $conf['override_title'],
-    '#title' => t('Override title'),
-    '#id' => 'override-title-checkbox',
-  );
-  $form['override_title_text'] = array(
-    '#type' => 'textfield',
-    '#default_value' => $conf['override_title_text'],
-    '#size' => 35,
-    '#id' => 'override-title-textfield',
-  );
-  $form['aligner_stop'] = array(
-    '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
   );
 
   $form['link_to_view'] = array(

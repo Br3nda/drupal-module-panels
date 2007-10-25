@@ -1,5 +1,5 @@
 <?php
-// $Id: custom.inc,v 1.2.6.13 2007/10/01 20:11:47 merlinofchaos Exp $
+// $Id: custom.inc,v 1.2.6.14 2007/10/25 22:33:03 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -13,6 +13,7 @@ function panels_custom_panels_content_types() {
     'add callback' => 'panels_admin_edit_custom',
     'edit callback' => 'panels_admin_edit_custom',
     'title callback' => 'panels_admin_title_custom',
+    'no override title' => TRUE,
   );
   return $items;
 }
@@ -77,6 +78,7 @@ function panels_admin_edit_custom($id, $parents, $conf = NULL) {
   $parents[] = 'format';
   $form['format'] = filter_form($conf['format'], 1, $parents);
 
+  // TODO: Advanced
   $form['css_id'] = array(
     '#type' => 'textfield',
     '#default_value' => $conf['css_id'],
