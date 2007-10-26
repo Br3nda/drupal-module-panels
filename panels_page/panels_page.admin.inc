@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.15 2007/10/25 02:23:20 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.16 2007/10/26 06:07:21 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -226,12 +226,13 @@ function panels_page_edit_form($panel_page) {
   );
   $content = '<dl class="content-list">';
 
+  $panel_page->context = $display->context = panels_page_get_contexts($panel_page);
   foreach (panels_get_panels($layout, $panel_page->display) as $panel_id => $title) {
     $content .= "<dt>$title</dt><dd>";
     if ($panel_page->display->panels[$panel_id]) {
       $content .= '<ol>';
       foreach ($panel_page->display->panels[$panel_id] as $pid) {
-        $content .= '<li>' . panels_get_pane_title($panel_page->display->content[$pid]) . '</li>';
+        $content .= '<li>' . panels_get_pane_title($panel_page->display->content[$pid], $display->context) . '</li>';
       }
       $content .= '</ol>';
     }
@@ -1534,23 +1535,6 @@ function panels_page_edit_layout_settings($panel_page, $did = NULL, $next = NULL
   return panels_edit_layout_settings($panel_page->display, $button, $dest);
 }
 
-
-/**
- * TODO: MOVE THIS. But where? Hm.
- * Get a bunch of empty contexts for this page
- */
-function panels_page_get_contexts($page) {
-  // Get contexts from arguments
-  $contexts = panels_argument_get_contexts($page->arguments, $page->display->display_context);
-
-  // add contexts from relationships
-  if (!empty($page->relationships)) {
-    panels_relationship_get_contexts($page->relationships, $contexts);
-  }
-
-  return $contexts;
-}
-
 /**
  * Pass through to the panels content editor.
  */
@@ -1650,4 +1634,102 @@ function panels_page_import_form_submit($formid, $form) {
   else {
     drupal_set_message(t('Unable to get a panel page out of that.'));
   }
+}
+
+/**
+ * TODO: MOVE THIS. But where? Hm.
+ * Get a bunch of empty contexts for this page
+ */
+function panels_page_get_contexts($page) {
+  // Get contexts from arguments
+  $contexts = panels_argument_get_contexts($page->arguments, $page->display->display_context);
+
+  // add contexts from relationships
+  if (!empty($page->relationships)) {
+    panels_relationship_get_contexts($page->relationships, $contexts);
+  }
+
+  return $contexts;
+}
+function panels_page_get_url($panel_page, $args) {
+  $parts = explode('/', $panel_page->path);
+  $url = array();
+  foreach ($parts as $part) {
+    if ($part == '%') {
+      $url[] = array_shift($args);
+    }
+    else {
+      $url[] = $part;
+    }
+  }
+  return implode('/', array_merge($url, $args));
+}
+
+function panels_page_admin_view($panel_page, $args) {
+  $form = array();
+
+  $form['fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Administrative view: enter arguments'),
+    '#collapsible' => TRUE,
+  );
+
+  $url = panels_page_get_url($panel_page, $args);
+  $form['fieldset']['url'] = array(
+    '#value' => t('<strong>Url of real panel: </strong> !url', array('!url' => l($url, $url))),
+  );
+
+  $contexts = panels_page_get_contexts($panel_page);
+  $count = 0;
+  foreach ($contexts as $context) {
+    $form['fieldset']["arg$count"] = array(
+      '#type' => 'textfield',
+      '#title' => check_plain($context->identifier),
+      '#default_value' => isset($args[$count]) ? $args[$count] : '',
+    );
+    if (isset($args[$count])) {
+      unset($args[$count]);
+    }
+    $count++;
+  }
+
+  $add = '';
+  if ($args) {
+    $add = implode('/', $args);
+  }
+  $form['fieldset']['additional'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Additional arguments'),
+    '#description' => t('Separated by /'),
+    '#default_value' => $add,
+  );
+
+  $form['fieldset']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Change arguments'),
+  );
+
+  $form['panel_page'] = array(
+    '#type' => 'value',
+    '#value' => $panel_page
+  );
+  $form['contexts'] = array(
+    '#type' => 'value',
+    '#value' => $contexts
+  );
+
+  return $form;
+}
+
+function panels_page_admin_view_submit($form_id, $form_values) {
+  $count = 0;
+  $url = "admin/panels/panel-page/" . $form_values['panel_page']->name . "/view";
+  foreach ($form_values['contexts'] as $context) {
+    $url .= "/" . $form_values["arg$count"];
+    $count++;
+  }
+  if (!empty($form_values['additional'])) {
+    $url .= "/" . $form_values['additional'];
+  }
+  return $url;
 }

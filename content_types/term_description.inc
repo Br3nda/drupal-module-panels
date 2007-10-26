@@ -1,5 +1,5 @@
 <?php
-// $Id: term_description.inc,v 1.1.2.4 2007/10/25 22:33:03 merlinofchaos Exp $
+// $Id: term_description.inc,v 1.1.2.5 2007/10/26 06:07:20 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -28,7 +28,7 @@ function panels_content_term_description($conf, $panel_args, $context) {
 
   $block->subject = $term->name;
   if ($term) {
-    $block->content = filter_admin_xss($term->description);
+    $block->content = filter_xss_admin($term->description);
     $block->delta = $term->tid;
   }
   else {

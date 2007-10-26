@@ -118,4 +118,8 @@ table .argument-operation input {
   top: 3px;
 }
 
-  
+.panels-admin-view {
+  padding: 1em;
+  border: 1px dotted black;
+  margin-bottom: 1em;
+}
