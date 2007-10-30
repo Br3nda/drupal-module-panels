@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.22 2007/10/30 20:25:57 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.23 2007/10/30 20:26:12 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -125,7 +125,7 @@ EOT
 EOT
       );
   }
-  db_query("UPDATE {sytem} SET weight = 10 WHERE name = 'panels'");
+  db_query("UPDATE {system} SET weight = 10 WHERE name = 'panels'");
 
   if (!module_exists('panels_page')) {
     drupal_set_message(t('It is recommended that you also enable the Panels page module.'));
