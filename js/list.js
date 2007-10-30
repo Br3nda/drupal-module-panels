@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.4 2007/10/20 20:43:59 merlinofchaos Exp $
+// $Id: list.js,v 1.1.2.5 2007/10/30 19:24:48 merlinofchaos Exp $
 
 /**
  * List object
@@ -19,7 +19,7 @@
 Drupal.list = function(base, settings) {
   // Set the properties for this object.
   if (settings.container == null) {
-    settings.container = 'tr';
+    settings.container = settings.row_class;
   }
 
   var max = function(array) {

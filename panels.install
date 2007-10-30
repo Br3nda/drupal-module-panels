@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.20 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.21 2007/10/30 19:24:48 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -125,6 +125,8 @@ EOT
 EOT
       );
   }
+  db_query("UPDATE {sytem} SET weight = 10 WHERE name = 'panels'");
+
   if (!module_exists('panels_page')) {
     drupal_set_message(t('It is recommended that you also enable the Panels page module.'));
   }
@@ -376,5 +378,11 @@ function panels_update_5209() {
       "WHERE pid = $page->pid", serialize($arguments), serialize($relationships), serialize(array()), $page->pid
     );
   }
+  return $ret;
+}
+
+function panels_update_5210() {
+  $ret = array();
+  $ret[] = update_sql("UPDATE {sytem} SET weight = 10 WHERE name = 'panels'");
   return $ret;
 }
