@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.16 2007/10/26 06:07:21 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.17 2007/10/30 19:27:39 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -984,6 +984,13 @@ function panels_page_ajax_argument_edit($panel_name) {
   }
   else {
     drupal_ajax_render();
+  }
+
+  // For some reason, some (but not all) systems can think this is a post,
+  // even though we're really just using $_POST to send some arguments.
+  // So we unset it to be safe.
+  if (!isset($_POST['form_id'])) {
+    unset($_POST);
   }
 
   $panel_page = panels_common_cache_get('panel_page', $panel_name);
