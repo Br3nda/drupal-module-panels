@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.21 2007/10/30 19:24:48 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.22 2007/10/30 20:25:57 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -383,6 +383,6 @@ function panels_update_5209() {
 
 function panels_update_5210() {
   $ret = array();
-  $ret[] = update_sql("UPDATE {sytem} SET weight = 10 WHERE name = 'panels'");
+  $ret[] = update_sql("UPDATE {system} SET weight = 10 WHERE name = 'panels'");
   return $ret;
 }
