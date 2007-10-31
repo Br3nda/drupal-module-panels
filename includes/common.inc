@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.9 2007/10/31 23:58:10 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.10 2007/10/31 23:59:07 merlinofchaos Exp $
 
 /**
  * @file
@@ -106,7 +106,7 @@ function panels_common_settings_submit($form_id, $form_values) {
 /**
  * Based upon the settings, get the allowed types for this node.
  */
-function panels_common_get_allowed_types($module, $contexts = NULL, $has_content = FALSE, $default_defaults = array(), $default_allowed_types = array()) {
+function panels_common_get_allowed_types($module, $contexts = array(), $has_content = FALSE, $default_defaults = array(), $default_allowed_types = array()) {
 
   // Get a list of all types that are available
 
