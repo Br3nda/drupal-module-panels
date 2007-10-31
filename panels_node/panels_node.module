@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.6 2007/10/25 02:23:20 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.7 2007/10/31 23:58:10 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -25,7 +25,7 @@ function panels_node_menu($may_cache) {
       'path' => 'admin/panels/panel-node',
       'title' => t('Panel nodes settings'),
       'description' => t('Configure panel node content availability.'),
-      'access' => user_access('administer panel-nodes'),    
+      'access' => user_access('administer panel-nodes'),
       'callback' => 'panels_node_settings',
     );
   }
@@ -37,7 +37,7 @@ function panels_node_menu($may_cache) {
         $items[] = array(
           'path' => $base . 'layout',
           'title' => t('Panel layout'),
-          'access' => TRUE,    
+          'access' => TRUE,
           'callback' => 'panels_node_edit_layout',
           'callback arguments' => array($node),
           'weight' => 2,
@@ -47,7 +47,7 @@ function panels_node_menu($may_cache) {
         $items[] = array(
           'path' => $base . 'settings',
           'title' => t('Panel layout settings'),
-          'access' => TRUE,    
+          'access' => TRUE,
           'callback' => 'panels_node_edit_layout_settings',
           'callback arguments' => array($node),
           'weight' => 2,
@@ -57,7 +57,7 @@ function panels_node_menu($may_cache) {
         $items[] = array(
           'path' => $base . 'content',
           'title' => t('Panel content'),
-          'access' => TRUE,    
+          'access' => TRUE,
           'callback' => 'panels_node_edit_content',
           'callback arguments' => array($node),
           'weight' => 3,
@@ -84,7 +84,7 @@ function panels_node_node_info() {
       'description' => t("A panel a page layout broken up into rows and columns."),
     )
   );
-} 
+}
 
 /**
  * Implementation of hook_access
@@ -130,7 +130,7 @@ function panels_node_form(&$node, &$param) {
     }
   }
 
-  $type = node_get_types('type', $node); 
+  $type = node_get_types('type', $node);
 
   $form['title'] = array(
     '#type'=> 'textfield',
@@ -185,7 +185,7 @@ function panels_node_load($node) {
   // We shortcut this because only in some really drastic corruption circumstance will this
   // not work.
   $additions['panels_node'] = db_fetch_array(db_query("SELECT * FROM {panels_node} WHERE nid = %d", $node->nid));
-  return $additions;  
+  return $additions;
 }
 
 /**
@@ -197,7 +197,7 @@ function panels_node_insert(&$node) {
   $display->layout = $node->panels_node['layout'];
   panels_save_display($display);
   $css_id = $node->panels_node['css_id'];
-  
+
   db_query("INSERT INTO {panels_node} (nid, did, css_id) VALUES (%d, %d, '%s')", $node->nid, $display->did, $node->panels_node['css_id']);
 
   $node->panels_node['did'] = $display->did;
@@ -215,6 +215,7 @@ function panels_node_update($node) {
  */
 
 function panels_node_view($node, $teaser = FALSE, $page = FALSE) {
+  panels_load_include('plugins');
   if ($teaser) {
     // Do the standard view for teaser.
     $node = node_prepare($node, $teaser);
@@ -223,7 +224,7 @@ function panels_node_view($node, $teaser = FALSE, $page = FALSE) {
     $display = panels_load_display($node->panels_node['did']);
     $display->css_id = $node->panel_node['css_id'];
     // TODO: Find a way to make sure this can't node_view.
-    $display->context = array(panels_create_context('node', $node));
+    $display->context = array(panels_context_create('node', $node));
 
     $node->content['body'] = array(
       '#value' => panels_render_display($display),
@@ -241,7 +242,7 @@ function panels_node_view($node, $teaser = FALSE, $page = FALSE) {
  * Settings for panel nodes
  */
 function panels_node_settings() {
-  require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
+  panels_load_include('common');
   return drupal_get_form('panels_common_settings', 'panels_node');
 }
 
@@ -253,6 +254,7 @@ function panels_node_settings() {
  */
 function panels_node_edit_layout($node) {
   $display = panels_load_display($node->panels_node['did']);
+  $display->context = array(panels_context_create('node', $node));
   return panels_edit_layout($display, t('Save'), "node/$node->nid/panel_layout");
 }
 
@@ -269,8 +271,9 @@ function panels_node_edit_layout_settings($node) {
  */
 function panels_node_edit_content($node) {
   $display = panels_load_display($node->panels_node['did']);
-  require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
-  $content_types = panels_common_get_allowed_types('panels_node');
+  $display->context = array(panels_context_create('node', $node));
+  panels_load_include('common');
+  $content_types = panels_common_get_allowed_types('panels_node', $display->context);
 
   // Print this with theme('page') so that blocks are disabled while editing a display.
   // This is important because negative margins in common block layouts (i.e, Garland)

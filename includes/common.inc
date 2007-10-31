@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.8 2007/10/25 02:23:20 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.9 2007/10/31 23:58:10 merlinofchaos Exp $
 
 /**
  * @file
@@ -119,6 +119,7 @@ function panels_common_get_allowed_types($module, $contexts = NULL, $has_content
     $default_types['other'] = TRUE;
   }
 
+  panels_load_include('plugins');
   $content_types = panels_get_available_content_types($contexts, $has_content, $allowed_types, $default_types);
 
   return $content_types;
