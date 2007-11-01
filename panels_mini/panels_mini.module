@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.5 2007/11/01 00:01:13 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.6 2007/11/01 18:59:00 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -315,6 +315,8 @@ function panels_mini_edit_content($panel_mini) {
   if (!is_object($panel_mini)) {
     $panel_mini = panels_mini_load($panel_mini);
   }
+  $panel_mini->display->context = array();
+
   require_once drupal_get_path('module', 'panels') .'/includes/common.inc';
   $content_types = panels_common_get_allowed_types('panels_mini');
 

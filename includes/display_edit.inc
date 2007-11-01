@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.11 2007/10/25 02:23:20 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.12 2007/11/01 18:59:00 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
@@ -654,7 +654,7 @@ function panels_add_content_config_form_submit($form_id, $form) {
   $buttons = form_builder('dummy', $buttons);
 
   // Render the new pane for the javascript.
-  $return->output = panels_show_pane($display, $cache->display->content[$form['pid']], NULL, drupal_render($buttons));
+  $return->output = panels_show_pane($cache->display, $cache->display->content[$form['pid']], NULL, drupal_render($buttons));
 
   panels_set('return', $return);
   return FALSE;
