@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.4 2007/10/03 22:52:49 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.5 2007/11/01 00:01:13 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -27,18 +27,18 @@ function panels_mini_perm() {
 function panels_mini_menu($may_cache) {
   if ($may_cache) {
     $access = user_access('create mini panels');
-    
+
     $items[] = array(
       'path' => 'admin/panels/panel-mini',
       'title' => t('Mini panels'),
-      'access' => $access,    
+      'access' => $access,
       'callback' => 'panels_mini_list_page',
       'description' => t('Create and administer mini panels (panels exposed as blocks).'),
     );
     $items[] = array(
       'path' => 'admin/panels/panel-mini/list',
       'title' => t('List'),
-      'access' => $access,    
+      'access' => $access,
       'callback' => 'panels_mini_list_page',
       'weight' => -10,
       'type' => MENU_DEFAULT_LOCAL_TASK,
@@ -53,7 +53,7 @@ function panels_mini_menu($may_cache) {
     $items[] = array(
       'path' => 'admin/panels/panel-mini/settings',
       'title' => t('Settings'),
-      'access' => $access,    
+      'access' => $access,
       'callback' => 'panels_mini_settings',
       'type' => MENU_LOCAL_TASK,
     );
@@ -74,7 +74,7 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
     $items[] = array(
       'path' => $base,
       'title' => t('Edit'),
-      'access' => $access,    
+      'access' => $access,
       'callback' => 'panels_mini_edit',
       'callback arguments' => array($panel_mini->pid),
       'weight' => -5,
@@ -83,7 +83,7 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
     $items[] = array(
       'path' => $base .'/edit',
       'title' => t('Edit'),
-      'access' => $access,    
+      'access' => $access,
       'callback' => 'panels_mini_edit',
       'callback arguments' => array($panel_mini->pid),
       'weight' => -5,
@@ -92,7 +92,7 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
     $items[] = array(
       'path' => $base .'/edit/general',
       'title' => t('General'),
-      'access' => $access,    
+      'access' => $access,
       'callback' => 'panels_mini_edit',
       'callback arguments' => array($panel_mini->pid),
       'weight' => -5,
@@ -101,7 +101,7 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
     $items[] = array(
       'path' => $base .'/edit/layout',
       'title' => t('Layout'),
-      'access' => $access,    
+      'access' => $access,
       'callback' => 'panels_mini_edit_layout',
       'callback arguments' => array($panel_mini->pid),
       'weight' => -3,
@@ -111,7 +111,7 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
     $items[] = array(
       'path' => $base .'/edit/settings',
       'title' => t('Layout settings'),
-      'access' => $access,    
+      'access' => $access,
       'callback' => 'panels_mini_edit_layout_settings',
       'callback arguments' => array($panel_mini->pid),
       'weight' => -3,
@@ -130,7 +130,7 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
     $items[] = array(
       'path' => $base .'/delete',
       'title' => t('Delete mini panel'),
-      'access' => user_access('create mini panels'),    
+      'access' => user_access('create mini panels'),
       'callback' => 'drupal_get_form',
       'callback arguments' => array('panels_mini_delete_confirm', $panel_mini->pid),
       'type' => MENU_CALLBACK,
@@ -205,6 +205,7 @@ function panels_mini_delete_confirm_submit($formid, $form) {
  * Handle the add mini panel page.
  */
 function panels_mini_add_page($layout = NULL) {
+  panels_load_include('plugins');
   $layouts = panels_get_layouts();
 
   if ($layout === NULL) {
@@ -249,7 +250,7 @@ function panels_mini_edit_form($panel_mini) {
     '#value' => $panel_mini->pid,
   );
   $form['panel_mini'] = array(
-    '#type' => 'value', 
+    '#type' => 'value',
     '#value' => $panel_mini
   );
 
@@ -272,7 +273,7 @@ function panels_mini_edit_form($panel_mini) {
     '#default_value' => $panel_mini->title,
     '#title' => t('Mini panel title'),
     '#description' => t('The title for this mini panel. It can be overridden in the block configuration.'),
-  ); 
+  );
 
   // Add the "panel settings" section of the form and the accompanying submit
   // handler.
@@ -355,7 +356,7 @@ function panels_mini_edit_layout_settings($panel_mini) {
 function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
   if ($op == 'list') {
     $blocks = array();
-    
+
     $result = db_query("SELECT * FROM {panels_mini} ORDER BY title");
     while ($panel_mini = db_fetch_object($result)) {
       $blocks[$panel_mini->pid] = array(
@@ -398,7 +399,7 @@ function panels_mini_load($pid) {
 }
 
 /**
- * Save a mini panel. 
+ * Save a mini panel.
  */
 function panels_mini_save(&$panel_mini) {
   $display = panels_save_display($panel_mini->display);
@@ -408,9 +409,9 @@ function panels_mini_save(&$panel_mini) {
       "UPDATE {panels_mini} SET " .
       "did = %d, " .
       "title = '%s' " .
-      "WHERE pid = %d", 
+      "WHERE pid = %d",
         $panel_mini->did,
-        $panel_mini->title, 
+        $panel_mini->title,
       $panel_mini->pid
     );
   }
