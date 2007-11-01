@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.7 2007/10/31 23:58:10 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.8 2007/11/01 02:10:03 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -114,6 +114,7 @@ function panels_node_form(&$node, &$param) {
 
     $layout = arg(3);
     if (is_null($layout)) {
+      panels_load_include('plugins');
       $form['markup']['#value'] = '';
       $layouts = panels_get_layouts();
       foreach ($layouts as $id => $layout) {
