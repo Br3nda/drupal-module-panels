@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.15 2007/10/26 06:07:21 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.16 2007/11/02 22:24:47 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -887,7 +887,7 @@ function panels_page_fields() {
  * Sanitize a panel prior to saving it.
  */
 function panels_page_sanitize($page) {
-  foreach (array('arguments', 'displays', 'contexts') as $id) {
+  foreach (array('arguments', 'displays', 'contexts', 'relationships') as $id) {
     if (empty($page->$id)) {
       $page->$id = array();
     }

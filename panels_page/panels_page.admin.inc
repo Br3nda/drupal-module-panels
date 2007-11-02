@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.17 2007/10/30 19:27:39 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.18 2007/11/02 22:24:47 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -159,7 +159,7 @@ function panels_page_add_page($layout = NULL) {
   $panel_page->did = 'new';
 
   drupal_set_title(t('Add panel page'));
-  return drupal_get_form('panels_page_edit_form', $panel_page);
+  return drupal_get_form('panels_page_edit_form', panels_page_sanitize($panel_page));
 }
 
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.1.2.1 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: node.inc,v 1.1.2.2 2007/11/02 22:24:47 merlinofchaos Exp $
 /**
  * @file contexts/node.inc
  *
@@ -50,27 +50,7 @@ function panels_context_node_settings_form($conf, $external = FALSE) {
     );
   }
 
-  $form['node'] = array(
-    '#prefix' => '<div class="no-float">',
-    '#suffix' => '</div>',
-    '#title' => t('Enter the title or NID of a post'),
-    '#type' => 'textfield',
-    '#maxlength' => 512,
-    '#autocomplete_path' => 'panels/node/autocomplete',
-    '#weight'  => -10,
-  );
-
-  if (!empty($conf['nid'])) {
-    $info = db_fetch_object(db_query("SELECT * FROM {node} WHERE nid = %d", $conf['nid']));
-    if ($info) {
-      $form['node']['#description'] = t('Currently set to "%title"', array('%title' => $info['title']));
-    }
-  }
-
-  $form['nid'] = array(
-    '#type' => 'value',
-    '#value' => $conf['nid'],
-  );
+  // TODO: uid autcomplete
 
   return $form;
 }
@@ -79,27 +59,5 @@ function panels_context_node_settings_form($conf, $external = FALSE) {
  * Validate a node.
  */
 function panels_context_node_settings_form_validate($form, $form_values) {
-  if (empty($form_values['external']) && empty($form_values['nid']) && empty($form_values['node'])) {
-    form_error($form['node'], t('You must select a node.'));
-    return;
-  }
-
-  if (empty($form_values['node'])) {
-    return;
-  }
-
-  $nid = $form_values['node'];
-  if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE nid = %d"), $nid));
-  }
-  else {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(title) = LOWER('%s')"), $nid));
-    if ($node) {
-      form_set_value($form['nid'], $node->nid);
-    }
-  }
-
-  if (!$node) {
-    form_error($form['node'], t('Invalid post selected'));
-  }
+  // Validate the uid autocomplete
 }
