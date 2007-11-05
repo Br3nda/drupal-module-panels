@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.9 2007/11/02 22:24:47 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.10 2007/11/05 22:27:42 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -272,6 +272,7 @@ function panels_node_edit_layout_settings($node) {
  * Pass through to the panels content editor.
  */
 function panels_node_edit_content($node) {
+  panels_load_include('plugins');
   $display = panels_load_display($node->panels_node['did']);
   $display->context = array(panels_context_create('node', $node));
   panels_load_include('common');

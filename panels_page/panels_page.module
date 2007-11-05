@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.16 2007/11/02 22:24:47 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.17 2007/11/05 22:27:42 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -199,13 +199,12 @@ function panels_page_menu($may_cache) {
  * Helper function to add a menu item for a panel.
  */
 function panels_page_admin_menu_items(&$items, $base, $page) {
-  $view_access = panels_page_access($page);
   $access = user_access('create panel-pages');
 
   $items[] = array(
     'path' => $base,
     'title' => t('View'),
-    'access' => $view_access,
+    'access' => $access,
     'callback' => 'panels_page_view_page',
     'callback arguments' => array($page->name, TRUE),
     'weight' => -10,
@@ -215,7 +214,7 @@ function panels_page_admin_menu_items(&$items, $base, $page) {
   $items[] = array(
     'path' => $base . '/view',
     'title' => t('View'),
-    'access' => $view_access,
+    'access' => $access,
     'callback' => 'panels_page_view_page',
     'callback arguments' => array($page->name, TRUE),
     'weight' => -10,
