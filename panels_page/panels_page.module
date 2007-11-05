@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.17 2007/11/05 22:27:42 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.18 2007/11/05 22:43:07 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -798,6 +798,11 @@ function panels_page_load_all($page_size = 0) {
     $page->displays = (!empty($page->displays)) ? unserialize($page->displays) : array();
     $page->contexts = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
     $page->relationships = (!empty($page->relationships)) ? unserialize($page->relationships) : array();
+
+    // I shouldn't need this but it seems this isn't getting array nature.
+    if (!is_array($page->relationships)) {
+      $page->relationships = array();
+    }
     $page->type = t('Local');
     $pages[$page->name] = $page;
   }
