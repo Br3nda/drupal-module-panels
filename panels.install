@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.23 2007/10/30 20:26:12 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.24 2007/11/05 22:33:11 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -385,4 +385,12 @@ function panels_update_5210() {
   $ret = array();
   $ret[] = update_sql("UPDATE {system} SET weight = 10 WHERE name = 'panels'");
   return $ret;
+}
+
+/**
+ * Force a menu update
+ */
+function panels_update_5211() {
+  menu_rebuild();
+  return array();
 }
