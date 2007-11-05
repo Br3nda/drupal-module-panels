@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.19 2007/11/05 22:47:14 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.20 2007/11/05 23:06:48 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -563,23 +563,9 @@ function panels_move_menu_tabs($path, $tab) {
   }
 
   if (!$local_tasks) {
-    // Get the menu item we want to move us to.
+    // Move the administrative items from the admin menu to here.
     $admin_item = $_menu['path index'][$path];
-    // If we don't already have tabs, we'll just move the administrative
-    // tabs here.
-    $_menu['items'][$my_mid]['type'] = MENU_DEFAULT_LOCAL_TASK;
-    $_menu['items'][$my_mid]['weight'] = -10;
-    $_menu['items'][$my_mid]['title'] = t('View');
-
-    $new_children = $_menu['items'][$admin_item]['children'];
-    foreach ($new_children as $child_mid) {
-      // Increase the weights so they all go right.
-      $_menu['items'][$child_mid]['weight'] += 50;
-    }
-    // remove the first item from the new children which is the admin view, which
-    // is the same as this.
-    array_shift($new_children);
-    $_menu['items'][$my_parent]['children'] = array_merge($_menu['items'][$my_parent]['children'], $new_children);
+    $_menu['items'][$my_mid]['children'] = $_menu['items'][$admin_item]['children'];
   }
   else {
     // But if we do have tabs, just add the admin item itself to the tabs.
