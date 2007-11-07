@@ -1,5 +1,5 @@
 <?php
-// $Id: user.inc,v 1.1.2.2 2007/11/02 22:24:47 merlinofchaos Exp $
+// $Id: user.inc,v 1.1.2.3 2007/11/07 02:10:54 merlinofchaos Exp $
 /**
  * @file contexts/user.inc
  *
@@ -45,22 +45,6 @@ function panels_context_user_settings_form($conf, $external = FALSE) {
   $options = array();
   if ($external) {
     $options[0] = t('External source');
-  }
-
-  foreach (taxonomy_get_vocabularies() as $vid => $user) {
-    $options[$vid] = $user->name;
-  }
-
-  $form['vid'] = array(
-    '#title' => t('user'),
-    '#type' => 'select',
-    '#options' => $options,
-    '#default_value' => $conf['vids'],
-    '#prefix' => '<div class="clear-block">',
-    '#suffix' => '</div>',
-  );
-  if ($external) {
-    $form['vid']['#description'] .= ' ' . t('Select external to require this from an external source such as a containing panel page.');
   }
 
   return $form;

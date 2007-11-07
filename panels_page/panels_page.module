@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.20 2007/11/05 23:06:48 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.21 2007/11/07 02:10:55 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -124,6 +124,22 @@ function panels_page_menu($may_cache) {
       'access' => $access,
       'callback' => 'panels_page_passthru',
       'callback arguments' => array('panels_page_ajax_relationship_edit'),
+      'type' => MENU_CALLBACK,
+    );
+
+    // Ajax responder
+    $items[] = array(
+      'path' => 'panels/context/ajax/add',
+      'access' => $access,
+      'callback' => 'panels_page_passthru',
+      'callback arguments' => array('panels_page_ajax_context_add'),
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array(
+      'path' => 'panels/context/ajax/edit',
+      'access' => $access,
+      'callback' => 'panels_page_passthru',
+      'callback arguments' => array('panels_page_ajax_context_edit'),
       'type' => MENU_CALLBACK,
     );
 
@@ -654,7 +670,7 @@ function panels_page_view_page($panel_page, $admin) {
     }
   }
 
-
+  $panel_page->context += panels_context_get_contexts($panel_page->contexts);
   // Get additional contexts from relationships
   panels_relationship_get_contexts($panel_page->relationships, $panel_page->context);
 

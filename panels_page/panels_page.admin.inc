@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.19 2007/11/05 22:41:22 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.20 2007/11/07 02:10:55 merlinofchaos Exp $
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -349,7 +349,6 @@ function panels_page_edit_form_submit($form_id, $form_values) {
 
 function panels_page_edit_advanced($name) {
   if (!empty($_POST)) {
-    // TODO: Combine these two caches?
     $panel_page = panels_common_cache_get('panel_page', $name);
   }
   else {
@@ -570,6 +569,44 @@ function panels_page_advanced_form($panel_page) {
   );
 
   // ---------------------------------------------------
+  // Pure contexts
+
+  $form['contexts'] = array(
+    '#type' => 'value',
+    '#value' => $panel_page->contexts,
+  );
+
+  $form['left']['arg-info']['contexts_table'] = array(
+    '#prefix' => '<div id="panels-contexts-table">',
+    '#suffix' => '</div>',
+    '#theme' => 'panels_page_contexts_form',
+    '#panel_name' => $panel_page->name
+  );
+
+  // Store the order the choices are in so javascript can manipulate it.
+  $form['left']['arg-info']['contexts_table']['markup'] = array(
+    '#value' => '&nbsp;'
+  );
+  $form['context_order'] = array(
+    '#type' => 'hidden',
+    '#id' => 'context-order',
+    '#default_value' => $panel_page->contexts ? implode(',', array_keys($panel_page->contexts)) : '',
+  );
+
+  $choices = array();
+  foreach (panels_get_contexts() as $name => $arg) {
+    $choices[$name] = $arg['title'];
+  }
+
+  asort($choices);
+
+  if (!empty($choices) || !empty($panel_page->contexts)) {
+    panels_page_add_context_table($form['left']['arg-info']['contexts_table'], $choices, $panel_page->contexts);
+  }
+
+  // End of contexts
+
+  // ---------------------------------------------------
   // Relationships, which are closely tied to arguments.
 
   $form['relationships'] = array(
@@ -600,6 +637,8 @@ function panels_page_advanced_form($panel_page) {
     panels_page_add_relationship_table($form['left']['arg-info']['relationships_table'], $available_relationships, $panel_page->relationships);
   }
 
+  // End of relationships
+
   $label = ($panel_page->pid == 'new') ? t('Next') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
@@ -608,32 +647,7 @@ function panels_page_advanced_form($panel_page) {
 
   return $form;
 }
-function panels_page_add_relationship_table(&$form, $available_relationships, $relationships) {
-  $form['relationship'] = array(
-    '#tree' => TRUE,
-  );
 
-  if (isset($relationships) && is_array($relationships)) {
-    foreach ($relationships as $position => $relationship) {
-      panels_page_add_relationship_to_form( $form['relationship'][$position], $position, $relationship);
-    }
-  }
-
-  $form['buttons'] = array(
-    '#tree' => TRUE,
-  );
-
-  $form['buttons']['add_relationship'] = array(
-    '#type' => 'select',
-    '#options' => $available_relationships,
-  );
-
-  $form['buttons']['add_relationship_submit'] = array(
-    '#type' => 'submit',
-    '#attributes' => array('class' => 'relationship-add'),
-    '#value' => t('Add relationship'),
-  );
-}
 
 /**
  * Process submission of the panel page edit form
@@ -658,6 +672,15 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
     foreach (explode(',', $form_values['relationship_order']) as $position) {
       // We retain the original position here because we need relationship IDs.
       $panel_page->relationships[$position] = $form_values['relationships'][$position];
+    }
+  }
+
+  // Organize contexts
+  $panel_page->contexts = array();
+  if (isset($form_values['context_order']) && $form_values['context_order'] !== '') {
+    foreach (explode(',', $form_values['context_order']) as $position) {
+      // We retain the original position here because we need context IDs.
+      $panel_page->contexts[$position] = $form_values['contexts'][$position];
     }
   }
 
@@ -771,7 +794,7 @@ function panels_page_add_argument_to_form(&$form, $position, $argument) {
 function theme_argument_row($form, $position, $count) {
   $output = '<tr id="argument-row-' . $position . '" class="argument-row ' . ($count % 2 ? 'even' : 'odd') . '">';
   $output .= '<td class="argument-title">&nbsp;' . drupal_render($form['title']) . '</td>';
-  $output .= '<td class="argument-operation">' . drupal_render($form['settings']) .
+  $output .= '<td class="argument-operation operation">' . drupal_render($form['settings']) .
     drupal_render($form['up']) .
     drupal_render($form['down']) .
     drupal_render($form['top']) .
@@ -792,7 +815,7 @@ function theme_panels_page_arguments_form($form) {
   $output .= '<thead>';
   $output .= '<tr>';
   $output .= '<th class="argument-title">' . t('Argument') . '</th>';
-  $output .= '<th class="argument-operation">' . t('Operation') . '</th>';
+  $output .= '<th class="argument-operation operation">' . t('Operation') . '</th>';
   $output .= '</thead>';
   $output .= '<tbody>';
 
@@ -976,7 +999,8 @@ function panels_page_ajax_argument_add($panel_name) {
   }
   else {
     $title = t('Add argument @argument', array('@argument' => $argument['title']));
-    $output = drupal_render_form('panels_page_edit_argument_form', $form);
+    $output = theme('status_messages');
+    $output .= drupal_render_form('panels_page_edit_argument_form', $form);
     panels_ajax_render($output, $title, url($_GET['q'], NULL, NULL, TRUE));
   }
 }
@@ -1032,7 +1056,8 @@ function panels_page_ajax_argument_edit($panel_name) {
     panels_ajax_render($output);
   }
   else {
-    $output = drupal_render_form('panels_page_edit_argument_form', $form);
+    $output = theme('status_messages');
+    $output .= drupal_render_form('panels_page_edit_argument_form', $form);
     panels_ajax_render($output, $title, url($_GET['q'], NULL, NULL, TRUE));
   }
 }
@@ -1156,6 +1181,36 @@ function panels_page_edit_argument_form_submit($form_id, $form_values) {
 // relationships -- highly resemble arguments.
 
 /**
+ * Add the relationship table to the page.
+ */
+function panels_page_add_relationship_table(&$form, $available_relationships, $relationships) {
+  $form['relationship'] = array(
+    '#tree' => TRUE,
+  );
+
+  if (isset($relationships) && is_array($relationships)) {
+    foreach ($relationships as $position => $relationship) {
+      panels_page_add_relationship_to_form( $form['relationship'][$position], $position, $relationship);
+    }
+  }
+
+  $form['buttons'] = array(
+    '#tree' => TRUE,
+  );
+
+  $form['buttons']['add_relationship'] = array(
+    '#type' => 'select',
+    '#options' => $available_relationships,
+  );
+
+  $form['buttons']['add_relationship_submit'] = array(
+    '#type' => 'submit',
+    '#attributes' => array('class' => 'relationship-add'),
+    '#value' => t('Add relationship'),
+  );
+}
+
+/**
  * Add an argument row to the form. Used both in the main form and by
  * the ajax to add an item.
  */
@@ -1184,7 +1239,7 @@ function panels_page_add_relationship_to_form(&$form, $position, $relationship) 
 function theme_relationship_row($form, $position, $count) {
   $output = '<tr id="relationship-row-' . $position . '" class="relationship-row ' . ($count % 2 ? 'even' : 'odd') . '">';
   $output .= '<td class="relationship-title">&nbsp;' . drupal_render($form['title']) . '</td>';
-  $output .= '<td class="relationship-operation">' . drupal_render($form['settings']) .
+  $output .= '<td class="relationship-operation operation">' . drupal_render($form['settings']) .
     drupal_render($form['remove']) .
   '</td>';
   $output .= '</tr>';
@@ -1202,7 +1257,7 @@ function theme_panels_page_relationships_form($form) {
     $output .= '<thead>';
     $output .= '<tr>';
     $output .= '<th class="relationship-title">' . t('Relationship') . '</th>';
-    $output .= '<th class="relationship-operation">' . t('Operation') . '</th>';
+    $output .= '<th class="relationship-operation operation">' . t('Operation') . '</th>';
     $output .= '</thead>';
     $output .= '<tbody>';
 
@@ -1330,7 +1385,8 @@ function panels_page_ajax_relationship_add($panel_name) {
   }
   else {
     $title = t('Add relationship @relationship', array('@relationship' => $relationship['title']));
-    $output = drupal_render_form('panels_page_edit_relationship_form', $form);
+    $output = theme('status_messages');
+    $output .= drupal_render_form('panels_page_edit_relationship_form', $form);
     panels_ajax_render($output, $title, url($_GET['q'], NULL, NULL, TRUE));
   }
 }
@@ -1372,8 +1428,8 @@ function panels_page_ajax_relationship_edit($panel_name) {
     $form['#redirect'] = FALSE;
   }
 
-  $re = drupal_process_form('panels_page_edit_relationship_form', $form);
-  if ($re) {
+  $rel = drupal_process_form('panels_page_edit_relationship_form', $form);
+  if ($rel) {
     // successful submit
 
     // Save changes
@@ -1384,7 +1440,8 @@ function panels_page_ajax_relationship_edit($panel_name) {
     panels_ajax_render($output);
   }
   else {
-    $output = drupal_render_form('panels_page_edit_relationship_form', $form);
+    $output = theme('status_messages');
+    $output .= drupal_render_form('panels_page_edit_relationship_form', $form);
     panels_ajax_render($output, $title, url($_GET['q'], NULL, NULL, TRUE));
   }
 }
@@ -1447,6 +1504,11 @@ function panels_page_edit_relationship_form($panel_page, $relationship, $positio
     $form['relationship']['relationship_settings']['#tree'] = TRUE;
   }
 
+  $form['relationship_info'] = array(
+    '#type' => 'value',
+    '#value' => $relationship,
+  );
+
   $form['end_form'] = array('#value' => '</div>');
 
   $form['next'] = array(
@@ -1460,7 +1522,7 @@ function panels_page_edit_relationship_form($panel_page, $relationship, $positio
  * validate an relationship edited/added via ajax
  */
 function panels_page_edit_relationship_form_validate($form_id, $form_values, $form) {
-  $relationship = $form_values['relationship'];
+  $relationship = $form_values['relationship_info'];
 
   if (isset($relationship['settings form validate']) && function_exists($relationship['settings form validate'])) {
     $relationship['settings form validate']($form['relationship']['relationship_settings'], $form_values['relationship']['relationship_settings']);
@@ -1479,6 +1541,376 @@ function panels_page_edit_relationship_form_submit($form_id, $form_values) {
 
   return $relationship;
 }
+
+// --- End of relationships
+
+// ---------------------------------------------------------------------------
+// contexts -- highly resemble arguments.
+
+/**
+ * Add the context table to the page.
+ */
+function panels_page_add_context_table(&$form, $available_contexts, $contexts) {
+  $form['context'] = array(
+    '#tree' => TRUE,
+  );
+
+  if (isset($contexts) && is_array($contexts)) {
+    foreach ($contexts as $position => $context) {
+      panels_page_add_context_to_form( $form['context'][$position], $position, $context);
+    }
+  }
+
+  $form['buttons'] = array(
+    '#tree' => TRUE,
+  );
+
+  $form['buttons']['add_context'] = array(
+    '#type' => 'select',
+    '#options' => $available_contexts,
+  );
+
+  $form['buttons']['add_context_submit'] = array(
+    '#type' => 'submit',
+    '#attributes' => array('class' => 'context-add'),
+    '#value' => t('Add context'),
+  );
+}
+
+/**
+ * Add an argument row to the form. Used both in the main form and by
+ * the ajax to add an item.
+ */
+function panels_page_add_context_to_form(&$form, $position, $context) {
+  $rdata = panels_get_context($context['name']);
+  $form['title'] = array(
+    '#value' => check_plain($context['identifier']),
+  );
+
+  $form['remove'] = panels_add_button('delete.png', t('Remove'),
+    t('Remove this item'),
+    'context-remove',
+    'context-remove-' . $position
+  );
+
+  $form['settings'] = panels_add_button('configure.gif', t('Configure'),
+    t('Configure this item'),
+    'context-settings',
+    'context-settings-' . $position
+  );
+}
+
+/**
+ * Theme the form item for the context entry.
+ */
+function theme_context_row($form, $position, $count) {
+  $output = '<tr id="context-row-' . $position . '" class="context-row ' . ($count % 2 ? 'even' : 'odd') . '">';
+  $output .= '<td class="context-title">&nbsp;' . drupal_render($form['title']) . '</td>';
+  $output .= '<td class="context-operation operation">' . drupal_render($form['settings']) .
+    drupal_render($form['remove']) .
+  '</td>';
+  $output .= '</tr>';
+  return $output;
+}
+
+/**
+ * Add the contexts form to panel page settings
+ */
+function theme_panels_page_contexts_form($form) {
+  $output = '';
+
+  if (!empty($form['context'])) {
+    $output .= '<table id="context-table">';
+    $output .= '<thead>';
+    $output .= '<tr>';
+    $output .= '<th class="context-title">' . t('Context') . '</th>';
+    $output .= '<th class="context-operation operation">' . t('Operation') . '</th>';
+    $output .= '</thead>';
+    $output .= '<tbody>';
+
+    $count = 0;
+    foreach (array_keys($form['context']) as $id) {
+      if (!is_numeric($id)) {
+        continue;
+      }
+      $output .= theme('context_row', $form['context'][$id], $id, $count++);
+    }
+
+    $output .= '</tbody>';
+    $output .= '</table>';
+  }
+
+  if (!empty($form['buttons'])) {
+    // Display the add context item.
+    $row = array();
+    $row[] = array('data' => drupal_render($form['buttons']['add_context']), 'class' => 'context-title');
+    $row[] = array('data' => drupal_render($form['buttons']['add_context_submit']), 'class' => 'context-add', 'width' => "60%");
+    $output .= theme('table', array(), array($row), array('id' => 'context-add-table'));
+  }
+
+  $settings = array(
+    'list' => array('context-table' => array(
+      // The buttons that do stuff.
+      'remove' => 'input.context-remove',
+      // The gadget that stores our the order of items.
+      'order' => 'input#context-order',
+      'configure' => 'input.context-settings',
+      'configure_path' => url('panels/context/ajax/edit/' . $form['#panel_name'], NULL, NULL, TRUE),
+
+      // The button that adds an item
+      'add' => 'input#edit-buttons-add-context-submit',
+      // Path for ajax on adding an item
+      'path' => url('panels/context/ajax/add/' . $form['#panel_name'], NULL, NULL, TRUE),
+      // Which items to post when adding
+      'post' => array('#edit-buttons-add-context', '#edit-buttons-add-context-submit'),
+      // Where to get the id of an item
+      'tr' => 'context-row-',
+      'row_class' => 'tr.context-row',
+    )),
+  );
+
+  drupal_add_js($settings, 'setting');
+  drupal_add_js(panels_get_path('js/list.js'));
+  drupal_add_js(panels_get_path('js/lib/dimensions.js'));
+  drupal_add_js(panels_get_path('js/lib/mc.js'));
+  drupal_add_js(panels_get_path('js/lib/form.js'));
+  drupal_add_js(panels_get_path('js/modal_forms.js'));
+  drupal_add_css(panels_get_path('css/panels_dnd.css'));
+
+  return $output;
+}
+
+/**
+ * Ajax entry point to add an context
+ */
+function panels_page_ajax_context_add($panel_name) {
+  $panel_page = panels_common_cache_get('panel_page', $panel_name);
+  if (!$panel_page) {
+    drupal_ajax_render();
+  }
+
+  // Figure out which context we're adding
+  if (isset($_POST['buttons']['add_context'])) {
+    $name = $_POST['buttons']['add_context'];
+    unset($_POST);
+  }
+  else if (isset($_POST['context']['name'])) {
+    $name = $_POST['context']['name'];
+  }
+
+  if (empty($name)) {
+    panels_ajax_render();
+  }
+
+  $context = panels_get_context($name);
+  if (empty($context)) {
+    panels_ajax_render();
+  }
+
+  // Give this argument an id, which is really just the nth version
+  // of this particular context.
+  $id = panels_page_get_arg_id($panel_page->contexts, $name) + 1;
+
+  // Figure out the position for our new context.
+  $position = empty($panel_page->contexts) ? 0 : max(array_keys($panel_page->contexts)) + 1;
+
+  // Create the basis for our new context.
+  $panel_page->contexts[$position] = array(
+    'identifier' => $context['title'] . ($id > 1 ? ' ' . $id : ''),
+    'keyword' => panels_page_get_keyword($panel_page, $context['keyword']),
+    'id' => $id,
+  );
+
+  $contexts = panels_page_get_contexts($panel_page);
+
+  $form = drupal_retrieve_form('panels_page_edit_context_form', $panel_page, $context, $position, $contexts);
+  if ($_POST && $_POST['form_id'] == 'panels_page_edit_context_form') {
+    $form['#redirect'] = FALSE;
+  }
+
+  $ctext = drupal_process_form('panels_page_edit_context_form', $form);
+  if ($ctext) {
+    // successful submit
+
+    // Save changes
+    $panel_page->contexts[$position] = $ctext;
+    panels_common_cache_set('panel_page', $panel_name, $panel_page);
+
+    // Build a chunk of the form to merge into the displayed form
+    $arg_form['context'] = array(
+      '#tree' => TRUE,
+    );
+
+    panels_page_add_context_to_form($arg_form['context'], $position, $ctext);
+    $arg_form = form_builder('dummy_form_id', $arg_form);
+
+    $output = new stdClass();
+    $output->type = $output->output = 'add';
+    $output->output = theme('context_row', $arg_form['context'], $position, $position);
+    $output->position = $position;
+    panels_ajax_render($output);
+  }
+  else {
+    $title = t('Add context @context', array('@context' => $context['title']));
+    $output = theme('status_messages');
+    $output .= drupal_render_form('panels_page_edit_context_form', $form);
+    panels_ajax_render($output, $title, url($_GET['q'], NULL, NULL, TRUE));
+  }
+}
+
+/**
+ * Ajax entry point to add an context
+ */
+function panels_page_ajax_context_edit($panel_name) {
+  $panel_page = panels_common_cache_get('panel_page', $panel_name);
+  if (!$panel_page) {
+    drupal_ajax_render();
+  }
+
+  // Figure out which context we're adding
+  if (isset($_POST['position'])) {
+    $position = $_POST['position'];
+  }
+
+  $name = $panel_page->contexts[$position]['name'];
+  if (empty($name)) {
+    panels_ajax_render();
+  }
+
+  // load the context
+  $context = panels_get_context($name);
+  if (empty($context)) {
+    panels_ajax_render();
+  }
+
+  $title = t('Edit context @context', array('@context' => $context['title']));
+
+  $contexts = panels_page_get_contexts($panel_page);
+
+  // Remove this context, because we can't really allow circular contexts.
+  unset($contexts[panels_context_context_id($panel_page->contexts[$position])]);
+
+  $form = drupal_retrieve_form('panels_page_edit_context_form', $panel_page, $context, $position, $contexts);
+  if ($_POST && $_POST['form_id'] == 'panels_page_edit_context_form') {
+    $form['#redirect'] = FALSE;
+  }
+
+  $ctext = drupal_process_form('panels_page_edit_context_form', $form);
+  if ($ctext) {
+    // successful submit
+
+    // Save changes
+    $panel_page->contexts[$position] = $ctext;
+    panels_common_cache_set('panel_page', $panel_name, $panel_page);
+
+    $output->type = $output->output = 'dismiss';
+    panels_ajax_render($output);
+  }
+  else {
+    $output = theme('status_messages');
+    $output .= drupal_render_form('panels_page_edit_context_form', $form);
+    panels_ajax_render($output, $title, url($_GET['q'], NULL, NULL, TRUE));
+  }
+}
+
+/**
+ * Form (for ajax use) to add an argument
+ */
+function panels_page_edit_context_form($panel_page, $context, $position, $contexts) {
+  $ctext = $panel_page->contexts[$position];
+  $form['position'] = array(
+    '#type' => 'hidden',
+    '#value' => $position,
+  );
+
+  $form['start_form'] = array('#value' => '<div class="modal-form clear-block">');
+
+  $form['description'] = array(
+    '#prefix' => '<div class="description">',
+    '#suffix' => '</div>',
+    '#value' => check_plain($context['description']),
+  );
+
+  // Basic context values
+  $form['context']['#tree'] = TRUE;
+
+  $form['context']['context'] = panels_context_selector($contexts, $context['required context'], $ctext['context']);
+
+  $form['context']['name'] = array(
+    '#type' => 'hidden',
+    '#value' => $context['name'],
+  );
+
+  $form['context']['id'] = array(
+    '#type' => 'value',
+    '#value' => $ctext['id'],
+  );
+
+  $form['context']['identifier'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Identifier'),
+    '#description' => t('Enter a title to identify this context on administrative screens.'),
+    '#default_value' => $ctext['identifier'],
+  );
+
+  $form['context']['keyword'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Keyword'),
+    '#description' => t('Enter a keyword to use for substitution in titles.'),
+    '#default_value' => $ctext['keyword'],
+  );
+
+  // Settings particular to this context
+  $context_settings = array();
+  if (isset($ctext['context_settings'])) {
+    $context_settings = $ctext['context_settings'];
+  }
+
+  if (isset($context['settings form']) && function_exists($context['settings form'])) {
+    $form['context']['context_settings'] = $context['settings form']($context_settings);
+    $form['context']['context_settings']['#tree'] = TRUE;
+  }
+
+  $form['context_info'] = array(
+    '#type' => 'value',
+    '#value' => $context,
+  );
+
+  $form['end_form'] = array('#value' => '</div>');
+
+  $form['next'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  return $form;
+}
+
+/**
+ * validate a  context edited/added via ajax
+ */
+function panels_page_edit_context_form_validate($form_id, $form_values, $form) {
+  $context = $form_values['context_info'];
+
+  if (isset($context['settings form validate']) && function_exists($context['settings form validate'])) {
+    $context['settings form validate']($form['context']['context_settings'], $form_values['context']['context_settings']);
+  }
+}
+
+/**
+ * Updates an context edited/added via ajax
+ */
+function panels_page_edit_context_form_submit($form_id, $form_values) {
+  $context = $form_values['context'];
+  $info = $form_values['context_info'];
+
+  if (isset($info['settings form submit']) && function_exists($info['settings form submit'])) {
+    $info['settings form submit']($form_values['context_settings']);
+  }
+
+  return $context;
+}
+
+// --- End of contexts
 
 /**
  * TODO: document this
@@ -1656,8 +2088,8 @@ function panels_page_import_form_submit($formid, $form) {
  */
 function panels_page_get_contexts($page) {
   // Get contexts from arguments
-  $contexts = panels_argument_get_contexts($page->arguments, $page->display->display_context);
-
+  $contexts = panels_argument_get_contexts($page->arguments);
+  $contexts += panels_context_get_contexts($page->contexts);
   // add contexts from relationships
   if (!empty($page->relationships)) {
     panels_relationship_get_contexts($page->relationships, $contexts);

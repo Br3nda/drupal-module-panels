@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.3 2007/10/26 06:07:20 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.4 2007/11/07 02:10:54 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -522,7 +522,7 @@ function panels_argument_context_id($argument) {
 }
 
 /**
- * Retreive a list of empty contexts for all arguments
+ * Retrieve a list of empty contexts for all arguments
  */
 function panels_argument_get_contexts($arguments) {
   $contexts = array();
@@ -776,20 +776,6 @@ function panels_context_create_empty($type) {
 }
 
 /**
- * When loading a display from cache, we may need to load the plugins
- * for any cached contexts on it, or the objects won't be available.
- */
-function panels_context_load_plugins($contexts) {
-  $loaded = array();
-  foreach ($contexts as $context) {
-    if (isset($context->plugin) && empty($loaded[$context->plugin])) {
-      panels_get_context($context->plugin);
-      $loaded[$context->plugin] = TRUE;
-    }
-  }
-}
-
-/**
  * Fetch keywords for use in string substitutions.
  *
  * @param $contexts
@@ -835,6 +821,44 @@ function panels_plugin_get_function($plugin, $which, $function_name) {
   if (function_exists($function)) {
     return $function;
   }
+}
+
+/**
+ * Determine a unique context ID for a context
+ *
+ * @todo can probably combine the various versions of this.
+ */
+function panels_context_context_id($context) {
+  return "context_$context[name]_$context[id]";
+}
+
+/**
+ * Get a context from a context object.
+ */
+function panels_context_get_context($context, $arg, $empty = FALSE) {
+  if ($function = panels_plugin_get_function('contexts', $context['name'], 'context')) {
+    $return = $function($arg, $context['context_settings'], $empty);
+    if ($return) {
+      $return->identifier = $context['identifier'];
+      $return->page_title = $context['title'];
+      $return->keyword = $context['keyword'];
+      return $return;
+    }
+  }
+}
+
+/**
+ * Retrieve a list of empty contexts for all contexts
+ */
+function panels_context_get_contexts($contexts) {
+  $return = array();
+  foreach ($contexts as $context) {
+    $ctext = panels_context_get_context($context, NULL, true);
+    if ($ctext) {
+      $return[panels_context_context_id($context)] = $ctext;
+    }
+  }
+  return $return;
 }
 
 // ---------------------------------------------------------------------------
