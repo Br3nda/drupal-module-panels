@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.21 2007/11/07 02:10:55 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.22 2007/11/09 22:37:29 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -594,8 +594,8 @@ function panels_move_menu_tabs($path, $tab) {
     $_menu['items'][$admin_item]['weight'] += 50;
     $_menu['items'][$admin_item]['type'] = MENU_LOCAL_TASK;
   }
-  menu_set_active_item($_GET['q']);
-  drupal_set_breadcrumb(menu_get_active_breadcrumb());
+//  menu_set_active_item($_GET['q']);
+//  drupal_set_breadcrumb(menu_get_active_breadcrumb());
 
 }
 
