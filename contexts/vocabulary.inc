@@ -1,5 +1,5 @@
 <?php
-// $Id: vocabulary.inc,v 1.1.2.2 2007/11/02 22:24:47 merlinofchaos Exp $
+// $Id: vocabulary.inc,v 1.1.2.3 2007/11/09 01:34:09 merlinofchaos Exp $
 /**
  * @file contexts/vocabulary.inc
  *
@@ -13,6 +13,7 @@ function panels_vocabulary_panels_contexts() {
     'context' => 'panels_context_create_vocabulary',
     'settings form' => 'panels_context_vocabulary_settings_form',
     'settings form validate' => 'panels_context_vocabulary_settings_form_validate',
+    'keyword' => 'vocabulary',
   );
   return $args;
 }

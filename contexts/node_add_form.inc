@@ -1,5 +1,5 @@
 <?php
-// $Id: node_add_form.inc,v 1.1.2.1 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: node_add_form.inc,v 1.1.2.2 2007/11/09 01:34:09 merlinofchaos Exp $
 /**
  * @file contexts/node_add_form.inc
  *
@@ -12,6 +12,7 @@ function panels_node_add_form_panels_contexts() {
     'description' => t('A node add form.'),
     'context' => 'panels_context_create_node_add_form',
     'settings form' => 'panels_context_node_add_form_settings_form',
+    'keyword' => 'node_add',
   );
   return $args;
 }
@@ -62,7 +63,7 @@ function panels_context_node_add_form_settings_form($conf, $external = FALSE) {
   if ($external) {
     $options[0] = t('External source');
   }
- 
+
    foreach (node_get_types() as $type => $info) {
     $options[$type] = $info->name;
   }
