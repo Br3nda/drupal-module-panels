@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.1.2.2 2007/11/09 01:34:09 merlinofchaos Exp $
+// $Id: term.inc,v 1.1.2.3 2007/11/09 22:35:38 merlinofchaos Exp $
 /**
  * @file contexts/term.inc
  *
@@ -14,6 +14,7 @@ function panels_term_panels_contexts() {
     'settings form' => 'panels_context_term_settings_form',
     'settings form validate' => 'panels_context_term_settings_form_validate',
     'keyword' => 'term',
+    'no ui' => TRUE,
   );
   return $args;
 }

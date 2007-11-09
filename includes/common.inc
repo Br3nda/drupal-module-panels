@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.12 2007/11/09 01:34:09 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.13 2007/11/09 22:35:38 merlinofchaos Exp $
 
 /**
  * @file
@@ -240,7 +240,9 @@ function panels_common_add_context_form($module, &$form, &$form_location, $objec
 
   $choices = array();
   foreach (panels_get_contexts() as $name => $arg) {
-    $choices[$name] = $arg['title'];
+    if (empty($arg['no ui'])) {
+      $choices[$name] = $arg['title'];
+    }
   }
 
   asort($choices);
@@ -1009,4 +1011,78 @@ function panels_common_get_keyword($page, $word) {
     $keyword = $word . '_' . ++$count;
   }
   return $keyword;
+}
+
+/**
+ * Create a visible list of content in a display.
+ * Note that the contexts must be pre-loaded.
+ */
+function theme_panels_common_content_list($display) {
+  $layout = panels_get_layout($display->layout);
+  $content = '<dl class="content-list">';
+  foreach (panels_get_panels($layout, $display) as $panel_id => $title) {
+    $content .= "<dt>$title</dt><dd>";
+    if ($display->panels[$panel_id]) {
+      $content .= '<ol>';
+      foreach ($display->panels[$panel_id] as $pid) {
+        $content .= '<li>' . panels_get_pane_title($display->content[$pid], $display->context) . '</li>';
+      }
+      $content .= '</ol>';
+    }
+    else {
+      $content .= t('Empty');
+    }
+    $content .= '</dd>';
+  }
+  $content .= '</dl>';
+  return $content;
+}
+
+/**
+ * Create a visible list of all the contexts available on an object.
+ * Assumes arguments, relationships and context objects.
+ *
+ * Contexts must be preloaded.
+ */
+function theme_panels_common_context_list($object) {
+  $titles = array();
+  $output = '';
+  $count = 1;
+  // First, make a list of arguments. Arguments are pretty simple.
+  if (!empty($object->arguments)) {
+    foreach ($object->arguments as $argument) {
+      $output .= '<tr>';
+      $output .= '<td><em>' . t('Argument @count', array('@count' => $count)) . '</em></td>';
+      $output .= '<td>' . check_plain($argument['identifier']) . '</td>';
+      $output .= '</tr>';
+      $titles[panels_argument_context_id($argument)] = $argument['identifier'];
+      $count++;
+    }
+  }
+  $count = 1;
+  // Then, make a nice list of contexts.
+  if (!empty($object->contexts)) {
+    foreach ($object->contexts as $context) {
+      $output .= '<tr>';
+      $output .= '<td><em>' . t('Context @count', array('@count' => $count)) . '</em></td>';
+      $output .= '<td>' . check_plain($context['identifier']) . '</td>';
+      $output .= '</tr>';
+      $titles[panels_context_context_id($context)] = $context['identifier'];
+      $count++;
+    }
+  }
+  // And relationships
+  if (!empty($object->relationships)) {
+    foreach ($object->relationships as $relationship) {
+      $output .= '<tr>';
+      $output .= '<td><em>' . t('From @title', array('@title' => $titles[$relationship['context']])) . '</em></td>';
+      $output .= '<td>' . check_plain($relationship['identifier']) . '</td>';
+      $output .= '</tr>';
+      $titles[panels_relationship_context_id($relationship)] = $relationship['identifier'];
+      $count++;
+    }
+  }
+  if ($output) {
+    return "<table><tbody>$output</tbody></table>\n";
+  }
 }

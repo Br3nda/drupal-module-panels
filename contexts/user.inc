@@ -1,5 +1,5 @@
 <?php
-// $Id: user.inc,v 1.1.2.3 2007/11/07 02:10:54 merlinofchaos Exp $
+// $Id: user.inc,v 1.1.2.4 2007/11/09 22:35:38 merlinofchaos Exp $
 /**
  * @file contexts/user.inc
  *
@@ -13,6 +13,7 @@ function panels_user_panels_contexts() {
     'context' => 'panels_context_create_user',
     'settings form' => 'panels_context_user_settings_form',
     'settings form validate' => 'panels_context_user_settings_form_validate',
+    'no ui' => TRUE,
   );
   return $args;
 }

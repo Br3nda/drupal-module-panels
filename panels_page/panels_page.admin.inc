@@ -1,5 +1,8 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.21 2007/11/09 01:34:09 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.22 2007/11/09 22:35:38 merlinofchaos Exp $
+/**
+ * @file panels_page.admin.inc Administrative screens and functions for panel pages
+ */
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -184,6 +187,7 @@ function panels_page_edit($panel_page) {
  * The form to edit the page portion of a panel.
  */
 function panels_page_edit_form($panel_page) {
+  panels_load_include('common');
   drupal_add_css(panels_get_path('css/panels_admin.css'));
   $layout = panels_get_layout($panel_page->display->layout);
 
@@ -224,28 +228,24 @@ function panels_page_edit_form($panel_page) {
   $form['right']['layout']['layout-display'] = array(
     '#value' => check_plain($layout['title']),
   );
-  $content = '<dl class="content-list">';
-
-  $panel_page->context = $display->context = panels_context_load_contexts($panel_page);
-  foreach (panels_get_panels($layout, $panel_page->display) as $panel_id => $title) {
-    $content .= "<dt>$title</dt><dd>";
-    if ($panel_page->display->panels[$panel_id]) {
-      $content .= '<ol>';
-      foreach ($panel_page->display->panels[$panel_id] as $pid) {
-        $content .= '<li>' . panels_get_pane_title($panel_page->display->content[$pid], $display->context) . '</li>';
-      }
-      $content .= '</ol>';
-    }
-    else {
-      $content .= t('Empty');
-    }
-    $content .= '</dd>';
-  }
-  $content .= '</dl>';
+  
+  $panel_page->context = $panel_page->display->context = panels_context_load_contexts($panel_page);
 
   $form['right']['layout']['layout-content'] = array(
-    '#value' => $content,
+    '#value' => theme('panels_common_content_list', $panel_page->display), //$content,
   );
+
+  $contexts = theme('panels_common_context_list', $panel_page);
+  if ($contexts) {
+    $form['right']['context'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Contexts'),
+    );
+
+    $form['right']['context']['context'] = array(
+      '#value' => $contexts,
+    );
+  }
 
   $form['left']['info']['name'] = array(
     '#type' => 'textfield',
