@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.23 2007/11/20 17:54:21 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.24 2007/11/20 21:00:47 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -68,14 +68,6 @@ function panels_page_menu($may_cache) {
       'access' => $access,
       'callback' => 'panels_page_settings',
       'weight' => 5,
-      'type' => MENU_LOCAL_TASK,
-    );
-    $items[] = array(
-      'path' => 'admin/panels/panel-page/add/layout',
-      'title' => t('Add'),
-      'access' => $access,
-      'callback' => 'panels_page_passthru',
-      'callback arguments' => array('panels_page_add_layout_page'),
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
