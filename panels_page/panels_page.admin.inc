@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.22 2007/11/09 22:35:38 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.23 2007/11/20 17:54:21 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -228,7 +228,7 @@ function panels_page_edit_form($panel_page) {
   $form['right']['layout']['layout-display'] = array(
     '#value' => check_plain($layout['title']),
   );
-  
+
   $panel_page->context = $panel_page->display->context = panels_context_load_contexts($panel_page);
 
   $form['right']['layout']['layout-content'] = array(
@@ -297,6 +297,9 @@ function panels_page_edit_form_validate($form_id, $form_values, $form) {
   // Test uniqueness of name:
   if (!$form_values['name']) {
     form_error($form['left']['info']['name'], t('Panel name is required.'));
+  }
+  else if (preg_match("/[^A-Za-z0-9_]/", $form_values['name'])) {
+    form_error($form['left']['settings']['name'], t('Name must be alphanumeric or underscores only.'));
   }
   else {
     $query = "SELECT pid FROM {panels_page} WHERE name = '%s'";

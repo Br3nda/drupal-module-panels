@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.24 2007/11/05 22:33:11 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.25 2007/11/20 17:54:20 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -37,6 +37,7 @@ EOT
       );
       db_query("CREATE SEQUENCE {panels_page}_pid_seq;");
       db_query("CREATE INDEX {panels_page}_path_idx ON {panels_page} (path);");
+      db_query("CREATE INDEX {panels_page}_name_idx ON {panels_page} (name);");
 
       db_query(<<<EOT
         CREATE TABLE {panels_display} (
@@ -94,7 +95,8 @@ EOT
           menu_tab_default_parent_type varchar(10),
           menu_parent_title varchar(255),
           menu_parent_tab_weight int(4),
-          KEY path (path)
+          KEY path (path),
+          KEY name (name)
         )/*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
@@ -242,7 +244,7 @@ function panels_update_5204() {
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN name varchar(255) UNIQUE");
   $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN name varchar(255) UNIQUE");
   // Give all our panels a name.
-  $ret[] = update_sql("UPDATE {panels_page} SET name = CONCAT('display_', pid)");
+  $ret[] = update_sql("UPDATE {panels_page} SET name = CONCAT('panel_page_', pid)");
   $ret[] = update_sql("UPDATE {panels_display} SET name = CONCAT('display_', did)");
   return $ret;
 }
@@ -394,3 +396,13 @@ function panels_update_5211() {
   menu_rebuild();
   return array();
 }
+
+/**
+ * Add missing index on 'name' field.
+ */
+function panels_update_5212() {
+  $ret = array();
+  $ret[] = update_sql("CREATE INDEX {panels_page}_name_idx ON {panels_page} (name)");
+  return $ret;
+}
+

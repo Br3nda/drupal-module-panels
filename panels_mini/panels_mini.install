@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.install,v 1.1.2.2 2007/10/01 20:42:21 merlinofchaos Exp $
+// $Id: panels_mini.install,v 1.1.2.3 2007/11/20 17:54:21 merlinofchaos Exp $
 
 /**
  * Implementation of hook_install().
@@ -10,22 +10,30 @@ function panels_mini_install() {
       db_query(<<<EOT
         CREATE TABLE {panels_mini} (
           pid integer NOT NULL DEFAULT 0,
+          name varchar(255) UNIQUE,
           did integer,
           title varchar(128),
+          contexts longtext,
+          relationships longtext,
           PRIMARY KEY (pid)
         );
 EOT
       );
       db_query("CREATE SEQUENCE {panels_mini}_pid_seq;");
+      db_query("CREATE INDEX {panels_mini}_name_idx ON {panels_mini} (name);");
       break;
     case 'mysql':
     case 'mysqli':
       db_query(<<<EOT
         CREATE TABLE {panels_mini} (
           pid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
+          name varchar(255) UNIQUE,
           did int(10),
-          title varchar(128)
-        )/*!40100 DEFAULT CHARACTER SET utf8 */
+          title varchar(128),
+          contexts longtext,
+          relationships longtext,
+          KEY name (name)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
       break;
@@ -44,7 +52,7 @@ function panels_mini_uninstall() {
     // Delete all configured blocks.
     db_query("DELETE FROM {blocks} WHERE module = 'panels_mini' AND delta = %d", $panel_mini->pid);
   }
-  
+
   // Finally, delete all mini panels.
   switch ($GLOBALS['db_type']) {
     case 'pgsql':
@@ -56,4 +64,53 @@ function panels_mini_uninstall() {
       db_query("DROP TABLE IF EXISTS {panels_mini}");
       break;
   }
+}
+
+function panels_mini_update_5000() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+      db_add_column($ret, 'panels_mini', 'relationships', 'text', array());
+      db_add_column($ret, 'panels_mini', 'contexts', 'text', array());
+      db_add_column($ret, 'panels_mini', 'name', 'varchar(255) UNIQUE', array());
+      break;
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {panels_mini} ADD COLUMN relationships longtext");
+      $ret[] = update_sql("ALTER TABLE {panels_mini} ADD COLUMN contexts longtext");
+      $ret[] = update_sql("ALTER TABLE {panels_mini} ADD COLUMN name varchar(255) UNIQUE AFTER pid");
+      break;
+  }
+
+  $ret[] = update_sql("CREATE INDEX {panels_mini}_name_idx ON {panels_mini} (name)");
+  $ret[] = update_sql("UPDATE {panels_mini} SET name = CONCAT('mini_', pid)");
+
+  // Update all existing mini panels, which are being referenced by rid, to
+  // be referenced by name.
+  $ret[] = update_sql("UPDATE {blocks} b INNER JOIN {panels_mini} pm on pm.pid = b.delta SET b.delta = pm.name WHERE b.module = 'panels_mini'");
+
+  // Update all existing mini panels that are in panels since we're now using
+  // a different mechanism to display them
+  $pids = array();
+  $result = db_query("SELECT pid, name FROM {panels_mini}");
+  while ($mini = db_fetch_object($result)) {
+    $pids[$mini->pid] = $mini->name;
+  }
+
+  $result = db_query("SELECT * FROM {panels_pane} WHERE configuration LIKE '%panels_mini%' AND type = 'block'");
+  while ($pane = db_fetch_object($result)) {
+    $conf = unserialize($pane->configuration);
+    // double check so we don't make a mistake
+    if (empty($conf['module']) || $conf['module'] != 'panels_mini') {
+      continue;
+    }
+    unset($conf['module']);
+    $conf['name'] = $pids[$conf['delta']];
+    unset($conf['delta']);
+    // We can't use update_sql because without the safety of %s, serialize gets messed with
+    // by the code that does prefixing.
+    db_query("UPDATE {panels_pane} SET type = 'panels_mini', configuration = '%s', subtype = '%s' WHERE pid = %d", serialize($conf), $conf['name'], $pane->pid);
+  }
+
+  return $ret;
 }

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.22 2007/11/09 22:37:29 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.23 2007/11/20 17:54:21 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -839,7 +839,7 @@ function panels_page_load($pid, $load_display = FALSE) {
     if (!$page) {
       $defaults = panels_page_default_panels();
       if (isset($defaults[$pid])) {
-        $page = $defaults[$pid];
+        $page = $cache[$pid] = $defaults[$pid];
         return $page;
       }
       return;
