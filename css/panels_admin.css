@@ -31,6 +31,7 @@
   width: 49%;
 }
 
+.right-container fieldset,
 .layout-container fieldset {
   margin-top: 0;
   width: 98%;

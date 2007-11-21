@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.24 2007/11/21 07:07:20 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.25 2007/11/21 18:06:10 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -186,7 +186,7 @@ function panels_page_edit($panel_page) {
 /**
  * The form to edit the page portion of a panel.
  */
-function panels_page_edit_form($panel_page) {
+function panels_page_edit_form($panel_page, $next = NULL) {
   panels_load_include('common');
   drupal_add_css(panels_get_path('css/panels_admin.css'));
   $layout = panels_get_layout($panel_page->display->layout);
@@ -342,7 +342,7 @@ function panels_page_edit_form_submit($form_id, $form_values) {
     if ($layout['settings form']) {
       return "admin/panels/panel-page/$panel_page->name/edit/settings/next";
     }
-    return "admin/panels/panel-page/$panel_page->name/edit/content";
+    return "admin/panels/panel-page/$panel_page->name/edit/advanced/next";
   }
   else {
     drupal_set_message(t('Your changes have been saved.'));
@@ -350,30 +350,20 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   }
 }
 
-function panels_page_edit_advanced($name) {
-  if (!empty($_POST)) {
-    $panel_page = panels_common_cache_get('panel_object:panel_page', $name);
-  }
-  else {
-    $panel_page = panels_page_load($name);
-    panels_common_cache_set('panel_object:panel_page', $name, $panel_page);
-  }
-
+/**
+ * Edit advanced settings of a panel page
+ */
+function panels_page_edit_advanced($name, $next = NULL) {
+  $panel_page = panels_page_load($name);
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
-  return drupal_get_form('panels_page_advanced_form', $panel_page);
+  return drupal_get_form('panels_page_advanced_form', $panel_page, $next);
 }
 
 /**
  * The form to edit the advanced settings of a panel page
  */
-function panels_page_advanced_form($panel_page) {
+function panels_page_advanced_form($panel_page, $next = NULL) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
-  $layout = panels_get_layout($panel_page->display->layout);
-
-  $form['pid'] = array(
-    '#type' => 'value',
-    '#value' => $panel_page->pid,
-  );
 
   $form['panel_page'] = array(
     '#type' => 'value',
@@ -381,12 +371,12 @@ function panels_page_advanced_form($panel_page) {
   );
 
   $form['right'] = array(
-    '#prefix' => '<div class="layout-container">',
+    '#prefix' => '<div class="right-container">',
     '#suffix' => '</div>',
   );
 
   $form['left'] = array(
-    '#prefix' => '<div class="panel-page-info-container">',
+    '#prefix' => '<div class="left-container">',
     '#suffix' => '</div>',
   );
 
@@ -423,12 +413,6 @@ function panels_page_advanced_form($panel_page) {
     '#title' => t('CSS code'),
     '#description' => t('Enter well-formed CSS code here; this code will be embedded into the page, and should only be used for minor adjustments; it is usually better to try to put CSS for the page into the theme if possible.'),
     '#default_value' => $panel_page->css,
-  );
-
-  $form['left']['arg-info'] = array(
-    '#type' => 'fieldset',
-    '#collapsible' => FALSE,
-    '#title' => t('Arguments'),
   );
 
   $form['left']['menu-info'] = array(
@@ -514,14 +498,7 @@ function panels_page_advanced_form($panel_page) {
     '#description' => t('If the Parent Menu Item is being defined by this panel (if you set the %type_field to either %tab or %menu), you can specify its title here.  If blank, the menu title will be used if that is defined, or the page title if not.', array('%type_field' => t('Parent Menu Item Type'), '%tab' => t('Tab'), '%menu' => t('Normal menu item'))),
   );
 
-  panels_load_include('common');
-
-  $settings =  panels_common_add_argument_form('panel_page', $form, $form['left']['arg-info']['arguments_table'], $panel_page);
-  $settings += panels_common_add_context_form('panel_page', $form, $form['left']['arg-info']['contexts_table'], $panel_page);
-  $settings += panels_common_add_relationship_form('panel_page', $form, $form['left']['arg-info']['relationships_table'], $panel_page);
-  panels_common_add_context_js($settings);
-
-  $label = ($panel_page->pid == 'new') ? t('Next') : t('Save');
+  $label = ($next) ? t('Next') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => $label,
@@ -538,6 +515,85 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
 
   $panel_page->css = $form_values['css'];
+  $panel_page->no_blocks = $form_values['no_blocks'];
+  $panel_page->menu = $form_values['menu'];
+  $panel_page->menu_tab = $form_values['menu_tab'];
+  $panel_page->menu_tab_weight = $form_values['menu_tab_weight'];
+  $panel_page->menu_title = $form_values['menu_title'];
+  $panel_page->menu_tab_default = $form_values['menu_tab_default'];
+  $panel_page->menu_tab_default_parent_type = $form_values['menu_tab_default_parent_type'];
+  $panel_page->menu_parent_title = $form_values['menu_parent_title'];
+  $panel_page->menu_parent_tab_weight = $form_values['menu_parent_tab_weight'];
+
+  $panel_page->access = array_keys(array_filter($form_values['access']));
+
+  drupal_set_message(t('Your changes have been saved.'));
+  panels_page_save($panel_page);
+  if ($form_values['submit'] == t('Next')) {
+    return "admin/panels/panel-page/$panel_page->name/edit/context/next";
+  }
+}
+
+/**
+ * Edit advanced settings of a panel page
+ */
+function panels_page_edit_context($name, $next = NULL) {
+  if (!empty($_POST)) {
+    $panel_page = panels_common_cache_get('panel_object:panel_page', $name);
+  }
+  else {
+    $panel_page = panels_page_load($name);
+    panels_common_cache_set('panel_object:panel_page', $name, $panel_page);
+  }
+
+  drupal_set_title(check_plain(panels_page_get_title($panel_page)));
+  return drupal_get_form('panels_page_context_form', $panel_page, $next);
+}
+
+/**
+ * The form to edit the context settings of a panel page
+ */
+function panels_page_context_form($panel_page, $next = NULL) {
+  drupal_add_css(panels_get_path('css/panels_admin.css'));
+  $layout = panels_get_layout($panel_page->display->layout);
+
+  $form['panel_page'] = array(
+    '#type' => 'value',
+    '#value' => $panel_page
+  );
+
+  $form['right'] = array(
+    '#prefix' => '<div class="right-container">',
+    '#suffix' => '</div>',
+  );
+
+  $form['left'] = array(
+    '#prefix' => '<div class="left-container">',
+    '#suffix' => '</div>',
+  );
+
+  panels_load_include('common');
+
+  $settings =  panels_common_add_argument_form('panel_page', $form, $form['left']['arguments_table'], $panel_page);
+  $settings += panels_common_add_context_form('panel_page', $form, $form['right']['contexts_table'], $panel_page);
+  $settings += panels_common_add_relationship_form('panel_page', $form, $form['left']['relationships_table'], $panel_page);
+  panels_common_add_context_js($settings);
+
+  $label = ($next) ? t('Next') : t('Save');
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => $label,
+  );
+
+  return $form;
+}
+
+
+/**
+ * Process submission of the panel page edit form
+ */
+function panels_page_context_form_submit($form_id, $form_values) {
+  $panel_page = $form_values['panel_page'];
 
   // Organize these from the common form.
   panels_common_save_context('argument', $panel_page->arguments, $form_values);
@@ -583,21 +639,12 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
     }
   }
 
-  $panel_page->no_blocks = $form_values['no_blocks'];
-  $panel_page->menu = $form_values['menu'];
-  $panel_page->menu_tab = $form_values['menu_tab'];
-  $panel_page->menu_tab_weight = $form_values['menu_tab_weight'];
-  $panel_page->menu_title = $form_values['menu_title'];
-  $panel_page->menu_tab_default = $form_values['menu_tab_default'];
-  $panel_page->menu_tab_default_parent_type = $form_values['menu_tab_default_parent_type'];
-  $panel_page->menu_parent_title = $form_values['menu_parent_title'];
-  $panel_page->menu_parent_tab_weight = $form_values['menu_parent_tab_weight'];
-
-  $panel_page->access = array_keys(array_filter($form_values['access']));
-
   drupal_set_message(t('Your changes have been saved.'));
   panels_page_save($panel_page);
   panels_common_cache_clear('panel_object:panel_page', $panel_page->name);
+  if ($form_values['submit'] == t('Next')) {
+    return "admin/panels/panel-page/$panel_page->name/edit/content";
+  }
 }
 
 /**
@@ -663,7 +710,7 @@ function panels_page_edit_layout_settings($panel_page, $did = NULL, $next = NULL
   }
   else {
     $button = t('Next');
-    $dest = "admin/panels/panel-page/$panel_page->name/edit/content";
+    $dest = "admin/panels/panel-page/$panel_page->name/edit/advanced/next";
   }
 
   return panels_edit_layout_settings($panel_page->display, $button, $dest);

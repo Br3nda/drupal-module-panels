@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.25 2007/11/21 07:07:20 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.26 2007/11/21 18:06:10 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -245,6 +245,16 @@ function panels_page_admin_menu_items(&$items, $base, $page) {
     'access' => $access,
     'callback' => 'panels_page_passthru',
     'callback arguments' => array('panels_page_edit_advanced', $page->name),
+    'weight' => -4,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items[] = array(
+    'path' => $base . '/edit/context',
+    'title' => t('Context'),
+    'access' => $access,
+    'callback' => 'panels_page_passthru',
+    'callback arguments' => array('panels_page_edit_context', $page->name),
     'weight' => -4,
     'type' => MENU_LOCAL_TASK,
   );
