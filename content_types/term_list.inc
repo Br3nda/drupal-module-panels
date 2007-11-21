@@ -1,5 +1,5 @@
 <?php
-// $Id: term_list.inc,v 1.1.2.4 2007/10/25 22:33:03 merlinofchaos Exp $
+// $Id: term_list.inc,v 1.1.2.5 2007/11/21 22:48:15 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -44,6 +44,8 @@ function panels_content_term_list($conf, $panel_args, $context) {
       case 'sibling':
         $parent = db_result(db_query("SELECT parent FROM {term_hierarchy} WHERE tid = %d", $term->tid));
         $terms = taxonomy_get_children($parent, $term->vid);
+        // Remove the term that started this.
+        unset($terms[$term->tid]);
         break;
       case 'synonyms':
         $terms = taxonomy_get_synonyms($term->tid);
