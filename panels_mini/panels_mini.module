@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.8 2007/11/21 07:07:20 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.9 2007/11/21 22:00:54 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -88,40 +88,22 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
 
   if ($access) {
     $items[] = array(
+      'path' => $base,
+      'title' => t('Preview'),
+      'access' => $access,
+      'callback' => 'panels_mini_preview_panel',
+      'callback arguments' => array($panel_mini),
+      'weight' => -10,
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array(
       'path' => $base . '/preview',
       'title' => t('Preview'),
       'access' => $access,
       'callback' => 'panels_mini_preview_panel',
       'callback arguments' => array($panel_mini),
       'weight' => -10,
-      'type' => MENU_LOCAL_TASK,
-    );
-    $items[] = array(
-      'path' => $base,
-      'title' => t('Edit'),
-      'access' => $access,
-      'callback' => 'panels_mini_edit',
-      'callback arguments' => array($panel_mini),
-      'weight' => -5,
-      'type' => MENU_CALLBACK,
-    );
-    $items[] = array(
-      'path' => $base .'/edit/general',
-      'title' => t('General'),
-      'access' => $access,
-      'callback' => 'panels_mini_edit',
-      'callback arguments' => array($panel_mini),
-      'weight' => -5,
       'type' => MENU_DEFAULT_LOCAL_TASK,
-    );
-    $items[] = array(
-      'path' => $base . '/edit/advanced',
-      'title' => t('Advanced'),
-      'access' => $access,
-      'callback' => 'panels_mini_edit_advanced',
-      'callback arguments' => array($panel_mini),
-      'weight' => -4,
-      'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
       'path' => $base .'/edit/layout',
@@ -129,10 +111,18 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
       'access' => $access,
       'callback' => 'panels_mini_edit_layout',
       'callback arguments' => array($panel_mini),
-      'weight' => -3,
+      'weight' => -9,
       'type' => MENU_LOCAL_TASK,
     );
-
+    $items[] = array(
+      'path' => $base .'/edit/general',
+      'title' => t('Settings'),
+      'access' => $access,
+      'callback' => 'panels_mini_edit',
+      'callback arguments' => array($panel_mini),
+      'weight' => -5,
+      'type' => MENU_LOCAL_TASK,
+    );
     $items[] = array(
       'path' => $base .'/edit/settings',
       'title' => t('Layout settings'),
@@ -140,6 +130,16 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
       'callback' => 'panels_mini_edit_layout_settings',
       'callback arguments' => array($panel_mini),
       'weight' => -3,
+      'type' => MENU_LOCAL_TASK,
+    );
+
+    $items[] = array(
+      'path' => $base . '/edit/context',
+      'title' => t('Context'),
+      'access' => $access,
+      'callback' => 'panels_mini_edit_context',
+      'callback arguments' => array($panel_mini),
+      'weight' => -2,
       'type' => MENU_LOCAL_TASK,
     );
 
@@ -158,7 +158,7 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
       'access' => $access,
       'callback' => 'drupal_get_form',
       'callback arguments' => array('panels_mini_edit_export', $panel_mini),
-      'weight' => -9,
+      'weight' => 0,
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
@@ -485,10 +485,14 @@ function panels_mini_edit_form_submit($form_id, $form_values) {
 
   if ($panel_mini->pid == 'new') {
     panels_mini_save($panel_mini);
-    // TODO: Why not use form_set_value() -- Because we don't have the $form.
     $GLOBALS['form_values']['pid'] = $panel_mini->pid;
 
-    return "admin/panels/panel-mini/$panel_mini->name/edit/content";
+    $layout = panels_get_layout($panel_mini->display->layout);
+
+    if ($layout['settings form']) {
+      return "admin/panels/panel-mini/$panel_mini->name/edit/settings/next";
+    }
+    return "admin/panels/panel-mini/$panel_mini->name/edit/context/next";
   }
   else {
     drupal_set_message(t('Your changes have been saved.'));
@@ -497,9 +501,9 @@ function panels_mini_edit_form_submit($form_id, $form_values) {
 }
 
 /**
- * Form to edit advanced features of a mini panel
+ * Form to edit context features of a mini panel
  */
-function panels_mini_edit_advanced($panel_mini) {
+function panels_mini_edit_context($panel_mini, $next = NULL) {
   if (!empty($_POST)) {
     $panel_mini = panels_common_cache_get('panel_object:panel_mini', $panel_mini->name);
   }
@@ -508,13 +512,13 @@ function panels_mini_edit_advanced($panel_mini) {
   }
 
   drupal_set_title(check_plain($panel_mini->title));
-  return drupal_get_form('panels_mini_advanced_form', $panel_mini);
+  return drupal_get_form('panels_mini_context_form', $panel_mini, $next);
 }
 
 /**
- * The form to edit the advanced settings of a panel mini
+ * The form to edit the context settings of a panel mini
  */
-function panels_mini_advanced_form($panel_mini) {
+function panels_mini_context_form($panel_mini, $next = NULL) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
   panels_load_include('plugins');
   $layout = panels_get_layout($panel_mini->display->layout);
@@ -546,7 +550,7 @@ function panels_mini_advanced_form($panel_mini) {
   $settings += panels_common_add_relationship_form('panel_mini', $form, $form['right']['relationships_table'], $panel_mini);
   panels_common_add_context_js($settings);
 
-  $label = ($panel_mini->pid == 'new') ? t('Next') : t('Save');
+  $label = $next ? t('Next') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => $label,
@@ -559,7 +563,7 @@ function panels_mini_advanced_form($panel_mini) {
 /**
  * Process submission of the panel mini edit form
  */
-function panels_mini_advanced_form_submit($form_id, $form_values) {
+function panels_mini_context_form_submit($form_id, $form_values) {
   $panel_mini = $form_values['panel_mini'];
 
   // Organize these from the common form.
@@ -570,6 +574,9 @@ function panels_mini_advanced_form_submit($form_id, $form_values) {
   drupal_set_message(t('Your changes have been saved.'));
   panels_mini_save($panel_mini);
   panels_common_cache_clear('panel_object:panel_mini', $panel_mini->name);
+  if ($form_values['submit'] == t('Next')) {
+    return "admin/panels/panel-mini/$panel_mini->name/edit/content";
+  }
 }
 
 /**
@@ -635,12 +642,21 @@ function panels_mini_edit_layout($panel_mini) {
 /**
  * Pass through to the panels layout settings editor.
  */
-function panels_mini_edit_layout_settings($panel_mini) {
+function panels_mini_edit_layout_settings($panel_mini, $next = NULL) {
   if (!is_object($panel_mini)) {
     $panel_mini = panels_mini_load($panel_mini);
   }
   drupal_set_title(check_plain($panel_mini->title));
-  return panels_edit_layout_settings($panel_mini->display, t('Save'), "admin/panels/panel-mini/$panel_mini->name/edit/settings");
+  if (empty($next)) {
+    $button = t('Save');
+    $dest = "admin/panels/panel-mini/$panel_mini->name/edit/settings";
+  }
+  else {
+    $button = t('Next');
+    $dest = "admin/panels/panel-mini/$panel_mini->name/edit/context/next";
+  }
+
+  return panels_edit_layout_settings($panel_mini->display, $button, $dest);
 }
 
 // ---------------------------------------------------------------------------
