@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.14 2007/11/21 07:07:19 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.15 2007/11/21 16:56:28 merlinofchaos Exp $
 
 /**
  * @file
@@ -187,7 +187,7 @@ function panels_common_context_info($type = NULL) {
         'singular title' => t('argument'),
         'description' => t("Arguments are parsed from the URL and translated into contexts that may be added to the display via the 'content' tab. These arguments are parsed in the order received, and you may use % in your URL to hold the place of an object; the rest of the arguments will come after the URL. For example, if the URL is node/%/panel and your user visits node/1/panel/foo, the first argument will be 1, and the second argument will be foo."),
         'add button' => t('Add argument'),
-        'context function' => 'panels_get_context',
+        'context function' => 'panels_get_argument',
         'sortable' => TRUE,
       ),
       'relationship' => array(
@@ -227,6 +227,7 @@ function panels_common_context_info($type = NULL) {
 function panels_common_context_data($type, $name) {
   $info = panels_common_context_info($type);
   if (function_exists($info['context function'])) {
+    dsm($info['context function']);
     return $info['context function']($name);
   }
 }
@@ -598,6 +599,8 @@ function panels_common_ajax_context_item_add($module, $type, $panel_name) {
   // Figure out which context we're adding
   if (isset($_POST['buttons'][$type]['item'])) {
     $name = $_POST['buttons'][$type]['item'];
+    // Unset $_POST so fapi doesn't get confused and try to process this
+    // as a form.
     unset($_POST);
   }
   else if (isset($_POST[$type]['name'])) {
@@ -704,6 +707,13 @@ function panels_common_ajax_context_item_edit($module, $type, $panel_name) {
   if (isset($_POST['position'])) {
     $position = $_POST['position'];
   }
+
+  if (!isset($_POST['form_id'])) {
+    // Unset $_POST so fapi doesn't get confused and try to process this
+    // as a form.
+    unset($_POST);
+  }
+
   // Create a reference to the place our context lives.
   $keyword = $type . 's';
   $ref = &$object->$keyword;
@@ -1097,6 +1107,7 @@ function panels_common_edit_argument_form($panel_page, $argument, $position) {
     '#type' => 'submit',
     '#value' => t('Save'),
   );
+
   return $form;
 }
 
