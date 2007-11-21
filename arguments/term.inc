@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.1.2.4 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: term.inc,v 1.1.2.5 2007/11/21 16:57:13 merlinofchaos Exp $
 /**
  * @file arguments/term.inc
  *
@@ -56,7 +56,7 @@ function panels_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
     return FALSE;
   }
 
-  if (array_filter($conf['vids']) && empty($conf['vids'][$term->vid])) {
+  if (!empty($conf['vids']) && array_filter($conf['vids']) && empty($conf['vids'][$term->vid])) {
     return FALSE;
   }
 
