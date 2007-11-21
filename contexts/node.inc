@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.1.2.3 2007/11/07 02:10:54 merlinofchaos Exp $
+// $Id: node.inc,v 1.1.2.4 2007/11/21 07:07:19 merlinofchaos Exp $
 /**
  * @file contexts/node.inc
  *
@@ -14,6 +14,7 @@ function panels_node_panels_contexts() {
     'settings form' => 'panels_context_node_settings_form',
     'settings form validate' => 'panels_context_node_settings_form_validate',
     'keyword' => 'node',
+    'context name' => 'node',
   );
   return $args;
 }

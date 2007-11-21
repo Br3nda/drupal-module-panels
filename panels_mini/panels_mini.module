@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.7 2007/11/20 17:54:21 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.8 2007/11/21 07:07:20 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -88,6 +88,15 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
 
   if ($access) {
     $items[] = array(
+      'path' => $base . '/preview',
+      'title' => t('Preview'),
+      'access' => $access,
+      'callback' => 'panels_mini_preview_panel',
+      'callback arguments' => array($panel_mini),
+      'weight' => -10,
+      'type' => MENU_LOCAL_TASK,
+    );
+    $items[] = array(
       'path' => $base,
       'title' => t('Edit'),
       'access' => $access,
@@ -104,6 +113,15 @@ function panels_mini_menu_items(&$items, $base, $panel_mini) {
       'callback arguments' => array($panel_mini),
       'weight' => -5,
       'type' => MENU_DEFAULT_LOCAL_TASK,
+    );
+    $items[] = array(
+      'path' => $base . '/edit/advanced',
+      'title' => t('Advanced'),
+      'access' => $access,
+      'callback' => 'panels_mini_edit_advanced',
+      'callback arguments' => array($panel_mini),
+      'weight' => -4,
+      'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
       'path' => $base .'/edit/layout',
@@ -266,6 +284,20 @@ function panels_mini_delete_confirm_submit($formid, $form) {
 }
 
 /**
+ * Provide an administrative preview of a mini panel.
+ */
+function panels_mini_preview_panel($mini) {
+  $mini->display->args = array();
+  $mini->display->css_id = 'mini-panel-' . $mini->name;
+
+  panels_load_include('plugins');
+  $mini->context = $mini->display->context = panels_context_load_contexts($mini);
+
+  drupal_set_title(filter_xss_admin($mini->title));
+  return panels_render_display($mini->display);
+}
+
+/**
  * Page callback to export a panel page to PHP code.
  */
 function panels_mini_edit_export($panel_mini) {
@@ -366,9 +398,38 @@ function panels_mini_edit_form($panel_mini) {
     '#description' => t('A unique name used to identify this panel page internally. It must be only be alpha characters and underscores. No spaces, numbers or uppercase characters.'),
   );
 
-  // Add the "panel settings" section of the form and the accompanying submit
-  // handler.
-  $form['right']['layout'] = panels_common_get_layout_information($panel_mini);
+  panels_load_include('plugins');
+  $panel_mini->context = $panel_mini->display->context = panels_context_load_contexts($panel_mini);
+
+  $form['right']['layout'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Layout'),
+  );
+
+  $layout = panels_get_layout($panel_mini->display->layout);
+
+  $form['right']['layout']['layout-icon'] = array(
+    '#value' => panels_print_layout_icon($panel_mini->display->layout, $layout),
+  );
+
+  $form['right']['layout']['layout-display'] = array(
+    '#value' => check_plain($layout['title']),
+  );
+  $form['right']['layout']['layout-content'] = array(
+    '#value' => theme('panels_common_content_list', $panel_mini->display), //$content,
+  );
+
+  $contexts = theme('panels_common_context_list', $panel_mini);
+  if ($contexts) {
+    $form['right']['context'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Contexts'),
+    );
+
+    $form['right']['context']['context'] = array(
+      '#value' => $contexts,
+    );
+  }
 
   $label = ($panel_mini->pid == 'new') ? t('Next') : t('Save');
   $form['submit'] = array(
@@ -436,6 +497,82 @@ function panels_mini_edit_form_submit($form_id, $form_values) {
 }
 
 /**
+ * Form to edit advanced features of a mini panel
+ */
+function panels_mini_edit_advanced($panel_mini) {
+  if (!empty($_POST)) {
+    $panel_mini = panels_common_cache_get('panel_object:panel_mini', $panel_mini->name);
+  }
+  else {
+    panels_common_cache_set('panel_object:panel_mini', $panel_mini->name, $panel_mini);
+  }
+
+  drupal_set_title(check_plain($panel_mini->title));
+  return drupal_get_form('panels_mini_advanced_form', $panel_mini);
+}
+
+/**
+ * The form to edit the advanced settings of a panel mini
+ */
+function panels_mini_advanced_form($panel_mini) {
+  drupal_add_css(panels_get_path('css/panels_admin.css'));
+  panels_load_include('plugins');
+  $layout = panels_get_layout($panel_mini->display->layout);
+
+  $form['pid'] = array(
+    '#type' => 'value',
+    '#value' => $panel_mini->pid,
+  );
+
+  $form['panel_mini'] = array(
+    '#type' => 'value',
+    '#value' => $panel_mini
+  );
+
+  $form['right'] = array(
+    '#prefix' => '<div class="right-container">',
+    '#suffix' => '</div>',
+  );
+
+  $form['left'] = array(
+    '#prefix' => '<div class="left-container">',
+    '#suffix' => '</div>',
+  );
+
+  panels_load_include('common');
+
+  $settings = panels_common_add_context_form('panel_mini', $form, $form['right']['contexts_table'], $panel_mini);
+  $settings += panels_common_add_required_context_form('panel_mini', $form, $form['left']['required_contexts_table'], $panel_mini);
+  $settings += panels_common_add_relationship_form('panel_mini', $form, $form['right']['relationships_table'], $panel_mini);
+  panels_common_add_context_js($settings);
+
+  $label = ($panel_mini->pid == 'new') ? t('Next') : t('Save');
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => $label,
+  );
+
+  return $form;
+}
+
+
+/**
+ * Process submission of the panel mini edit form
+ */
+function panels_mini_advanced_form_submit($form_id, $form_values) {
+  $panel_mini = $form_values['panel_mini'];
+
+  // Organize these from the common form.
+  panels_common_save_context('context', $panel_mini->contexts, $form_values);
+  panels_common_save_context('requiredcontext', $panel_mini->requiredcontexts, $form_values);
+  panels_common_save_context('relationship', $panel_mini->relationships, $form_values);
+
+  drupal_set_message(t('Your changes have been saved.'));
+  panels_mini_save($panel_mini);
+  panels_common_cache_clear('panel_object:panel_mini', $panel_mini->name);
+}
+
+/**
  * Enable a default panel mini
  */
 function panels_mini_enable_page($name = NULL) {
@@ -470,10 +607,12 @@ function panels_mini_edit_content($panel_mini) {
   if (!is_object($panel_mini)) {
     $panel_mini = panels_mini_load($panel_mini);
   }
-  $panel_mini->display->context = array();
+  panels_load_include('plugins');
+  // Collect a list of contexts required by the arguments on this page.
+  $panel_mini->display->context = $contexts = panels_context_load_contexts($panel_mini);
 
   panels_load_include('common');
-  $content_types = panels_common_get_allowed_types('panels_mini');
+  $content_types = panels_common_get_allowed_types('panels_mini', $contexts);
 
   // Print this with theme('page') so that blocks are disabled while editing a display.
   // This is important because negative margins in common block layouts (i.e, Garland)
@@ -515,17 +654,21 @@ function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
   if ($op == 'list') {
     $blocks = array();
 
-    $result = db_query("SELECT * FROM {panels_mini} ORDER BY title");
-    while ($panel_mini = db_fetch_object($result)) {
-      $blocks[$panel_mini->pid] = array(
-        'info' => t('Mini panel: "@title"', array('@title' => $panel_mini->title)),
-      );
+    $minis = panels_mini_load_all();
+    foreach ($minis as $panel_mini) {
+      if (empty($mini->disabled) && empty($mini->requiredcontext)) {
+        $blocks[$panel_mini->pid] = array(
+          'info' => t('Mini panel: "@title"', array('@title' => $panel_mini->title)),
+        );
+      }
     }
 
     return $blocks;
   }
   elseif ($op == 'view') {
     $panel_mini = panels_mini_load($delta);
+    panels_load_include('plugins');
+    $panel_mini->context = $panel_mini->display->context = panels_context_load_contexts($panel_mini);
     $block = array(
       'subject' => $panel_mini->title,
       'content' => panels_render_display($panel_mini->display)
@@ -568,6 +711,14 @@ function panels_mini_content_types() {
 //      'required context' => $contexts,
       'category' => array(t('Mini panels'), -8),
     );
+    if (!empty($mini->requiredcontexts)) {
+      $types[$mini->name]['required context'] = array();
+      foreach ($mini->requiredcontexts as $context) {
+        $info = panels_get_context($context['name']);
+        // TODO: allow an optional setting
+        $types[$mini->name]['required context'][] = new panels_required_context($context['identifier'], $info['context name']);
+      }
+    }
   }
   return $types;
 }
@@ -577,6 +728,12 @@ function panels_mini_content_types() {
  */
 function panels_mini_content($conf, $panel_args, &$contexts) {
   $mini = panels_mini_load($conf['name']);
+  panels_load_include('plugins');
+
+  // Load up any contexts we might be using.
+  $context = panels_context_match_required_contexts($mini->requiredcontexts, $contexts);
+  $mini->context = $mini->display->context = panels_context_load_contexts($mini, FALSE, $context);
+
   if (empty($mini) || !empty($mini->disabled)) {
     return;
   }
@@ -628,7 +785,7 @@ function panels_mini_title_mini_panel($conf) {
  * Sanitize a mini, to guarantee certain data is as we believe it will be.
  */
 function panels_mini_sanitize($mini) {
-  foreach (array('contexts', 'relationships') as $id) {
+  foreach (array('contexts', 'relationships', 'requiredcontexts') as $id) {
     if (!is_array($mini->$id)) {
       $mini->$id = array();
     }
@@ -650,12 +807,13 @@ function panels_mini_load_all($page_size = 0) {
     $result = db_query($query);
   }
 
-  while ($page = db_fetch_object($result)) {
-    $page->contexts = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
-    $page->relationships = (!empty($page->relationships)) ? unserialize($page->relationships) : array();
+  while ($mini = db_fetch_object($result)) {
+    $mini->contexts = (!empty($mini->contexts)) ? unserialize($mini->contexts) : array();
+    $mini->requiredcontexts = (!empty($mini->requiredcontexts)) ? unserialize($mini->requiredcontexts) : array();
+    $mini->relationships = (!empty($mini->relationships)) ? unserialize($mini->relationships) : array();
 
-    $page->type = t('Local');
-    $panels[$page->name] = panels_mini_sanitize($page);
+    $mini->type = t('Local');
+    $panels[$mini->name] = panels_mini_sanitize($mini);
   }
 
   $status = variable_get('panel_mini_defaults', array());
@@ -705,6 +863,7 @@ function panels_mini_load($pid) {
     }
 
     $mini->contexts = (!empty($mini->contexts)) ? unserialize($mini->contexts) : array();
+    $mini->requiredcontexts = (!empty($mini->requiredcontexts)) ? unserialize($mini->requiredcontexts) : array();
     $mini->relationships = (!empty($mini->relationships)) ? unserialize($mini->relationships) : array();
 
     $cache[$pid] = panels_mini_sanitize($mini);
@@ -727,13 +886,15 @@ function panels_mini_save(&$panel_mini) {
       "name = '%s', " .
       "title = '%s', " .
       "relationships = '%s', " .
-      "contexts = '%s' " .
+      "contexts = '%s', " .
+      "requiredcontexts = '%s' " .
       "WHERE pid = %d",
         $panel_mini->did,
         $panel_mini->name,
         $panel_mini->title,
         serialize($panel_mini->relationships),
         serialize($panel_mini->contexts),
+        serialize($panel_mini->requiredcontexts),
       $panel_mini->pid
     );
   }
@@ -746,12 +907,14 @@ function panels_mini_save(&$panel_mini) {
         "did, " .
         "title, " .
         "relationships, " .
-        "contexts " .
+        "contexts, " .
+        "requiredcontexts " .
       ") " .
       "VALUES (" .
         "%d, " .
         "'%s', " .
         "%d, " .
+        "'%s', " .
         "'%s', " .
         "'%s', " .
         "'%s'" .
@@ -761,7 +924,8 @@ function panels_mini_save(&$panel_mini) {
         $display->did,
         $panel_mini->title,
         serialize($panel_mini->relationships),
-        serialize($panel_mini->contexts)
+        serialize($panel_mini->contexts),
+        serialize($panel_mini->requiredcontexts)
     );
   }
 

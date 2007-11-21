@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.5 2007/11/09 01:34:09 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.6 2007/11/21 07:07:19 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -795,6 +795,89 @@ function panels_context_get_keywords($contexts) {
 }
 
 /**
+ * Determine a unique context ID for a context
+ *
+ * @todo can probably combine the various versions of this.
+ */
+function panels_context_context_id($context, $type = 'context') {
+  return $type . "_$context[name]_$context[id]";
+}
+
+/**
+ * Get a context from a context object.
+ */
+function panels_context_get_context($context, $type = 'context') {
+  if ($function = panels_plugin_get_function('contexts', $context['name'], 'context')) {
+    $return = $function($type == 'requiredcontext', $context['context_settings'], TRUE);
+    if ($return) {
+      $return->identifier = $context['identifier'];
+      $return->page_title = $context['title'];
+      $return->keyword = $context['keyword'];
+      return $return;
+    }
+  }
+}
+
+/**
+ * Retrieve a list of empty contexts for all contexts
+ */
+function panels_context_get_contexts($contexts, $type = 'context') {
+  $return = array();
+  foreach ($contexts as $context) {
+    $ctext = panels_context_get_context($context, $type);
+    if ($ctext) {
+      $return[panels_context_context_id($context, $type)] = $ctext;
+    }
+  }
+  return $return;
+}
+
+/**
+ * Get a group of empty contexts for the object; this assumes all the
+ * standard context types, and doesn't punish you if they aren't
+ * available.
+ */
+function panels_context_load_contexts($object, $placeholders = TRUE, $contexts = array()) {
+  if ($placeholders) {
+    // This will load empty contexts as placeholders for argumens that come
+    // from external sources. If this isn't set, it's assumed these context
+    // will already have been matched up and loaded.
+    if (!empty($object->requiredcontexts) && is_array($object->requiredcontexts)) {
+      $contexts += panels_context_get_contexts($object->requiredcontexts, 'requiredcontext');
+    }
+
+    if (!empty($object->arguments) && is_array($object->arguments)) {
+      $contexts += panels_argument_get_contexts($object->arguments);
+    }
+  }
+
+  if (!empty($object->contexts) && is_array($object->contexts)) {
+    $contexts += panels_context_get_contexts($object->contexts);
+  }
+
+  // add contexts from relationships
+  if (!empty($object->relationships) && is_array($object->relationships)) {
+    panels_relationship_get_contexts($object->relationships, $contexts);
+  }
+
+  return $contexts;
+}
+
+/**
+ * Match up external contexts to our required contexts. It shouldn't be
+ * possible to get here without the contexts already lining up properly.
+ */
+
+function panels_context_match_required_contexts($required, $contexts) {
+  $return = array();
+  foreach ($required as $r) {
+    $return[panels_context_context_id($r, 'requiredcontext')] = array_shift($contexts);
+  }
+
+  return $return;
+}
+
+/**
  * Get a function from a plugin, if it exists.
  *
  * @param $plugin
@@ -823,67 +906,6 @@ function panels_plugin_get_function($plugin, $which, $function_name) {
   }
 }
 
-/**
- * Determine a unique context ID for a context
- *
- * @todo can probably combine the various versions of this.
- */
-function panels_context_context_id($context) {
-  return "context_$context[name]_$context[id]";
-}
-
-/**
- * Get a context from a context object.
- */
-function panels_context_get_context($context, $arg, $empty = FALSE) {
-  if ($function = panels_plugin_get_function('contexts', $context['name'], 'context')) {
-    $return = $function($arg, $context['context_settings'], $empty);
-    if ($return) {
-      $return->identifier = $context['identifier'];
-      $return->page_title = $context['title'];
-      $return->keyword = $context['keyword'];
-      return $return;
-    }
-  }
-}
-
-/**
- * Retrieve a list of empty contexts for all contexts
- */
-function panels_context_get_contexts($contexts) {
-  $return = array();
-  foreach ($contexts as $context) {
-    $ctext = panels_context_get_context($context, NULL, true);
-    if ($ctext) {
-      $return[panels_context_context_id($context)] = $ctext;
-    }
-  }
-  return $return;
-}
-
-/**
- * Get a group of empty contexts for the object; this assumes all the
- * standard context types, and doesn't punish you if they aren't
- * available.
- */
-function panels_context_load_contexts($object) {
-  // Get contexts from arguments
-  $contexts = array();
-  if (!empty($object->arguments) && is_array($object->arguments)) {
-    $contexts = panels_argument_get_contexts($object->arguments);
-  }
-
-  if (!empty($object->contexts) && is_array($object->contexts)) {
-    $contexts += panels_context_get_contexts($object->contexts);
-  }
-
-  // add contexts from relationships
-  if (!empty($object->relationships) && is_array($object->relationships)) {
-    panels_relationship_get_contexts($object->relationships, $contexts);
-  }
-
-  return $contexts;
-}
 
 // ---------------------------------------------------------------------------
 // panels data loading

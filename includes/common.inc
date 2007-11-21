@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.13 2007/11/09 22:35:38 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.14 2007/11/21 07:07:19 merlinofchaos Exp $
 
 /**
  * @file
@@ -176,6 +176,61 @@ function panels_common_get_layout_information($panel_implementation, $contexts =
 // ---------------------------------------------------------------------------
 // contexts -- highly resemble arguments.
 
+function panels_common_context_info($type = NULL) {
+  static $info = NULL;
+
+  // static doesn't work with functions like t().
+  if (empty($info)) {
+    $info = array(
+      'argument' => array(
+        'title' => t('Arguments'),
+        'singular title' => t('argument'),
+        'description' => t("Arguments are parsed from the URL and translated into contexts that may be added to the display via the 'content' tab. These arguments are parsed in the order received, and you may use % in your URL to hold the place of an object; the rest of the arguments will come after the URL. For example, if the URL is node/%/panel and your user visits node/1/panel/foo, the first argument will be 1, and the second argument will be foo."),
+        'add button' => t('Add argument'),
+        'context function' => 'panels_get_context',
+        'sortable' => TRUE,
+      ),
+      'relationship' => array(
+        'title' => t('Relationships'),
+        'singular title' => t('relationship'),
+        'description' => t('Relationships are contexts that are created from already existing contexts; the add relationship button will only appear once there is another context available. Relationships can load objects based upon how they are related to each other; for example, the author of a node, or a taxonomy term attached to a node, or the vocabulary of a taxonomy term.'),
+        'add button' => t('Add relationship'),
+        'context function' => 'panels_get_relationship',
+        'sortable' => FALSE,
+      ),
+      'context' => array(
+        'title' => t('Contexts'),
+        'singular title' => t('context'),
+        'description' => t('Contexts are embedded directly into the panel; you generally must select an object in the panel. For example, you could select node 5, or the term "animals" or the user "administrator"'),
+        'add button' => t('Add context'),
+        'context function' => 'panels_get_context',
+        'sortable' => FALSE,
+      ),
+      'requiredcontext' => array(
+        'title' => t('Required contexts'),
+        'singular title' => t('required context'),
+        'description' => t('Required contexts are passed in from some external source, such as a containing panel. If a mini panel has required contexts, it can only appear when that context is available, and therefore will not show up as a standard Drupal block.'),
+        'add button' => t('Add required context'),
+        'context function' => 'panels_get_context',
+        'sortable' => TRUE,
+      ),
+    );
+  }
+
+  if ($type === NULL) {
+    return $info;
+  }
+
+  return $info[$type];
+}
+
+function panels_common_context_data($type, $name) {
+  $info = panels_common_context_info($type);
+  if (function_exists($info['context function'])) {
+    return $info['context function']($name);
+  }
+}
+
 /**
  * Add the argument table plus gadget plus javascript to the form.
  */
@@ -251,6 +306,44 @@ function panels_common_add_context_form($module, &$form, &$form_location, $objec
     panels_common_add_item_table('context', $form_location, $choices, $object->contexts);
   }
   return _panels_common_context_js($object->name, $module, 'context');
+}
+
+function panels_common_add_required_context_form($module, &$form, &$form_location, $object) {
+  $form['requiredcontexts'] = array(
+    '#type' => 'value',
+    '#value' => $object->requiredcontexts,
+  );
+
+  $form_location = array(
+    '#prefix' => '<div id="panels-requiredcontexts-table">',
+    '#suffix' => '</div>',
+    '#theme' => 'panels_common_context_item_form',
+    '#panel_name' => $object->name,
+    '#panels_context_type' => 'requiredcontext',
+    '#panels_context_module' => $module,
+  );
+
+  // Store the order the choices are in so javascript can manipulate it.
+  $form_location['markup'] = array(
+    '#value' => '&nbsp;'
+  );
+  $form['requiredcontext_order'] = array(
+    '#type' => 'hidden',
+    '#id' => 'requiredcontext-order',
+    '#default_value' => $object->requiredcontexts ? implode(',', array_keys($object->requiredcontexts)) : '',
+  );
+
+  $choices = array();
+  foreach (panels_get_contexts() as $name => $arg) {
+    $choices[$name] = $arg['title'];
+  }
+
+  asort($choices);
+
+  if (!empty($choices) || !empty($object->contexts)) {
+    panels_common_add_item_table('requiredcontext', $form_location, $choices, $object->requiredcontexts);
+  }
+  return _panels_common_context_js($object->name, $module, 'requiredcontext');
 }
 
 function panels_common_add_relationship_form($module, &$form, &$form_location, $object) {
@@ -347,6 +440,13 @@ function panels_common_add_item_table($type, &$form, $available_contexts, $items
     }
   }
 
+  $type_info = panels_common_context_info($type);
+  $form['description'] = array(
+    '#prefix' => '<div class="description">',
+    '#suffix' => '</div>',
+    '#value' => $type_info['description'],
+  );
+
   $form['buttons'] = array(
     '#tree' => TRUE,
   );
@@ -356,10 +456,11 @@ function panels_common_add_item_table($type, &$form, $available_contexts, $items
     '#options' => $available_contexts,
   );
 
+  $type_info = panels_common_context_info($type);
   $form['buttons'][$type]['add'] = array(
     '#type' => 'submit',
     '#attributes' => array('class' => $type . '-add'),
-    '#value' => t('Add @type', array('@type' => $type)),
+    '#value' => $type_info['add button'],
   );
 }
 
@@ -369,13 +470,15 @@ function panels_common_add_item_table($type, &$form, $available_contexts, $items
  */
 function panels_common_add_item_to_form($type, &$form, $position, $item) {
   // This is the single function way to load any plugin by variable type.
-  $info = panels_get_plugins($type . 's', 'panels_' . $type . 's', $item['name']);
+  $info = panels_common_context_data($type, $item['name']);
   $form['title'] = array(
     '#value' => check_plain($item['identifier']),
   );
 
   // Relationships not sortable.
-  if ($type != 'relationship') {
+  $type_info = panels_common_context_info($type);
+
+  if (!empty($type_info['sortable'])) {
     $form['top'] = panels_add_button('go-top.png', t('Top'),
       t('Move this item to the top of the list'),
       $type . '-top',
@@ -422,7 +525,8 @@ function theme_panels_common_context_item_row($type, $form, $position, $count) {
   $output .= '<td class="title">&nbsp;' . drupal_render($form['title']) . '</td>';
 
   $arrows = '';
-  if ($type != 'relationship') {
+  $type_info = panels_common_context_info($type);
+  if (!empty($type_info['sortable'])) {
     $arrows = drupal_render($form['up']) .
               drupal_render($form['down']) .
               drupal_render($form['top']) .
@@ -445,11 +549,13 @@ function theme_panels_common_context_item_form($form) {
   $module = $form['#panels_context_module'];
   $name = $form['#panel_name'];
 
+  $type_info = panels_common_context_info($type);
+
   if (!empty($form[$type])) {
     $output .= '<table id="' . $type . '-table">';
     $output .= '<thead>';
     $output .= '<tr>';
-    $output .= '<th class="title">' . ucwords($type) . '</th>';
+    $output .= '<th class="title">' . $type_info['title'] . '</th>';
     $output .= '<th class="operation operation">' . t('Operation') . '</th>';
     $output .= '</thead>';
     $output .= '<tbody>';
@@ -472,6 +578,9 @@ function theme_panels_common_context_item_form($form) {
     $row[] = array('data' => drupal_render($form['buttons'][$type]['item']), 'class' => 'title');
     $row[] = array('data' => drupal_render($form['buttons'][$type]['add']), 'class' => 'add', 'width' => "60%");
     $output .= theme('table', array(), array($row), array('id' => $type . '-add-table'));
+  }
+  if (!empty($form['description'])) {
+    $output .= drupal_render($form['description']);
   }
 
   return $output;
@@ -499,7 +608,7 @@ function panels_common_ajax_context_item_add($module, $type, $panel_name) {
     panels_ajax_render();
   }
 
-  $info = panels_get_plugins($type . 's', 'panels_' . $type . 's', $name);
+  $info = panels_common_context_data($type, $name);
   if (empty($info)) {
     panels_ajax_render();
   }
@@ -574,7 +683,8 @@ function panels_common_ajax_context_item_add($module, $type, $panel_name) {
     panels_ajax_render($output);
   }
   else {
-    $title = t('Add @type @context', array('@type' => $type, '@context' => $info['title']));
+    $type_info = panels_common_context_info($type);
+    $title = t('Add @type "@context"', array('@type' => $type_info['singular title'], '@context' => $info['title']));
     $output = theme('status_messages');
     $output .= drupal_render_form($form_id, $form);
     panels_ajax_render($output, $title, url($_GET['q'], NULL, NULL, TRUE));
@@ -604,12 +714,13 @@ function panels_common_ajax_context_item_edit($module, $type, $panel_name) {
   }
 
   // load the context
-  $info = panels_get_plugins($type . 's', 'panels_' . $type . 's', $name);
+  $info = panels_common_context_data($type, $name);
   if (empty($info)) {
     panels_ajax_render();
   }
 
-  $title = t('Edit @type @context', array('@type' => $type, '@context' => $info['title']));
+  $type_info = panels_common_context_info($type);
+  $title = t('Edit @type "@context"', array('@type' => $type_info['singular title'], '@context' => $info['title']));
 
   $contexts = panels_context_load_contexts($object);
 
@@ -643,7 +754,7 @@ function panels_common_ajax_context_item_edit($module, $type, $panel_name) {
 }
 
 /**
- * Form (for ajax use) to add an argument
+ * Form (for ajax use) to add a context
  */
 function panels_common_edit_context_form($object, $context, $position, $contexts) {
   $ctext = $object->contexts[$position];
@@ -734,6 +845,73 @@ function panels_common_edit_context_form_submit($form_id, $form_values) {
     $info['settings form submit']($form_values['context_settings']);
   }
 
+  return $context;
+}
+
+/**
+ * Form (for ajax use) to add a context
+ */
+function panels_common_edit_requiredcontext_form($object, $context, $position, $contexts) {
+  $ctext = $object->requiredcontexts[$position];
+  $form['position'] = array(
+    '#type' => 'hidden',
+    '#value' => $position,
+  );
+
+  $form['start_form'] = array('#value' => '<div class="modal-form clear-block">');
+
+  $form['description'] = array(
+    '#prefix' => '<div class="description">',
+    '#suffix' => '</div>',
+    '#value' => check_plain($context['description']),
+  );
+
+  // Basic context values
+  $form['requiredcontext']['#tree'] = TRUE;
+
+  $form['requiredcontext']['name'] = array(
+    '#type' => 'hidden',
+    '#value' => $context['name'],
+  );
+
+  $form['requiredcontext']['id'] = array(
+    '#type' => 'value',
+    '#value' => $ctext['id'],
+  );
+
+  $form['requiredcontext']['identifier'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Identifier'),
+    '#description' => t('Enter a title to identify this context on administrative screens.'),
+    '#default_value' => $ctext['identifier'],
+  );
+
+  $form['requiredcontext']['keyword'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Keyword'),
+    '#description' => t('Enter a keyword to use for substitution in titles.'),
+    '#default_value' => $ctext['keyword'],
+  );
+
+  $form['context_info'] = array(
+    '#type' => 'value',
+    '#value' => $context,
+  );
+
+  $form['end_form'] = array('#value' => '</div>');
+
+  $form['next'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  return $form;
+}
+
+/**
+ * Updates a required context edited/added via ajax
+ */
+function panels_common_edit_requiredcontext_form_submit($form_id, $form_values) {
+  $context = $form_values['requiredcontext'];
   return $context;
 }
 
@@ -999,9 +1177,11 @@ function panels_common_get_arg_id($arguments, $name) {
 function panels_common_get_keyword($page, $word) {
   // Create a complete set of keywords
   $keywords = array();
-  foreach (array('arguments', 'relationships', 'contexts') as $type) {
-    foreach ($page->$type as $info) {
-      $keywords[$info['keyword']] = TRUE;
+  foreach (array('arguments', 'relationships', 'contexts', 'requiredcontexts') as $type) {
+    if (!empty($page->$type) && is_array($page->$type)) {
+      foreach ($page->$type as $info) {
+        $keywords[$info['keyword']] = TRUE;
+      }
     }
   }
 

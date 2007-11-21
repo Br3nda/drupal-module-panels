@@ -17,14 +17,16 @@
 }
 
 /* styles for the basic panel-%implementation% edit page */
-.layout-container {
+.layout-container,
+.right-container {
   float: right;
   padding: 0 0 0 1em;
   margin: 0;
   width: 49%;
 }
 
-.info-container {
+.info-container,
+.left-container {
   padding-right: 1em;
   width: 49%;
 }

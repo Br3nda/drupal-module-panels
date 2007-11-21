@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.23 2007/11/20 17:54:21 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.24 2007/11/21 07:07:20 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -388,13 +388,6 @@ function panels_page_advanced_form($panel_page) {
   $form['left'] = array(
     '#prefix' => '<div class="panel-page-info-container">',
     '#suffix' => '</div>',
-  );
-
-  $form['right']['advanced'] = array(
-    '#type' => 'fieldset',
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#title' => t('Advanced settings'),
   );
 
   $form['right']['advanced'] = array(
