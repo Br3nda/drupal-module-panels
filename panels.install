@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.26 2007/11/21 06:15:53 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.27 2007/11/21 22:30:55 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -278,7 +278,11 @@ function panels_update_5208() {
   $count = db_result(db_query("SELECT MAX(did) FROM {panels_display}"));
   $ret[] = update_sql("DELETE FROM {sequences} WHERE name = '{panels_display}_did'");
   $ret[] = update_sql("DELETE FROM {sequences} WHERE name = '{panels_display}_id'");
-  $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_display}_did', $count)");
+  if ($count) {
+    $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_display}_did',
+    $count)");
+  }
+
   return $ret;
 }
 
