@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.16 2007/11/21 16:57:23 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.17 2007/11/21 20:16:03 merlinofchaos Exp $
 
 /**
  * @file
@@ -520,9 +520,8 @@ function panels_common_add_item_to_form($type, &$form, $position, $item) {
 /**
  * Theme the form item for the context entry.
  */
-function theme_panels_common_context_item_row($type, $form, $position, $count) {
-  $output = '<tr id="' . $type . '-row-' . $position . '" class="' . $type . '-row ' . ($count % 2 ? 'even' : 'odd') . '">';
-  $output .= '<td class="title">&nbsp;' . drupal_render($form['title']) . '</td>';
+function theme_panels_common_context_item_row($type, $form, $position, $count, $with_tr = TRUE) {
+  $output = '<td class="title">&nbsp;' . drupal_render($form['title']) . '</td>';
 
   $arrows = '';
   $type_info = panels_common_context_info($type);
@@ -536,7 +535,9 @@ function theme_panels_common_context_item_row($type, $form, $position, $count) {
   $output .= '<td class="operation">' . drupal_render($form['settings']) .
     $arrows . drupal_render($form['remove']) .
   '</td>';
-  $output .= '</tr>';
+  if ($with_tr) {
+    $output = '<tr id="' . $type . '-row-' . $position . '" class="' . $type . '-row ' . ($count % 2 ? 'even' : 'odd') . '">' . $output . '</tr>';
+  }
   return $output;
 }
 
@@ -679,7 +680,7 @@ function panels_common_ajax_context_item_add($module, $type, $panel_name) {
       $output->relationships_table = drupal_render($rel_form);
     }
 
-    $output->type = $output->output = 'add';
+    $output->type = 'add';
     $output->output = theme('panels_common_context_item_row', $type, $arg_form[$type], $position, $position);
     $output->position = $position;
     panels_ajax_render($output);
@@ -753,6 +754,19 @@ function panels_common_ajax_context_item_edit($module, $type, $panel_name) {
     panels_common_cache_set("panel_object:$module", $panel_name, $object);
 
     $output->type = $output->output = 'dismiss';
+
+
+    // Build a chunk of the form to merge into the displayed form
+    $arg_form[$type] = array(
+      '#tree' => TRUE,
+    );
+
+    panels_common_add_item_to_form($type, $arg_form[$type], $position, $retval);
+    $arg_form = form_builder($form_id, $arg_form);
+
+    $output->replace = theme('panels_common_context_item_row', $type, $arg_form[$type], $position, $position, FALSE);
+    $output->replace_id = '#' . $type . '-row-' . $position;
+
     panels_ajax_render($output);
   }
   else {

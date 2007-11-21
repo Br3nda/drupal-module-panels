@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.5 2007/10/30 19:24:48 merlinofchaos Exp $
+// $Id: list.js,v 1.1.2.6 2007/11/21 20:16:03 merlinofchaos Exp $
 
 /**
  * List object
@@ -139,6 +139,14 @@ Drupal.list = function(base, settings) {
 
   this.restripeTable = restripeTable;
 
+  var changed = function(item) {
+    if (!item.is('.changed')) {
+      item.addClass('changed').css('color', 'red');
+      item.children('td:first').prepend(' <b>*</b> ');
+      $('p.nodequeue-warning').css('color', 'red');
+    }
+  }
+
   // Set as a function so we can be both a closure and called later
   // when more items get added.
   this.bindButtons = function() {
@@ -199,6 +207,7 @@ Drupal.list = function(base, settings) {
           if (prev.html() != null && item != prev) {
             // move item
             prev.before(item);
+            changed(item);
             restripeTable('#' + base);
             changeOrder(this, 'up');
           }
@@ -216,6 +225,7 @@ Drupal.list = function(base, settings) {
           var first = $(item).siblings(':first');
 
           first.before(item);
+          changed(item);
           restripeTable('#' + base);
           changeOrder(this, 'top');
 
@@ -234,6 +244,7 @@ Drupal.list = function(base, settings) {
           if (next.html() != null && item != next) {
             // move item
             next.after(item);
+            changed(item);
             restripeTable('#' + base);
             changeOrder(this, 'down');
           }
@@ -252,6 +263,7 @@ Drupal.list = function(base, settings) {
           
           // move item
           last.after(item);
+          changed(item);
           restripeTable('#' + base);
           changeOrder(this, 'bottom');
 
@@ -297,6 +309,7 @@ Drupal.list = function(base, settings) {
 
           // Add the form and re-attach behavior.
           $('#' + base + ' tbody').append(data.output);
+          changed($('#' + base + ' tbody tr:last'));
 
           changeOrder(data.position, 'add');
 
@@ -337,6 +350,12 @@ Drupal.list = function(base, settings) {
           return;
         case 'dismiss':
           // just dismiss the dialog.
+          console.log(data.replace);
+          if (data.replace_id && data.replace) {
+            $(data.replace_id).html(data.replace);
+            changed($(data.replace_id));
+          }
+
           $('#panels-modal').unmodalContent();
           return;
         default:
