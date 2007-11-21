@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.install,v 1.1.2.3 2007/11/20 17:54:21 merlinofchaos Exp $
+// $Id: panels_mini.install,v 1.1.2.4 2007/11/21 06:02:15 merlinofchaos Exp $
 
 /**
  * Implementation of hook_install().
@@ -13,8 +13,9 @@ function panels_mini_install() {
           name varchar(255) UNIQUE,
           did integer,
           title varchar(128),
-          contexts longtext,
-          relationships longtext,
+          requiredcontexts text,
+          contexts text,
+          relationships text,
           PRIMARY KEY (pid)
         );
 EOT
@@ -31,8 +32,9 @@ EOT
           did int(10),
           title varchar(128),
           contexts longtext,
+          requiredcontexts longtext,
           relationships longtext,
-          KEY name (name)
+          KEY (name)
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
@@ -110,6 +112,20 @@ function panels_mini_update_5000() {
     // We can't use update_sql because without the safety of %s, serialize gets messed with
     // by the code that does prefixing.
     db_query("UPDATE {panels_pane} SET type = 'panels_mini', configuration = '%s', subtype = '%s' WHERE pid = %d", serialize($conf), $conf['name'], $pane->pid);
+  }
+
+  return $ret;
+}
+
+function panels_mini_update_5001() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+      db_add_column($ret, 'panels_mini', 'requiredcontexts', 'text', array());
+      break;
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {panels_mini} ADD COLUMN requiredcontexts longtext");
   }
 
   return $ret;
