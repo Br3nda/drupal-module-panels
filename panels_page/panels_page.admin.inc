@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.26 2007/11/21 19:40:49 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.27 2007/11/21 20:41:31 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -847,12 +847,14 @@ function panels_page_admin_view($panel_page, $args) {
 
   $contexts = panels_context_load_contexts($panel_page);
   $count = 0;
-  foreach ($contexts as $context) {
-    $form['fieldset']["arg$count"] = array(
-      '#type' => 'textfield',
-      '#title' => check_plain($context->identifier),
-      '#default_value' => isset($args[$count]) ? $args[$count] : '',
-    );
+  foreach ($contexts as $id => $context) {
+    if (substr($id, 0, 8) == 'argument') {
+      $form['fieldset']["arg$count"] = array(
+        '#type' => 'textfield',
+        '#title' => check_plain($context->identifier),
+        '#default_value' => isset($args[$count]) ? $args[$count] : '',
+      );
+    }
     if (isset($args[$count])) {
       unset($args[$count]);
     }
