@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.15 2007/11/21 16:56:28 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.16 2007/11/21 16:57:23 merlinofchaos Exp $
 
 /**
  * @file
@@ -227,7 +227,6 @@ function panels_common_context_info($type = NULL) {
 function panels_common_context_data($type, $name) {
   $info = panels_common_context_info($type);
   if (function_exists($info['context function'])) {
-    dsm($info['context function']);
     return $info['context function']($name);
   }
 }
