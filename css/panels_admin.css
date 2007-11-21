@@ -125,3 +125,12 @@ table .argument-operation input {
   border: 1px dotted black;
   margin-bottom: 1em;
 }
+
+tr.changed td {
+  background-color: #FFFFDD !important;
+}
+
+tr.changed td span.star {
+  font-weight: bold;
+  color: #E09010;
+}

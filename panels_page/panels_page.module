@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.27 2007/11/21 19:40:49 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.28 2007/11/21 21:47:28 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -229,12 +229,33 @@ function panels_page_admin_menu_items(&$items, $base, $page) {
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
 
+  // Set up for the 'default' display.
+  $items[] = array(
+    'path' => $base . '/edit/layout',
+    'title' => t('Layout'),
+    'access' => $access,
+    'callback' => 'panels_page_passthru',
+    'callback arguments' => array('panels_page_edit_layout', $page->name),
+    'weight' => -9,
+    'type' => MENU_LOCAL_TASK,
+  );
+
   $items[] = array(
     'path' => $base . '/edit/general',
     'title' => t('Settings'),
     'access' => $access,
     'callback' => 'panels_page_passthru',
     'callback arguments' => array('panels_page_edit', $page->name),
+    'weight' => -7,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items[] = array(
+    'path' => $base . '/edit/settings',
+    'title' => t('Layout settings'),
+    'access' => $access,
+    'callback' => 'panels_page_passthru',
+    'callback arguments' => array('panels_page_edit_layout_settings', $page->name, NULL),
     'weight' => -5,
     'type' => MENU_LOCAL_TASK,
   );
@@ -245,7 +266,7 @@ function panels_page_admin_menu_items(&$items, $base, $page) {
     'access' => $access,
     'callback' => 'panels_page_passthru',
     'callback arguments' => array('panels_page_edit_advanced', $page->name),
-    'weight' => -4,
+    'weight' => -3,
     'type' => MENU_LOCAL_TASK,
   );
 
@@ -255,28 +276,7 @@ function panels_page_admin_menu_items(&$items, $base, $page) {
     'access' => $access,
     'callback' => 'panels_page_passthru',
     'callback arguments' => array('panels_page_edit_context', $page->name),
-    'weight' => -4,
-    'type' => MENU_LOCAL_TASK,
-  );
-
-  // Set up for the 'default' display.
-  $items[] = array(
-    'path' => $base . '/edit/layout',
-    'title' => t('Layout'),
-    'access' => $access,
-    'callback' => 'panels_page_passthru',
-    'callback arguments' => array('panels_page_edit_layout', $page->name),
-    'weight' => -3,
-    'type' => MENU_LOCAL_TASK,
-  );
-
-  $items[] = array(
-    'path' => $base . '/edit/settings',
-    'title' => t('Layout settings'),
-    'access' => $access,
-    'callback' => 'panels_page_passthru',
-    'callback arguments' => array('panels_page_edit_layout_settings', $page->name, NULL),
-    'weight' => -3,
+    'weight' => -2,
     'type' => MENU_LOCAL_TASK,
   );
 
@@ -360,7 +360,7 @@ function panels_page_admin_menu_items(&$items, $base, $page) {
     'access' => $access,
     'callback' => 'panels_page_passthru',
     'callback arguments' => array('drupal_get_form', 'panels_page_edit_export', $page->name),
-    'weight' => -9,
+    'weight' => 0,
     'type' => MENU_LOCAL_TASK,
   );
   $items[] = array(

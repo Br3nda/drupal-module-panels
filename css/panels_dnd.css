@@ -49,6 +49,17 @@ div.panels-display .pane-add {
   overflow: hidden; 
 }
 
+.changed div.grabber {
+  background-color: #FFFFDD !important;
+  border-bottom: 1px solid #3D9CD7 !important;
+  color: black !important;
+}
+
+.changed div.grabber span.star {
+  font-weight: bold;
+  color: #E09010;
+}
+
 .panel-pane .grabber:hover {
   color: #fff;
   background: #2F78A5;

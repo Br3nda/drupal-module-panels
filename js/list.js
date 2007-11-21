@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.7 2007/11/21 20:28:23 merlinofchaos Exp $
+// $Id: list.js,v 1.1.2.8 2007/11/21 21:47:28 merlinofchaos Exp $
 
 /**
  * List object
@@ -141,8 +141,8 @@ Drupal.list = function(base, settings) {
 
   var changed = function(item) {
     if (!item.is('.changed')) {
-      item.addClass('changed').css('color', 'red');
-      item.children('td:first').prepend(' <b>*</b> ');
+      item.addClass('changed');
+      item.children('td:first').append(' <span class="star">*</span> ');
     }
   }
 
@@ -206,8 +206,8 @@ Drupal.list = function(base, settings) {
           if (prev.html() != null && item != prev) {
             // move item
             prev.before(item);
-            changed(item);
             restripeTable('#' + base);
+            changed(item);
             changeOrder(this, 'up');
           }
 
@@ -224,8 +224,8 @@ Drupal.list = function(base, settings) {
           var first = $(item).siblings(':first');
 
           first.before(item);
-          changed(item);
           restripeTable('#' + base);
+          changed(item);
           changeOrder(this, 'top');
 
           return false;
@@ -243,8 +243,8 @@ Drupal.list = function(base, settings) {
           if (next.html() != null && item != next) {
             // move item
             next.after(item);
-            changed(item);
             restripeTable('#' + base);
+            changed(item);
             changeOrder(this, 'down');
           }
 
@@ -262,8 +262,8 @@ Drupal.list = function(base, settings) {
           
           // move item
           last.after(item);
-          changed(item);
           restripeTable('#' + base);
+          changed(item);
           changeOrder(this, 'bottom');
 
           return false;

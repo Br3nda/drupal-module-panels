@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.17 2007/11/21 20:16:03 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.18 2007/11/21 21:47:28 merlinofchaos Exp $
 
 /**
  * @file
@@ -403,7 +403,7 @@ function _panels_common_context_js($name, $module, $type) {
     'tr' => $type . '-row-',
     'row_class' => "tr.$type-row",
     // Additional HTML to replace on add.
-    'replace' => array('div#panels-relationships-table' => 'relationships_table'),
+    'replace' => array('div#panels-relationships-table div.buttons' => 'relationships_table'),
   ));
 }
 
@@ -447,6 +447,10 @@ function panels_common_add_item_table($type, &$form, $available_contexts, $items
     '#value' => $type_info['description'],
   );
 
+  panels_common_add_item_table_buttons($type, $form, $available_contexts);
+}
+
+function panels_common_add_item_table_buttons($type, &$form, $available_contexts) {
   $form['buttons'] = array(
     '#tree' => TRUE,
   );
@@ -552,7 +556,7 @@ function theme_panels_common_context_item_form($form) {
 
   $type_info = panels_common_context_info($type);
 
-  if (!empty($form[$type])) {
+  if (!empty($form[$type]) && empty($form['#only_buttons'])) {
     $output .= '<table id="' . $type . '-table">';
     $output .= '<thead>';
     $output .= '<tr>';
@@ -578,7 +582,9 @@ function theme_panels_common_context_item_form($form) {
     $row = array();
     $row[] = array('data' => drupal_render($form['buttons'][$type]['item']), 'class' => 'title');
     $row[] = array('data' => drupal_render($form['buttons'][$type]['add']), 'class' => 'add', 'width' => "60%");
+    $output .= '<div class="buttons">';
     $output .= theme('table', array(), array($row), array('id' => $type . '-add-table'));
+    $output .= '</div>';
   }
   if (!empty($form['description'])) {
     $output .= drupal_render($form['description']);
@@ -665,6 +671,7 @@ function panels_common_ajax_context_item_add($module, $type, $panel_name) {
       '#panel_name' => $panel_name,
       '#panels_context_type' => 'relationship',
       '#panels_context_module' => $module,
+      '#only_buttons' => TRUE,
     );
 
     $rel_form['relationship'] = array(
@@ -675,7 +682,7 @@ function panels_common_ajax_context_item_add($module, $type, $panel_name) {
 
     $output = new stdClass();
     if (!empty($available_relationships)) {
-      panels_common_add_item_table('relationship', $rel_form, $available_relationships, $object->relationships);
+      panels_common_add_item_table_buttons('relationship', $rel_form, $available_relationships);
       $rel_form = form_builder('dummy_form_id', $rel_form);
       $output->relationships_table = drupal_render($rel_form);
     }
