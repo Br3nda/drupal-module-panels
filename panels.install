@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.25 2007/11/20 17:54:20 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.26 2007/11/21 06:15:53 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -96,7 +96,7 @@ EOT
           menu_parent_title varchar(255),
           menu_parent_tab_weight int(4),
           KEY path (path),
-          KEY name (name)
+          KEY (name)
         )/*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
