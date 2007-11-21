@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.11 2007/11/05 22:36:11 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.12 2007/11/21 22:20:59 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -17,9 +17,11 @@ function panels_node_perm() {
 function panels_node_menu($may_cache) {
   if ($may_cache) {
     $items[] = array(
-      'path' => 'node/add/panel-node',
-      'title' => t('Create panel-node'),
+      'path' => 'node/add/panel',
+      'title' => t('Panel'),
       'access' => user_access('create panel-nodes'),
+      'callback' => 'panels_node_add',
+      'type' => MENU_NORMAL_ITEM,
     );
     $items[] = array(
       'path' => 'admin/panels/panel-node',
@@ -65,6 +67,16 @@ function panels_node_menu($may_cache) {
         );
       }
     }
+    // Hard override of node/add
+    if (arg(0) == 'node' && arg(1) == 'add' && arg(2) == 'panel' && arg(3) == NULL) {
+      $items[] = array(
+        'path' => 'node/add/panel',
+        'title' => t('Panel'),
+        'access' => user_access('create panel-nodes'),
+        'callback' => 'panels_node_add',
+        'type' => MENU_NORMAL_ITEM,
+      );
+    }
   }
   return $items;
 }
@@ -103,6 +115,18 @@ function panels_node_access($op, $node = NULL) {
   }
 }
 
+function panels_node_add() {
+  $output = '';
+
+  panels_load_include('plugins');
+  // If no layout selected, present a list of choices.
+  foreach (panels_get_layouts() as $id => $layout) {
+    $output .= panels_print_layout_link($id, $layout, $_GET['q'] . '/' . $id);
+  }
+  return $output;
+
+}
+
 /**
  * Implementation of hook_form.
  */
@@ -112,23 +136,15 @@ function panels_node_form(&$node, &$param) {
     // Grab our selected layout from arg(3). If it doesn't exist, present them with
     // a list to pick from.
 
-    $layout = arg(3);
-    if (is_null($layout)) {
-      panels_load_include('plugins');
-      $form['markup']['#value'] = '';
-      $layouts = panels_get_layouts();
-      foreach ($layouts as $id => $layout) {
-        $form['markup']['#value'] .= panels_print_layout_link($id, $layout, $_GET['q'] . '/' . $id);
-      }
-      $form['markup']['#value'] .= '<br style="clear: both;" />';
-      return $form;
+    panels_load_include('plugins');
+    $layout = panels_get_layout(arg(3));
+    if (empty($layout)) {
+      return drupal_not_found();
     }
-    else {
-      $form['panels_node']['layout'] = array(
-        '#type' => 'value',
-        '#value' => $layout,
-      );
-    }
+    $form['panels_node']['layout'] = array(
+      '#type' => 'value',
+      '#value' => arg(3),
+    );
   }
 
   $type = node_get_types('type', $node);
