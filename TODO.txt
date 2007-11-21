@@ -8,7 +8,7 @@ ajax/js
     o remove panels_hidden, use only javascript
     o Remove 'panels_set' and use the broken up drupal_get_form functions
       rather than drupal_get_form for our multi-step stuff.
-    o Add permission checking to all the ajax functions
+    X Add permission checking to all the ajax functions
     o Break up panels_ajax into separate entry areas [mostly done]
     o ensure complete degradability
     X Make sure the icons on the 'change layout' page are clickable
@@ -37,10 +37,10 @@ panels page
     o Clone panels page
 
 mini panels
-    o Allow mini panels to require an argument (and thus be just panel content)
+    X Allow mini panels to require an argument (and thus be just panel content)
 
 content types
-    o Allow creating new custom blocks.
+    - Allow creating new custom blocks.
     X Get all 'block' settings into blocks.
     X Remove all calls to the 'admin' callback
     X Make panels_get_content_type() like using for layout
@@ -59,7 +59,7 @@ content types
     X give views.inc setting to NOT use arguments.
     X unify title overriding.
     X node_content type 
-    o taxonomy term types
+    X taxonomy term types
     o user types
     o views context sensitive conversions
 
@@ -83,8 +83,8 @@ Styles:
     X Rounded corners style
 
 Arguments:
-    o taxonomy argument
-    o user argument
+    X taxonomy argument
+    X user argument
 
 panels API
     X Provide method to directly edit/configure an individual content block if viewer has permissions
