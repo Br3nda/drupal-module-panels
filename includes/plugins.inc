@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.6 2007/11/21 07:07:19 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.7 2007/11/21 17:43:50 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -473,7 +473,7 @@ function panels_get_pane_content($pane, $args = array(), $context = NULL, $incom
  * @param $pane
  *   The $pane object.
  */
-function panels_get_pane_title(&$pane, $context = NULL, $incoming_content = NULL) {
+function panels_get_pane_title(&$pane, $context = array(), $incoming_content = NULL) {
   if (empty($pane->context)) {
     $pane->context = panels_pane_select_context($pane, $context);
     if ($pane->context === FALSE) {
