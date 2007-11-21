@@ -1,5 +1,5 @@
 <?php
-// $Id: term_parent.inc,v 1.1.2.3 2007/11/09 01:34:09 merlinofchaos Exp $
+// $Id: term_parent.inc,v 1.1.2.4 2007/11/21 17:11:29 merlinofchaos Exp $
 /**
  * @file relationships/term_parent.inc
  *
@@ -9,7 +9,7 @@
 function panels_term_parent_panels_relationships() {
   $args['term_parent'] = array(
     'title' => t("Term parent"),
-    'keyword' => 'term_parent',
+    'keyword' => 'parent_term',
     'description' => t('Adds a taxonomy term parent from a term context.'),
     'required context' => new panels_required_context(t('Term'), 'term'),
     'context' => 'panels_term_parent_context',
@@ -25,7 +25,7 @@ function panels_term_parent_panels_relationships() {
 function panels_term_parent_context($context = NULL, $conf) {
   // If unset it wants a generic, unfilled context, which is just NULL
   if (empty($context->data)) {
-    return new panels_context(array('term_parent', 'term'), NULL);
+    return panels_context_create('term', NULL);
   }
 
   if (isset($context->data)) {
@@ -46,7 +46,7 @@ function panels_term_parent_context($context = NULL, $conf) {
     // load the term
     if ($result) {
       $term = taxonomy_get_term($result['tid']);
-      return new panels_context(array('term_parent', 'term'), $term);
+      return panels_context_create('term', $term);
     }
   }
 }
