@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.6 2007/11/21 20:16:03 merlinofchaos Exp $
+// $Id: list.js,v 1.1.2.7 2007/11/21 20:28:23 merlinofchaos Exp $
 
 /**
  * List object
@@ -143,7 +143,6 @@ Drupal.list = function(base, settings) {
     if (!item.is('.changed')) {
       item.addClass('changed').css('color', 'red');
       item.children('td:first').prepend(' <b>*</b> ');
-      $('p.nodequeue-warning').css('color', 'red');
     }
   }
 

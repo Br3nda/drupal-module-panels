@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.22 2007/10/22 23:48:50 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.23 2007/11/21 20:28:23 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -114,6 +114,13 @@ Drupal.Panels.bindPortlet = function() {
     content.hide();
   }
 }
+
+Drupal.Panels.changed = function(item) {
+  if (!item.is('.changed')) {
+    item.addClass('changed');
+    item.children('div.grabber span.text').prepend(' <b>*</b> ').css('background-color', 'red');
+  }
+};
 
 Drupal.Panels.Draggable = {
   // The draggable object
@@ -355,6 +362,7 @@ Drupal.Panels.DraggableHandler = function() {
     if (draggable.current_pad) {
       // Drop the object where we're hovering
       $(draggable.object).insertAfter($(draggable.current_pad.obj));
+      Drupal.Panels.changed($(draggable.object));
     }
     else {
       // or put it back where it came from
@@ -476,6 +484,8 @@ Drupal.Panels.attachPane = function(parent) {
     $('div.panel-pane').addClass('panel-portlet')
       .each(Drupal.Panels.bindPortlet);
   }
+
+  Drupal.Panels.changed($(parent));
 
   $(parent).find('div.grabber').panelsDraggable();
 
