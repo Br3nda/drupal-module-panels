@@ -1,5 +1,5 @@
 <?php
-// $Id: term_from_node.inc,v 1.1.2.3 2007/10/25 02:23:20 merlinofchaos Exp $
+// $Id: term_from_node.inc,v 1.1.2.4 2007/11/21 17:14:39 merlinofchaos Exp $
 /**
  * @file relationships/term_from_node.inc
  *
@@ -25,13 +25,13 @@ function panels_term_from_node_panels_relationships() {
 function panels_term_from_node_context($context = NULL, $conf) {
   // If unset it wants a generic, unfilled context, which is just NULL
   if (empty($context->data)) {
-    return new panels_context(array('term'), NULL);
+    return panels_context_create_empty('term', NULL);
   }
 
   if (isset($context->data->taxonomy)) {
     foreach ($context->data->taxonomy as $term) {
       if ($term->vid == $conf['vid']) {
-        return new panels_context(array('term'), $term);
+        return panels_context_create('term', $term);
       }
     }
   }

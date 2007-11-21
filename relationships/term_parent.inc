@@ -1,5 +1,5 @@
 <?php
-// $Id: term_parent.inc,v 1.1.2.4 2007/11/21 17:11:29 merlinofchaos Exp $
+// $Id: term_parent.inc,v 1.1.2.5 2007/11/21 17:14:39 merlinofchaos Exp $
 /**
  * @file relationships/term_parent.inc
  *
@@ -25,7 +25,7 @@ function panels_term_parent_panels_relationships() {
 function panels_term_parent_context($context = NULL, $conf) {
   // If unset it wants a generic, unfilled context, which is just NULL
   if (empty($context->data)) {
-    return panels_context_create('term', NULL);
+    return panels_context_create_empty('term');
   }
 
   if (isset($context->data)) {
