@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.25 2007/11/21 18:06:10 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.26 2007/11/21 19:40:49 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -299,7 +299,7 @@ function panels_page_edit_form_validate($form_id, $form_values, $form) {
     form_error($form['left']['info']['name'], t('Panel name is required.'));
   }
   else if (preg_match("/[^A-Za-z0-9_]/", $form_values['name'])) {
-    form_error($form['left']['settings']['name'], t('Name must be alphanumeric or underscores only.'));
+    form_error($form['left']['info']['name'], t('Name must be alphanumeric or underscores only.'));
   }
   else {
     $query = "SELECT pid FROM {panels_page} WHERE name = '%s'";
@@ -889,7 +889,7 @@ function panels_page_admin_view($panel_page, $args) {
 
 function panels_page_admin_view_submit($form_id, $form_values) {
   $count = 0;
-  $url = "admin/panels/panel-page/" . $form_values['panel_page']->name . "/view";
+  $url = "admin/panels/panel-page/" . $form_values['panel_page']->name . "/preview";
   foreach ($form_values['contexts'] as $context) {
     $url .= "/" . $form_values["arg$count"];
     $count++;

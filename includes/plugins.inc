@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.7 2007/11/21 17:43:50 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.8 2007/11/21 19:40:49 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -535,6 +535,70 @@ function panels_argument_get_contexts($arguments) {
   return $contexts;
 }
 
+/**
+ * Load the contexts for a given panel.
+ *
+ * @param $arguments
+ *   The array of argument definitions
+ * @param &$contexts
+ *   The array of existing contexts.
+ * @param $args
+ *   The arguments to load
+ *
+ * @return
+ *   FALSE if an argument wants to 404.
+ */
+function panels_argument_load_contexts($arguments, &$contexts, $args) {
+  foreach ($arguments as $argument) {
+    // pull the argument off the list.
+    $arg = array_shift($args);
+    $id = panels_argument_context_id($argument);
+
+    // For % arguments embedded in the URL, our context is already loaded.
+    // There is no need to go and load it again.
+    if (empty($contexts[$id])) {
+      if ($context = panels_argument_get_context($argument, $arg)) {
+        $contexts[$id] = $context;
+      }
+    }
+    else {
+      $context = $contexts[$id];
+    }
+
+    if ((empty($context) || empty($context->data)) && $argument['default'] == '404') {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+/**
+ * Choose a display based upon arguments and loaded contexts.
+ *
+ * @param $arguments
+ *   The array of argument definitions
+ * @param &$contexts
+ *   The array of existing contexts.
+ *
+ * @return
+ *   The identification of the display to use
+ */
+function panels_argument_get_display($arguments, $contexts) {
+  $display_candidate = NULL;
+  foreach ($arguments as $argument) {
+    $id = panels_argument_context_id($argument);
+    if (!empty($contexts[$id]) && !empty($contexts[$id]->data)) {
+      $context = $contexts[$id];
+      $d = panels_argument_choose_display($argument['name'], $argument['argument_settings'], $context);
+      if ($d) {
+        $display_candidate = "argument_$i" . '-' . $d;
+      }
+    }
+  }
+
+  return $display_candidate;
+}
+
 // ---------------------------------------------------------------------------
 // panels relationship helpers
 
@@ -875,6 +939,17 @@ function panels_context_match_required_contexts($required, $contexts) {
   }
 
   return $return;
+}
+
+/**
+ * Return the first context with a form id from a list of contexts.
+ */
+function panels_context_get_form($contexts) {
+  foreach ($contexts as $context) {
+    if (!empty($context->form_id)) {
+      return $context;
+    }
+  }
 }
 
 /**

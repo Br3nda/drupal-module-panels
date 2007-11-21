@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.26 2007/11/21 18:06:10 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.27 2007/11/21 19:40:49 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -211,7 +211,7 @@ function panels_page_admin_menu_items(&$items, $base, $page) {
 
   $items[] = array(
     'path' => $base,
-    'title' => t('View'),
+    'title' => t('Preview'),
     'access' => $access,
     'callback' => 'panels_page_view_page',
     'callback arguments' => array($page->name, TRUE),
@@ -220,8 +220,8 @@ function panels_page_admin_menu_items(&$items, $base, $page) {
   );
 
   $items[] = array(
-    'path' => $base . '/view',
-    'title' => t('View'),
+    'path' => $base . '/preview',
+    'title' => t('Preview'),
     'access' => $access,
     'callback' => 'panels_page_view_page',
     'callback arguments' => array($page->name, TRUE),
@@ -639,53 +639,31 @@ function panels_page_view_page($panel_page, $admin) {
     $panel_page->context = array();
   }
 
-  // TODO: Generalize this, move into arguments section.
-  $form = NULL;
   if ($panel_page->arguments) {
-    $count = 0;
-    foreach ($panel_page->arguments as $i => $argument) {
-
-      // For % arguments embedded in the URL, our context is already loaded.
-      // There is no need to go and load it again.
-      $id = panels_argument_context_id($argument);
-      if (empty($panel_page->context[$id])) {
-        $context = panels_argument_get_context($argument, $args[$count]);
+    if (!panels_argument_load_contexts($panel_page->arguments, $panel_page->context, $args)) {
+      if ($admin) {
+        return $output . t('Page reports "Page not found" due to argument restrictions');
       }
       else {
-        $context = $panel_page->context[$id];
-      }
-      $count++;
-
-      if (!empty($context) && !empty($context->data)) {
-        $panel_page->context[$id] = $context;
-        $d = panels_argument_choose_display($argument['name'], $argument['argument_settings'], $context);
-        if ($d) {
-          $display_candidate = "argument_$i" . '-' . $d;
-        }
-        if (isset($context->form_id)) {
-          $form = $context;
-        }
-      }
-      else if ($argument['default'] == '404') {
-        return $admin ? $output . t('Page reports "not found"') : drupal_not_found();
+        return drupal_not_found();
       }
     }
   }
 
-  $panel_page->context += panels_context_get_contexts($panel_page->contexts);
-  // Get additional contexts from relationships
-  panels_relationship_get_contexts($panel_page->relationships, $panel_page->context);
-
-//  dsm($panel_page->context);
-
+  $panel_page->context = panels_context_load_contexts($panel_page, FALSE, $panel_page->context);
   $panel_page->keywords = panels_context_get_keywords($panel_page->context);
+
   // Figure out which display to use.
-  if (isset($display_candidate)) {
+  if ($display_candidate = panels_argument_get_display($panel_page->arguments, $panel_page->context)) {
     $display = panels_page_fetch_display($panel_page, $display_candidate);
   }
   else {
     $display = !empty($panel_page->display) ? $panel_page->display : panels_load_display($panel_page->did);
   }
+
+  // Figure out if these contexts include a form; will be NULL if there
+  // isn't one, or the context if there is.
+  $form = panels_context_get_form($panel_page->contexts);
 
   // This is the first point at which it is safe to add items to the display
   // as the argument handling, above, may choose which display is actually
