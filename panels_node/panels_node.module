@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.12 2007/11/21 22:20:59 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.13 2007/11/22 16:43:31 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -20,7 +20,6 @@ function panels_node_menu($may_cache) {
       'path' => 'node/add/panel',
       'title' => t('Panel'),
       'access' => user_access('create panel-nodes'),
-      'callback' => 'panels_node_add',
       'type' => MENU_NORMAL_ITEM,
     );
     $items[] = array(

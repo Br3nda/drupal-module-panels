@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.install,v 1.1.2.3 2007/10/01 20:42:21 merlinofchaos Exp $
+// $Id: panels_node.install,v 1.1.2.4 2007/11/22 16:43:31 merlinofchaos Exp $
 
 /**
  * Install the panels node tables
@@ -46,4 +46,11 @@ function panels_node_uninstall() {
       db_query("DROP TABLE IF EXISTS {panels_node}");
       break;
   }
+}
+
+function panels_node_update_5000() {
+  $ret = array();
+  $ret[] = update_sql("UPDATE {system} SET weight = 11 WHERE name = 'panels_node'");
+  menu_rebuild();
+  return $ret;
 }
