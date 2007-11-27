@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.2.6.17 2007/11/27 17:11:26 merlinofchaos Exp $
+// $Id: node.inc,v 1.2.6.18 2007/11/27 17:24:08 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -38,6 +38,10 @@ function panels_content_node($conf, $panel_args) {
     if ($translation = module_invoke('translation', 'node_nid', $nid, $GLOBALS['locale'])) {
       $nid = $translation;
     }
+  }
+
+  if (!is_numeric($nid)) {
+    return;
   }
 
   $node = node_load($nid);
@@ -139,6 +143,10 @@ function panels_admin_validate_node($form, $form_values) {
  * Returns the administrative title for a node.
  */
 function panels_admin_title_node($conf) {
+  if (!is_numeric($conf['nid'])) {
+    return t('Node loaded from @var', array('@var' => $conf['nid']));
+  }
+
   $node = node_load($conf['nid']);
   if ($node) {
     return check_plain($node->title);
