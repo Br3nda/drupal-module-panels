@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.6.17 2007/10/25 22:33:03 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.6.18 2007/11/27 17:43:33 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
