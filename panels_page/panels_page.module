@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.28 2007/11/21 21:47:28 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.29 2007/11/27 17:04:59 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -573,10 +573,15 @@ function panels_move_menu_tabs($path, $tab) {
   // Check the existing children to see if there is a default local task
   // already.
   $local_tasks = FALSE;
-  foreach ($_menu['items'][$my_parent]['children'] as $child_mid) {
-    if ($_menu['items'][$child_mid]['type'] & MENU_IS_LOCAL_TASK) {
-      $local_tasks = TRUE;
-      break;
+
+  if ($my_parent != 1) {
+    // We do not run this loop if the parent is the top level menu item
+    // since that way lies madness.
+    foreach ($_menu['items'][$my_parent]['children'] as $child_mid) {
+      if ($_menu['items'][$child_mid]['type'] & MENU_IS_LOCAL_TASK) {
+        $local_tasks = TRUE;
+        break;
+      }
     }
   }
 
@@ -596,9 +601,6 @@ function panels_move_menu_tabs($path, $tab) {
     $_menu['items'][$admin_item]['weight'] += 50;
     $_menu['items'][$admin_item]['type'] = MENU_LOCAL_TASK;
   }
-//  menu_set_active_item($_GET['q']);
-//  drupal_set_breadcrumb(menu_get_active_breadcrumb());
-
 }
 
 // ---------------------------------------------------------------------------
