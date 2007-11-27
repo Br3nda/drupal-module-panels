@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.27 2007/11/21 22:30:55 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.28 2007/11/27 17:19:49 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -21,13 +21,13 @@ function panels_install() {
           displays text,
           contexts text,
           relationships text,
-          no_blocks boolean DEFAULT FALSE,
+          no_blocks smallint DEFAULT 0,
           -- menu fields
-          menu boolean DEFAULT FALSE,
-          menu_tab boolean,
+          menu smallint DEFAULT 0,
+          menu_tab smallint,
           menu_tab_weight smallint,
           menu_title varchar(255),
-          menu_tab_default boolean,
+          menu_tab_default smallint,
           menu_tab_default_parent_type varchar(10),
           menu_parent_title varchar(255),
           menu_parent_tab_weight smallint,
