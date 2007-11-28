@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.64 2007/10/25 22:33:03 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.65 2007/11/28 04:17:48 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -519,7 +519,13 @@ function panels_export_display($display, $prefix = '') {
 }
 
 function panels_var_export($object, $prefix = '') {
-  $output = var_export($object, TRUE);
+  if (is_array($object) && empty($object)) {
+    $output = 'array()';
+  }
+  else {
+    $output = var_export($object, TRUE);
+  }
+
   if ($prefix) {
     $output = str_replace("\n", "\n$prefix", $output);
   }

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.9 2007/11/21 22:00:54 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.10 2007/11/28 04:17:48 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -961,18 +961,18 @@ function panels_mini_delete($panel_mini) {
  * Export a panel page into PHP code for use in import. The code returned from
  * can be used directly in panels_mini_save().
  */
-function panels_mini_export($panel_mini) {
+function panels_mini_export($panel_mini, $prefix = '') {
   $output = '';
   $fields = array('name', 'title', 'contexts', 'relationships');
-  $output .= '$mini = new stdClass()' . ";\n";
-  $output .= '$mini->pid = \'new\'' . ";\n";
+  $output .= $prefix . '$mini = new stdClass()' . ";\n";
+  $output .= $prefix . '$mini->pid = \'new\'' . ";\n";
   foreach ($fields as $field) {
-    $output .= '  $mini->' . $field . ' = ' . panels_var_export($panel_mini->$field, '  ') . ";\n";
+    $output .= $prefix . '  $mini->' . $field . ' = ' . panels_var_export($panel_mini->$field, '  ') . ";\n";
   }
   // Export the primary display
   $display = !empty($panel_mini->display) ? $panel_mini->display : panels_load_display($panel_mini->did);
-  $output .= panels_export_display($display);
-  $output .= '$mini->display = $display' . ";\n";
+  $output .= panels_export_display($display, $prefix);
+  $output .= $prefix . '$mini->display = $display' . ";\n";
 
   return $output;
 }
@@ -995,8 +995,36 @@ function panels_mini_default_panels() {
 function panels_mini_panels_block_info($module, $delta, &$info) {
   // Remove the block version of mini panels from being available content types.
   $info = NULL;
-/*
-  $info['icon'] = 'icon_contrib_block.png';
-  $info['category'] = array(t('Mini panels'), -8);
-*/
+}
+
+/**
+ * Implementation of hook_panels_exportables()
+ */
+function panels_mini_panels_exportables($op = 'list', $panels = NULL, $name = 'foo') {
+  static $all_panels = NULL;
+  if ($op == 'list') {
+    if (empty($all_panels)) {
+      $all_panels = panels_mini_load_all();
+    }
+
+    foreach ($all_panels as $name => $panel) {
+      $return[$name] = check_plain($name) . ' (' . check_plain($panel->title) . ')';
+    }
+    return $return;
+  }
+
+  if ($op == 'export') {
+    $code = "/**\n";
+    $code .= " * Implementation of hook_default_panel_minis()\n";
+    $code .= " */\n";
+    $code .= "function " . $name . "_default_panel_minis() {\n";
+    foreach ($panels as $panel => $truth) {
+      $code .= panels_mini_export($all_panels[$panel], '  ');
+      $code .= '  $minis[\'' . check_plain($panel) . '\'] = $mini;' . "\n\n\n";
+    }
+    $code .= "  return \$minis;\n";
+    $code .= "}\n";
+    return $code;
+  }
+
 }

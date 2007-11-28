@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.29 2007/11/27 17:04:59 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.30 2007/11/28 04:17:48 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -968,31 +968,31 @@ function panels_page_delete($panel_page) {
  * Export a panel page into PHP code for use in import. The code returned from
  * can be used directly in panels_page_save().
  */
-function panels_page_export($panel_page) {
+function panels_page_export($panel_page, $prefix = '') {
   $output = '';
   $fields = panels_page_fields();
-  $output .= '$page = new stdClass()' . ";\n";
-  $output .= '$page->pid = \'new\'' . ";\n";
+  $output .= $prefix . '$page = new stdClass()' . ";\n";
+  $output .= $prefix . '$page->pid = \'new\'' . ";\n";
   foreach ($fields as $field => $q) {
     if ($field == 'displays') {
       continue;
     }
 
-    $output .= '  $page->' . $field . ' = ' . panels_var_export($panel_page->$field, '  ') . ";\n";
+    $output .= $prefix . '  $page->' . $field . ' = ' . panels_var_export($panel_page->$field, '  ') . ";\n";
   }
   // Export the primary display
   $display = !empty($panel_page->display) ? $panel_page->display : panels_load_display($panel_page->did);
-  $output .= panels_export_display($display);
-  $output .= '$page->display = $display' . ";\n";
+  $output .= panels_export_display($display, $prefix);
+  $output .= $prefix . '$page->display = $display' . ";\n";
 
   // Export all secondary displays
-  $output .= '$page->displays = array()' . ";\n";
+  $output .= $prefix . '$page->displays = array()' . ";\n";
   foreach ($panel_page->displays as $did => $info) {
-    $output .= '  $page->displays[\'' . $did . "']['title'] = '" . check_plain($info['title']) . "';\n";
-    $output .= '  $page->displays[\'' . $did . "']['argument_id'] = '" . check_plain($info['argument_id']) . "';\n";
+    $output .= $prefix . '  $page->displays[\'' . $did . "']['title'] = '" . check_plain($info['title']) . "';\n";
+    $output .= $prefix . '  $page->displays[\'' . $did . "']['argument_id'] = '" . check_plain($info['argument_id']) . "';\n";
     $display = !empty($info['display']) ? $info['display'] : panels_load_display($info['did']);
-    $output .= panels_export_display($display, '    ');
-    $output .= '  $page->displays[\'' . $did . "']['display'] =  \$display;\n";
+    $output .= panels_export_display($display, $prefix . '    ');
+    $output .= $prefix . '  $page->displays[\'' . $did . "']['display'] =  \$display;\n";
   }
   return $output;
 }
@@ -1009,3 +1009,33 @@ function panels_page_default_panels() {
   return $panels;
 }
 
+/**
+ * Implementation of hook_panels_exportables()
+ */
+function panels_page_panels_exportables($op = 'list', $panels = NULL, $name = 'foo') {
+  static $all_panels = NULL;
+  if ($op == 'list') {
+    if (empty($all_panels)) {
+      $all_panels = panels_page_load_all();
+    }
+
+    foreach ($all_panels as $name => $panel) {
+      $return[$name] = check_plain($name) . ' (' . check_plain(panels_page_get_title($panel)) . ')';
+    }
+    return $return;
+  }
+
+  if ($op == 'export') {
+    $code = "/**\n";
+    $code .= " * Implementation of hook_default_panel_pages()\n";
+    $code .= " */\n";
+    $code .= "function " . $name . "_default_panel_pages() {\n";
+    foreach ($panels as $panel => $truth) {
+      $code .= panels_page_export($all_panels[$panel], '  ');
+      $code .= '  $pages[\'' . check_plain($panel) . '\'] = $page;' . "\n\n\n";
+    }
+    $code .= "  return \$pages;\n";
+    $code .= "}\n";
+    return $code;
+  }
+}
