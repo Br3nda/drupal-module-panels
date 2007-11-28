@@ -1,4 +1,4 @@
-/* $Id: flexible.css,v 1.1.2.4 2007/11/27 17:43:33 merlinofchaos Exp $ */
+/* $Id: flexible.css,v 1.1.2.5 2007/11/28 00:55:49 merlinofchaos Exp $ */
 
 .panel-flexible { 
   overflow: hidden; 
@@ -11,8 +11,7 @@
 .panel-flexible .panel-col { 
   float: left; 
   padding: 0;
-  margin-top: 1px;
-  margin-bottom: .5em;
+  margin-top: 1px 0 .5em 0;
 }
 
 .panel-flexible .panel-row {
@@ -42,4 +41,18 @@
 
 .panel-flexible .panel-separator {
   margin: 0 0 1em 0;
+}
+
+/* sidebar css */
+div.panel-flexible div.panel-flexible-sidebars div.panel-sidebar { 
+  float: left; 
+  position: relative; 
+}
+
+* html div.panel-sidebar-left div.inside {
+  background-color: transparent;
+}
+
+div.panel-flexible div.panel-flexible-sidebars div.panel-sidebar-middle { 
+  width: 100%; 
 }

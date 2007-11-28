@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.13 2007/11/21 17:43:50 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.14 2007/11/28 00:55:49 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
@@ -59,15 +59,19 @@ function panels_edit_display($display, $destination) {
     '#value' => '<p>' . t('Grab the title bar of any pane to drag it to another panel. Click the add pane button in any panel to add more content. Click the configure button on any pane to re-configure that pane.') . '</p>',
   );
 
-  $form['button']['#tree'] = TRUE;
-  foreach ($display->content as $pid => $panel) {
-    $form['button'][$pid]['#tree'] = TRUE;
-    $form['button'][$pid]['configure'] = panels_add_button('configure.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
-    $form['button'][$pid]['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');
-  }
-
   $layout = panels_get_layout($display->layout);
   $layout_panels = panels_get_panels($layout, $display);
+
+  $form['button']['#tree'] = TRUE;
+  foreach ($display->content as $pid => $pane) {
+    // This test ensures we don't put anything for panes that are in panels
+    // that don't exist -- as can happen when flexible changes.
+    if ($layout_panels[$pane->panel]) {
+      $form['button'][$pid]['#tree'] = TRUE;
+      $form['button'][$pid]['configure'] = panels_add_button('configure.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
+      $form['button'][$pid]['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');
+    }
+  }
 
   foreach ($layout_panels as $id => $name) {
     $form['panels'][$id]['add'] = panels_add_button('add.gif', t('Add content'), t('Add content to this panel'), 'pane-add', "pane-add-$id");
@@ -882,6 +886,7 @@ function panels_common_panel_settings($display) {
   drupal_add_js($ajax, 'setting');
   drupal_add_js(panels_get_path('js/edit_settings.js'));
   drupal_add_js(panels_get_path('js/modal_forms.js'));
+  drupal_add_js(panels_get_path('js/checkboxes.js'));
   drupal_add_css(panels_get_path('css/panels_dnd.css'));
 
   return $form;
@@ -1002,6 +1007,7 @@ function _panels_js_files() {
   drupal_add_js(array('panelsAjaxURL' => url('panels/ajax', NULL, NULL, TRUE)), 'setting');
   drupal_add_js(panels_get_path('js/display_editor.js'));
   drupal_add_js(panels_get_path('js/modal_forms.js'));
+  drupal_add_js(panels_get_path('js/checkboxes.js'));
   drupal_add_css(panels_get_path('css/panels_dnd.css'));
   drupal_add_css(panels_get_path('css/panels_admin.css'));
 }

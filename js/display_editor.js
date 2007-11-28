@@ -1,11 +1,13 @@
-// $Id: display_editor.js,v 1.1.2.24 2007/11/21 21:47:28 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.25 2007/11/28 00:55:49 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
  * Contains the javascript for the Panels display editor.
  */
 
-Drupal.Panels = {};
+if (!Drupal.Panels) {
+  Drupal.Panels = {};
+}
 
 /** add content button **/
 Drupal.Panels.clickAdd = function() {
@@ -79,22 +81,6 @@ Drupal.Panels.bindClickDelete = function(o) {
     }
     return false;
   });
-}
-
-/** Bind an item to a checkbox to auto disable it when unchecked **/
-Drupal.Panels.bindCheckBox = function(checkbox, gadget) {
-  var clickCheckBox = function() {
-    if ($(checkbox).attr('checked')) {
-      $(gadget).attr('disabled', false);
-    }
-    else {
-      $(gadget).attr('disabled', true);
-    }    
-  }
-
-  $(checkbox).change(); // unset any existing
-  $(checkbox).change(clickCheckBox);
-  clickCheckBox();
 }
 
 Drupal.Panels.bindPortlet = function() {
