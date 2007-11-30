@@ -9,7 +9,7 @@ div.panels-display {
 }
 
 div.panels-display h2.label {
-  background: transparent;
+/*  background: transparent; */
   color: #3D9CD7;
   text-align: center;
   font-size: 11pt;
@@ -87,7 +87,9 @@ div.panels-display .pane-add {
   display: inline;
 }
 
-.panel-pane .buttons input.pane-delete, .panel-pane .buttons input.pane-configure {
+.panel-pane .buttons input.pane-delete, 
+.panel-pane .buttons input.pane-cache, 
+.panel-pane .buttons input.pane-configure {
   margin: 2px 1px;
 }
 
@@ -232,7 +234,7 @@ a.close img {
   margin-left: 2em;
 }
 
-.panels-modal-content .modal-form .no-float * {
+.panels-modal-content .no-float .form-item * {
   float: none;
 }
 

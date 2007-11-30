@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.28 2007/11/27 17:19:49 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.29 2007/11/30 19:55:30 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -46,6 +46,7 @@ EOT
           layout varchar(32),
           layout_settings text,
           panel_settings text,
+          cache text,
           PRIMARY KEY (did)
         );
 EOT
@@ -62,6 +63,7 @@ EOT
           subtype varchar(64),
           access varchar(128),
           configuration text,
+          cache text,
           position smallint
         );
 EOT
@@ -107,7 +109,8 @@ EOT
           name varchar(255) UNIQUE,
           layout VARCHAR(32),
           layout_settings longtext,
-          panel_settings longtext
+          panel_settings longtext,
+          cache text,
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
@@ -121,6 +124,7 @@ EOT
           subtype varchar(64),
           access varchar(128),
           configuration longtext,
+          cache longtext,
           position int(5),
           key (did)
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
@@ -410,3 +414,20 @@ function panels_update_5212() {
   return $ret;
 }
 
+/**
+ * Add a field to store pane caching information.
+ */
+function panels_update_5213() {
+  $ret = array();
+  switch($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN cache longtext AFTER configuration");
+      $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN cache longtext AFTER panel_settings");
+       break;
+    case 'pgsql':
+      db_add_column($ret, 'panels_pane', 'cache', 'text');
+      db_add_column($ret, 'panels_display', 'cache', 'text');
+  }
+  return $ret;
+}

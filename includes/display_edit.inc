@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.14 2007/11/28 00:55:49 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.15 2007/11/30 19:55:30 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
@@ -63,11 +63,16 @@ function panels_edit_display($display, $destination) {
   $layout_panels = panels_get_panels($layout, $display);
 
   $form['button']['#tree'] = TRUE;
+  $caches = panels_get_caches();
+
   foreach ($display->content as $pid => $pane) {
     // This test ensures we don't put anything for panes that are in panels
     // that don't exist -- as can happen when flexible changes.
     if ($layout_panels[$pane->panel]) {
       $form['button'][$pid]['#tree'] = TRUE;
+      if ($caches && user_access('use panels caching features')) {
+        $form['button'][$pid]['cache'] = panels_add_button('configure.gif', t('Caching'), t('Control caching'), 'pane-cache');
+      }
       $form['button'][$pid]['configure'] = panels_add_button('configure.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
       $form['button'][$pid]['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');
     }
@@ -113,6 +118,12 @@ function panels_edit_display($display, $destination) {
     '#id' => 'panels-show-all',
   );
 
+  $form['hide']['cache-settings'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cache settings'),
+    '#id' => 'panels-cache-settings',
+  );
+
   if ($submit) {
     // The caller wants their own submit.
     $form['#submit'] = array($submit => array());
@@ -131,7 +142,8 @@ function theme_panels_edit_display($form) {
     foreach ((array) $display->panels[$panel_id] as $pid) {
       $pane = $display->content[$pid];
       $left_buttons = NULL;
-      $buttons = drupal_render($form['button'][$pid]['configure']);
+      $buttons = !empty($form['button'][$pid]['cache']) ? drupal_render($form['button'][$pid]['cache']) : '';
+      $buttons .= drupal_render($form['button'][$pid]['configure']);
       $buttons .= drupal_render($form['button'][$pid]['delete']);
       $content[$pane->panel] .= panels_show_pane($display, $pane, $left_buttons, $buttons);
     }
@@ -536,7 +548,9 @@ function panels_add_content($cache, $panel_id) {
   return $output;
 }
 
-
+/**
+ * Entry point for AJAX: Add pane (configure)
+ */
 function panels_ajax_add_config($did = NULL, $pid = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
     $display = $cache->display;
@@ -649,6 +663,9 @@ function panels_add_content_config_form_submit($form_id, $form) {
   $return->id = $form['pid'];
 
   // we need to fake the buttons a little.
+  if ($caches && user_access('use panels caching features')) {
+    $$buttons['cache'] = panels_add_button('configure.gif', t('Caching'), t('Control caching'), 'pane-cache');
+  }
   $buttons['configure'] = panels_add_button('configure.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
   $buttons['configure']['#parents'] = array('button', $form['pid'], 'configure');
 
@@ -664,6 +681,9 @@ function panels_add_content_config_form_submit($form_id, $form) {
   return FALSE;
 }
 
+/**
+ * Entry point for AJAX modal: configure pane
+ */
 function panels_ajax_configure($did = NULL, $pid = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
     $text = drupal_get_form('panels_edit_pane_config_form', $cache->display, $pid);
@@ -772,6 +792,176 @@ function panels_edit_pane_config_form_submit($form_id, $form) {
 
   panels_set('return', $return);
   return FALSE;
+}
+
+/**
+ * Entry point for AJAX modal: configure pane
+ */
+function panels_ajax_cache($did = NULL, $pid = NULL) {
+  // TODO: This is the model the rest of this AJAX stuff should be working from;
+  // that panels_get() stuff sucks, and I think this is much more straightforward.
+
+  if (!((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did))) {
+    panels_ajax_render();
+  }
+
+  // First, check to see if this is a form being submitted and, if it is, which
+  // one, because we can have two forms here.
+  if (!empty($_POST) && !empty($_POST['form_id']) && $_POST['form_id'] == 'panels_edit_cache_settings_form') {
+    return panels_ajax_cache_settings($cache, $pid);
+  }
+
+  $method = panels_ajax_form('panels_edit_cache_method_form',
+     t('Select cache method'), url($_GET['q'], NULL, NULL, TRUE),
+     $cache->display, $pid);
+  return panels_ajax_cache_settings($cache, $pid, $method);
+}
+
+/**
+ * Choose cache method form
+ */
+function panels_edit_cache_method_form($display, $pid) {
+  $conf = $pid ? $display->content[$pid]->cache : $display->cache;
+
+  // Set to 0 to ensure we get a selected radio.
+  if (!isset($conf['method'])) {
+    $conf['method'] = 0;
+  }
+
+  $caches = panels_get_caches();
+  if (empty($caches)) {
+    $form['markup'] = array('#value' => t('No caching options are available at this time. Please enable a panels caching module in order to use caching options.'));
+    return $form;
+  }
+
+  $options[0] = t('No caching');
+  foreach ($caches as $cache => $info) {
+    $options[$cache] = check_plain($info['title']);
+  }
+
+  $form['method'] = array(
+    '#prefix' => '<div class="no-float">',
+    '#suffix' => '</div>',
+    '#type' => 'radios',
+    '#title' => t('Method'),
+    '#options' => $options,
+    '#default_value' => $conf['method'],
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Next'),
+  );
+  return $form;
+}
+
+/**
+ * Submit callback for panels_edit_cache_method_form.
+ *
+ * All this needs to do is return the method.
+ */
+function panels_edit_cache_method_form_submit($form_id, $form_values) {
+  return $form_values['method'];
+}
+
+/**
+ * Handle the cache settings form
+ */
+function panels_ajax_cache_settings($cache, $pid, $method = NULL) {
+  if (empty($method)) {
+    // Retrieve the method from the form.
+    $method = $_POST['method'];
+  }
+
+  if (empty($method) || !($function = panels_plugin_get_function('cache', $method, 'settings form'))) {
+    panels_ajax_set_cache_data($cache->display, $pid, 0);
+  }
+  else {
+    $cache->display = panels_ajax_form('panels_edit_cache_settings_form',
+      t('Configure cache settings'), url($_GET['q'], NULL, NULL, TRUE),
+      $cache->display, $pid, $method, $function);
+  }
+
+  panels_cache_set($cache->display->did, $cache);
+  panels_ajax_render('dismiss');
+}
+
+/**
+ * Set the cache method and associated settings on the display.
+ */
+function panels_ajax_set_cache_data(&$display, $pid, $method, $settings = array()) {
+  if ($pid) {
+    $conf = &$display->content[$pid]->cache;
+  }
+  else {
+    $conf = &$display->cache;
+  }
+
+  $conf['method'] = $method;
+  $conf['settings'] = $settings;
+}
+
+/**
+ * Cache settings form
+ */
+function panels_edit_cache_settings_form($display, $pid, $method, $settings_function) {
+  $conf = $pid ? $display->content[$pid]->cache : $display->cache;
+  $info = panels_get_cache($method);
+
+  $form['description'] = array(
+    '#prefix' => '<div class="description">',
+    '#suffix' => '</div>',
+    '#value' => check_plain($info['description']),
+  );
+  $form['settings'] = $settings_function($conf['settings'], $display, $pid);
+  $form['settings']['#tree'] = TRUE;
+
+  $form['method'] = array(
+    '#type' => 'hidden',
+    '#value' => $method,
+  );
+
+  $form['display'] = array(
+    '#type' => 'value',
+    '#value' => $display,
+  );
+
+  $form['pid'] = array(
+    '#type' => 'value',
+    '#value' => $pid,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  return $form;
+}
+
+/**
+ * Validate cache settings.
+ */
+function panels_edit_cache_settings_form_validate($form_id, $form_values, $form) {
+  $method = $form_values['method'];
+  if ($function = panels_plugin_get_function('cache', $method, 'settings form validate')) {
+    $function($form, $form_values['settings']);
+  }
+}
+
+/**
+ * Allows panel styles to validate their style settings.
+ */
+function panels_edit_cache_settings_form_submit($form_id, $form_values) {
+  if ($function = panels_plugin_get_function('cache', $method, 'settings form submit')) {
+    $function($form_values['settings']);
+  }
+
+  // Identify which configuration we're setting
+  $pid = $form_values['pid'];
+  $display = $form_values['display'];
+
+  panels_ajax_set_cache_data($display, $pid, $form_values['method'], $form_values['settings']);
+  return $display;
 }
 
 function panels_edit_submit_subform($display) {

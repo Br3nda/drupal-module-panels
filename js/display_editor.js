@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.25 2007/11/28 00:55:49 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.26 2007/11/30 19:55:31 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -45,6 +45,28 @@ Drupal.Panels.clickShowAll = function() {
   return false;
 }
 
+/** Configure cache button */
+Drupal.Panels.clickCacheSettings = function () {
+  // show the empty dialog right away.
+  $('#panels-modal').modalContent({
+      opacity: '.40', 
+      background: '#fff'
+    }
+  );
+  $('#modalContent .modal-content').html($('div#panels-throbber').html());
+
+  $.ajax({
+    type: "POST",
+    url: Drupal.settings.panelsAjaxURL + "/cache/" + $('#panel-did').val(),
+    data: '',
+    global: true,
+    success: Drupal.Panels.Subform.bindAjaxResponse,
+    error: function() { alert("An error occurred."); $('#panels-modal').unmodalContent(); },
+    dataType: 'json'
+  });
+  return false;
+}
+
 /** Configure pane button */
 Drupal.Panels.bindClickConfigure = function (o) {
   $('input.pane-configure').unbind('click');
@@ -60,6 +82,31 @@ Drupal.Panels.bindClickConfigure = function (o) {
     $.ajax({
       type: "POST",
       url: Drupal.settings.panelsAjaxURL + "/configure/" + $('#panel-did').val() + '/' + id,
+      data: '',
+      global: true,
+      success: Drupal.Panels.Subform.bindAjaxResponse,
+      error: function() { alert("An error occurred."); $('#panels-modal').unmodalContent(); },
+      dataType: 'json'
+    });
+    return false;
+  });
+}
+
+/** Configure cache button */
+Drupal.Panels.bindClickCache = function (o) {
+  $('input.pane-cache').unbind('click');
+  $('input.pane-cache').click(function() {
+    var id = $(this)[0].id.replace('edit-button-', '').replace('-cache', '');
+    // show the empty dialog right away.
+    $('#panels-modal').modalContent({
+        opacity: '.40', 
+        background: '#fff'
+      }
+    );
+    $('#modalContent .modal-content').html($('div#panels-throbber').html());
+    $.ajax({
+      type: "POST",
+      url: Drupal.settings.panelsAjaxURL + "/cache/" + $('#panel-did').val() + '/' + id,
       data: '',
       global: true,
       success: Drupal.Panels.Subform.bindAjaxResponse,
@@ -475,6 +522,7 @@ Drupal.Panels.attachPane = function(parent) {
 
   $(parent).find('div.grabber').panelsDraggable();
 
+  Drupal.Panels.bindClickCache();
   Drupal.Panels.bindClickConfigure();
   Drupal.Panels.bindClickDelete();
   Drupal.Panels.Draggable.savePositions();
@@ -488,6 +536,7 @@ Drupal.Panels.autoAttach = function() {
   $('input.pane-add').click(Drupal.Panels.clickAdd);
   $('input#panels-hide-all').click(Drupal.Panels.clickHideAll);
   $('input#panels-show-all').click(Drupal.Panels.clickShowAll);
+  $('input#panels-cache-settings').click(Drupal.Panels.clickCacheSettings);
 
   Drupal.Panels.attachPane(document);
 }

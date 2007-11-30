@@ -1,3 +1,5 @@
+; $Id: panels_export.info,v 1.1.2.2 2007/11/30 19:55:31 merlinofchaos Exp $
+
 name = Panels exporter
 description = Allows exporting multiple panel pages, mini panels and other types at once.
 package = "Panels"

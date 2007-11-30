@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.6 2007/11/28 00:55:49 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.7 2007/11/30 19:55:31 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -280,6 +280,12 @@ function panels_flexible_panels($display, $settings) {
 function theme_panels_flexible($id, $content, $settings) {
   if (empty($settings)) {
     $settings = panels_flexible_default_panels();
+  }
+
+  // Special check for updating.
+  if (empty($settings['width_type'])) {
+    $settings['width_type'] = '%';
+    $settings['percent_width'] = 100;
   }
 
   if ($id) {

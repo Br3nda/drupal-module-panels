@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.65 2007/11/28 04:17:48 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.66 2007/11/30 19:55:30 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -87,6 +87,22 @@ function panels_menu($may_cache) {
       'type' => MENU_CALLBACK
     );
     $items[] = array(
+      'path' => 'panels/ajax/cache',
+      'title' => t('ajax'),
+      'callback' => 'panels_ajax_passthru',
+      'callback arguments' => array('panels_ajax_cache'),
+      'access' => user_access('access content'),
+      'type' => MENU_CALLBACK
+    );
+    $items[] = array(
+      'path' => 'panels/ajax/cache-settings',
+      'title' => t('ajax'),
+      'callback' => 'panels_ajax_passthru',
+      'callback arguments' => array('panels_ajax_cache_settings'),
+      'access' => user_access('access content'),
+      'type' => MENU_CALLBACK
+    );
+    $items[] = array(
       'path' => 'panels/ajax/panel_settings',
       'title' => t('ajax'),
       'callback' => 'panels_ajax_passthru',
@@ -130,7 +146,13 @@ function panels_ajax_render($output = NULL, $title = NULL, $url = NULL) {
   if (!is_object($output)) {
     $temp = new stdClass();
     $temp->output = $output;
-    $temp->type = 'display';
+    switch ($output) {
+      case 'dismiss':
+        $temp->type = $output;
+        break;
+      default:
+        $temp->type = 'display';
+    }
     $temp->title = $title;
     $temp->url = $url;
     $output = $temp;
@@ -143,6 +165,43 @@ function panels_ajax_render($output = NULL, $title = NULL, $url = NULL) {
   drupal_set_header('Content-Type: text/javascript; charset=utf-8');
   print drupal_to_js($output);
   exit;
+}
+
+
+/**
+ * Handle a form for AJAX in a manner that happens to be basically the
+ * opposite of the normal flow; if the form hasn't been processed,
+ * just render it and exit; if it has been submitted successfuly, however,
+ * then we return whatever the submit function returned and do our
+ * next step accordingly.
+ *
+ * @param $form_id
+ *   The id of the form
+ * @param $title
+ *   The title for the modal dialog, if rendered.
+ * @param $url
+ *   The next URL to go to; may be NULL.
+ * @param ...
+ *   Any arguments that go to the form.
+ */
+function panels_ajax_form($form_id, $title, $url) {
+  $args = func_get_args();
+
+  // Remove the $title and $url
+  array_splice($args, 1, 2);
+
+  $form = call_user_func_array('drupal_retrieve_form', $args);
+  $form['#redirect'] = FALSE;
+
+  $result = drupal_process_form($form_id, $form);
+  if (isset($result)) {
+    return $result;
+  }
+
+  // If the form wasn't submitted successfully, render the form.
+  $output = theme('status_messages');
+  $output .= drupal_render_form($form_id, $form);
+  panels_ajax_render($output, $title, $url);
 }
 
 /**
@@ -159,7 +218,7 @@ function panels_get_path($file, $base_path = false, $module = 'panels') {
  * Implementation of hook_perm
  */
 function panels_perm() {
-  return array('view all panes', 'administer pane visibility', 'administer advanced pane settings');
+  return array('view all panes', 'administer pane visibility', 'administer advanced pane settings', 'use panels caching features');
 }
 
 // ---------------------------------------------------------------------------
@@ -396,18 +455,10 @@ function panels_load_displays($dids) {
     }
 
     // unserialize important bits:
-    if (!empty($display->layout_settings)) {
-      $display->layout_settings = unserialize($display->layout_settings);
-    }
-    else {
-      $display->layout_settings = array();
-    }
-    if (!empty($display->panel_settings)) {
-      $display->panel_settings = unserialize($display->panel_settings);
-    }
-    else {
-      $display->panel_settings = array();
-    }
+    $display->layout_settings = empty($display->layout_settings) ? array() : unserialize($display->layout_settings);
+    $display->panel_settings = empty($display->panel_settings) ? array() : unserialize($display->panel_settings);
+    $display->cache = empty($display->cache) ? array() : unserialize($display->cache);
+
     $display->panels = $display->content = array();
 
     $displays[$display->did] = $display;
@@ -417,6 +468,7 @@ function panels_load_displays($dids) {
 
   while ($pane = db_fetch_object($result)) {
     $pane->configuration = unserialize($pane->configuration);
+    $pane->cache = empty($pane->cache) ? array() : unserialize($pane->cache);
     $pane->access = ($pane->access ? explode(', ', $pane->access) : array());
 
     $displays[$pane->did]->panels[$pane->panel][] = $pane->pid;
@@ -440,12 +492,16 @@ function panels_load_display($did) {
  */
 function panels_save_display(&$display) {
   if ($display->did && $display->did != 'new') {
-    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s' WHERE did = %d", $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), $display->did);
+    if (empty($display->cache)) {
+      $display->cache = array();
+    }
+
+    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s', cache = '%s' WHERE did = %d", $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), $display->did);
     db_query("DELETE FROM {panels_pane} WHERE did = %d", $display->did);
   }
   else {
     $display->did = db_next_id("{panels_display}_did");
-    db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings) VALUES (%d, '%s', '%s', '%s')", $display->did, $display->layout, serialize($display->layout_settings), serialize($display->panel_settings));
+    db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings, cache) VALUES (%d, '%s', '%s', '%s', '%s')", $display->did, $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache));
   }
 
   // update all the panes
@@ -459,13 +515,21 @@ function panels_save_display(&$display) {
         unset($display->content[$pid]);
         $pane->pid = db_next_id("{panels_pane}_pid");
       }
-      db_query("INSERT INTO {panels_pane} (pid, did, panel, type, subtype, configuration, access, position) VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', %d)", $pane->pid, $display->did, $pane->panel, $pane->type, $pane->subtype, serialize($pane->configuration), !empty($pane->access) ? implode(', ', $pane->access) : '', $pane->position);
+      if (empty($pane->cache)) {
+        $pane->cache = array();
+      }
+
+      db_query("INSERT INTO {panels_pane} (pid, did, panel, type, subtype, configuration, cache, access, position) VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', %d)", $pane->pid, $display->did, $pane->panel, $pane->type, $pane->subtype, serialize($pane->configuration), serialize($pane->cache), !empty($pane->access) ? implode(', ', $pane->access) : '', $pane->position);
       // and put it back so our pids and positions can be used
       $display->content[$pid] = $pane;
       $new_panes[] = $pid;
     }
     $display->panels[$id] = $panes;
   }
+
+  // Clear any cached content for this display.
+  panels_load_include('plugins');
+  panels_clear_cached_content($display);
 
   return $display; // to be nice, even tho we have a reference.
 }
@@ -560,7 +624,7 @@ function panels_render_display(&$display) {
 
   $output .= panels_render_layout($layout, $display, $display->css_id, $display->layout_settings);
 
-  // Let modules act just prior to render.
+  // Let modules act just after render.
   foreach (module_implements('panels_post_render') as $module) {
     $function = $module . '_panels_post_render';
     $output .= $function($display);
@@ -602,7 +666,19 @@ function panels_render_layout($layout, $content, $css_id = NULL, $settings = arr
   // This now comes after the CSS is added, because panels-within-panels must
   // have their CSS added in the right order; inner content before outer content.
   if (is_object($content)) {
-    $content = panels_render_panes($content);
+    $cache = FALSE;
+    if (empty($content->cache['method'])) {
+      $content = panels_render_panes($content);
+    }
+    else {
+      $cache = panels_get_cached_content($content, $content->args, $content->context);
+      if ($cache === FALSE) {
+        $cache = new panels_cache_object();
+        $cache->set_content(panels_render_panes($content));
+        panels_set_cached_content($cache, $content, $content->args, $content->context);
+      }
+      $content = $cache->content;
+    }
   }
 
   $output = theme($layout['theme'], check_plain($css_id), $content, $settings);
@@ -670,7 +746,8 @@ function panels_render_pane(&$display, &$pane) {
       return FALSE;
     }
   }
-  $content = panels_get_pane_content($pane, $display->args, $pane->context, $display->incoming_content);
+
+  $content = panels_get_pane_content($display, $pane, $display->args, $pane->context, $display->incoming_content);
 
   $keywords = !empty($display->keywords) ? $display->keywords : array();
   // Override the title if configured to

@@ -1,4 +1,4 @@
-// $Id: checkboxes.js,v 1.1.2.1 2007/11/29 16:42:43 merlinofchaos Exp $
+// $Id: checkboxes.js,v 1.1.2.2 2007/11/30 19:55:31 merlinofchaos Exp $
 
 if (!Drupal.Panels) {
   Drupal.Panels = {};
@@ -8,7 +8,6 @@ Drupal.Panels.Checkboxes = {};
 
 /** Bind an item to a checkbox to auto disable it when unchecked **/
 Drupal.Panels.Checkboxes.bindCheckbox = function(checkbox, gadget) {
-  console.log(checkbox);
   var clickCheckBox = function() {
     var status = !$(checkbox).attr('checked');
 

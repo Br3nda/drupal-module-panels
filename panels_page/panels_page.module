@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.30 2007/11/28 04:17:48 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.31 2007/11/30 19:55:31 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -675,6 +675,7 @@ function panels_page_view_page($panel_page, $admin) {
   $display->keywords = $panel_page->keywords;
   $display->css_id = $panel_page->css_id;
   $display->owner = $panel_page;
+  $display->owner->id = $panel_page->name; // unique id of this display's owner.
   $display->type = 'panel_page';
 
   // Set this as 'current' so that other stuff can utilize it.
