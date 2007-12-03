@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.9 2007/11/30 19:55:30 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.10 2007/12/03 19:55:28 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -564,10 +564,10 @@ class panels_cache_object {
   function panels_cache_object() {
     $this->head = drupal_set_html_head();
     $this->css = drupal_add_css();
-    foreach (array('core', 'module', 'theme', 'setting', 'inline') as $scope) {
+
+    foreach (array('header', 'footer') as $scope) {
       $this->js[$scope] = drupal_add_js(NULL, NULL, $scope);
     }
-    // store js
   }
 
   /**
@@ -586,9 +586,11 @@ class panels_cache_object {
    * Set the object for storing. This overwrites.
    */
   function cache() {
-    if ($ready) {
+    if ($this->ready) {
       return;
     }
+
+    $this->ready = TRUE;
 
     // Simple replacement for head
     $this->head = str_replace($this->head, '', drupal_set_html_head());
@@ -608,15 +610,20 @@ class panels_cache_object {
       }
     }
 
+    $js = array();
     // A little less simple for js
-    foreach (array('core', 'module', 'theme', 'setting', 'inline') as $scope) {
+    foreach (array('header', 'footer') as $scope) {
       $js[$scope] = drupal_add_js(NULL, NULL, $scope);
-      $start = $this->js;
-      $this->js = array();
+    }
+    
+    $start = $this->js;
+    $this->js = array();
 
-      foreach ($js as $scope => $scopes) {
-        foreach ($scopes as $type => $types) {
-          foreach ($types as $id => $info) {
+    foreach ($js as $scope => $scopes) {
+      foreach ($scopes as $type => $types) {
+        foreach ($types as $id => $info) {
+          if ($info['code'] == 'foo') { dsm('foo found'); }
+          if (!isset($start[$scope][$type][$id])) {
             switch ($type) {
               case 'setting':
                 $this->js[] = array($info, $type, $scope);
@@ -631,7 +638,9 @@ class panels_cache_object {
         }
       }
     }
+    dsm($this->js);
   }
+
   /**
    * Restore out of band data saved to cache.
    */
@@ -646,6 +655,7 @@ class panels_cache_object {
     }
     if (!empty($this->js)) {
       foreach ($this->js as $args) {
+        dsm($args);
         call_user_func_array('drupal_add_js', $args);
       }
     }
