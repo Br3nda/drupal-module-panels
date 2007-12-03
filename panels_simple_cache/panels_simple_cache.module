@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_simple_cache.module,v 1.1.2.2 2007/12/03 19:55:28 merlinofchaos Exp $
+// $Id: panels_simple_cache.module,v 1.1.2.3 2007/12/03 20:03:29 merlinofchaos Exp $
 /**
  * @file panels_simple_cache.module
  *
@@ -27,7 +27,6 @@ function panels_simple_cache_panels_cache() {
  */
 function panels_simple_cache_get_cache($conf, $display, $args, $contexts, $pane = NULL) {
   $cid = panels_simple_cache_get_id($conf, $display, $args, $contexts, $pane);
-  dsm("Getting cache $cid");
   $cache = cache_get($cid, 'cache');
   if (!$cache) {
     return FALSE;
@@ -61,7 +60,6 @@ function panels_simple_cache_clear_cache($display) {
   }
   $cid .= ':' . $display->did;
 
-  dsm("clearing cache $cid");
   cache_clear_all($cid, 'cache', TRUE);
 }
 

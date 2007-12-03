@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.10 2007/12/03 19:55:28 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.11 2007/12/03 20:03:29 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -622,7 +622,6 @@ class panels_cache_object {
     foreach ($js as $scope => $scopes) {
       foreach ($scopes as $type => $types) {
         foreach ($types as $id => $info) {
-          if ($info['code'] == 'foo') { dsm('foo found'); }
           if (!isset($start[$scope][$type][$id])) {
             switch ($type) {
               case 'setting':
@@ -638,7 +637,6 @@ class panels_cache_object {
         }
       }
     }
-    dsm($this->js);
   }
 
   /**
@@ -655,7 +653,6 @@ class panels_cache_object {
     }
     if (!empty($this->js)) {
       foreach ($this->js as $args) {
-        dsm($args);
         call_user_func_array('drupal_add_js', $args);
       }
     }
