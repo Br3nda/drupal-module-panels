@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.4 2007/11/28 00:55:49 merlinofchaos Exp $
+// $Id: modal_forms.js,v 1.1.2.5 2007/12/03 19:56:44 merlinofchaos Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -118,6 +118,7 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
     $('#panel-pane-' + data.area).append(data.output);
     
     Drupal.Panels.attachPane('#panel-pane-' + data.id);
+    Drupal.Panels.changed($('#panel-pane-' + data.id));
     // dismiss the dialog
     $('#panels-modal').unmodalContent();
   }

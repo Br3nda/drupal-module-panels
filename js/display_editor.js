@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.26 2007/11/30 19:55:31 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.27 2007/12/03 19:56:44 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -517,8 +517,6 @@ Drupal.Panels.attachPane = function(parent) {
     $('div.panel-pane').addClass('panel-portlet')
       .each(Drupal.Panels.bindPortlet);
   }
-
-  Drupal.Panels.changed($(parent));
 
   $(parent).find('div.grabber').panelsDraggable();
 
