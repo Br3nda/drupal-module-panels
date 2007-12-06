@@ -1,5 +1,5 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.2 2007/10/20 21:03:07 merlinofchaos Exp $
+// $Id: rounded_corners.inc,v 1.1.2.3 2007/12/06 02:35:46 merlinofchaos Exp $
 /**
  * @file styles/rounded_corners.inc
  * Definition of the 'rounded_corners' panel style.
@@ -36,7 +36,7 @@ function theme_panels_rounded_corners_style_render_panel($display, $panel_id, $p
     if ($print_separator) {
       $output .= '<div class="panel-separator"></div>';
     }
-    $text = theme('panels_pane', $pane, $display);
+    $text = theme('panels_pane', $pane, $display->content[$pid], $display);
     if ($text) {
       $output .= ($where == 'pane') ? theme('rounded_corners_box', $text) : $text;
     }
@@ -112,6 +112,11 @@ $idstr .wrap-corner .b-edge .r {
 $idstr .wrap-corner .r-edge {
   padding: 5px 24px;
 }
+$idstr div.admin-links {
+  margin-top: -14px;
+  margin-left: -12px;
+}
+
 EOF;
 
   if ($where == 'panel') {

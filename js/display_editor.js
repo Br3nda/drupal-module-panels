@@ -1,13 +1,9 @@
-// $Id: display_editor.js,v 1.1.2.27 2007/12/03 19:56:44 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.28 2007/12/06 02:35:45 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
  * Contains the javascript for the Panels display editor.
  */
-
-if (!Drupal.Panels) {
-  Drupal.Panels = {};
-}
 
 /** add content button **/
 Drupal.Panels.clickAdd = function() {

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.31 2007/11/30 19:55:31 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.32 2007/12/06 02:35:45 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -717,10 +717,19 @@ function theme_panels_page_render_form($form) {
   return theme('form', $form);
 }
 
+
 /**
  * Load a display based upon information from the $displays list.
  */
 function panels_page_fetch_display($panel_page, $id) {
+  $display = _panels_page_fetch_display($panel_page, $id);
+  $display->owner = $panel_page;
+  $display->owner->id = $panel_page->name;
+
+  return $display;
+}
+
+function _panels_page_fetch_display($panel_page, $id) {
   $info = $panel_page->displays[$id];
 
   // If the 'display' is set it's the result of an export/default

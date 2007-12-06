@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.18 2007/11/21 21:47:28 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.19 2007/12/06 02:35:45 merlinofchaos Exp $
 
 /**
  * @file
@@ -86,7 +86,7 @@ function panels_common_settings($module_name = 'panels_common') {
     '#value' => t('Submit'),
   );
 
-  drupal_add_css(drupal_get_path('module', 'panels_page') . '/css/panels_page.css');
+  drupal_add_css(panels_get_path('css/panels_page.css'));
   return $form;
 }
 

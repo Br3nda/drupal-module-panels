@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.11 2007/12/03 20:03:29 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.12 2007/12/06 02:35:45 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -160,7 +160,16 @@ function panels_pane_access($pane, $account = NULL) {
  */
 function panels_ct_get_content($type, $conf, $args, $context, $incoming_content) {
   if ($function = panels_plugin_get_function('content_types', $type, 'render callback')) {
-    return $function($conf, $args, $context, $incoming_content);
+    $content = $function($conf, $args, $context, $incoming_content);
+    if (empty($content->title) && !empty($content->subject)) {
+      $content->title = $content->subject;
+    }
+
+    if (!empty($content->title) && empty($content->subject)) {
+      $content->subject = $content->title;
+    }
+
+    return $content;
   }
 }
 
@@ -467,6 +476,7 @@ function panels_get_pane_content($display, $pane, $args = array(), $context = NU
   $content = FALSE;
   if (empty($pane->cache['method'])) {
     $content = panels_ct_get_content($pane->type, $pane->configuration, $args, $context, $incoming_content);
+    drupal_alter('panels_pane', $content, $pane, $args, $context);
   }
   else {
     $cache = panels_get_cached_content($display, $args, $context, $pane);
@@ -615,7 +625,7 @@ class panels_cache_object {
     foreach (array('header', 'footer') as $scope) {
       $js[$scope] = drupal_add_js(NULL, NULL, $scope);
     }
-    
+
     $start = $this->js;
     $this->js = array();
 

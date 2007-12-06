@@ -1,13 +1,9 @@
-// $Id: edit_settings.js,v 1.1.2.2 2007/11/28 00:55:49 merlinofchaos Exp $
+// $Id: edit_settings.js,v 1.1.2.3 2007/12/06 02:35:45 merlinofchaos Exp $
 /**
  * @file edit_settings.js 
  *
  * Contains the javascript for the Panels display editor.
  */
-
-if (!Drupal.Panels) {
-  Drupal.Panels = {};
-}
 
 /** edit settings button **/
 Drupal.Panels.clickEdit = function() {

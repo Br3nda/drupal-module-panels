@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.2.6.19 2007/11/27 17:43:33 merlinofchaos Exp $
+// $Id: node.inc,v 1.2.6.20 2007/12/06 02:35:45 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -47,6 +47,15 @@ function panels_content_node($conf, $panel_args) {
   $node = node_load($nid);
   if (!node_access('view', $node)) {
     return;
+  }
+
+  if (node_access('update', $node)) {
+    $block->admin_links['update'] = array(
+      'title' => t('Edit node'),
+      'alt' => t("Edit this node"),
+      'href' => "node/$node->nid/edit",
+      'query' => drupal_get_destination(),
+    );
   }
 
   $block->module = 'node';

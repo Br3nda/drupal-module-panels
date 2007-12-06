@@ -1,8 +1,4 @@
-// $Id: checkboxes.js,v 1.1.2.2 2007/11/30 19:55:31 merlinofchaos Exp $
-
-if (!Drupal.Panels) {
-  Drupal.Panels = {};
-}
+// $Id: checkboxes.js,v 1.1.2.3 2007/12/06 02:35:45 merlinofchaos Exp $
 
 Drupal.Panels.Checkboxes = {};
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.6.18 2007/11/27 17:43:33 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.6.19 2007/12/06 02:35:45 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -31,9 +31,33 @@ function panels_content_block($conf) {
   $block->module = $conf['module'];
   $block->delta = $conf['delta'];
 
+  if (user_access('administer blocks')) {
+    $block->admin_links = array(
+      array(
+        'title' => t('Configure block'),
+        'alt' => t("Configure this pane's 'block settings' in administer >> site building >> blocks"),
+        'href' => "admin/build/block/configure/$block->module/$block->delta",
+        'query' => drupal_get_destination(),
+      ),
+    );
+  }
+
+  // This seems extra but it prevents an unnecessary query sometimes.
+  if (empty($conf['block_visibility']) && $block->module != 'block') {
+    return $block;
+  }
+
   // Test for block visibility
-  $result = db_query("SELECT pages, visibility FROM {blocks} WHERE module = '%s' AND delta = %d", $block->module, $block->delta);
+  $result = db_query("SELECT title, pages, visibility FROM {blocks} WHERE module = '%s' AND delta = %d", $block->module, $block->delta);
   $block_visibility = db_fetch_object($result);
+
+  if ($block->module == 'block') {
+    $block->title = $block_visibility->title;
+  }
+
+  if (empty($conf['block_visibility'])) {
+    return $block;
+  }
 
   if ($block_visibility && $block_visibility->pages) {
     if ($block_visibility->visibility < 2) {
@@ -106,24 +130,32 @@ function panels_admin_edit_block($id, $parents, $conf) {
     '#value' => $conf['delta'],
   );
 
-  // Module-specific block configurations.
-  if (user_access('administer advanced pane settings') && $settings = module_invoke($conf['module'], 'block', 'configure', $conf['delta'])) {
-    // Specifically modify a couple of core block forms.
-    if ($conf['module'] == 'block') {
-      unset($settings['submit']);
-      $settings['info']['#type'] = 'value';
-      $settings['info']['#value'] = $settings['info']['#default_value'];
-    }
-    panels_admin_fix_block_tree($settings);
-    $form['block_settings'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Block settings'),
-      '#description' => t('Settings in this section are global and are for all blocks of this type, anywhere in the system.'),
-      '#tree' => FALSE,
+  if (user_access('administer advanced pane settings')) {
+    $form['block_visibility'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Use block visibility settings (see block config)'),
+      '#default_value' => $conf['block_visibility'],
+      '#description' => t('If checked, the block visibility settings for this block will apply to this block.'),
     );
+    // Module-specific block configurations.
+    if ($settings = module_invoke($conf['module'], 'block', 'configure', $conf['delta'])) {
+      // Specifically modify a couple of core block forms.
+      if ($conf['module'] == 'block') {
+        unset($settings['submit']);
+        $settings['info']['#type'] = 'value';
+        $settings['info']['#value'] = $settings['info']['#default_value'];
+      }
+      panels_admin_fix_block_tree($settings);
+      $form['block_settings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Block settings'),
+        '#description' => t('Settings in this section are global and are for all blocks of this type, anywhere in the system.'),
+        '#tree' => FALSE,
+      );
 
 
-    $form['block_settings'] += $settings;
+      $form['block_settings'] += $settings;
+    }
   }
 
   return $form;
@@ -247,10 +279,6 @@ function block_panels_block_info($module, $delta, &$info) {
   $info['icon'] = 'icon_core_block_empty.png';
   $info['category'] = array(t('Custom'), -10);
 }
-
-
-
-
 
 function user_panels_block_info($module, $delta, &$info) {
   $info['category'] = t('Core blocks');

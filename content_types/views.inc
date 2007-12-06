@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.22 2007/10/25 22:33:03 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.23 2007/12/06 02:35:45 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -66,11 +66,35 @@ function panels_content_views($conf, $panel_args, &$contexts) {
     $view_type = $conf['type'] == 'embed' ? 'page' : $conf['type'];
     $block->subject = views_get_title($view, $view_type);
     if (!empty($conf['link_to_view'])) {
-      $block->subject_link = views_get_url($view, $args);
+      $block->title_link = views_get_url($view, $args);
+    }
+
+    if (!empty($conf['more_link'])) {
+      $block->more = array('href' => views_get_url($view, $args));
     }
 
     $pager_id = empty($conf['use_pager']) ? 0 : intval($conf['pager_id']);
+
+    $stored_feeds = drupal_add_feed();
     $block->content = views_build_view($conf['type'], $view, $args, $pager_id, intval($conf['nodes_per_page']), 0, intval($conf['offset']));
+
+    if (!empty($conf['feed_icons'])) {
+      $new_feeds = drupal_add_feed();
+      if ($diff = array_diff(array_keys($new_feeds), array_keys($stored_feeds))) {
+        foreach ($diff as $url) {
+          $block->feeds[$url] = $new_feeds[$url];
+        }
+      }
+    }
+
+    if (user_access('administer views')) {
+      $block->admin_links['update'] = array(
+        'title' => t('Edit view'),
+        'alt' => t("Edit this view"),
+        'href' => $view->vid ? "admin/build/views/$view->name/edit" : "admin/build/views/add/$view->name",
+        'query' => drupal_get_destination(),
+      );
+    }
   }
   return $block;
 }
@@ -181,6 +205,20 @@ function panels_admin_edit_views($id, $parents, $conf) {
     '#default_value' => $conf['link_to_view'],
     '#title' => t('Link title to view'),
     '#description' => t('If checked, the title will be a link to the view.'),
+  );
+
+  $form['more_link'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $conf['more_link'],
+    '#title' => t('Provide a "more" link that links to the view'),
+    '#description' => t('This is independent of any more link that may be provided by the view itself; if you see two more links, turn this one off. Views will only provide a more link if using the "block" type, however, so if using embed, use this one.'),
+  );
+
+  $form['feed_icons'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $conf['feed_icons'],
+    '#title' => t('Display feed icons'),
+    '#description' => t('If checked, any feed icons provided by this view will be displayed.'),
   );
 
   $form['pager_aligner_start'] = array(
