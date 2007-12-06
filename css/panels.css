@@ -1,0 +1,49 @@
+/* $Id: panels.css,v 1.1.2.1 2007/12/06 16:13:30 merlinofchaos Exp $ */
+
+div.panel-pane div.admin-links {
+  font-size: xx-small;
+  width: 99%;
+  margin-right: 1em;
+  line-height: xx-small;
+}
+
+div.panel-pane div.admin-links li a {
+  color: #ccc;
+}
+
+div.panel-pane div.admin-links li {
+  padding-bottom: 2px;
+  background: white;
+}
+
+div.panel-pane div.admin-links:hover a {
+  color: #000;
+}
+
+div.panel-pane div.admin-links a:before {
+  content: "[";
+}
+
+div.panel-pane div.admin-links a:after {
+  content: "]";
+}
+
+div.panel-pane div.panel-hide {
+  display: none;
+}
+
+div.panel-pane div.hover {
+  display: block;
+  position: absolute;
+  z-index: 20;
+  margin-top: -1.5em;
+}
+
+div.panel-pane div.node {
+  margin: 0;
+  padding: 0;
+}
+
+div.panel-pane div.feed a {
+  float: right;
+}
