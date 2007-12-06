@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.12 2007/12/06 02:35:45 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.13 2007/12/06 16:12:34 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -476,7 +476,10 @@ function panels_get_pane_content($display, $pane, $args = array(), $context = NU
   $content = FALSE;
   if (empty($pane->cache['method'])) {
     $content = panels_ct_get_content($pane->type, $pane->configuration, $args, $context, $incoming_content);
-    drupal_alter('panels_pane', $content, $pane, $args, $context);
+    foreach (module_implements('panels_pane_content_alter') as $module) {
+      $function = $module . 'panels_pane_content_alter';
+      $function($content, $pane, $args, $context);
+    }
   }
   else {
     $cache = panels_get_cached_content($display, $args, $context, $pane);
