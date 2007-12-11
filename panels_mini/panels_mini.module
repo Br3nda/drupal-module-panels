@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.11 2007/12/11 21:02:36 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.12 2007/12/11 21:06:39 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -200,7 +200,8 @@ function panels_mini_list_page() {
   $sorts = array();
 
   $header = array(
-    array('data' => t('Title'), 'field' => 'title', 'sort' => 'asc'),
+    array('data' => t('Title'), 'field' => 'title'),
+    array('data' => t('Name'), 'field' => 'name', 'sort' => 'asc'),
     array('data' => t('Type'), 'field' => 'type'),
     t('Layout'),
     t('Operations'),
@@ -226,6 +227,7 @@ function panels_mini_list_page() {
 
     $item = array();
     $item[] = check_plain($panel_mini->title);
+    $item[] = check_plain($panel_mini->name);
     $item[] = $panel_mini->type; // this is safe as it's always programmatic
 
     if (empty($panel_mini->display)) {
@@ -238,8 +240,11 @@ function panels_mini_list_page() {
     $ts = tablesort_init($header);
     switch ($ts['sql']) {
       case 'title':
-      default:
         $sorts[] = $item[0];
+        break;
+      case 'name':
+      default:
+        $sorts[] = $item[1];
         break;
       case 'type':
         $sorts[] = $panel_mini->type . $item[0];

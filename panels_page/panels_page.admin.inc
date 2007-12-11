@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.29 2007/12/11 21:02:36 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.30 2007/12/11 21:06:39 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -12,7 +12,8 @@ function panels_page_list_page() {
   $sorts = array();
 
   $header = array(
-    array('data' => t('Page title'), 'field' => 'title', 'sort' => 'asc'),
+    array('data' => t('Page title'), 'field' => 'title'),
+    array('data' => t('Name'), 'field' => 'name', 'sort' => 'asc'),
     array('data' => t('Type'), 'field' => 'type'),
     t('Layout'),
     array('data' => t('URL'), 'field' => 'url'),
@@ -40,6 +41,7 @@ function panels_page_list_page() {
     $path = empty($panel_page->disabled) && strpos($panel_page->path, '%') === FALSE ? l($panel_page->path, $panel_page->path) : check_plain($panel_page->path);
     $item = array();
     $item[] = check_plain(panels_page_get_title($panel_page));
+    $item[] = check_plain($panel_page->name);
     $item[] = $panel_page->type; // this is safe as it's always programmatic
 
     if (empty($panel_page->display)) {
@@ -53,8 +55,11 @@ function panels_page_list_page() {
     $ts = tablesort_init($header);
     switch ($ts['sql']) {
       case 'title':
-      default:
         $sorts[] = $item[0];
+        break;
+      case 'title':
+      default:
+        $sorts[] = $item[1];
         break;
       case 'type':
         $sorts[] = $panel_page->type . $item[0];
