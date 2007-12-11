@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.6 2007/12/11 01:32:30 merlinofchaos Exp $
+// $Id: modal_forms.js,v 1.1.2.7 2007/12/11 21:02:35 merlinofchaos Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -137,6 +137,9 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
   } 
 }
 
+/**
+ * Display the modal
+ */
 Drupal.Panels.Subform.show = function() {
   $('#panels-modal').modalContent({
       opacity: '.40', 
@@ -146,6 +149,9 @@ Drupal.Panels.Subform.show = function() {
   $('#modalContent .modal-content').html($('div#panels-throbber').html());
 }
 
+/**
+ * Hide the modal
+ */
 Drupal.Panels.Subform.dismiss = function() {
   $('#panels-modal').unmodalContent();
 }

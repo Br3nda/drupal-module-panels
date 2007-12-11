@@ -1,7 +1,7 @@
-/* $Id: twocol_bricks.css,v 1.1.2.1 2007/11/27 17:35:16 merlinofchaos Exp $ */
+/* $Id: twocol_bricks.css,v 1.1.2.2 2007/12/11 21:02:35 merlinofchaos Exp $ */
 
 .panel-2col-bricks { 
-  overflow: hidden; 
+/*  overflow: hidden;  */
   margin-top: 0;
   padding-top: 0;
 }

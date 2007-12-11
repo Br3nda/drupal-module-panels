@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.32 2007/12/06 02:35:45 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.33 2007/12/11 21:02:36 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -478,7 +478,6 @@ function panels_page_access($panel_page, $account = NULL) {
 /**
  * Get the title for a panel page, given a context.
  *
- * TODO: Retool this so we rely primarily on the contexts to get a title.
  */
 function panels_page_get_title($panel_page, $context = 'page', $default_title = NULL) {
   $title = _panels_page_get_title($panel_page, $context, $default_title);
@@ -524,6 +523,27 @@ function _panels_page_get_title($panel_page, $context, $default_title) {
   else {
     return $default_title;
   }
+}
+
+/**
+ * Get the actual URL of a panel page given the passed in arguments.
+ */
+function panels_page_get_url($panel_page, $args = NULL) {
+  if (!isset($args)) {
+    $args = $panel_page->args;
+  }
+
+  $parts = explode('/', $panel_page->path);
+  $url = array();
+  foreach ($parts as $part) {
+    if ($part == '%') {
+      $url[] = array_shift($args);
+    }
+    else {
+      $url[] = $part;
+    }
+  }
+  return implode('/', array_merge($url, $args));
 }
 
 /**

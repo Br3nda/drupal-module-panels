@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.28 2007/12/06 02:35:45 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.29 2007/12/11 21:02:35 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -9,19 +9,14 @@
 Drupal.Panels.clickAdd = function() {
   var id = $(this)[0].id.replace('pane-add-', '');
   // show the empty dialog right away.
-  $('#panels-modal').modalContent({
-      opacity: '.40', 
-      background: '#fff'
-    }
-  );
-  $('#modalContent .modal-content').html($('div#panels-throbber').html());
+  Drupal.Panels.Subform.show();
   $.ajax({
     type: "POST",
     url: Drupal.settings.panelsAjaxURL + "/add-content/" + $('#panel-did').val() + '/' + id,
     data: '',
     global: true,
     success: Drupal.Panels.Subform.bindAjaxResponse,
-    error: function() { alert("An error occurred."); $('#panels-modal').unmodalContent(); },
+    error: function() { alert("An error occurred."); Drupal.Panels.Subform.dismiss(); },
     dataType: 'json'
   });
   return false;
@@ -44,12 +39,7 @@ Drupal.Panels.clickShowAll = function() {
 /** Configure cache button */
 Drupal.Panels.clickCacheSettings = function () {
   // show the empty dialog right away.
-  $('#panels-modal').modalContent({
-      opacity: '.40', 
-      background: '#fff'
-    }
-  );
-  $('#modalContent .modal-content').html($('div#panels-throbber').html());
+  Drupal.Panels.Subform.show();
 
   $.ajax({
     type: "POST",
@@ -57,7 +47,7 @@ Drupal.Panels.clickCacheSettings = function () {
     data: '',
     global: true,
     success: Drupal.Panels.Subform.bindAjaxResponse,
-    error: function() { alert("An error occurred."); $('#panels-modal').unmodalContent(); },
+    error: function() { alert("An error occurred."); Drupal.Panels.Subform.dismiss(); },
     dataType: 'json'
   });
   return false;
@@ -69,19 +59,15 @@ Drupal.Panels.bindClickConfigure = function (o) {
   $('input.pane-configure').click(function() {
     var id = $(this)[0].id.replace('edit-button-', '').replace('-configure', '');
     // show the empty dialog right away.
-    $('#panels-modal').modalContent({
-        opacity: '.40', 
-        background: '#fff'
-      }
-    );
-    $('#modalContent .modal-content').html($('div#panels-throbber').html());
+    Drupal.Panels.Subform.show();
+  
     $.ajax({
       type: "POST",
       url: Drupal.settings.panelsAjaxURL + "/configure/" + $('#panel-did').val() + '/' + id,
       data: '',
       global: true,
       success: Drupal.Panels.Subform.bindAjaxResponse,
-      error: function() { alert("An error occurred."); $('#panels-modal').unmodalContent(); },
+      error: function() { alert("An error occurred."); Drupal.Panels.Subform.dismiss(); },
       dataType: 'json'
     });
     return false;
@@ -94,19 +80,15 @@ Drupal.Panels.bindClickCache = function (o) {
   $('input.pane-cache').click(function() {
     var id = $(this)[0].id.replace('edit-button-', '').replace('-cache', '');
     // show the empty dialog right away.
-    $('#panels-modal').modalContent({
-        opacity: '.40', 
-        background: '#fff'
-      }
-    );
-    $('#modalContent .modal-content').html($('div#panels-throbber').html());
+    Drupal.Panels.Subform.show();
+    
     $.ajax({
       type: "POST",
       url: Drupal.settings.panelsAjaxURL + "/cache/" + $('#panel-did').val() + '/' + id,
       data: '',
       global: true,
       success: Drupal.Panels.Subform.bindAjaxResponse,
-      error: function() { alert("An error occurred."); $('#panels-modal').unmodalContent(); },
+      error: function() { alert("An error occurred."); Drupal.Panels.Subform.dismiss(); },
       dataType: 'json'
     });
     return false;

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.28 2007/12/06 02:35:45 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.29 2007/12/11 21:02:36 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -817,20 +817,6 @@ function panels_page_import_form_submit($formid, $form) {
   else {
     drupal_set_message(t('Unable to get a panel page out of that.'));
   }
-}
-
-function panels_page_get_url($panel_page, $args) {
-  $parts = explode('/', $panel_page->path);
-  $url = array();
-  foreach ($parts as $part) {
-    if ($part == '%') {
-      $url[] = array_shift($args);
-    }
-    else {
-      $url[] = $part;
-    }
-  }
-  return implode('/', array_merge($url, $args));
 }
 
 function panels_page_admin_view($panel_page, $args) {

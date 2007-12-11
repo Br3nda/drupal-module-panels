@@ -1,7 +1,7 @@
-/* $Id: flexible.css,v 1.1.2.5 2007/11/28 00:55:49 merlinofchaos Exp $ */
+/* $Id: flexible.css,v 1.1.2.6 2007/12/11 21:02:35 merlinofchaos Exp $ */
 
 .panel-flexible { 
-  overflow: hidden; 
+/*  overflow: hidden;  */
 }
 
 .panel-flexible {

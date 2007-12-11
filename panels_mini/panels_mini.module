@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.10 2007/11/28 04:17:48 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.11 2007/12/11 21:02:36 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -48,6 +48,13 @@ function panels_mini_menu($may_cache) {
       'title' => t('Add'),
       'access' => $access,
       'callback' => 'panels_mini_add_page',
+      'type' => MENU_LOCAL_TASK,
+    );
+    $items[] = array(
+      'path' => 'admin/panels/panel-mini/import',
+      'title' => t('Import'),
+      'access' => $access,
+      'callback' => 'panels_mini_import_mini',
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
@@ -316,6 +323,61 @@ function panels_mini_edit_export($panel_mini) {
   return $form;
 }
 
+/*
+ * Page callback to import a mini panel from PHP code.
+ */
+function panels_mini_import_mini() {
+  if ($_POST['form_id'] == 'panels_mini_edit_form') {
+    $panel_mini = $_SESSION['pm_import'];
+    drupal_set_title(t('Import panel mini "@s"', array('@s' => $panel_mini->title)));
+    return drupal_get_form('panels_mini_edit_form', $panel_mini);
+  }
+
+  return drupal_get_form('panels_mini_import_form');
+}
+
+/*
+ * Form for the mini panel import
+ */
+function panels_mini_import_form() {
+  $form['panel_mini'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Panel mini code'),
+    '#cols' => 60,
+    '#rows' => 6,
+    '#description' => t('Cut and paste the results of an Export Panel mini here.'),
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t("Submit"),
+  );
+
+  $form['#redirect'] = NULL;
+  return $form;
+}
+
+/*
+ * Handle the submit button on importing a panel mini.
+ */
+function panels_mini_import_form_submit($formid, $form) {
+  ob_start();
+  eval($form['panel_mini']);
+  ob_end_clean();
+
+  if (isset($mini)) {
+    drupal_set_title(t('Import panel mini "@s"', array('@s' => $mini->title)));
+    $_SESSION['pm_import'] = $mini;
+    $output = drupal_get_form('panels_mini_edit_form', $mini);
+    print theme('page', $output);
+    exit;
+  }
+  else {
+    drupal_set_message(t('Unable to get a mini panel out of that.'));
+  }
+}
+
+
 /**
  * Handle the add mini panel page.
  */
@@ -484,6 +546,7 @@ function panels_mini_edit_form_submit($form_id, $form_values) {
   $panel_mini->name = $form_values['name'];
 
   if ($panel_mini->pid == 'new') {
+    unset($_SESSION['pm_import']);
     panels_mini_save($panel_mini);
     $GLOBALS['form_values']['pid'] = $panel_mini->pid;
 
@@ -963,7 +1026,7 @@ function panels_mini_delete($panel_mini) {
  */
 function panels_mini_export($panel_mini, $prefix = '') {
   $output = '';
-  $fields = array('name', 'title', 'contexts', 'relationships');
+  $fields = array('name', 'title', 'requiredcontexts', 'contexts', 'relationships');
   $output .= $prefix . '$mini = new stdClass()' . ";\n";
   $output .= $prefix . '$mini->pid = \'new\'' . ";\n";
   foreach ($fields as $field) {
