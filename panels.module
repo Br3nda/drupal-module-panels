@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.67 2007/12/06 02:35:44 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.68 2007/12/11 01:32:28 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -106,7 +106,7 @@ function panels_menu($may_cache) {
       'path' => 'panels/ajax/panel_settings',
       'title' => t('ajax'),
       'callback' => 'panels_ajax_passthru',
-      'callback arguments' => array('panels_common_panel_settings_ajax'),
+      'callback arguments' => array('panels_panel_settings_ajax'),
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK
     );
@@ -734,7 +734,7 @@ function panels_render_panes($display) {
         $panel[$pid] = $panes[$pid];
       }
     }
-    $content[$panel_name] = panels_render_panel($display, $panel);
+    $content[$panel_name] = panels_render_panel($display, $panel_name, $panel);
   }
 
   return $content;
@@ -823,25 +823,43 @@ function panels_pane_select_context($pane, $contexts) {
 }
 
 /**
+ * Given a display and the id of a panel, get the style in which to render
+ * that panel.
+ */
+function panels_get_panel_style_and_settings($panel_settings, $panel) {
+  if (empty($panel_settings)) {
+    return array(panels_get_style('default'), array());
+  }
+
+  if (empty($panel_settings['individual']) || empty($panel_settings['panel'][$panel]['style'])) {
+    $style = panels_get_style($panel_settings['style']);
+    $style_settings = $panel_settings['style_settings']['default'];
+  }
+  else {
+    $style = panels_get_style($panel_settings['panel'][$panel]['style']);
+    $style_settings = $panel_settings['style_settings'][$panel];
+  }
+
+  return array($style, $style_settings);
+}
+
+/**
  * Render a panel, by storing the content of each pane in an appropriate array
  * and then passing through to the theme function that will render the panel
  * in the configured panel style.
  *
  * @param $display
  *   A display object.
+ * @param $panel
+ *   The ID of the panel being rendered
  * @param $panes
  *   An array of panes that are assigned to the panel that's being rendered.
  * @return
  *   The rendered HTML for a panel.
  * @render
  */
-function panels_render_panel($display, $panes) {
-  if (!empty($display->panel_settings)) {
-    $style = panels_get_style($display->panel_settings['style']);
-  }
-  else {
-    $style = panels_get_style('default');
-  };
+function panels_render_panel($display, $panel, $panes) {
+  list($style, $style_settings) = panels_get_panel_style_and_settings($display->panel_settings, $panel);
 
   // Retrieve the pid (can be a panel page id, a mini panel id, etc.), this
   // might be used (or even necessary) for some panel display styles.

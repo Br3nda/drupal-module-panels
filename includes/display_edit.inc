@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.15 2007/11/30 19:55:30 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.16 2007/12/11 01:32:29 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
@@ -329,7 +329,7 @@ function panels_edit_layout_settings_form($display, $finish, $destination) {
 
   $form['layout_settings']['#tree'] = TRUE;
 
-  $form += panels_common_panel_settings($display);
+  $form += panels_panel_settings($display);
 
   $form['variables'] = array(
     '#type' => 'value',
@@ -361,7 +361,7 @@ function panels_edit_layout_settings_form($display, $finish, $destination) {
 
 function panels_edit_layout_settings_form_validate($form_id, $form_values, $form) {
   list($display, $finish, $destination) = $form_values['variables'];
-  panels_common_panel_settings_validate($form_id, $form_values, $form);
+  panels_panel_settings_validate($form_id, $form_values, $form);
   $layout = $form_values['layout'];
   if (!empty($layout['settings validate']) && function_exists($layout['settings validate'])) {
     $layout['settings validate']($form_values['layout_settings'], $form['layout_settings'], $display, $layout, $display->layout_settings);
@@ -370,7 +370,7 @@ function panels_edit_layout_settings_form_validate($form_id, $form_values, $form
 
 function panels_edit_layout_settings_form_submit($form_id, $form_values) {
   list($display, $finish, $destination) = $form_values['variables'];
-  panels_common_panel_settings_submit($form_id, $form_values);
+  panels_panel_settings_submit($form_id, $form_values);
 
   $layout = $form_values['layout'];
   if (!empty($layout['settings submit']) && function_exists($layout['settings submit'])) {
@@ -1003,8 +1003,9 @@ function panels_edit_submit_subform($display) {
 // Panels settings + ajax for modal popup
 
 /**
+ * Form to edit panel style settings.
  */
-function panels_common_panel_settings($display) {
+function panels_panel_settings($display) {
   $panel_settings = $display->panel_settings;
   $style = panels_get_style((!empty($panel_settings['style'])) ? $panel_settings['style'] : 'default');
 
@@ -1027,11 +1028,16 @@ function panels_common_panel_settings($display) {
     '#tree' => TRUE,
   );
 
+  $form['panel_settings']['start_box'] = array(
+    '#value' => '<div class="form-item clear-block"><label>' . t('Default panel style') . ':</label>',
+  );
+
+  $modals = array();
   $form['panel_settings']['style'] = array(
+    '#prefix' => '<div class="panels-style-settings-box">',
+    '#suffix' => '</div>',
     '#type' => 'select',
-    '#title' => t('Panel style'),
     '#options' => $options,
-    '#description' => t('The style in which the panes of each panel will be displayed.'),
     '#id' => 'panel-settings-style',
     '#default_value' => $style['name'],
   );
@@ -1041,9 +1047,10 @@ function panels_common_panel_settings($display) {
     $style_settings = panels_common_cache_get('style_settings', $display->did);
   }
   if (!isset($style_settings)) {
-    $style_settings = $panel_settings['style_settings'];
+    $style_settings = !empty($panel_settings['style_settings']) ? $panel_settings['style_settings'] : array();
     panels_common_cache_set('style_settings', $display->did, $style_settings);
   }
+
   $form['panel_settings']['style_settings'] = array(
     '#type' => 'value',
     '#value' => $style_settings,
@@ -1054,15 +1061,66 @@ function panels_common_panel_settings($display) {
     '#value' => t('Edit style settings'),
   );
 
+  // Set up the AJAX settings for the modal.
+  $modals['#panels-style-settings'] = array(url('panels/ajax/panel_settings/' . $display->did . '/default', NULL, NULL, TRUE), '#panel-settings-style');
+
+  $form['panel_settings']['end_box'] = array(
+    '#value' => '</div>',
+  );
+
+  $form['panel_settings']['individual'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Per panel settings'),
+    '#id' => 'panel-settings-individual',
+    '#description' => t('If this is checked, each pane (region) in the display can have its own style.'),
+    '#default_value' => $panel_settings['individual'],
+  );
+
+  $layout_options = array_merge(array('-1' => t('Use the default panel style')), $options);
+  $layout = panels_get_layout($display->layout);
+  $layout_panels = panels_get_panels($layout, $display);
+
+  $checkboxes = array();
+  foreach ($layout_panels as $id => $name) {
+    $form['panel_settings']['panel'][$id]['start_box'] = array(
+      '#value' => '<div class="form-item clear-block"><label>' . $name . ':</label>',
+    );
+    $form['panel_settings']['panel'][$id]['style'] = array(
+      '#prefix' => '<div class="panels-style-settings-box">',
+      '#suffix' => '</div>',
+      '#type' => 'select',
+      '#options' => $layout_options,
+      '#id' => 'panel-settings-style-' . $id,
+      '#default_value' => $display->panel_settings['panel'][$id]['style'],
+    );
+    $checkboxes[] = '#panel-settings-style-' . $id;
+
+    $form['panel_settings']['panel'][$id]['edit_style'] = array(
+      '#type' => 'submit',
+      '#id' => 'panels-style-settings-' . $id,
+      '#attributes' => array('class' => 'panels-style-settings'),
+      '#value' => t('Edit style settings'),
+    );
+    $checkboxes[] = '#panels-style-settings-' . $id;
+
+    // Set up the AJAX settings for the modal.
+    $modals['#panels-style-settings-' . $id ] = array(url('panels/ajax/panel_settings/' . $display->did . '/' . $id, NULL, NULL, TRUE), '#panel-settings-style-' . $id);
+
+    $form['panel_settings']['panel'][$id]['end_box'] = array(
+      '#value' => '</div>',
+    );
+  }
+
   // while we don't use this directly some of our forms do.
   drupal_add_js('misc/collapse.js');
   drupal_add_js('misc/autocomplete.js');
 
   $ajax = array('panels' => array(
-    'ajaxURL' => url('panels/ajax/panel_settings/' . $display->did, NULL, NULL, TRUE),
     'closeText' => t('Close Window'),
     'closeImage' => theme('image', panels_get_path('images/close.gif'), t('Close window'), t('Close window')),
     'throbber' => theme('image', panels_get_path('images/throbber.gif'), t('Loading...'), t('Loading')),
+    'checkboxes' => array('#panel-settings-individual' => $checkboxes),
+    'modals' => $modals,
   ));
 
   $form['panel_settings']['did'] = array(
@@ -1074,7 +1132,6 @@ function panels_common_panel_settings($display) {
   drupal_add_js(panels_get_path('js/lib/mc.js'));
   drupal_add_js(panels_get_path('js/lib/form.js'));
   drupal_add_js($ajax, 'setting');
-  drupal_add_js(panels_get_path('js/edit_settings.js'));
   drupal_add_js(panels_get_path('js/modal_forms.js'));
   drupal_add_js(panels_get_path('js/checkboxes.js'));
   drupal_add_css(panels_get_path('css/panels_dnd.css'));
@@ -1082,38 +1139,38 @@ function panels_common_panel_settings($display) {
   return $form;
 }
 
-function panels_common_panel_settings_validate($form_id, $form_values, $form) {
+function panels_panel_settings_validate($form_id, $form_values, $form) {
   $settings = panels_common_cache_get('style_settings', $form_values['panel_settings']['did']);
   form_set_value($form['panel_settings']['style_settings'], $settings);
 }
 
-function panels_common_panel_settings_submit($form_id, $form_values) {
+function panels_panel_settings_submit($form_id, $form_values) {
   panels_common_cache_clear('style_settings', $form_values['panel_settings']['did']);
 }
 
 /**
  * AJAX incoming to deal with the style settings modal
  */
-function panels_common_panel_settings_ajax($did, $name) {
+function panels_panel_settings_ajax($did, $panel, $name) {
+  if ($name == '0') {
+    panels_ajax_render(t('There are no style settings to edit.'), t('Edit default style settings'));
+  }
+
   $style = panels_get_style($name);
   $style_settings = panels_common_cache_get('style_settings', $did);
-
-  $form = drupal_retrieve_form('panels_common_style_settings_form', $did, $style, $style_settings);
-  if ($_POST) {
-    $form['#redirect'] = FALSE;
+  if (!isset($style_settings)) {
+    panels_ajax_render();
   }
 
-  $result = drupal_process_form('panels_common_style_settings_form', $form);
-  if ($result) {
-    // successful submit
-    $output = new stdClass();
-    $output->type = $output->output = 'dismiss';
-    panels_ajax_render($output);
-  }
-  else {
-    $output = drupal_render_form('panels_common_style_settings_form', $form);
-    panels_ajax_render($output, t('Edit style settings for @style', array('@style' => $style['title'])), url($_GET['q'], NULL, NULL, TRUE));
-  }
+  // Render the panels ajax form. This only returns to us on successful
+  // submit; otherwise the form is rendered for us and nothing else happens.
+  $style_settings[$panel] = panels_ajax_form('panels_common_style_settings_form',
+     t('Edit style settings for @style', array('@style' => $style['title'])),
+    url($_GET['q'], NULL, NULL, TRUE),
+    $did, $style, $style_settings[$panel]);
+
+  panels_common_cache_set('style_settings', $did, $style_settings);
+  panels_ajax_render('dismiss');
 }
 
 /**
@@ -1179,8 +1236,7 @@ function panels_common_style_settings_form_submit($form_id, $form_values) {
     $style['settings form submit']($form_values['style_settings']);
   }
 
-  panels_common_cache_set('style_settings', $form_values['did'], $form_values['style_settings']);
-  return 'dismiss';
+  return $form_values['style_settings'];
 }
 
 /**

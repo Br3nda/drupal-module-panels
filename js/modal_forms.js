@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.5 2007/12/03 19:56:44 merlinofchaos Exp $
+// $Id: modal_forms.js,v 1.1.2.6 2007/12/11 01:32:30 merlinofchaos Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -137,6 +137,19 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
   } 
 }
 
+Drupal.Panels.Subform.show = function() {
+  $('#panels-modal').modalContent({
+      opacity: '.40', 
+      background: '#fff'
+    }
+  );
+  $('#modalContent .modal-content').html($('div#panels-throbber').html());
+}
+
+Drupal.Panels.Subform.dismiss = function() {
+  $('#panels-modal').unmodalContent();
+}
+
 Drupal.Panels.Subform.createModal = function() {
   var html = ''
   html += '<div class="panels-hidden">';
@@ -160,5 +173,46 @@ Drupal.Panels.Subform.createModal = function() {
   html += '</div>';
 
   $('body').append(html);
-
 }
+
+/**
+ * Bind a modal form to a button and a URL to go to.
+ */
+Drupal.Panels.Subform.bindModal = function(id, info) {
+  $(id).click(function() {
+    var url = info[0];
+    if (info[1]) {
+      url += '/' + $(info[1]).val();
+    }
+    // show the empty dialog right away.
+    Drupal.Panels.Subform.show();
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: '',
+      global: true,
+      success: Drupal.Panels.Subform.bindAjaxResponse,
+      error: function() { alert("Invalid response from server."); Drupal.Panels.Subform.dismiss(); },
+      dataType: 'json'
+    });
+    return false;
+  });
+}
+
+/**
+ * Bind all modals to their buttons. They'll be in the settings like so:
+ * Drupal.settings.panels.modals.button-id = url
+ */
+Drupal.Panels.Subform.autoAttach = function() {
+  if (Drupal.settings && Drupal.settings.panels && Drupal.settings.panels.modals) {
+    Drupal.Panels.Subform.createModal();
+    for (var modal in Drupal.settings.panels.modals) {
+      if (!$(modal + '.modal-processed').size()) {
+        Drupal.Panels.Subform.bindModal(modal, Drupal.settings.panels.modals[modal]);
+        $(modal).addClass('modal-processed');
+      }
+    }
+  }
+}
+
+$(Drupal.Panels.Subform.autoAttach);

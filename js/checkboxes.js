@@ -1,4 +1,4 @@
-// $Id: checkboxes.js,v 1.1.2.3 2007/12/06 02:35:45 merlinofchaos Exp $
+// $Id: checkboxes.js,v 1.1.2.4 2007/12/11 01:32:30 merlinofchaos Exp $
 
 Drupal.Panels.Checkboxes = {};
 
@@ -27,7 +27,6 @@ Drupal.Panels.Checkboxes.bindCheckboxes = function() {
       }
     }
   }
-
 }
 
 $(Drupal.Panels.Checkboxes.bindCheckboxes);

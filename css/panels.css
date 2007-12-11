@@ -1,4 +1,4 @@
-/* $Id: panels.css,v 1.1.2.1 2007/12/06 16:13:30 merlinofchaos Exp $ */
+/* $Id: panels.css,v 1.1.2.2 2007/12/11 01:32:29 merlinofchaos Exp $ */
 
 div.panel-pane div.admin-links {
   font-size: xx-small;
@@ -35,7 +35,7 @@ div.panel-pane div.panel-hide {
 div.panel-pane div.hover {
   display: block;
   position: absolute;
-  z-index: 20;
+  z-index: 200;
   margin-top: -1.5em;
 }
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.7 2007/11/30 19:55:31 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.8 2007/12/11 01:32:30 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -50,7 +50,7 @@ function panels_flexible_default_panels() {
   );
 }
 
-function panels_flexible_settings_form($display, $layout, &$settings) {
+function panels_flexible_settings_form($display, $layout, $settings) {
   if (empty($settings)) {
     // default for a new flexible layout
     $settings = panels_flexible_default_panels();
@@ -191,12 +191,12 @@ function panels_flexible_settings_form($display, $layout, &$settings) {
     '#default_value' => $settings['sidebars']['width_type'],
   );
 
-  $settings = array('panels' => array('checkboxes' => array(
+  $js_settings = array('panels' => array('checkboxes' => array(
     '#sidebar-left-checkbox' => array('#sidebar-left-width'),
     '#sidebar-right-checkbox' => array('#sidebar-right-width'),
   )));
   drupal_add_js(panels_get_path('js/checkboxes.js'));
-  drupal_add_js($settings, 'setting');
+  drupal_add_js($js_settings, 'setting');
   return $form;
 }
 
