@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.30 2007/12/11 21:06:39 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.31 2007/12/12 20:33:37 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -27,7 +27,8 @@ function panels_page_list_page() {
       $ops[] = l(t('Export'), "admin/panels/panel-page/$panel_page->name/export");
     }
     if ($panel_page->type != t('Default')) {
-      $ops[] = l(t('Delete'), "admin/panels/panel-page/$panel_page->name/delete");
+      $text = $panel_page->type == t('Overridden') ? t('Revert') : t('Delete');
+      $ops[] = l($text, "admin/panels/panel-page/$panel_page->name/delete");
     }
     else {
       if (empty($panel_page->disabled)) {
@@ -125,12 +126,22 @@ function panels_page_delete_confirm($panel_page) {
   }
   $form['pid'] = array('#type' => 'value', '#value' => $panel_page->pid);
   $form['did'] = array('#type' => 'value', '#value' => $panel_page->did);
-  return confirm_form( $form,
-    t('Are you sure you want to delete "@title"?', array('@title' => panels_page_get_title($panel_page))),
-    $_GET['destination'] ? $_GET['destination'] : 'admin/panels/panel-page',
-    t('This action cannot be undone.'),
-    t('Delete'), t('Cancel')
-  );
+  if ($panel_page->type != t('Overridden')) {
+    return confirm_form( $form,
+      t('Are you sure you want to delete "@title"?', array('@title' => panels_page_get_title($panel_page))),
+      $_GET['destination'] ? $_GET['destination'] : 'admin/panels/panel-page',
+      t('This action cannot be undone.'),
+      t('Delete'), t('Cancel')
+    );
+  }
+  else {
+    return confirm_form( $form,
+      t('Are you sure you want to revert "@title" to its default setup?', array('@title' => panels_page_get_title($panel_page))),
+      $_GET['destination'] ? $_GET['destination'] : 'admin/panels/panel-page',
+      t('This action cannot be undone.'),
+      t('Revert'), t('Cancel')
+    );
+  }
 }
 
 /*
@@ -653,61 +664,44 @@ function panels_page_context_form_submit($form_id, $form_values) {
 }
 
 /**
- * TODO: document this
+ * Pass through to the panels layout editor.
  */
-function panel_page_fetch_panel_page($panel_page, $did) {
+function panels_page_edit_layout($panel_page, $did = NULL) {
   if (!is_object($panel_page)) {
     $panel_page = panels_page_load($panel_page);
   }
 
-  // If we visit this page on a default panel, we have to make it real.
-  if ($panel_page->pid == 'new') {
-    $pid = panels_page_save($panel_page);
-    // reload because not everything gets properly reset on save and we need
-    // ids that were created.
-    $panel_page = panels_page_load($pid);
-  }
+  $display = panels_page_fetch_display($panel_page, $did);
 
-  if (empty($did)) {
-    $panel_page->display = panels_load_display($panel_page->did);
-    $panel_page->display->owner = $panel_page;
-    $panel_page->display->owner->id = $panel_page->name;
-  }
-  else {
-    $panel_page->display = panels_page_fetch_display($panel_page, $did);
+  // The following form will return the $display upon successful submit, if
+  // we didn't send the $dest. Which we don't, here. That way we can update
+  // our panel_page if necessary and do our own goto.
+  $output = panels_edit_layout($panel_page->display, t('Save'));
+  if (is_object($output)) {
+    // If this is a default page, and was saved, we have to make it real.
+    panels_page_set_display($panel_page, $did, $output);
 
-    // Some displays might have an alternate context string which could be
-    // important.
-    if (isset($panel_page->displays[$did]['context'])) {
-      $panel_page->display->display_context = $panel_page->displays[$did]['context'];
+    $dest = "admin/panels/panel-page/$panel_page->name/edit/layout";
+    if ($did) {
+      $dest .= "/$did";
     }
+    drupal_goto($dest);
   }
-
-  return $panel_page;
-}
-
-/**
- * Pass through to the panels layout editor.
- */
-function panels_page_edit_layout($panel_page, $did = NULL) {
-  $panel_page = panel_page_fetch_panel_page($panel_page, $did);
 
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
-
-  $dest = "admin/panels/panel-page/$panel_page->name/edit/layout";
-  if ($did) {
-    $dest .= "/$did";
-  }
-  return panels_edit_layout($panel_page->display, t('Save'), $dest);
+  return $output;
 }
 
 /**
  * Pass through to the panels layout settings editor.
  */
 function panels_page_edit_layout_settings($panel_page, $did = NULL, $next = NULL) {
-  $panel_page = panel_page_fetch_panel_page($panel_page, $did);
+  if (!is_object($panel_page)) {
+    $panel_page = panels_page_load($panel_page);
+  }
 
-  drupal_set_title(check_plain(panels_page_get_title($panel_page)));
+  $display = panels_page_fetch_display($panel_page, $did);
+
   if (empty($next)) {
     $button = t('Save');
     $dest = "admin/panels/panel-page/$panel_page->name/edit/settings";
@@ -720,34 +714,54 @@ function panels_page_edit_layout_settings($panel_page, $did = NULL, $next = NULL
     $dest = "admin/panels/panel-page/$panel_page->name/edit/advanced/next";
   }
 
-  return panels_edit_layout_settings($panel_page->display, $button, $dest);
+  // The following form will return the $display upon successful submit, if
+  // we didn't send the $dest. Which we don't, here.
+  $output = panels_edit_layout_settings($panel_page->display, $button);
+  if (is_object($output)) {
+    panels_page_set_display($panel_page, $did, $output);
+    drupal_goto($dest);
+  }
+
+  drupal_set_title(check_plain(panels_page_get_title($panel_page)));
+  return $output;
 }
 
 /**
  * Pass through to the panels content editor.
  */
 function panels_page_edit_content($panel_page, $did = NULL) {
-  $panel_page = panel_page_fetch_panel_page($panel_page, $did);
+  if (!is_object($panel_page)) {
+    $panel_page = panels_page_load($panel_page);
+  }
+
+  $display = panels_page_fetch_display($panel_page, $did);
 
   // Collect a list of contexts required by the arguments on this page.
   $contexts = panels_context_load_contexts($panel_page);
-  $panel_page->display->context = $contexts;
+  $display->context = $contexts;
+  $display->args = array();
 
   // Get a list of available content.
   require_once drupal_get_path('module', 'panels') . '/includes/common.inc';
   $content_types = panels_common_get_allowed_types('panels_page', $contexts);
 
+  $output = panels_edit($display, NULL, $content_types);
+  if (is_object($output)) {
+    // If this is a default page, and was saved, we have to make it real.
+    panels_page_set_display($panel_page, $did, $output);
+
+    // And do the drupal_goto that a submit function ordinarily would have.
+    $dest = "admin/panels/panel-page/$panel_page->name/edit/content";
+    if ($did) {
+      $dest .= "/$did";
+    }
+    drupal_goto($dest);
+  }
+
   // Print this with theme('page') so that blocks are disabled while editing a display.
   // This is important because negative margins in common block layouts (i.e, Garland)
   // messes up the drag & drop.
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
-
-  $dest = "admin/panels/panel-page/$panel_page->name/edit/content";
-  if ($did) {
-    $dest .= "/$did";
-  }
-  $output = panels_edit($panel_page->display, $dest, $content_types);
-
   print theme('page', $output, FALSE);
 }
 
@@ -800,7 +814,7 @@ function panels_page_import_form() {
     '#value' => t("Submit"),
   );
 
-  $form['#redirect'] = NULL;
+  $form['#redirect'] = FALSE;
   return $form;
 }
 
@@ -817,7 +831,6 @@ function panels_page_import_form_submit($formid, $form) {
     $_SESSION['pp_import'] = $page;
     $output = drupal_get_form('panels_page_edit_form', $page);
     print theme('page', $output);
-    exit;
   }
   else {
     drupal_set_message(t('Unable to get a panel page out of that.'));

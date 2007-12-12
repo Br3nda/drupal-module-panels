@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.68 2007/12/11 01:32:28 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.69 2007/12/12 20:33:36 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -362,7 +362,7 @@ function panels_get($var) {
  *
  * TODO: Doc this. Important.
  */
-function panels_edit($display, $destination, $content_types = NULL) {
+function panels_edit($display, $destination = NULL, $content_types = NULL) {
   panels_load_include('display_edit');
   panels_load_include('plugins');
   return _panels_edit($display, $destination, $content_types);
@@ -373,10 +373,10 @@ function panels_edit($display, $destination, $content_types = NULL) {
  *
  * TODO: Doc this. Important.
  */
-function panels_edit_layout($display, $finish, $destination) {
+function panels_edit_layout($display, $finish, $destination = NULL) {
   panels_load_include('display_edit');
   panels_load_include('plugins');
-  return drupal_get_form('panels_choose_layout', $display, $finish, $destination);
+  return _panels_edit_layout($display, $finish, $destination);
 }
 
 /**
@@ -384,10 +384,10 @@ function panels_edit_layout($display, $finish, $destination) {
  *
  * TODO: Doc this. Important.
  */
-function panels_edit_layout_settings($display, $finish, $destination) {
+function panels_edit_layout_settings($display, $finish, $destination = NULL) {
   panels_load_include('display_edit');
   panels_load_include('plugins');
-  return drupal_get_form('panels_edit_layout_settings_form', $display, $finish, $destination);
+  return _panels_edit_layout_settings( $display, $finish, $destination);
 }
 
 
@@ -574,6 +574,7 @@ function panels_export_display($display, $prefix = '') {
   foreach ($display->content as $pane) {
     $id = 'new-' . ++$counter;
     $output .= $prefix . '$pane = new stdClass()'  . ";\n";
+    $output .= $prefix . '  $pane->pid = \'' . $id . '\'' . ";\n";
     $fields = array('panel', 'type', 'subtype', 'access', 'configuration');
     foreach ($fields as $field) {
       $output .= $prefix . '  $pane->' . $field . ' = ' . panels_var_export($pane->$field, "$prefix  ") . ";\n";

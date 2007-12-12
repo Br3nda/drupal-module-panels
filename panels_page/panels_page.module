@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.33 2007/12/11 21:02:36 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.34 2007/12/12 20:33:37 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -741,17 +741,74 @@ function theme_panels_page_render_form($form) {
 /**
  * Load a display based upon information from the $displays list.
  */
-function panels_page_fetch_display($panel_page, $id) {
-  $display = _panels_page_fetch_display($panel_page, $id);
+function panels_page_fetch_display(&$panel_page, $id) {
+  $did = NULL;
+  if (empty($id)) {
+    // If empty, use the default display.
+    if (empty($panel_page->display)) {
+      // Load it if not already loaded
+      $panel_page->display = $display = panels_load_display($panel_page->did);
+    }
+    else {
+      // Otherwise, use the loaded display
+      $display = $panel_page->display;
+    }
+  }
+  else {
+    // Otherwise, fetch from our alternative displays.
+    $display = _panels_page_fetch_display($panel_page, $id);
+  }
+
   $display->owner = $panel_page;
-  $display->owner->id = $panel_page->name;
+  $display->owner->id = $name;
+  return $display;
+}
+
+/**
+ * Fetch a display from a panel pages alternative list of displays
+ */
+function _panels_page_fetch_display(&$panel_page, $id) {
+  // TODO: Not sure if this is true. There might be a different
+  // method of validating $id.
+  if (!isset($panel_page->displays[$id])) {
+    return FALSE;
+  }
+
+  $info = $panel_page->displays[$id];
+  if ($display = _panels_fetch_display_from_info($info)) {
+    return $display;
+  }
+
+  // At this point the display does not yet exist, which means we need to
+  // create one and save the panel page to reflect this.
+  if (!empty($info['default'])) {
+    $display = _panels_fetch_display_from_info($panel_page->displays[$info['default']]);
+    if (empty($display)) {
+      // Use the default display.
+      if (empty($panel_page->display)) {
+        // Load it if not already loaded
+        $panel_page->display = $display = panels_load_display($panel_page->did);
+      }
+      else {
+        // Otherwise, use the loaded display
+        $display = $panel_page->display;
+      }
+    }
+  }
+
+  // Make a copy of the display; using the export forces all the IDs properly,
+  // since we don't want this to actually *be* the original display.
+  $code = panels_export_display($display);
+  $display = eval($code);
 
   return $display;
 }
 
-function _panels_page_fetch_display($panel_page, $id) {
-  $info = $panel_page->displays[$id];
-
+/**
+ * Get a display based on whether it's already in code or needs to be
+ * loaded
+ */
+function _panels_fetch_display_from_info($info) {
   // If the 'display' is set it's the result of an export/default
   if (isset($info['display'])) {
     return $info['display'];
@@ -761,35 +818,35 @@ function _panels_page_fetch_display($panel_page, $id) {
     return panels_load_display($info['did']);
   }
 
-  // At this point the display does not yet exist, which means we need to
-  // create one and save the panel page to reflect this.
+  return FALSE;
+}
 
-  // Arguments can provide their own default to use as a template
-  if (!empty($info['default']) && is_numeric($panel_page->displays[$info['default']]['did'])) {
-    $original = panels_load_display($panel_page->displays[$info['default']]['did']);
+/**
+ * Check to see if the panel page needs to be saved due to a display having
+ * been just saved.
+ */
+function panels_page_set_display($panel_page, $id, $display) {
+  $save = FALSE;
+  if ($panel_page->pid == 'new') {
+    $save = TRUE;
+
+    if (empty($id)) {
+      dsm($display->did);
+      $panel_page->display = $display;
+      $panel_page->did = $display->did;
+    }
   }
 
-  if (!isset($original)) {
-    if (empty($panel_page->display)) {
-      $original = panels_load_display($panel_page->did);
-    }
-    else {
-      $original = $panel_page->display;
+  if (!empty($id)) {
+    if (empty($panel_page->displays[$id]['did'])) {
+      $save = TRUE;
+      $panel_page->displays[$id] = array('did' => $display->did);
     }
   }
 
-  // Make a copy of the display; using the export forces all the IDs properly.
-  $code = panels_export_display($original);
-  $original = eval($code);
-
-  panels_save_display($display);
-  $panel_page->displays[$id]['did'] = $display->did;
-
-  // TODO: Having to clone this sucks.
-  // TODO: I don't think we need to clone this anymore.
-
-  panels_page_save(drupal_clone($panel_page));
-  return $display;
+  if ($save) {
+    panels_page_save($panel_page);
+  }
 }
 
 // ---------------------------------------------------------------------------

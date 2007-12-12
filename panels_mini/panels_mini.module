@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.12 2007/12/11 21:06:39 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.13 2007/12/12 20:33:37 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -689,11 +689,18 @@ function panels_mini_edit_content($panel_mini) {
   panels_load_include('common');
   $content_types = panels_common_get_allowed_types('panels_mini', $contexts);
 
+  $output = panels_edit($panel_mini->display, NULL, $content_types);
+  if (is_object($output)) {
+    $panel_mini->display = $output;
+    $panel_mini->did = $output->did;
+    panels_mini_save($panel_mini);
+    drupal_goto("admin/panels/panel-mini/$panel_mini->name/edit/content");
+  }
   // Print this with theme('page') so that blocks are disabled while editing a display.
   // This is important because negative margins in common block layouts (i.e, Garland)
   // messes up the drag & drop.
   drupal_set_title(check_plain($panel_mini->title));
-  print theme('page', panels_edit($panel_mini->display, "admin/panels/panel-mini/$panel_mini->name/edit/content", $content_types), FALSE);
+  print theme('page', $output, FALSE);
 }
 
 /**
@@ -703,8 +710,17 @@ function panels_mini_edit_layout($panel_mini) {
   if (!is_object($panel_mini)) {
     $panel_mini = panels_mini_load($panel_mini);
   }
+
+  $output = panels_edit_layout($panel_mini->display, t('Save'));
+  if (is_object($output)) {
+    $panel_mini->display = $output;
+    $panel_mini->did = $output->did;
+    panels_mini_save($panel_mini);
+    drupal_goto("admin/panels/panel-mini/$panel_mini->name/edit/layout");
+  }
+
   drupal_set_title(check_plain($panel_mini->title));
-  return panels_edit_layout($panel_mini->display, t('Save'), "admin/panels/panel-mini/$panel_mini->name/edit/layout");
+  return $output;
 }
 
 /**
@@ -714,7 +730,6 @@ function panels_mini_edit_layout_settings($panel_mini, $next = NULL) {
   if (!is_object($panel_mini)) {
     $panel_mini = panels_mini_load($panel_mini);
   }
-  drupal_set_title(check_plain($panel_mini->title));
   if (empty($next)) {
     $button = t('Save');
     $dest = "admin/panels/panel-mini/$panel_mini->name/edit/settings";
@@ -724,7 +739,16 @@ function panels_mini_edit_layout_settings($panel_mini, $next = NULL) {
     $dest = "admin/panels/panel-mini/$panel_mini->name/edit/context/next";
   }
 
-  return panels_edit_layout_settings($panel_mini->display, $button, $dest);
+  $output = panels_edit_layout_settings($panel_mini->display, $button);
+  if (is_object($output)) {
+    $panel_mini->display = $output;
+    $panel_mini->did = $output->did;
+    panels_mini_save($panel_mini);
+    drupal_goto($dest);
+  }
+
+  drupal_set_title(check_plain($panel_mini->title));
+  return $output;
 }
 
 // ---------------------------------------------------------------------------

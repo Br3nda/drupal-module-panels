@@ -1,12 +1,12 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.16 2007/12/11 01:32:29 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.17 2007/12/12 20:33:37 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
  *
  * TODO: Doc this. Important.
  */
-function _panels_edit($display, $destination, $content_types = NULL) {
+function _panels_edit($display, $destination = NULL, $content_types = NULL) {
   $did = $display->did;
   if (!$did) {
     $display->did = $did = 'new';
@@ -25,9 +25,20 @@ function _panels_edit($display, $destination, $content_types = NULL) {
     panels_cache_set($did, $cache);
   }
 
-  $output = drupal_get_form('panels_edit_display', $display, $destination);
-  $hidden = theme('panels_hidden');
-  return $output . $hidden;
+  // Break out the form pieces so we can return the new $display upon
+  // successful submit.
+
+  $form_id = 'panels_edit_display';
+  $form = drupal_retrieve_form($form_id, $display, $destination);
+
+  if ($result = drupal_process_form($form_id, $form)) {
+    // successful submit
+    return $result;
+  }
+
+  $output = drupal_render_form($form_id, $form);
+  $output .= theme('panels_hidden');
+  return $output;
 }
 
 /**
@@ -50,10 +61,15 @@ function panels_edit_display($display, $destination) {
     '#value' => $display
   );
 
-  $form['destination'] = array(
-    '#type' => 'value',
-    '#value' => $destination
-  );
+  if (!empty($destination)) {
+    $form['destination'] = array(
+      '#type' => 'value',
+      '#value' => $destination
+    );
+  }
+  else {
+    $form['#redirect'] = FALSE;
+  }
 
   $form['explanation'] = array(
     '#value' => '<p>' . t('Grab the title bar of any pane to drag it to another panel. Click the add pane button in any panel to add more content. Click the configure button on any pane to re-configure that pane.') . '</p>',
@@ -158,8 +174,6 @@ function theme_panels_edit_display($form) {
 function panels_edit_display_submit($form_id, $form_values) {
   $display = $form_values['panels_display'];
   if ($form_values['op'] == t('Save')) {
-//    drupal_set_message('<pre>' . var_export($display, true) . '</pre>');
-//    drupal_set_message('<pre>' . var_export($form_values, true) . '</pre>');
     $old_content = $display->content;
     $display->content = array();
 
@@ -176,13 +190,28 @@ function panels_edit_display_submit($form_id, $form_values) {
         }
       }
     }
-//    drupal_set_message('<pre>' . var_export($display, true) . '</pre>');
     drupal_set_message(t('Panel content has been updated.'));
     panels_save_display($display);
   }
 
   panels_cache_clear($display->did);
-  return $form_values['destination'];
+  if (empty($form_values['destination'])) {
+    return $display;
+  }
+}
+
+function _panels_edit_layout($display, $finish, $destination = NULL) {
+  // Break out the form pieces so we can return the new $display upon
+  // successful submit.
+  $form_id = 'panels_choose_layout';
+  $form = drupal_retrieve_form($form_id, $display, $finish, $destination);
+
+  if ($result = drupal_process_form($form_id, $form)) {
+    // successful submit
+    return $result;
+  }
+  $output = drupal_render_form($form_id, $form);
+  return $output;
 }
 
 /**
@@ -212,6 +241,10 @@ function panels_choose_layout($display, $finish, $destination) {
     '#type' => 'value',
     '#value' => array($display, $finish, $destination),
   );
+
+  if (empty($destination)) {
+    $form['#redirect'] = FALSE;
+  }
 
   if ($_POST['op'] && $_POST['op'] != t('Back') && $display->content) {
     $form['#post'] = $_POST;
@@ -258,6 +291,10 @@ function panels_choose_layout_submit($form_id, $form_values) {
 
     // save it back to our session.
     panels_save_display($display);
+    if (empty($destination)) {
+      return $display;
+    }
+
     return $destination;
   }
 
@@ -318,6 +355,20 @@ function panels_change_layout(&$form, $display, $new_layout_id) {
   return $form;
 }
 
+function _panels_edit_layout_settings($display, $finish, $destination = NULL) {
+  // Break out the form pieces so we can return the new $display upon
+  // successful submit.
+  $form_id = 'panels_edit_layout_settings_form';
+  $form = drupal_retrieve_form($form_id, $display, $finish, $destination);
+
+  if ($result = drupal_process_form($form_id, $form)) {
+    // successful submit
+    return $result;
+  }
+  $output = drupal_render_form($form_id, $form);
+  return $output;
+}
+
 /**
  * Form to change the layout of a display.
  */
@@ -335,6 +386,10 @@ function panels_edit_layout_settings_form($display, $finish, $destination) {
     '#type' => 'value',
     '#value' => array($display, $finish, $destination),
   );
+
+  if (empty($destination)) {
+    $form['#redirect'] = FALSE;
+  }
 
   $form['layout'] = array(
     '#type' => 'value',
@@ -383,9 +438,14 @@ function panels_edit_layout_settings_form_submit($form_id, $form_values) {
 
     panels_save_display($display);
     drupal_set_message("Your layout settings have been saved.");
-    if ($form_values['op'] == $finish) {
-      return $destination;
+    if ($form_values['op'] != $finish) {
+      // This forces us to come back here if they hit Save.
+      $_REQUEST['destination'] = $_GET['q'];
     }
+    if (empty($destination)) {
+      return $display;
+    }
+    return $destination;
   }
 }
 
@@ -420,6 +480,7 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
 
   $output = theme('panels_pane_dnd', $block, $pane->pid, $title, $left_buttons, $buttons);
   if ($skin) {
+    dsm($pane->pid);
     $output = '<div class="panel-pane" id="panel-pane-' . $pane->pid . '">' . $output . '</div>';
   }
   return $output;
