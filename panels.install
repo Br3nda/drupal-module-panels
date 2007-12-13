@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.29 2007/11/30 19:55:30 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.30 2007/12/13 23:35:46 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -110,7 +110,7 @@ EOT
           layout VARCHAR(32),
           layout_settings longtext,
           panel_settings longtext,
-          cache text,
+          cache text
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
