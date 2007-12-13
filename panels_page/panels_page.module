@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.34 2007/12/12 20:33:37 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.35 2007/12/13 17:52:20 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -831,7 +831,6 @@ function panels_page_set_display($panel_page, $id, $display) {
     $save = TRUE;
 
     if (empty($id)) {
-      dsm($display->did);
       $panel_page->display = $display;
       $panel_page->did = $display->did;
     }
