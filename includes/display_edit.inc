@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.17 2007/12/12 20:33:37 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.18 2007/12/13 23:39:44 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
@@ -480,7 +480,6 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
 
   $output = theme('panels_pane_dnd', $block, $pane->pid, $title, $left_buttons, $buttons);
   if ($skin) {
-    dsm($pane->pid);
     $output = '<div class="panel-pane" id="panel-pane-' . $pane->pid . '">' . $output . '</div>';
   }
   return $output;
