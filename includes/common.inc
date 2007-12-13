@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.19 2007/12/06 02:35:45 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.20 2007/12/13 18:33:22 merlinofchaos Exp $
 
 /**
  * @file
@@ -373,9 +373,9 @@ function panels_common_add_relationship_form($module, &$form, &$form_location, $
 
   $available_relationships = panels_get_relevant_relationships(panels_context_load_contexts($object));
 
-  if (!empty($available_relationships) || !empty($object->relationships)) {
+//  if (!empty($available_relationships) || !empty($object->relationships)) {
     panels_common_add_item_table('relationship', $form_location, $available_relationships, $object->relationships);
-  }
+//  }
 
   return _panels_common_context_js($object->name, $module, 'relationship');
 }
@@ -455,17 +455,19 @@ function panels_common_add_item_table_buttons($type, &$form, $available_contexts
     '#tree' => TRUE,
   );
 
-  $form['buttons'][$type]['item'] = array(
-    '#type' => 'select',
-    '#options' => $available_contexts,
-  );
+  if (!empty($available_contexts)) {
+    $form['buttons'][$type]['item'] = array(
+      '#type' => 'select',
+      '#options' => $available_contexts,
+    );
 
-  $type_info = panels_common_context_info($type);
-  $form['buttons'][$type]['add'] = array(
-    '#type' => 'submit',
-    '#attributes' => array('class' => $type . '-add'),
-    '#value' => $type_info['add button'],
-  );
+    $type_info = panels_common_context_info($type);
+    $form['buttons'][$type]['add'] = array(
+      '#type' => 'submit',
+      '#attributes' => array('class' => $type . '-add'),
+      '#value' => $type_info['add button'],
+    );
+  }
 }
 
 /**
