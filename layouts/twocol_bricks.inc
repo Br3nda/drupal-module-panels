@@ -1,5 +1,5 @@
 <?php
-// $Id: twocol_bricks.inc,v 1.1.2.1 2007/11/27 17:35:16 merlinofchaos Exp $
+// $Id: twocol_bricks.inc,v 1.1.2.2 2007/12/17 22:09:19 merlinofchaos Exp $
 /**
  * @file twocol_bricks.inc
  *
@@ -39,32 +39,32 @@ function theme_panels_twocol_bricks($id, $content) {
   }
 
   $output = <<<EOT
-<div class="panel-2col-bricks clear-block" $idstr>
-  <div class="panel-col-top">
+<div class="panel-display panel-2col-bricks clear-block" $idstr>
+  <div class="panel-panel panel-col-top">
     <div class="inside">$content[top]</div>
   </div>
   <div class="center-wrapper">
-    <div class="panel-col-first">
+    <div class="panel-panel panel-col-first">
       <div class="inside">$content[left_above]</div>
     </div>
 
-    <div class="panel-col-last">
+    <div class="panel-panel panel-col-last">
       <div class="inside">$content[right_above]</div>
     </div>
   </div>
-  <div class="panel-col-middle">
+  <div class="panel-panel panel-col-middle">
     <div class="inside">$content[middle]</div>
   </div>
   <div class="center-wrapper">
-    <div class="panel-col-first">
+    <div class="panel-panel panel-col-first">
       <div class="inside">$content[left_below]</div>
     </div>
 
-    <div class="panel-col-last">
+    <div class="panel-panel panel-col-last">
       <div class="inside">$content[right_below]</div>
     </div>
   </div>
-  <div class="panel-col-bottom">
+  <div class="panel-panel panel-col-bottom">
     <div class="inside">$content[bottom]</div>
   </div>
 </div>

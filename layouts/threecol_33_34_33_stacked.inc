@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_33_34_33_stacked.inc,v 1.5.6.5 2007/11/27 17:43:33 merlinofchaos Exp $
+// $Id: threecol_33_34_33_stacked.inc,v 1.5.6.6 2007/12/17 22:09:19 merlinofchaos Exp $
 
 /**
  * implementation of hook_panels_layouts
@@ -27,24 +27,24 @@ function theme_panels_threecol_33_34_33_stacked($id, $content) {
   }
 
   $output = <<<EOT
-<div class="panel-3col-33-stacked  clear-block" $idstr>
-  <div class="panel-col-top">
+<div class="panel-display panel-3col-33-stacked  clear-block" $idstr>
+  <div class="panel-panel panel-col-top">
     <div class="inside">$content[top]</div>
   </div>
   <div class="center-wrapper">
-    <div class="panel-col-first">
+    <div class="panel-panel panel-col-first">
       <div class="inside">$content[left]</div>
     </div>
 
-    <div class="panel-col">
+    <div class="panel-panel panel-col">
       <div class="inside">$content[middle]</div>
     </div>
 
-    <div class="panel-col-last">
+    <div class="panel-panel panel-col-last">
       <div class="inside">$content[right]</div>
     </div>
   </div>
-  <div class="panel-col-bottom">
+  <div class="panel-panel panel-col-bottom">
     <div class="inside">$content[bottom]</div>
   </div>
 </div>
