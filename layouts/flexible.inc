@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.8 2007/12/11 01:32:30 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.9 2007/12/17 22:34:15 merlinofchaos Exp $
 /**
  * implementation of hook_panels_layouts
  */
@@ -336,17 +336,6 @@ function theme_panels_flexible($id, $content, $settings) {
     $output = "<div class=\"panel-sidebar-middle panel-sidebar\">\n$output</div>\n";
     if ($settings['sidebars']['width_type'] == '%') {
       $css .= "$idcss div.panel-flexible-sidebars div.panel-sidebar-middle { width: " . (intval($settings['percent_width']) - intval($settings['sidebars']['left_width']) - intval($settings['sidebars']['right_width'])) . "; }\n";
-    }
-    else {
-/*
-      if (!empty($settings['sidebars']['left'])) {
-        $css .= "$idcss div.panel-sidebar-middle { padding-left: " . intval($settings['sidebars']['left_width']) . $settings['sidebars']['width_type'] . "; }\n";
-        $css .= "$idcss div.panel-sidebar-middle .squeeze { margin-left: " . intval($settings['sidebars']['left_width']) . $settings['sidebars']['width_type'] . "; }\n";
-      }
-      if (!empty($settings['sidebars']['right'])) {
-        $width .= "margin-right: " . intval($settings['sidebars']['right_width']) . $settings['sidebars']['width_type'] . ';';
-      }
-*/
     }
   }
 
