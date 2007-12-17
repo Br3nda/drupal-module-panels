@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.18 2007/12/13 23:39:44 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.19 2007/12/17 23:27:24 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
@@ -1192,8 +1192,8 @@ function panels_panel_settings($display) {
   drupal_add_js(panels_get_path('js/lib/mc.js'));
   drupal_add_js(panels_get_path('js/lib/form.js'));
   drupal_add_js($ajax, 'setting');
-  drupal_add_js(panels_get_path('js/modal_forms.js'));
   drupal_add_js(panels_get_path('js/checkboxes.js'));
+  drupal_add_js(panels_get_path('js/modal_forms.js'));
   drupal_add_css(panels_get_path('css/panels_dnd.css'));
 
   return $form;
@@ -1312,8 +1312,8 @@ function _panels_js_files() {
   drupal_add_js(panels_get_path('js/lib/form.js'));
   drupal_add_js(array('panelsAjaxURL' => url('panels/ajax', NULL, NULL, TRUE)), 'setting');
   drupal_add_js(panels_get_path('js/display_editor.js'));
-  drupal_add_js(panels_get_path('js/modal_forms.js'));
   drupal_add_js(panels_get_path('js/checkboxes.js'));
+  drupal_add_js(panels_get_path('js/modal_forms.js'));
   drupal_add_css(panels_get_path('css/panels_dnd.css'));
   drupal_add_css(panels_get_path('css/panels_admin.css'));
 }
