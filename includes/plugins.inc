@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.13 2007/12/06 16:12:34 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.14 2007/12/17 21:24:37 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -1139,6 +1139,10 @@ function panels_context_load_contexts($object, $placeholders = TRUE, $contexts =
 
 function panels_context_match_required_contexts($required, $contexts) {
   $return = array();
+  if (!is_array($required)) {
+    return $return;
+  }
+
   foreach ($required as $r) {
     $return[panels_context_context_id($r, 'requiredcontext')] = array_shift($contexts);
   }

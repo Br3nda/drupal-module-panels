@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.35 2007/12/13 17:52:20 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.36 2007/12/17 21:24:38 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -768,12 +768,6 @@ function panels_page_fetch_display(&$panel_page, $id) {
  * Fetch a display from a panel pages alternative list of displays
  */
 function _panels_page_fetch_display(&$panel_page, $id) {
-  // TODO: Not sure if this is true. There might be a different
-  // method of validating $id.
-  if (!isset($panel_page->displays[$id])) {
-    return FALSE;
-  }
-
   $info = $panel_page->displays[$id];
   if ($display = _panels_fetch_display_from_info($info)) {
     return $display;
@@ -799,7 +793,7 @@ function _panels_page_fetch_display(&$panel_page, $id) {
   // Make a copy of the display; using the export forces all the IDs properly,
   // since we don't want this to actually *be* the original display.
   $code = panels_export_display($display);
-  $display = eval($code);
+  eval($code);
 
   return $display;
 }
@@ -837,9 +831,12 @@ function panels_page_set_display($panel_page, $id, $display) {
   }
 
   if (!empty($id)) {
-    if (empty($panel_page->displays[$id]['did'])) {
+    if (empty($panel_page->displays[$id]['did']) || $panel_page->displays[$id]['did'] == 'new') {
       $save = TRUE;
-      $panel_page->displays[$id] = array('did' => $display->did);
+      $panel_page->displays[$id]['did'] = $display->did;
+      if (isset($panel_page->displays[$id]['display'])) {
+        unset($panel_page->displays[$id]['display']);
+      }
     }
   }
 

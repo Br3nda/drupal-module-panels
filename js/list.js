@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.8 2007/11/21 21:47:28 merlinofchaos Exp $
+// $Id: list.js,v 1.1.2.9 2007/12/17 21:24:37 merlinofchaos Exp $
 
 /**
  * List object
@@ -349,7 +349,7 @@ Drupal.list = function(base, settings) {
           return;
         case 'dismiss':
           // just dismiss the dialog.
-          console.log(data.replace);
+//          console.log(data.replace);
           if (data.replace_id && data.replace) {
             $(data.replace_id).html(data.replace);
             changed($(data.replace_id));
