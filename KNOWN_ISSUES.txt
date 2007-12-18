@@ -1,4 +1,4 @@
-# $Id: KNOWN_ISSUES.txt,v 1.1.2.4 2007/12/18 02:39:16 merlinofchaos Exp $
+# $Id: KNOWN_ISSUES.txt,v 1.1.2.5 2007/12/18 02:48:43 merlinofchaos Exp $
 
 Known Issue http://drupal.org/node/191771
   'Node' panes can have two titles or have two title areas.
@@ -55,3 +55,17 @@ Known Issue http://drupal.org/node/180650
     Make sure your panel has an ID of some sort. With mini panels there is
     no easy workaround as mini panels currently do not have IDs of their
     own.
+
+Known Issue http://drupal.org/node/165745
+  You see a message similar to this:
+  Table 'drupal.panels_info' doesn't exist query: SELECT * FROM panels_info 
+  WHERE path = 'front_page_new' in...
+
+  The important piece of information is 'panels_info'.
+  Cause:
+    The Meta Tags module (also known as nodewords.module) directly reads the
+    the panels tables and modifies its forms to add the tags. Unfortunately
+    for this module, Panels has changed *greatly* in the leap from 1.0 to
+    2.0 and the tables aren't the same. However, the nodewords module doesn't
+    yet know this. Look in the nodewords issue queue for panels patches and
+    you should find something.
