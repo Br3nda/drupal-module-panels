@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.38 2007/12/18 01:29:27 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.39 2007/12/18 01:48:29 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -737,7 +737,7 @@ function theme_panels_page_render_form($form) {
 /**
  * Load a display based upon information from the $displays list.
  */
-function panels_page_fetch_display(&$panel_page, $id) {
+function panels_page_fetch_display(&$panel_page, $id = NULL) {
   $did = NULL;
   if (empty($id)) {
     // If empty, use the default display.

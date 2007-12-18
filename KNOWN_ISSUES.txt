@@ -1,6 +1,6 @@
-# $Id: KNOWN_ISSUES.txt,v 1.1.2.2 2007/12/18 01:36:53 merlinofchaos Exp $
+# $Id: KNOWN_ISSUES.txt,v 1.1.2.3 2007/12/18 01:48:29 merlinofchaos Exp $
 
-Known Issue #191771:
+Known Issue http://drupal.org/node/191771
   'Node' panes can have two titles or have two title areas.
   Cause: 
     Content that comes into a pane is already formatted, and this happens
@@ -13,7 +13,7 @@ Known Issue #191771:
     Add an if statement to your node.tpl.php to prevent printing that h2
     if $node->title is empty.
 
-Known Issue #186454:
+Known Issue http://drupal.org/node/186454
   Internet Explorer is really bad about making the rightmost panel
   fall beneath the others.
   Cause:
@@ -31,4 +31,17 @@ Known Issue #186454:
     2) if that doesn't work, override the widths of the panel-panel
        divs and reduce them by 1 or 2%; usually this will give IE
        enough space to quit pushing things around.
+
+Known Issue http://drupal.org/node/154351
+  TinyMCE, FCKEditor and other wysiwyg editors really blow up on Panels
+  content editing.
+  Cause:
+    The modal dialogs that Panels uses are very particular about javascript
+    and these editors are too much for them. Also, these editors get
+    cranky about complicated forms with several text areas.
+  Solution:
+    Disable these editors on all of your panels admin pages. The important
+    URLs are admin/panels/* and panels/ajax/*. More details instructions
+    may follow if someone familiar with these systems submits a patch at
+    the above drupal.org URL.
 
