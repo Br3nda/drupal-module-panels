@@ -1,4 +1,4 @@
-# $Id: KNOWN_ISSUES.txt,v 1.1.2.3 2007/12/18 01:48:29 merlinofchaos Exp $
+# $Id: KNOWN_ISSUES.txt,v 1.1.2.4 2007/12/18 02:39:16 merlinofchaos Exp $
 
 Known Issue http://drupal.org/node/191771
   'Node' panes can have two titles or have two title areas.
@@ -45,3 +45,13 @@ Known Issue http://drupal.org/node/154351
     may follow if someone familiar with these systems submits a patch at
     the above drupal.org URL.
 
+Known Issue http://drupal.org/node/180650
+  The rounded corners style shows up as just a small graphic rather than
+  a full box around the panels as it shoujld.
+  Cause:
+    The rounded corners CSS relies on the ID for the panel, but the ID is
+    optional.
+  Solution:
+    Make sure your panel has an ID of some sort. With mini panels there is
+    no easy workaround as mini panels currently do not have IDs of their
+    own.

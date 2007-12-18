@@ -1,5 +1,5 @@
 <?php
-// $Id: node_add.inc,v 1.1.2.5 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: node_add.inc,v 1.1.2.6 2007/12/18 02:39:16 merlinofchaos Exp $
 /**
  * @file arguments/nid.inc
  *
@@ -23,7 +23,7 @@ function panels_node_add_panels_arguments() {
 /**
  * Discover if this argument gives us the node we crave.
  */
-function panels_node_add_context($arg = NULL, $conf = NULL, $context = NULL, $index = 0) {
+function panels_node_add_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   // If unset it wants a generic, unfilled context.
   if (!isset($arg)) {
     return panels_context_create_empty('node_add_form');

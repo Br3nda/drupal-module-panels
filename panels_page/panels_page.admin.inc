@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.32 2007/12/18 00:19:39 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.33 2007/12/18 02:39:17 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -736,6 +736,7 @@ function panels_page_edit_content($panel_page, $did = NULL) {
 
   // Collect a list of contexts required by the arguments on this page.
   $contexts = panels_context_load_contexts($panel_page);
+
   $display->context = $contexts;
   $display->args = array();
 

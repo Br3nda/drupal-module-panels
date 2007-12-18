@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.16 2007/12/18 02:05:44 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.17 2007/12/18 02:39:17 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -722,6 +722,7 @@ function panels_get_pane_title(&$pane, $context = array(), $incoming_content = N
 function panels_argument_get_context($argument, $arg, $empty = FALSE) {
   if ($function = panels_plugin_get_function('arguments', $argument['name'], 'context')) {
     $context = $function($arg, $argument['argument_settings'], $empty);
+
     if ($context) {
       $context->identifier = $argument['identifier'];
       $context->page_title = $argument['title'];
