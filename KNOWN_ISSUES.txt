@@ -1,4 +1,4 @@
-# $Id: KNOWN_ISSUES.txt,v 1.1.2.1 2007/12/18 00:40:56 merlinofchaos Exp $
+# $Id: KNOWN_ISSUES.txt,v 1.1.2.2 2007/12/18 01:36:53 merlinofchaos Exp $
 
 Known Issue #191771:
   'Node' panes can have two titles or have two title areas.
@@ -13,4 +13,22 @@ Known Issue #191771:
     Add an if statement to your node.tpl.php to prevent printing that h2
     if $node->title is empty.
 
+Known Issue #186454:
+  Internet Explorer is really bad about making the rightmost panel
+  fall beneath the others.
+  Cause:
+    Internet explorer calculates margins and padding differntly from
+    everyone else, and this makes it entirely too easy for widths
+    to add up to greater than the amount of allotted space, despite
+    using percentage widths.
+  Solution:
+    There are two solutions to this problem:
+    1) In your theme, try to eliminate padding from the the <div>
+       that directly contains your content; you can do this by
+       adding an empty <div> inside it that surrounds the content
+       and very specifically is set to margin: 0 and padding: 0
+
+    2) if that doesn't work, override the widths of the panel-panel
+       divs and reduce them by 1 or 2%; usually this will give IE
+       enough space to quit pushing things around.
 
