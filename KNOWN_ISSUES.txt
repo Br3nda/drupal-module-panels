@@ -1,0 +1,16 @@
+# $Id: KNOWN_ISSUES.txt,v 1.1.2.1 2007/12/18 00:40:56 merlinofchaos Exp $
+
+Known Issue #191771:
+  'Node' panes can have two titles or have two title areas.
+  Cause: 
+    Content that comes into a pane is already formatted, and this happens
+    in theme('node'). theme('node') assumes it will be printing a title
+    most of the time. However, Panels wants the titles of panes to be
+    consistent, so it removes the title from the node to prevent your
+    node.tpl.php from printing it. The result is often an empty h2 which
+    has odd effects.
+  Solution:
+    Add an if statement to your node.tpl.php to prevent printing that h2
+    if $node->title is empty.
+
+
