@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.2.6.20 2007/12/06 02:35:45 merlinofchaos Exp $
+// $Id: node.inc,v 1.2.6.21 2007/12/18 01:29:27 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -63,7 +63,10 @@ function panels_content_node($conf, $panel_args) {
 
   $block->subject = $node->title;
 
-  unset($node->title);
+  if (empty($conf['leave_node_title'])) {
+    unset($node->title);
+  }
+
   $block->content = node_view($node, $conf['teaser'], FALSE, $conf['links']);
   return $block;
 }
@@ -120,6 +123,13 @@ function panels_admin_edit_node($id, $parents, $conf) {
     '#default_value' => $conf['links'],
     '#title' => t('Display links'),
     '#description' => t('Check here to display the links with the post.')
+  );
+
+  $form['leave_node_title'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => $conf['leave_node_title'],
+    '#title' => t('Leave node title'),
+    '#description' => t('Advanced: if checked, do not touch the node title; this can cause the node title to appear twice unless your theme is aware of this.')
   );
 
   return $form;

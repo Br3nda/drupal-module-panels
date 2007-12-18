@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.14 2007/12/17 21:24:37 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.15 2007/12/18 01:29:27 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -206,6 +206,8 @@ function panels_ct_conf_form($type, $id, $contexts, $conf) {
     $form['context'] = panels_context_selector($contexts, $subtype[$id]['required context'], $conf['context']);
   }
 
+  // Unless we're not allowed to overide the title on this content type, add this
+  // gadget to all panes.
   if (empty($content_type['no title override'])) {
     $form['aligner_start'] = array(
       '#value' => '<div class="option-text-aligner">',
@@ -230,7 +232,26 @@ function panels_ct_conf_form($type, $id, $contexts, $conf) {
       '#suffix' => '</div>',
       '#value' =>  t('You may use %keywords from contexts, as well as %title to contain the original title.'),
     );
+  }
 
+  // Add CSS class and ID gadgets to all panes if advanced pane settings is set.
+  if (user_access('administer advanced pane settings')) {
+    $form['css_id'] = array(
+      '#type' => 'textfield',
+      '#default_value' => $conf['css_id'],
+      '#title' => t('CSS ID'),
+      '#description' => t('CSS ID to apply to this content. This may be blank.'),
+      '#weight' => 2,
+      '#size' => 15,
+    );
+    $form['css_class'] = array(
+      '#type' => 'textfield',
+      '#default_value' => $conf['css_class'],
+      '#title' => t('CSS class'),
+      '#description' => t('CSS class to apply to this content. This may be blank.'),
+      '#weight' => 2,
+      '#size' => 15,
+    );
   }
 
   return $form;

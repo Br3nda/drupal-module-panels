@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.69 2007/12/12 20:33:36 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.70 2007/12/18 01:29:27 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -763,6 +763,16 @@ function panels_render_pane(&$display, &$pane) {
     $content->title = $pane->configuration['override_title_text'];
   }
 
+  // Pass long the css_id that is usually available.
+  if (!empty($pane->configuration['css_id'])) {
+    $content->css_id = $pane->configuration['css_id'];
+  }
+
+  // Pass long the css_class that is usually available.
+  if (!empty($pane->configuration['css_class'])) {
+    $content->css_class = $pane->configuration['css_class'];
+  }
+
   // Perform substitutions
   if (!empty($keywords)) {
     $content->title = strtr($content->title, $keywords);
@@ -866,12 +876,12 @@ function panels_render_panel($display, $panel, $panes) {
   // might be used (or even necessary) for some panel display styles.
   // TODO: Got to fix this to use panel page name instead of pid, since pid is
   // no longer guaranteed. This needs an API to be able to set the final id.
-  $panel_id = 0;
-  if (isset($display->owner) && is_object($display->owner) && isset($display->owner->pid)) {
-    $panel_id = $display->owner->pid;
+  $owner_id = 0;
+  if (isset($display->owner) && is_object($display->owner) && isset($display->owner->id)) {
+    $owner_id = $display->owner->id;
   }
 
-  return theme($style['render panel'], $display, $panel_id, $panes, $display->panel_settings['style_settings']);
+  return theme($style['render panel'], $display, $owner_id, $panes, $display->panel_settings['style_settings'], $panel);
 }
 
 
@@ -940,7 +950,15 @@ function theme_panels_layout_icon($id, $image, $title = NULL) {
  */
 function theme_panels_pane($content, $pane, $display) {
   if (!empty($content->content)) {
-    $output = "<div class=\"panel-pane\">\n";
+    $idstr = $classstr = '';
+    if (!empty($content->css_id)) {
+      $idstr = ' id="' . $content->css_id . '"';
+    }
+    if (!empty($content->css_class)) {
+      $classstr = ' ' . $content->css_class;
+    }
+
+    $output = "<div class=\"panel-pane$classstr\"$idstr>\n";
     if (user_access('view pane admin links') && !empty($content->admin_links)) {
       $output .= "<div class=\"admin-links panel-hide\">" . theme('links', $content->admin_links) . "</div>\n";
     }

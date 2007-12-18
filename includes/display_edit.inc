@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.19 2007/12/17 23:27:24 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.20 2007/12/18 01:29:27 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
@@ -844,8 +844,8 @@ function panels_edit_pane_config_form_submit($form_id, $form) {
   $return->id = $form['pid'];
 
   $block = panels_render_pane($cache->display, $cache->display->content[$form['pid']]);
-  if (!$block->subject) {
-    $block->subject = t('No title');
+  if (!$block->title) {
+    $block->title = t('No title');
   }
 
   $return->output = theme('panels_pane_collapsible', $block, $cache->display);
@@ -1334,8 +1334,8 @@ function theme_panels_panel_dnd($content, $area, $label, $footer) {
 
 // @DND
 function theme_panels_pane_dnd($block, $id, $label, $left_buttons = NULL, $buttons = NULL) {
-  if (!$block->subject) {
-    $block->subject = t('No title');
+  if (!$block->title) {
+    $block->title = t('No title');
   }
   static $count = 0;
   $output .= "<div class=\"grabber\">";
@@ -1354,7 +1354,7 @@ function theme_panels_pane_dnd($block, $id, $label, $left_buttons = NULL, $butto
 
 // @DND
 function theme_panels_pane_collapsible($block) {
-  $output .= '<h2 class="title">' . $block->subject . '</h2>';
+  $output .= '<h2 class="title">' . $block->title . '</h2>';
   $output .= '<div class="content">' . filter_xss_admin($block->content) . '</div>';
   return $output;
 }

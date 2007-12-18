@@ -1,5 +1,5 @@
 <?php
-// $Id: custom.inc,v 1.2.6.15 2007/11/27 17:43:33 merlinofchaos Exp $
+// $Id: custom.inc,v 1.2.6.16 2007/12/18 01:29:27 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -27,21 +27,9 @@ function panels_content_custom($conf) {
   $block->module = 'custom';
   $block->delta = ++$delta;
   $block->subject = filter_xss_admin($conf['title']);
-  $block->content = theme('panels_custom_content', check_markup($conf['body'], $conf['format'], FALSE), check_plain($conf['css_id']), check_plain($conf['css_class']));
+  $block->content = check_markup($conf['body'], $conf['format'], FALSE);
+
   return $block;
-}
-
-function theme_panels_custom_content($content, $id, $class) {
-  if ($id) {
-    $id = 'id="' . $id . '"';
-  }
-
-  if ($content) {
-    $output = '<div class="panels-custom ' . $class . '" ' . $id . '>';
-    $output .= $content;
-    $output .= '</div>';
-  }
-  return $output;
 }
 
 /**
@@ -63,7 +51,7 @@ function panels_admin_content_types_custom() {
  */
 function panels_admin_edit_custom($id, $parents, $conf = NULL) {
   if (!is_array($conf)) {
-    $conf = array('title' => '', 'body' => '', 'css_id' => '', 'css_class' => '');
+    $conf = array('title' => '', 'body' => '');
   }
   $form['title'] = array(
     '#type' => 'textfield',
@@ -77,24 +65,6 @@ function panels_admin_edit_custom($id, $parents, $conf = NULL) {
   );
   $parents[] = 'format';
   $form['format'] = filter_form($conf['format'], 1, $parents);
-
-  // TODO: Advanced
-  $form['css_id'] = array(
-    '#type' => 'textfield',
-    '#default_value' => $conf['css_id'],
-    '#title' => t('CSS ID'),
-    '#description' => t('CSS ID of this custom content.'),
-    '#weight' => 2,
-    '#size' => 15,
-  );
-  $form['css_class'] = array(
-    '#type' => 'textfield',
-    '#default_value' => $conf['css_class'],
-    '#title' => t('CSS class'),
-    '#description' => t('CSS class of this custom content.'),
-    '#weight' => 2,
-    '#size' => 15,
-  );
 
   return $form;
 }

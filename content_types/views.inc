@@ -1,5 +1,5 @@
 <?php
-// $Id: views.inc,v 1.4.4.23 2007/12/06 02:35:45 merlinofchaos Exp $
+// $Id: views.inc,v 1.4.4.24 2007/12/18 01:29:27 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -289,7 +289,12 @@ function panels_admin_edit_views($id, $parents, $conf) {
 function panels_admin_title_views($conf) {
   $view = views_get_view($conf['view']);
   $title = views_get_title($view, 'admin');
-  return $title ? $title : $view->name;
+
+  // Embed the offset into title information to make it easier to see offsets
+  // of the same view.
+  $offset = intval($conf['offset']);
+  $result = $title ? $title : $view->name;
+  return $result . ($offset ? (' (offset ' . $offset . ')') : '');
 }
 
 /**
