@@ -1,5 +1,33 @@
 <?php
-// $Id: node.inc,v 1.2.6.21 2007/12/18 01:29:27 merlinofchaos Exp $
+// $Id: panels_node_legacy.module,v 1.1.2.1 2007/12/18 22:43:06 merlinofchaos Exp $
+
+/**
+ * Implementation of hook_menu()
+ */
+function panels_node_legacy_menu($may_cache) {
+  if ($may_cache) {
+    $items[] = array(
+      'path' => 'admin/panels/node-legacy',
+      'title' => t('Legacy node panes'),
+      'access' => user_access('access administration pages'),
+      'type' => MENU_NORMAL_ITEM,
+      'callback' => 'panels_node_legacy_admin',
+      'description' => t('Information about the legacy node content type.'),
+    );
+    return $items;
+  }
+}
+
+/**
+ * Page callback for the very short admin page
+ */
+function panels_node_legacy_admin() {
+  $output = '<p>';
+  $output .= t('Panels legacy nodes does not have a normal administrative UI, such as panels pages or mini panels. With this module, users may add a node directly to a panel via the add content interface. They may then select this node using an auto-complete field. In general, this method of adding nodes to panes should be considered deprecated and is only retained to support updating sites that use this older method. Moving forward, it is recommended that the context system be used to embed nodes, as that is far more powerful and interesting.');
+  $output .= '</p>';
+  return $output;
+}
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -8,13 +36,13 @@ function panels_node_panels_content_types() {
     'title' => t('Node'),
     'weight' => -10,
     'single' => TRUE, // only provides a single content type
-    'content_types' => 'panels_admin_content_types_node',
-    'render callback' => 'panels_content_node',
-    'add callback' => 'panels_admin_add_node',
-    'edit callback' => 'panels_admin_edit_node',
-    'title callback' => 'panels_admin_title_node',
-    'add validate callback' => 'panels_admin_validate_node',
-    'edit validate callback' => 'panels_admin_validate_node',
+    'content_types' => 'panels_node_legacy_content_types',
+    'render callback' => 'panels_node_legacy_render',
+    'add callback' => 'panels_node_legacy_add',
+    'edit callback' => 'panels_node_legacy_edit',
+    'title callback' => 'panels_node_legacy_title',
+    'add validate callback' => 'panels_node_legacy_edit_validate',
+    'edit validate callback' => 'panels_node_legacy_edit_validate',
   );
   return $items;
 }
@@ -23,7 +51,7 @@ function panels_node_panels_content_types() {
  * Output function for the 'node' content type. Outputs a node
  * based on the module and delta supplied in the configuration.
  */
-function panels_content_node($conf, $panel_args) {
+function panels_node_legacy_render($conf, $panel_args) {
   $nid = $conf['nid'];
   foreach (explode('/', $_GET['q']) as $id => $arg) {
     $nid = str_replace("%$id", $arg, $nid);
@@ -74,7 +102,7 @@ function panels_content_node($conf, $panel_args) {
 /**
  * Return all content types available.
  */
-function panels_admin_content_types_node() {
+function panels_node_legacy_content_types() {
   return array(
     'node' => array(
       'title' => t('Node content'),
@@ -88,8 +116,8 @@ function panels_admin_content_types_node() {
 /**
  * Returns the form for a new node.
  */
-function panels_admin_add_node($id, $parents, $conf = array()) {
-  $form = panels_admin_edit_node($id, $parents, $conf);
+function panels_node_legacy_add($id, $parents, $conf = array()) {
+  $form = panels_node_legacy_edit($id, $parents, $conf);
   $form['nid'] = array(
     '#prefix' => '<div class="no-float">',
     '#suffix' => '</div>',
@@ -107,7 +135,7 @@ function panels_admin_add_node($id, $parents, $conf = array()) {
 /**
  * Returns an edit form for the custom type.
  */
-function panels_admin_edit_node($id, $parents, $conf) {
+function panels_node_legacy_edit($id, $parents, $conf) {
   $form['nid'] = array(
     '#type' => 'value',
     '#default_value' => $conf['nid'],
@@ -138,7 +166,7 @@ function panels_admin_edit_node($id, $parents, $conf) {
 /**
  * Validate a node.
  */
-function panels_admin_validate_node($form, $form_values) {
+function panels_node_legacy_edit_validate($form, $form_values) {
   if (!$form_values['validate_me']) {
     return;
   }
@@ -161,7 +189,7 @@ function panels_admin_validate_node($form, $form_values) {
 /**
  * Returns the administrative title for a node.
  */
-function panels_admin_title_node($conf) {
+function panels_node_legacy_title($conf) {
   if (!is_numeric($conf['nid'])) {
     return t('Node loaded from @var', array('@var' => $conf['nid']));
   }
