@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.15 2007/12/18 01:29:27 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.16 2007/12/18 02:05:44 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -811,7 +811,7 @@ function panels_argument_load_contexts($arguments, &$contexts, $args) {
  */
 function panels_argument_get_display($arguments, $contexts) {
   $display_candidate = NULL;
-  foreach ($arguments as $argument) {
+  foreach ($arguments as $i => $argument) {
     $id = panels_argument_context_id($argument);
     if (!empty($contexts[$id]) && !empty($contexts[$id]->data)) {
       $context = $contexts[$id];
