@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.31 2007/12/12 20:33:37 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.32 2007/12/18 00:19:39 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -45,11 +45,9 @@ function panels_page_list_page() {
     $item[] = check_plain($panel_page->name);
     $item[] = $panel_page->type; // this is safe as it's always programmatic
 
-    if (empty($panel_page->display)) {
-      $panel_page->display = panels_load_display($panel_page->did);
-    }
+    $display = panels_page_fetch_display($panel_page);
 
-    $item[] = check_plain($layouts[$panel_page->display->layout]['title']);
+    $item[] = check_plain($layouts[$display->layout]['title']);
     $item[] = $path;
     $item[] = implode(' | ', $ops);
     $items[] = $item;

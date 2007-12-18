@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.36 2007/12/17 21:24:38 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.37 2007/12/18 00:19:39 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -676,12 +676,8 @@ function panels_page_view_page($panel_page, $admin) {
   $panel_page->keywords = panels_context_get_keywords($panel_page->context);
 
   // Figure out which display to use.
-  if ($display_candidate = panels_argument_get_display($panel_page->arguments, $panel_page->context)) {
-    $display = panels_page_fetch_display($panel_page, $display_candidate);
-  }
-  else {
-    $display = !empty($panel_page->display) ? $panel_page->display : panels_load_display($panel_page->did);
-  }
+  $display_id = panels_argument_get_display($panel_page->arguments, $panel_page->context));
+  $display = panels_page_fetch_display($panel_page, $display_id);
 
   // Figure out if these contexts include a form; will be NULL if there
   // isn't one, or the context if there is.
