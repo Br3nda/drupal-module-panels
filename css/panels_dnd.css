@@ -12,9 +12,10 @@ div.panels-display h2.label {
 /*  background: transparent; */
   color: #3D9CD7;
   text-align: center;
-  font-size: 11pt;
+  font-size: 13pt;
   margin: 0 0 .5em 0;
   padding-right: 16px;
+  vertical-align: center;
 }
 
 div.panels-display .pane-add {

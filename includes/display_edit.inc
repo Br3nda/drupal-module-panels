@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.20 2007/12/18 01:29:27 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.21 2007/12/18 20:06:54 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
@@ -87,15 +87,15 @@ function panels_edit_display($display, $destination) {
     if ($layout_panels[$pane->panel]) {
       $form['button'][$pid]['#tree'] = TRUE;
       if ($caches && user_access('use panels caching features')) {
-        $form['button'][$pid]['cache'] = panels_add_button('configure.gif', t('Caching'), t('Control caching'), 'pane-cache');
+        $form['button'][$pid]['cache'] = panels_add_button('icon-cache.png', t('Caching'), t('Control caching'), 'pane-cache');
       }
-      $form['button'][$pid]['configure'] = panels_add_button('configure.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
-      $form['button'][$pid]['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');
+      $form['button'][$pid]['configure'] = panels_add_button('icon-configure.png', t('Configure'), t('Configure this pane'), 'pane-configure');
+      $form['button'][$pid]['delete'] = panels_add_button('icon-delete.png', t('Delete'), t('Remove this pane'), 'pane-delete');
     }
   }
 
   foreach ($layout_panels as $id => $name) {
-    $form['panels'][$id]['add'] = panels_add_button('add.gif', t('Add content'), t('Add content to this panel'), 'pane-add', "pane-add-$id");
+    $form['panels'][$id]['add'] = panels_add_button('icon-addcontent.png', t('Add content'), t('Add content to this panel'), 'pane-add', "pane-add-$id");
   }
 
   $form['panel'] = array('#tree' => TRUE);
@@ -724,12 +724,12 @@ function panels_add_content_config_form_submit($form_id, $form) {
 
   // we need to fake the buttons a little.
   if ($caches && user_access('use panels caching features')) {
-    $$buttons['cache'] = panels_add_button('configure.gif', t('Caching'), t('Control caching'), 'pane-cache');
+    $$buttons['cache'] = panels_add_button('icon-configure.png', t('Caching'), t('Control caching'), 'pane-cache');
   }
-  $buttons['configure'] = panels_add_button('configure.gif', t('Configure'), t('Configure this pane'), 'pane-configure');
+  $buttons['configure'] = panels_add_button('icon-configure.png', t('Configure'), t('Configure this pane'), 'pane-configure');
   $buttons['configure']['#parents'] = array('button', $form['pid'], 'configure');
 
-  $buttons['delete'] = panels_add_button('close.gif', t('Delete'), t('Remove this pane'), 'pane-delete');
+  $buttons['delete'] = panels_add_button('icon-delete.png', t('Delete'), t('Remove this pane'), 'pane-delete');
   $buttons['delete']['#parents'] = array('button', $form['pid'], 'delete');
 
   $buttons = form_builder('dummy', $buttons);
@@ -1177,7 +1177,7 @@ function panels_panel_settings($display) {
 
   $ajax = array('panels' => array(
     'closeText' => t('Close Window'),
-    'closeImage' => theme('image', panels_get_path('images/close.gif'), t('Close window'), t('Close window')),
+    'closeImage' => theme('image', panels_get_path('images/icon-delete.png'), t('Close window'), t('Close window')),
     'throbber' => theme('image', panels_get_path('images/throbber.gif'), t('Loading...'), t('Loading')),
     'checkboxes' => array('#panel-settings-individual' => $checkboxes),
     'modals' => $modals,
@@ -1366,7 +1366,7 @@ function theme_panels_pane_collapsible($block) {
 // @DND
 function theme_panels_hidden() {
   $close_text = t('Close Window');
-  $close_image = theme('image', panels_get_path('images/close.gif'), t('Close window'), t('Close window'));
+  $close_image = theme('image', panels_get_path('images/icon-delete.png'), t('Close window'), t('Close window'));
   $throbber_image = theme('image', panels_get_path('images/throbber.gif'), t('Loading...'), t('Loading'));
   $output = <<<EOF
 <div class="panels-hidden">\n
