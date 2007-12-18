@@ -1,0 +1,6 @@
+; $Id: panels_views_legacy.info,v 1.1.2.1 2007/12/18 22:16:19 merlinofchaos Exp $
+name = Legacy views panes
+description = Provides all views as panes to be added to displays; this is provided for legacy use and should not be used in new installations.
+package = "Panels"
+dependencies = panels views
+

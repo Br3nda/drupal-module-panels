@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.13 2007/11/22 16:43:31 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.14 2007/12/18 22:16:19 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -23,11 +23,28 @@ function panels_node_menu($may_cache) {
       'type' => MENU_NORMAL_ITEM,
     );
     $items[] = array(
-      'path' => 'admin/panels/panel-node',
-      'title' => t('Panel nodes settings'),
+      'path' => 'admin/panels/panel-nodes',
+      'title' => t('Panel nodes'),
+      'access' => user_access('create panel-nodes') && user_access('access administration pages'),
+      'type' => MENU_NORMAL_ITEM,
+      'callback' => 'panels_node_admin',
+      'description' => t('Information about panel nodes.'),
+    );
+
+    $items[] = array(
+      'path' => 'admin/panels/panel-nodes/information',
+      'title' => t('Information'),
+      'access' => user_access('create panel-nodes') && user_access('access administration pages'),
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+    );
+
+    $items[] = array(
+      'path' => 'admin/panels/panel-nodes/settings',
+      'title' => t('Settings'),
       'description' => t('Configure panel node content availability.'),
       'access' => user_access('administer panel-nodes'),
       'callback' => 'panels_node_settings',
+      'type' => MENU_LOCAL_TASK,
     );
   }
   else {
@@ -78,6 +95,26 @@ function panels_node_menu($may_cache) {
     }
   }
   return $items;
+}
+
+/**
+ * Page callback for the very short admin page
+ */
+function panels_node_admin() {
+  $output = '<p>';
+  $output .= t('Panel nodes do not have a normal administrative UI, such as panels pages or mini panels. With this module, a new node type is created: a "panel" node. These are nodes that have panel layouts, but do not have the breadth of features that panel pages do; these features are sacrificed so that you gain all the capabilities of nodes.');
+  $output .= '</p><p>';
+  $output .= t('You may create a !panel_node using the normal !create_content menu, and you can administer your panel nodes under the normal !administer_nodes menu (administrative permission required).', array(
+    '!panel_node' => l(t('panel node'), 'node/add/panel'),
+    '!create_content' => l(t('create content'), 'node/add'),
+    '!administer_nodes' => l(t('administer nodes'), 'admin/content/node'),
+  ));
+  $output .= '</p><p>';
+  $output .= t('On the !settings page, you may control which panes may be added to panel nodes; this can be very valuable to limit what content is available if your users who can create panel nodes are not administrators.', array(
+    '!settings' => l(t('settings'), 'admin/panels/panel-nodes/settings'),
+  ));
+  $output .= '</p>';
+  return $output;
 }
 
 // ---------------------------------------------------------------------------

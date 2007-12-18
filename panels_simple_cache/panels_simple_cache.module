@@ -1,10 +1,39 @@
 <?php
-// $Id: panels_simple_cache.module,v 1.1.2.3 2007/12/03 20:03:29 merlinofchaos Exp $
+// $Id: panels_simple_cache.module,v 1.1.2.4 2007/12/18 22:16:19 merlinofchaos Exp $
 /**
  * @file panels_simple_cache.module
  *
  * Provides a simple time-based caching option for panel panes.
  */
+
+/**
+ * Implementation of hook_menu()
+ */
+function panels_simple_cache_menu($may_cache) {
+  if ($may_cache) {
+    $items[] = array(
+      'path' => 'admin/panels/simple-cache',
+      'title' => t('Simple cache'),
+      'access' => user_access('access administration pages') && user_access('use panels caching features'),
+      'type' => MENU_NORMAL_ITEM,
+      'callback' => 'panels_simple_cache_admin',
+      'description' => t('Information about Panels simple cache.'),
+    );
+    return $items;
+  }
+}
+
+/**
+ * Page callback for the very short admin page
+ */
+function panels_simple_cache_admin() {
+  $output = '<p>';
+  $output .= t('Panels simple cache does not have a normal administrative UI, such as panels pages or mini panels. With this module, you are given the option to add caching features to any panel display in panel pages, mini panels, panel nodes or any other displays provided by other modules or plugins. These options are available as an icon on each pane of the edit content pane.');
+  $output .= '</p><p>';
+  $output .= t('This module provides only very simple, time-based caching; it is not at all suitable if your content will change at all per user (and this can mean administrative additions that are just visible to you) as all users will see the same content; it is provided mostly as a reference implementation for other, smarter caching modules.');
+  $output .= '</p>';
+  return $output;
+}
 
 /**
  * Implementation of hook_panels_cache()
@@ -77,6 +106,10 @@ function panels_simple_cache_get_id($conf, $display, $args, $contexts, $pane) {
 
   if ($pane) {
     $id .= ':' . $pane->pid;
+  }
+
+  if (user_access('view pane admin links')) {
+    $id .= ':admin';
   }
 
   switch ($conf['granularity']) {
