@@ -1,4 +1,4 @@
-/* $Id: onecol.css,v 1.1.2.3 2007/12/11 21:02:35 merlinofchaos Exp $ */
+/* $Id: onecol.css,v 1.1.2.4 2007/12/18 03:08:28 merlinofchaos Exp $ */
 
 .panel-1col { 
 /*  overflow: hidden;  */
@@ -10,8 +10,6 @@
 
 
 .panel-1col .panel-col { 
-  float: left; 
-  width: 100%; 
 }
 
 #panels-edit-display .panel-pane,
