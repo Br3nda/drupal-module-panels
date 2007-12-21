@@ -1,21 +1,19 @@
 <?php
-// $Id: term_description.inc,v 1.1.2.6 2007/12/06 02:35:45 merlinofchaos Exp $
+// $Id: term_description.inc,v 1.1.2.7 2007/12/21 03:21:36 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
 function panels_term_description_panels_content_types() {
-  if (module_exists('comment')) {
-    $items['term_description'] = array(
-      'title' => t('Term description'),
-      'content_types' => 'panels_admin_content_types_term_description',
-      'single' => TRUE, // only provides a single content type
-      'render callback' => 'panels_content_term_description',
-      'add callback' => 'panels_admin_edit_term_description',
-      'edit callback' => 'panels_admin_edit_term_description',
-      'title callback' => 'panels_admin_title_term_description',
-    );
-    return $items;
-  }
+  $items['term_description'] = array(
+    'title' => t('Term description'),
+    'content_types' => 'panels_admin_content_types_term_description',
+    'single' => TRUE, // only provides a single content type
+    'render callback' => 'panels_content_term_description',
+    'add callback' => 'panels_admin_edit_term_description',
+    'edit callback' => 'panels_admin_edit_term_description',
+    'title callback' => 'panels_admin_title_term_description',
+  );
+  return $items;
 }
 
 /**

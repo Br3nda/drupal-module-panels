@@ -1,21 +1,19 @@
 <?php
-// $Id: term_list.inc,v 1.1.2.5 2007/11/21 22:48:15 merlinofchaos Exp $
+// $Id: term_list.inc,v 1.1.2.6 2007/12/21 03:21:36 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
 function panels_term_list_panels_content_types() {
-  if (module_exists('comment')) {
-    $items['term_list'] = array(
-      'title' => t('List of related terms'),
-      'content_types' => 'panels_admin_content_types_term_list',
-      'single' => TRUE, // only provides a single content type
-      'render callback' => 'panels_content_term_list',
-      'add callback' => 'panels_admin_edit_term_list',
-      'edit callback' => 'panels_admin_edit_term_list',
-      'title callback' => 'panels_admin_title_term_list',
-    );
-    return $items;
-  }
+  $items['term_list'] = array(
+    'title' => t('List of related terms'),
+    'content_types' => 'panels_admin_content_types_term_list',
+    'single' => TRUE, // only provides a single content type
+    'render callback' => 'panels_content_term_list',
+    'add callback' => 'panels_admin_edit_term_list',
+    'edit callback' => 'panels_admin_edit_term_list',
+    'title callback' => 'panels_admin_title_term_list',
+  );
+  return $items;
 }
 
 /**

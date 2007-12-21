@@ -1,18 +1,20 @@
 <?php
-// $Id: node_comments.inc,v 1.1.2.5 2007/10/25 22:33:03 merlinofchaos Exp $
+// $Id: node_comments.inc,v 1.1.2.6 2007/12/21 03:21:36 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
 function panels_node_comments_panels_content_types() {
-  $items['node_comments'] = array(
-    'title' => t('Node comments'),
-    'content_types' => 'panels_admin_content_types_node_comments',
-    'single' => TRUE, // only provides a single content type
-    'render callback' => 'panels_content_node_comments',
-    'add callback' => 'panels_admin_edit_node_comments',
-    'edit callback' => 'panels_admin_edit_node_comments',
-    'title callback' => 'panels_admin_title_node_comments',
-  );
+  if (module_exists('comment')) {
+    $items['node_comments'] = array(
+      'title' => t('Node comments'),
+      'content_types' => 'panels_admin_content_types_node_comments',
+      'single' => TRUE, // only provides a single content type
+      'render callback' => 'panels_content_node_comments',
+      'add callback' => 'panels_admin_edit_node_comments',
+      'edit callback' => 'panels_admin_edit_node_comments',
+      'title callback' => 'panels_admin_title_node_comments',
+    );
+  }
   return $items;
 }
 

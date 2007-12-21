@@ -1,21 +1,19 @@
 <?php
-// $Id: node_type_desc.inc,v 1.1.2.6 2007/10/25 22:33:03 merlinofchaos Exp $
+// $Id: node_type_desc.inc,v 1.1.2.7 2007/12/21 03:21:36 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
 function panels_node_type_desc_panels_content_types() {
-  if (module_exists('comment')) {
-    $items['node_type_desc'] = array(
-      'title' => t('Node type description'),
-      'content_types' => 'panels_admin_content_types_node_type_desc',
-      'single' => TRUE, // only provides a single content type
-      'render callback' => 'panels_content_node_type_desc',
-      'add callback' => 'panels_admin_edit_node_type_desc',
-      'edit callback' => 'panels_admin_edit_node_type_desc',
-      'title callback' => 'panels_admin_title_node_type_desc',
-    );
-    return $items;
-  }
+  $items['node_type_desc'] = array(
+    'title' => t('Node type description'),
+    'content_types' => 'panels_admin_content_types_node_type_desc',
+    'single' => TRUE, // only provides a single content type
+    'render callback' => 'panels_content_node_type_desc',
+    'add callback' => 'panels_admin_edit_node_type_desc',
+    'edit callback' => 'panels_admin_edit_node_type_desc',
+    'title callback' => 'panels_admin_title_node_type_desc',
+  );
+  return $items;
 }
 
 /**
