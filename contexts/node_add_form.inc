@@ -1,5 +1,5 @@
 <?php
-// $Id: node_add_form.inc,v 1.1.2.2 2007/11/09 01:34:09 merlinofchaos Exp $
+// $Id: node_add_form.inc,v 1.1.2.3 2007/12/22 19:48:52 merlinofchaos Exp $
 /**
  * @file contexts/node_add_form.inc
  *
@@ -13,6 +13,7 @@ function panels_node_add_form_panels_contexts() {
     'context' => 'panels_context_create_node_add_form',
     'settings form' => 'panels_context_node_add_form_settings_form',
     'keyword' => 'node_add',
+    'context name' => 'node_add_form',
   );
   return $args;
 }

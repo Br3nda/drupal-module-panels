@@ -1,5 +1,5 @@
 <?php
-// $Id: user.inc,v 1.1.2.4 2007/11/09 22:35:38 merlinofchaos Exp $
+// $Id: user.inc,v 1.1.2.5 2007/12/22 19:48:52 merlinofchaos Exp $
 /**
  * @file contexts/user.inc
  *
@@ -13,7 +13,9 @@ function panels_user_panels_contexts() {
     'context' => 'panels_context_create_user',
     'settings form' => 'panels_context_user_settings_form',
     'settings form validate' => 'panels_context_user_settings_form_validate',
+    'keyword' => 'user',
     'no ui' => TRUE,
+    'context name' => 'user',
   );
   return $args;
 }
@@ -37,16 +39,13 @@ function panels_context_create_user($empty, $data = NULL, $conf = FALSE) {
   if (!empty($data)) {
     $context->data = $data;
     $context->title = $data->name;
-    $context->argument = $data->vid;
+    $context->argument = $data->uid;
     return $context;
   }
 }
 
 function panels_context_user_settings_form($conf, $external = FALSE) {
   $options = array();
-  if ($external) {
-    $options[0] = t('External source');
-  }
 
   return $form;
 }

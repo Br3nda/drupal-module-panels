@@ -1,5 +1,5 @@
 <?php
-// $Id: node_edit_form.inc,v 1.1.2.2 2007/11/09 01:34:09 merlinofchaos Exp $
+// $Id: node_edit_form.inc,v 1.1.2.3 2007/12/22 19:48:52 merlinofchaos Exp $
 /**
  * @file contexts/node_edit_form.inc
  *
@@ -14,6 +14,7 @@ function panels_node_edit_form_panels_contexts() {
     'settings form' => 'panels_context_node_edit_form_settings_form',
     'settings form validate' => 'panels_context_node_edit_form_settings_form_validate',
     'keyword' => 'node_edit',
+    'context name' => 'node_edit_form',
   );
   return $args;
 }
