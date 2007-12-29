@@ -1,6 +1,6 @@
-; $Id: panels_node_legacy.info,v 1.1.2.1 2007/12/18 22:43:06 merlinofchaos Exp $
+; $Id: panels_node_legacy.info,v 1.1.2.2 2007/12/29 21:09:34 merlinofchaos Exp $
 name = Legacy node panes
-description = Allows embedding specific nodes into panes without using contexts
+description = "Allows embedding specific nodes into panes without using contexts; this module is deprecated and should only be used if necessary"
 package = "Panels"
 dependencies = panels
 

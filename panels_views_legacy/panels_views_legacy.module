@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views_legacy.module,v 1.1.2.1 2007/12/18 22:16:19 merlinofchaos Exp $
+// $Id: panels_views_legacy.module,v 1.1.2.2 2007/12/29 21:09:34 merlinofchaos Exp $
 
 /**
  * Implementation of hook_menu()
@@ -29,19 +29,17 @@ function panels_views_legacy_admin() {
 }
 
 /**
- * Callback function to supply a list of content types.
+ * Implementation of hook_panels_content_types()
  */
 function panels_views_legacy_panels_content_types() {
   // Only valid if views module loaded.
   $items['views'] = array(
-    'title' => t('View'),
-    'content_types' => 'panels_admin_content_types_views',
+    'title' => t('Legacy views'),
+    'content_types' => 'panels_views_legacy_content_types',
     'render callback' => 'panels_views_legacy_render',
     'add callback' => 'panels_views_legacy_add',
     'edit callback' => 'panels_views_legacy_edit',
     'title callback' => 'panels_views_legacy_title',
-    'add validate callback' => 'panels_views_legacy_edit_validate',
-    'edit validate callback' => 'panels_views_legacy_edit_validate',
   );
   return $items;
 }
@@ -97,6 +95,7 @@ function panels_views_legacy_render($conf, $panel_args, &$contexts) {
 
     if (!empty($conf['more_link'])) {
       $block->more = array('href' => views_get_url($view, $args));
+      $view->block_more = FALSE;
     }
 
     $pager_id = empty($conf['use_pager']) ? 0 : intval($conf['pager_id']);
@@ -127,7 +126,7 @@ function panels_views_legacy_render($conf, $panel_args, &$contexts) {
 /**
  * Return all content types available.
  */
-function panels_admin_content_types_views() {
+function panels_views_legacy_content_types() {
   $types = array();
   $views = array();
   $args = array();

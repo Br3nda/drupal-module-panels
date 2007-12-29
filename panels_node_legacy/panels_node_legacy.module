@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node_legacy.module,v 1.1.2.1 2007/12/18 22:43:06 merlinofchaos Exp $
+// $Id: panels_node_legacy.module,v 1.1.2.2 2007/12/29 21:09:34 merlinofchaos Exp $
 
 /**
  * Implementation of hook_menu()
@@ -29,7 +29,7 @@ function panels_node_legacy_admin() {
 }
 
 /**
- * Callback function to supply a list of content types.
+ * Implementation of hook_panels_content_types()
  */
 function panels_node_panels_content_types() {
   $items['node'] = array(

@@ -1,0 +1,23 @@
+<?php
+// $Id: panels_views.install,v 1.1.2.1 2007/12/29 21:09:34 merlinofchaos Exp $
+
+/**
+ * Install the panels tables
+ */
+function panels_views_install() {
+  // This is a poor man's schema implementation ala Drupal 6.
+  $fields = panels_views_pane_fields();
+  $sql = "";
+  foreach ($fields as $field => $data) {
+    if ($sql) {
+      $sql .= ', ';
+    }
+    $sql .= $field . ' ' . $data['definition'];
+  }
+  db_query("CREATE TABLE {panels_views} ($sql) /*!40100 DEFAULT CHARACTER SET utf8 */");
+}
+
+function panels_views_uninstall() {
+  db_query("DROP TABLE {panels_views}");
+}
+
