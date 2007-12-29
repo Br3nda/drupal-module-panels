@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.1 2007/12/29 21:09:34 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.2 2007/12/29 23:07:27 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -137,7 +137,7 @@ function panels_views_list_views() {
 
     $item[] = implode(' | ', $ops);
     $items[] = $item;
-    
+
     $ts = tablesort_init($header);
     switch ($ts['sql']) {
       case 'title':
@@ -230,7 +230,7 @@ function panels_views_edit_view($view_name) {
 function panels_views_edit_view_form($view, $panel_view) {
   panels_views_pane_arguments($view, $panel_view);
 
-  
+
   $form['basic'] = array(
     '#type' => 'fieldset',
     '#title' => t('Basic information'),
@@ -757,8 +757,6 @@ function panels_views_render($conf, $panel_args, &$contexts) {
     }
   }
 
-  dsm($args);
-
   if ($pv->allow_url_override && $conf['url']) {
     $view->url = $conf['url'];
   }
@@ -776,13 +774,13 @@ function panels_views_render($conf, $panel_args, &$contexts) {
   $block->subject = views_get_title($view, $view_type);
 
   // link to ivew
-  if (($pv->allow_link_to_view && !empty($conf['link_to_view'])) || 
+  if (($pv->allow_link_to_view && !empty($conf['link_to_view'])) ||
       (!$pv->allow_link_to_view && $pv->link_to_view)) {
     $block->title_link = views_get_url($view, $args);
   }
 
   // more link
-  if (($pv->allow_more_link && !empty($conf['more_link'])) || 
+  if (($pv->allow_more_link && !empty($conf['more_link'])) ||
       (!$pv->allow_more_link && $pv->more_link)) {
     $block->more = array('href' => views_get_url($view, $args));
     $view->block_more = FALSE;
@@ -802,7 +800,7 @@ function panels_views_render($conf, $panel_args, &$contexts) {
   $stored_feeds = drupal_add_feed();
   $block->content = views_build_view($pv->type, $view, $args, $pager_id, $nodes_per_page, 0, $offset);
 
-  if (($pv->allow_feed_icons && !empty($conf['feed_icons'])) || 
+  if (($pv->allow_feed_icons && !empty($conf['feed_icons'])) ||
       (!$pv->allow_feed_icons && $pv->feed_icons)) {
     $new_feeds = drupal_add_feed();
     if ($diff = array_diff(array_keys($new_feeds), array_keys($stored_feeds))) {
@@ -1026,7 +1024,7 @@ function panels_views_pane_fields() {
   $names = array(
     'pvid' => array(
       'default' => 'NULL',
-      'arg' => '%d', 
+      'arg' => '%d',
       'definition' => 'integer NOT NULL PRIMARY KEY',
       'primary' => TRUE,
     ),
