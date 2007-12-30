@@ -1,11 +1,18 @@
 <?php
-// $Id: panels_views.install,v 1.1.2.1 2007/12/29 21:09:34 merlinofchaos Exp $
+// $Id: panels_views.install,v 1.1.2.2 2007/12/30 23:50:50 merlinofchaos Exp $
 
 /**
  * Install the panels tables
  */
 function panels_views_install() {
   // This is a poor man's schema implementation ala Drupal 6.
+
+  // The documentation says this shouldn't be necessary but sometimes the
+  // .module file is not actually loaded at this time, so we have to load it.
+  if (!function_exists('panels_views_pane_fields')) {
+    require_once drupal_get_path('module', 'panels_views') . '/panels_views.module';
+  }
+
   $fields = panels_views_pane_fields();
   $sql = "";
   foreach ($fields as $field => $data) {
