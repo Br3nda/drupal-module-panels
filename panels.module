@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.74 2007/12/31 07:20:13 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.75 2007/12/31 07:26:53 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -349,7 +349,7 @@ function panels_common_cache_clear($obj, $did) {
  */
 function panels_cron() {
   // delete anything 7 days old or more.
-  db_query("DELETE FROM {panels_cache_object} WHERE timestamp < %d", time() - (86400 * 7));
+  db_query("DELETE FROM {panels_object_cache} WHERE timestamp < %d", time() - (86400 * 7));
 }
 
 /**
