@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.9 2007/12/17 21:24:37 merlinofchaos Exp $
+// $Id: list.js,v 1.1.2.10 2007/12/31 06:30:17 merlinofchaos Exp $
 
 /**
  * List object
@@ -300,6 +300,10 @@ Drupal.list = function(base, settings) {
             return false;
             
           });
+          // hack: allow collapsible textareas to work
+          Drupal.Panels.Subform.bindCollapsible();
+
+          Drupal.Panels.Subform.bindAutocomplete();
           return;
         case 'add':
           // add new data

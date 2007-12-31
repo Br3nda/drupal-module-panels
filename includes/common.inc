@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.20 2007/12/13 18:33:22 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.21 2007/12/31 06:30:16 merlinofchaos Exp $
 
 /**
  * @file
@@ -424,6 +424,9 @@ function panels_common_add_context_js($base) {
   drupal_add_js(panels_get_path('js/lib/form.js'));
   drupal_add_js(panels_get_path('js/modal_forms.js'));
   drupal_add_css(panels_get_path('css/panels_dnd.css'));
+  // while we don't use this directly some of our forms do.
+  drupal_add_js('misc/collapse.js');
+  drupal_add_js('misc/autocomplete.js');
 }
 
 /**

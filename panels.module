@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.72 2007/12/31 05:26:49 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.73 2007/12/31 06:30:16 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -998,20 +998,27 @@ function panels_node_autocomplete($string) {
   // TODO: Compare this to the nodequeue version, see which is better.
   // TODO: The nodequeue version is totally better. Steal it.
   if ($string != '') { // if there are node_types passed, we'll use those in a MySQL IN query.
-    $result = db_query_range(db_rewrite_sql('SELECT n.title, u.name FROM {node} n INNER JOIN {users} u ON u.uid = n.uid WHERE LOWER(title) LIKE LOWER(\'%%%s%%\')'), $string, 0, 10);
-    $prefix = count($array) ? implode(', ', $array) .', ' : '';
+    $preg_matches = array();
+    $match = preg_match('/\[nid: (\d+)\]/', $string, $preg_matches);
+    if (!$match) {
+      $match = preg_match('/^nid: (\d+)/', $string, $preg_matches);
+    }
+    if ($match) {
+      $arg = $preg_matches[1];
+      $where = "n.nid = %d";
+    }
+    else {
+      $arg = $string;
+      $where = "LOWER(title) LIKE LOWER('%%%s%%')";
+    }
+    $result = db_query_range(db_rewrite_sql("SELECT n.nid, n.title, u.name FROM {node} n INNER JOIN {users} u ON u.uid = n.uid WHERE $where"), $arg, 0, 10);
 
     $matches = array();
     while ($node = db_fetch_object($result)) {
-      $n = $node->title;
-      // Commas and quotes in terms are special cases, so encode 'em.
-      if (preg_match('/,/', $node->title) || preg_match('/"/', $node->title)) {
-        $n = '"'. preg_replace('/"/', '""', $node->title) .'"';
-      }
-      $matches[$prefix . $n] = '<span class="autocomplete_title">'. check_plain($node->title) .'</span> <span class="autocomplete_user">('. t('by %user', array('%user' => check_plain($node->name))) .')</span>';
+      $name = empty($node->name) ? variable_get('anonymous', t('Anonymous')) : check_plain($node->name);
+      $matches[$node->title . " [nid: $node->nid]"] = '<span class="autocomplete_title">'. check_plain($node->title) .'</span> <span class="autocomplete_user">('. t('by @user', array('@user' => $name)) .')</span>';
     }
     drupal_set_header('Content-Type: text/javascript; charset=utf-8');
     print drupal_to_js($matches);
-    exit();
   }
 }

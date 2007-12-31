@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.1.2.4 2007/11/21 07:07:19 merlinofchaos Exp $
+// $Id: node.inc,v 1.1.2.5 2007/12/31 06:30:16 merlinofchaos Exp $
 /**
  * @file contexts/node.inc
  *
@@ -85,7 +85,8 @@ function panels_context_node_settings_form($conf, $external = FALSE) {
  * Validate a node.
  */
 function panels_context_node_settings_form_validate($form, $form_values) {
-  if (empty($form_values['external']) && empty($form_values['nid']) && empty($form_values['node'])) {   // Validate the autocomplete
+  // Validate the autocomplete
+  if (empty($form_values['external']) && empty($form_values['nid']) && empty($form_values['node'])) {   
     form_error($form['node'], t('You must select a node.'));
     return;
   }
@@ -95,6 +96,15 @@ function panels_context_node_settings_form_validate($form, $form_values) {
   }
 
   $nid = $form_values['node'];
+  $preg_matches = array();
+  $match = preg_match('/\[nid: (\d+)\]/', $nid, $preg_matches);
+  if (!$match) {
+    $match = preg_match('/^nid: (\d+)/', $nid, $preg_matches);
+  }
+
+  if ($match) {
+    $nid = $preg_matches[1];
+  }
   if (is_numeric($nid)) {
     $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE nid = %d"), $nid));
   }

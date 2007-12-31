@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.7 2007/12/11 21:02:35 merlinofchaos Exp $
+// $Id: modal_forms.js,v 1.1.2.8 2007/12/31 06:30:17 merlinofchaos Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -56,7 +56,7 @@ Drupal.Panels.Subform.bindCollapsible = function() {
 /** ripped from Drupal cause it's not easy to re-autoattach cleanly */
 Drupal.Panels.Subform.bindAutocomplete = function() {
   var acdb = [];
-  $('.panels-modal-content input.autocomplete').each(function () {
+  $('div.panels-modal-content input.autocomplete').each(function () {
     var uri = this.value;
     if (!acdb[uri]) {
       acdb[uri] = new Drupal.ACDB(uri);
