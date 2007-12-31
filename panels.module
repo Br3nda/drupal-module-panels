@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.73 2007/12/31 06:30:16 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.74 2007/12/31 07:20:13 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -280,26 +280,31 @@ function panels_add_button($image, $name, $text, $class, $id = NULL) {
  * being edited, which can be a seriously multi-step process.
  */
 function panels_cache_get($did) {
+  return panels_common_cache_get('panels', $did);
+/*
   static $cache = array();
   if (!array_key_exists($did, $cache)) {
     $data = cache_get('panels_display:' . session_id() . ':' . $did, 'cache');
     $cache[$did] = unserialize($data->data);
   }
   return $cache[$did];
+*/
 }
 
 /**
  * Save the edited display into the cache.
  */
 function panels_cache_set($did, $cache) {
-  cache_set('panels_display:' . session_id() . ':' . $did, 'cache', serialize($cache), time() + 86400);
+  return panels_common_cache_set('panels', $did, $cache);
+//  cache_set('panels_display:' . session_id() . ':' . $did, 'cache', serialize($cache), time() + 86400);
 }
 
 /**
  * Clear a display from the cache; used if the editing is aborted.
  */
 function panels_cache_clear($did) {
-  cache_clear_all('panels_display:' . session_id() . ':' . $did, 'cache');
+  return panels_common_cache_clear('panels', $did);
+//  cache_clear_all('panels_display:' . session_id() . ':' . $did, 'cache');
 }
 
 // ---------------------------------------------------------------------------
@@ -316,29 +321,40 @@ function panels_common_cache_get($obj, $did, $skip_cache = FALSE) {
   }
 
   if (!array_key_exists($key, $cache)) {
-    $data = cache_get(session_id() . ":$obj:$did", 'cache');
-    $cache[$key] = unserialize($data->data);
+    $data = db_fetch_object(db_query("SELECT * FROM {panels_object_cache} WHERE sid = '%s' AND obj = '%s' AND did = %d", session_id(), $obj, $did));
+    if ($data) {
+      $cache[$key] = unserialize($data->data);
+    }
   }
-  return $cache[$key];
+  return isset($cache[$key]) ? $cache[$key] : NULL;
 }
 
 /**
  * Save the edited display into the cache.
  */
 function panels_common_cache_set($obj, $did, $cache) {
-  cache_set(session_id() . ":$obj:$did", 'cache', serialize($cache), time() + 86400);
+  panels_common_cache_clear($obj, $did);
+  db_query("INSERT INTO {panels_object_cache} (sid, obj, did, data, timestamp) VALUES ('%s', '%s', %d, '%s', %d)", session_id(), $obj, $did, serialize($cache), time());
 }
 
 /**
  * Clear a display from the cache; used if the editing is aborted.
  */
-function panels_common_cache_clear($did) {
-  cache_clear_all(session_id() . ":$obj:$did", 'cache');
+function panels_common_cache_clear($obj, $did) {
+  db_query("DELETE FROM {panels_object_cache} WHERE sid = '%s' AND obj = '%s' AND did = %d", session_id(), $obj, $did);
+}
+
+/**
+ * Clean up old caches
+ */
+function panels_cron() {
+  // delete anything 7 days old or more.
+  db_query("DELETE FROM {panels_cache_object} WHERE timestamp < %d", time() - (86400 * 7));
 }
 
 /**
  * Global storage function, used mostly so that _submit hooks can pass data
- * back to their originator more easily.
+ * back to their originator more easily. TODO: deprecated but still in use.
  */
 function panels_set($var, $value = NULL) {
   static $vars = array();

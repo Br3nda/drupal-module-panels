@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.30 2007/12/13 23:35:46 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.31 2007/12/31 07:20:13 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -70,6 +70,18 @@ EOT
       );
       db_query("CREATE SEQUENCE {panels_pane}_pid_seq;");
       db_query("CREATE INDEX {panels_pane}_did_idx ON {panels_pane} (did);");
+      db_query(<<<EOT
+        CREATE TABLE {panels_object_cache} (
+          sid varchar(64),
+          did integer,
+          obj varchar(255),
+          timestamp integer,
+          data text
+        );
+EOT
+      );
+      db_query("CREATE INDEX {panels_object_cache}_idx ON {panels_object_cache} (sid, obj, did);");
+      db_query("CREATE INDEX {panels_object_cache}_time_idx ON {panels_object_cache} (timestamp);");
       break;
     case 'mysql':
     case 'mysqli':
@@ -130,6 +142,19 @@ EOT
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
+      db_query(<<<EOT
+        CREATE TABLE {panels_object_cache} (
+          sid varchar(64),
+          did integer,
+          obj varchar(255),
+          data text,
+          timestamp integer,
+          KEY (sid, obj, did),
+          KEY (timestamp)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */
+EOT
+      );
+      db_query("CREATE INDEX {panels_object_cache}_idx ON {panels_object_cache} (sid, obj, did);");
   }
   db_query("UPDATE {system} SET weight = 10 WHERE name = 'panels'");
 
@@ -428,6 +453,32 @@ function panels_update_5213() {
     case 'pgsql':
       db_add_column($ret, 'panels_pane', 'cache', 'text');
       db_add_column($ret, 'panels_display', 'cache', 'text');
+  }
+  return $ret;
+}
+
+/**
+ * Create a new table for object caching. This isn't part of the cache
+ * system.
+ */
+function panels_update_5214() {
+  $ret = array();
+  switch($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql(<<<EOT
+        CREATE TABLE {panels_object_cache} (
+          sid varchar(64),
+          did integer,
+          obj varchar(255),
+          timestamp integer,
+          data text,
+          KEY (sid, obj, did),
+          KEY (timestamp)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */
+EOT
+    );
+    case 'pgsql':
   }
   return $ret;
 }
