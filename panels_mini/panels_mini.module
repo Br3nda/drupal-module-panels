@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.16 2007/12/31 05:26:50 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.17 2007/12/31 06:51:00 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -836,6 +836,8 @@ function panels_mini_content_types() {
  * Render a mini panel called from a panels display
  */
 function panels_mini_content($conf, $panel_args, &$contexts) {
+  static $id_cache = array();
+
   $mini = panels_mini_load($conf['name']);
   if (!$mini) {
     return FALSE;
@@ -853,6 +855,13 @@ function panels_mini_content($conf, $panel_args, &$contexts) {
 
   $mini->display->args = $panel_args;
   $mini->display->css_id = 'mini-panel-' . $conf['name'];
+  if (!empty($id_cache[$conf['name']])) {
+    $mini->display->css_id .= "-" . $id_cache[$conf['name']]++;
+  }
+  else {
+    $id_cache[$conf['name']] = 1;
+  }
+
   $mini->display->owner = $mini;
   $mini->display->owner->id = $mini->name; // unique ID of this mini.
 
