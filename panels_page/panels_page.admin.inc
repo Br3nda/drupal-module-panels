@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.33 2007/12/18 02:39:17 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.34 2007/12/31 23:41:43 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -332,6 +332,12 @@ function panels_page_edit_form_validate($form_id, $form_values, $form) {
     $result = db_result(db_query("SELECT pid FROM {panels_page} WHERE path = '%s' AND pid <> %d", $form_values['path'], $form_values['pid']));
     if ($result) {
       form_error($form['left']['info']['path'], t('Path may not be the same as another panel page path.'));
+    }
+
+    // validate against aliases
+    $result = db_result(db_query("SELECT src FROM {url_alias} WHERE dst = '%s'", $form_values['path']));
+    if ($result) {
+      form_error($form['left']['info']['path'], t('The path you have chosen is already aliased to @src.', array('@src' => $result)));
     }
   }
 }

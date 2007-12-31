@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_export.module,v 1.1.2.1 2007/11/28 04:17:48 merlinofchaos Exp $
+// $Id: panels_export.module,v 1.1.2.2 2007/12/31 23:41:43 merlinofchaos Exp $
 /**
  * @file panels_export.module
  *
@@ -41,6 +41,7 @@ function panels_export_perm() {
  * Page callback to export panels in bulk.
  */
 function panels_export_export() {
+  $exportables = array();
   foreach (module_implements('panels_exportables') as $module) {
     $function = $module . '_panels_exportables';
     $exportables[$module] = $function('list');
