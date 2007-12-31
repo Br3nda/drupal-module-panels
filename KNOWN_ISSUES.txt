@@ -1,4 +1,4 @@
-# $Id: KNOWN_ISSUES.txt,v 1.1.2.5 2007/12/18 02:48:43 merlinofchaos Exp $
+# $Id: KNOWN_ISSUES.txt,v 1.1.2.6 2007/12/31 02:09:01 merlinofchaos Exp $
 
 Known Issue http://drupal.org/node/191771
   'Node' panes can have two titles or have two title areas.
@@ -69,3 +69,12 @@ Known Issue http://drupal.org/node/165745
     2.0 and the tables aren't the same. However, the nodewords module doesn't
     yet know this. Look in the nodewords issue queue for panels patches and
     you should find something.
+
+Known Issue http://drupal.org/node/153399
+  The drag and drop content UI doesn't seem to work at all under Safari.
+
+  Cause:
+    Safari 2 has some serious problems with the javascript code.
+  Solution:
+    Upgrade to Safari 3 if possible. If not, use an an alternative browser
+    such as Firefox or Opera.
