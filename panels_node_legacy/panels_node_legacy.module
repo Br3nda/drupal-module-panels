@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node_legacy.module,v 1.1.2.2 2007/12/29 21:09:34 merlinofchaos Exp $
+// $Id: panels_node_legacy.module,v 1.1.2.3 2007/12/31 05:26:50 merlinofchaos Exp $
 
 /**
  * Implementation of hook_menu()
@@ -197,5 +197,8 @@ function panels_node_legacy_title($conf) {
   $node = node_load($conf['nid']);
   if ($node) {
     return check_plain($node->title);
+  }
+  else {
+    return t('Missing/deleted node');
   }
 }

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.71 2007/12/18 22:16:19 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.72 2007/12/31 05:26:49 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -703,7 +703,7 @@ function panels_render_panes($display) {
   // can do the leftovers of forms).
   $panes = array();
   $later = array();
-
+  
   foreach ($display->content as $pid => $pane) {
     // If the user can't see this pane, do not render it.
     if (!panels_pane_access($pane)) {

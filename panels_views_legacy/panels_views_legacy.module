@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views_legacy.module,v 1.1.2.2 2007/12/29 21:09:34 merlinofchaos Exp $
+// $Id: panels_views_legacy.module,v 1.1.2.3 2007/12/31 05:26:50 merlinofchaos Exp $
 
 /**
  * Implementation of hook_menu()
@@ -313,6 +313,9 @@ function panels_views_legacy_edit($id, $parents, $conf) {
  */
 function panels_views_legacy_title($conf) {
   $view = views_get_view($conf['view']);
+  if (empty($view)) {
+    return t('Deleted/missing view');
+  }
   $title = views_get_title($view, 'admin');
   return $title ? $title : $view->name;
 }

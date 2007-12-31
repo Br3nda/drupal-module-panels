@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.21 2007/12/18 20:06:54 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.22 2007/12/31 05:26:50 merlinofchaos Exp $
 
 /**
  * Main API entry point to edit a panel display.
@@ -475,8 +475,17 @@ function panels_get_pane_edit_form($pane, $contexts, $parents) {
  *   just the innards for ajax replacement
  */
 function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE) {
-  $block = panels_render_pane($display, $pane);
-  $title = panels_get_pane_title($pane, $display->context);
+  $content_type = panels_get_content_type($pane->type);
+  if (empty($content_type)) {
+    $block = new stdClass();
+    $block->title = t('Missing content type');
+    $block->content = t('This pane\'s content type is either missing or has been deleted. This pane will not render.');
+    $title = t('Unknown');
+  }
+  else {
+    $block = panels_render_pane($display, $pane);
+    $title = panels_get_pane_title($pane, $display->context);
+  }
 
   $output = theme('panels_pane_dnd', $block, $pane->pid, $title, $left_buttons, $buttons);
   if ($skin) {
