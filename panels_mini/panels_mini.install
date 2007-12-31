@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.install,v 1.1.2.4 2007/11/21 06:02:15 merlinofchaos Exp $
+// $Id: panels_mini.install,v 1.1.2.5 2007/12/31 04:43:28 merlinofchaos Exp $
 
 /**
  * Implementation of hook_install().
@@ -49,6 +49,9 @@ function panels_mini_uninstall() {
   $result = db_query("SELECT * FROM {panels_mini} ORDER BY title");
   while ($panel_mini = db_fetch_object($result)) {
     // Delete all associated displays.
+    if (!function_exists('panels_delete_display')) {
+      require_once drupal_get_path('module', 'panels') .'/panels.module';
+    }
     panels_delete_display($panel_mini->did);
 
     // Delete all configured blocks.
