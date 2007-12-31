@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.1.2.5 2007/11/21 16:57:13 merlinofchaos Exp $
+// $Id: term.inc,v 1.1.2.6 2007/12/31 04:31:06 merlinofchaos Exp $
 /**
  * @file arguments/term.inc
  *
@@ -31,14 +31,10 @@ function panels_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
     return panels_context_create_empty('term');
   }
 
-  if (!is_numeric($arg)) {
-    return FALSE;
-  }
-
   switch ($conf['input_form']) {
     case 'tid':
     default:
-      if (!is_numeric($arg) && $conf['input_form'] == 'tid') {
+      if (!is_numeric($arg)) {
         return FALSE;
       }
       $term = taxonomy_get_term($arg);
@@ -46,7 +42,14 @@ function panels_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
     case 'term':
       $terms = taxonomy_get_term_by_name($arg);
       if (count($terms) != 1) {
-        return FALSE;
+        foreach ($terms as $potential) {
+          foreach ($conf['vids'] as $vid => $active) {
+            if ($active == 1 && $potential->vid == $vid) {
+              $term = $potential;
+              break 3; // break out of the foreaches AND the case
+            }
+          }
+        }
       }
       $term = array_shift($terms);
       break;
