@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node_legacy.module,v 1.1.2.3 2007/12/31 05:26:50 merlinofchaos Exp $
+// $Id: panels_node_legacy.module,v 1.1.2.4 2008/01/01 00:05:00 merlinofchaos Exp $
 
 /**
  * Implementation of hook_menu()
@@ -172,14 +172,23 @@ function panels_node_legacy_edit_validate($form, $form_values) {
   }
 
   $nid = $form_values['nid'];
+  $preg_matches = array();
+  $match = preg_match('/\[nid: (\d+)\]/', $nid, $preg_matches);
+  if (!$match) {
+    $match = preg_match('/^nid: (\d+)/', $nid, $preg_matches);
+  }
+
+  if ($match) {
+    $nid = $preg_matches[1];
+  }
   if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE nid = %d"), $nid));
   }
   else {
     $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(title) = LOWER('%s')"), $nid));
-    if ($node) {
-      form_set_value($form['nid'], $node->nid);
-    }
+  }
+  if ($node) {
+    form_set_value($form['nid'], $node->nid);
   }
 
   if (!($node || preg_match('/^[@%]\d+$/', $nid))) {
