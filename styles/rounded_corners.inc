@@ -1,9 +1,13 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.3 2007/12/06 02:35:46 merlinofchaos Exp $
+// $Id: rounded_corners.inc,v 1.1.2.4 2008/01/08 18:03:08 merlinofchaos Exp $
 /**
  * @file styles/rounded_corners.inc
  * Definition of the 'rounded_corners' panel style.
  */
+
+
+// ---------------------------------------------------------------------------
+// Panels hooks.
 
 /**
  * Implementation of hook_panels_style_info().
@@ -12,36 +16,42 @@ function panels_rounded_corners_panels_styles() {
   return array(
     'rounded_corners' => array(
       'title' => t('Rounded corners'),
-      'description' => t('Presents the panes with a rounded corner box around them'),
-      'panels implementations' => array(),
+      'description' => t('Presents the panes or panels with a rounded corner box around them'),
       'render panel' => 'panels_rounded_corners_style_render_panel',
       'settings form' => 'panels_rounded_corners_style_settings_form',
     ),
   );
 }
 
+
+// ---------------------------------------------------------------------------
+// Panels style plugin callbacks.
+
 /**
- * Panel style: rounded_corners of panes (panes are items in an unordered rounded_corners).
+ * Render callback.
+ *
+ * @ingroup themeable
  */
 function theme_panels_rounded_corners_style_render_panel($display, $panel_id, $panes, $settings) {
   $output = '';
 
-  // Determine where to put the box. If empty or 'pane' around each pane.
-  // if 'panel' then just around the whole panel.
+  // Determine where to put the box. If empty or 'pane' around each pane. If
+  // 'panel' then just around the whole panel.
   $where = empty($settings['corner_location']) ? 'pane' : $settings['corner_location'];
 
   $print_separator = FALSE;
-  foreach ($panes as $pane) {
+  foreach ($panes as $pane_id => $pane) {
     // Add the separator if we've already displayed a pane.
     if ($print_separator) {
       $output .= '<div class="panel-separator"></div>';
     }
-    $text = theme('panels_pane', $pane, $display->content[$pid], $display);
+    $text = theme('panels_pane', $pane, $display->content[$pane_id], $display);
     if ($text) {
       $output .= ($where == 'pane') ? theme('rounded_corners_box', $text) : $text;
     }
 
-    // If we displayed a pane, this will become true; if not, it will become false.
+    // If we displayed a pane, this will become true; if not, it will become
+    // false.
     $print_separator = (bool) $text;
   }
 
@@ -58,7 +68,43 @@ function theme_panels_rounded_corners_style_render_panel($display, $panel_id, $p
   return $output;
 }
 
-function theme_rounded_corners_css($display, $where) {
+/**
+ * Settings form callback.
+ */
+function panels_rounded_corners_style_settings_form($style_settings) {
+  $form['corner_location'] = array(
+    '#type' => 'select',
+    '#title' => t('Box around'),
+    '#options' => array(
+      'pane' => t('Each pane'),
+      'panel' => t('Each panel')
+    ),
+    '#default_value' => (isset($style_settings['corner_location'])) ? $style_settings['corner_location'] : 'ul',
+    '#description' => t('Choose whether to include the box around each pane (piece of content) or panel (each column or region)'),
+  );
+
+  return $form;
+}
+
+
+// ---------------------------------------------------------------------------
+// Themeing callbacks.
+
+/**
+ * @ingroup themable
+ * @{
+ */
+
+/**
+ * Generates the dynamic CSS.
+ *
+ * @param $display
+ *   A Panels display object.
+ * @param $where
+ *   String indicating where the rounded corners should be applied, either
+ *   'pane' or 'panel'.
+ */
+function theme_rounded_corners_css($display, $where = 'pane') {
   $idstr = empty($display->css_id) ? '.rounded_corner' : "#$display->css_id";
   $url = panels_get_path('styles/corners', TRUE);
 
@@ -133,16 +179,21 @@ EOF;
 }
 
 /**
- * Create the HTML for our rounded corner box
+ * Create the HTML for our rounded corner box.
+ *
+ * @param $text
+ *   The content of this rounded corner box.
+ * @return
+ *   The created HTML.
  */
-function theme_rounded_corners_box($text) {
+function theme_rounded_corners_box($content) {
   return <<<EOF
 <div class="rounded_corner">
   <div class="wrap-corner">
     <div class="t-edge"><div class="l"></div><div class="r"></div></div>
     <div class="l-edge">
       <div class="r-edge">
-        $text
+        $content
       </div>
     </div>
     <div class="b-edge"><div class="l"></div><div class="r"></div></div>
@@ -152,17 +203,5 @@ EOF;
 }
 
 /**
- * Settings form for this style
+ * @} End of "ingroup themeable".
  */
-function panels_rounded_corners_style_settings_form($style_settings) {
-  $form['corner_location'] = array(
-    '#type' => 'select',
-    '#title' => t('Box around'),
-    '#options' => array('pane' => t('Each pane'), 'panel' => t('Each panel')),
-    '#default_value' => isset($style_settings['corner_location']) ? $style_settings['corner_location'] : 'ul',
-    '#description' => t('Choose whether to include the box around each pane (piece of content) or panel (each column or region)'),
-  );
-
-  return $form;
-}
-
