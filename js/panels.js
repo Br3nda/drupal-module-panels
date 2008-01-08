@@ -1,4 +1,4 @@
-// $Id: panels.js,v 1.1.2.3 2008/01/08 19:20:48 merlinofchaos Exp $
+// $Id: panels.js,v 1.1.2.4 2008/01/08 19:58:36 merlinofchaos Exp $
 
 Drupal.Panels = {};
 
@@ -9,8 +9,8 @@ Drupal.Panels.autoAttach = function() {
       $('div.panel-hide', this).addClass("hover"); return true;
     }
    );
-   $("div.panel-pane").mouseout(
-    function(){
+  $("div.panel-pane").mouseout(
+   function(){
       $('div.panel-hide', this).removeClass("hover"); return true;
     }
   );

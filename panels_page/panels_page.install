@@ -1,0 +1,17 @@
+<?php
+// $Id: panels_page.install,v 1.1.2.1 2008/01/08 19:58:37 merlinofchaos Exp $
+
+/**
+ * Implementation of hook_install()
+ *
+ * Note that the panels page tables are largely owned by panels.module
+ */
+function panels_page_install() {
+  db_query("UPDATE {system} SET weight = 10 WHERE name = 'panels_page'");
+}
+
+function panels_page_update_5000() {
+  $ret = array();
+  $ret[] = update_sql("UPDATE {system} SET weight = 10 WHERE name = 'panels_page'");
+  return $ret;
+}
