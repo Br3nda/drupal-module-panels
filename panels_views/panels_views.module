@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.5 2008/01/08 17:59:20 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.6 2008/01/08 18:05:54 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -517,6 +517,7 @@ function panels_views_edit_view_form_validate($form_id, $form_values, $form) {
  * Submit the edit form and save the values
  */
 function panels_views_edit_view_form_submit($form_id, $form_values) {
+  $form_values['contexts'] = isset($form_values['contexts']) ? $form_values['contexts'] : array();
   panels_views_save((object) $form_values);
   drupal_set_message(t("The panel view has been saved."));
   return 'admin/panels/views';
