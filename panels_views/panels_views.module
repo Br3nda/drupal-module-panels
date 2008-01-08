@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.4 2008/01/08 17:58:05 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.5 2008/01/08 17:59:20 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -10,7 +10,7 @@
  */
 
 /**
- * Implementation of hook_menu
+ * Implementation of hook_menu().
  */
 function panels_views_menu($may_cache) {
   if ($may_cache) {
@@ -86,7 +86,7 @@ function panels_views_menu($may_cache) {
 }
 
 /**
- * Implementation of hook_perm
+ * Implementation of hook_perm().
  */
 function panels_views_perm() {
   return array('administer panel views');
@@ -225,7 +225,7 @@ function panels_views_edit_view($view_name) {
 }
 
 /**
- * Form to add or edit add a view pane
+ * Form to add or edit add a view pane.
  */
 function panels_views_edit_view_form($view, $panel_view) {
   panels_views_pane_arguments($view, $panel_view);
@@ -428,7 +428,7 @@ function panels_views_edit_view_form($view, $panel_view) {
   $form['deco']['more_link'] = array(
     '#type' => 'checkbox',
     '#title' => t('More link'),
-    '#description' => t('If checked, Panels will provide a "more" link that links to the View URL; this is different from the Views "more" link which will automatically be disabled.'),
+    '#description' => t('If checked, Panels will provide a "more" link that links to the view URL; this is different from the view\'s "more" link which will automatically be disabled.'),
     '#default_value' => $panel_view->more_link,
   );
 
@@ -453,14 +453,14 @@ function panels_views_edit_view_form($view, $panel_view) {
 
   $form['deco']['url_override'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Override the Panel URL with a manually set URL.'),
+    '#title' => t('Override the panel URL with a manually set URL.'),
     '#default_value' => $panel_view->url_override,
   );
 
   $form['deco']['url'] = array(
     '#type' => 'textfield',
     '#title' => t('Override view URL'),
-    '#description' => t('If override URL is set, the URL the View thinks it is using; all "more", "exposed filters", "summary" and "feed" type links will use this URL.'),
+    '#description' => t('If override URL is set, the URL the view thinks it is using; all "more", "exposed filters", "summary" and "feed" type links will use this URL.'),
     '#default_value' => $panel_view->url,
   );
 
@@ -566,8 +566,8 @@ function panels_views_import_view() {
   return drupal_get_form('panels_views_import_form');
 }
 
-/*
- * Form for the panel view import
+/**
+ * Form for the panel view import.
  */
 function panels_views_import_form() {
   $form['panel_view'] = array(
@@ -587,7 +587,7 @@ function panels_views_import_form() {
   return $form;
 }
 
-/*
+/**
  * Handle the submit button on importing a panel view.
  */
 function panels_views_import_form_submit($formid, $form) {
@@ -609,12 +609,12 @@ function panels_views_import_form_submit($formid, $form) {
     exit;
   }
   else {
-    drupal_set_message(t('Unable to get a panel view out of that.'));
+    drupal_set_message(t('Unable to get a panel view out of that import.'));
   }
 }
 
 /**
- * Page callback to export a panel view
+ * Page callback to export a panel view.
  */
 function panels_views_export_view($pv, $prefix = '') {
   if (!is_object($pv)) {
@@ -632,12 +632,13 @@ function panels_views_export_view($pv, $prefix = '') {
     '#type' => 'textarea',
     '#title' => $pv->title,
     '#default_value' => $code,
-    '#rows' => $lines);
+    '#rows' => $lines
+  );
   return $form;
 }
 
 /**
- * Enable a default panel view
+ * Enable a default panel view.
  */
 function panels_views_enable_page($name = NULL) {
   $defaults = panels_views_default_panels();
@@ -668,7 +669,7 @@ function panels_views_disable_page($name = NULL) {
 // Content type routines.
 
 /**
- * Implementation of hook_panels_content_types()
+ * Implementation of hook_panels_content_types().
  */
 function panels_views_panels_content_types() {
   $items['views2'] = array(
@@ -716,7 +717,7 @@ function panels_views_content_types() {
 }
 
 /**
- * Render a panel view as a pane
+ * Render a panel view as a pane.
  */
 function panels_views_render($conf, $panel_args, &$contexts) {
   $pv = panels_views_load($conf['name']);
@@ -774,7 +775,7 @@ function panels_views_render($conf, $panel_args, &$contexts) {
   $view_type = $pv->view_type == 'embed' ? 'page' : $pv->view_type;
   $block->subject = views_get_title($view, $view_type);
 
-  // link to ivew
+  // link to view
   if (($pv->allow_link_to_view && !empty($conf['link_to_view'])) ||
       (!$pv->allow_link_to_view && $pv->link_to_view)) {
     $block->title_link = views_get_url($view, $args);
@@ -799,7 +800,7 @@ function panels_views_render($conf, $panel_args, &$contexts) {
   $offset = ($pv->allow_offset) ? $conf['offset'] : $pv->offset;
 
   $stored_feeds = drupal_add_feed();
-  $block->content = views_build_view($pv->type, $view, $args, $pager_id, $nodes_per_page, 0, $offset);
+  $block->content = views_build_view($pv->view_type, $view, $args, $pager_id, $nodes_per_page, 0, $offset);
 
   if (($pv->allow_feed_icons && !empty($conf['feed_icons'])) ||
       (!$pv->allow_feed_icons && $pv->feed_icons)) {
@@ -825,7 +826,7 @@ function panels_views_render($conf, $panel_args, &$contexts) {
 }
 
 /**
- * Provide the pane edit dialog
+ * Provide the pane edit dialog.
  */
 function panels_views_edit($id, $parents, $conf = array()) {
   $pv = panels_views_load($id);
@@ -989,7 +990,7 @@ function panels_views_title($conf) {
 }
 
 // -------------------------------------------------------------------------
-// Views helpers.
+// Panels views helpers.
 
 /**
  * Get a list of all views as an option array. This really should be included
@@ -1177,7 +1178,7 @@ function panels_views_pane_fields() {
 }
 
 /**
- * Provide default settings for a new view pane
+ * Provide default settings for a new view pane.
  */
 function panels_views_default_view_pane($view) {
   $names = panels_views_pane_fields();
@@ -1204,8 +1205,8 @@ function panels_views_default_view_pane($view) {
 }
 
 /**
- * Adjust a pane for a view's arguments, adding or subtracting
- * as needed to match the current view's argument configuration.
+ * Adjust a pane for a view's arguments, adding or subtracting as needed to
+ * match the current view's argument configuration.
  */
 function panels_views_pane_arguments($view, &$panel_view) {
   $contexts = array();
@@ -1352,7 +1353,7 @@ function panels_views_load_all() {
 }
 
 /**
- * Get all 'default' panel views
+ * Get all 'default' panel views.
  */
 function panels_views_default_panels() {
   $panels = module_invoke_all('default_panel_views');
@@ -1388,10 +1389,11 @@ function panels_views_export($pv, $prefix = '') {
 }
 
 /**
- * Implementation of hook_panels_exportables()
+ * Implementation of hook_panels_exportables().
  */
 function panels_views_panels_exportables($op = 'list', $panels = NULL, $name = 'foo') {
   static $all_panels = NULL;
+
   if ($op == 'list') {
     if (empty($all_panels)) {
       $all_panels = panels_views_load_all();
@@ -1405,7 +1407,7 @@ function panels_views_panels_exportables($op = 'list', $panels = NULL, $name = '
 
   if ($op == 'export') {
     $code = "/**\n";
-    $code .= " * Implementation of hook_default_panel_views()\n";
+    $code .= " * Implementation of hook_default_panel_views().\n";
     $code .= " */\n";
     $code .= "function " . $name . "_default_panel_views() {\n";
     foreach ($panels as $panel => $truth) {
@@ -1416,5 +1418,4 @@ function panels_views_panels_exportables($op = 'list', $panels = NULL, $name = '
     $code .= "}\n";
     return $code;
   }
-
 }

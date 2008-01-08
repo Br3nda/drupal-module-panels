@@ -1,8 +1,8 @@
 <?php
-// $Id: panels_views.install,v 1.1.2.2 2007/12/30 23:50:50 merlinofchaos Exp $
+// $Id: panels_views.install,v 1.1.2.3 2008/01/08 17:59:20 merlinofchaos Exp $
 
 /**
- * Install the panels tables
+ * Implementation of hook_install().
  */
 function panels_views_install() {
   // This is a poor man's schema implementation ala Drupal 6.
@@ -19,12 +19,14 @@ function panels_views_install() {
     if ($sql) {
       $sql .= ', ';
     }
-    $sql .= $field . ' ' . $data['definition'];
+    $sql .= $field . '' . $data['definition'];
   }
   db_query("CREATE TABLE {panels_views} ($sql) /*!40100 DEFAULT CHARACTER SET utf8 */");
 }
 
+/**
+ * Implementation of hook_uninstall().
+ */
 function panels_views_uninstall() {
   db_query("DROP TABLE {panels_views}");
 }
-
