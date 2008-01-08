@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.75 2007/12/31 07:26:53 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.76 2008/01/08 18:01:14 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -898,7 +898,7 @@ function panels_render_panel($display, $panel, $panes) {
     $owner_id = $display->owner->id;
   }
 
-  return theme($style['render panel'], $display, $owner_id, $panes, $display->panel_settings['style_settings'], $panel);
+  return theme($style['render panel'], $display, $owner_id, $panes, $style_settings, $panel);
 }
 
 
