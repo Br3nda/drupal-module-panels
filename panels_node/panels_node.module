@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.15 2008/01/08 19:04:42 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.16 2008/01/08 19:20:48 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -262,7 +262,7 @@ function panels_node_insert(&$node) {
 function panels_node_delete(&$node) {
   db_query("DELETE FROM {panels_node} WHERE nid = %d", $node->nid);
   if (!empty($node->panels_node['did'])) {
-    panels_delete_display($node->panels_node['did']));
+    panels_delete_display($node->panels_node['did']);
   }
 }
 
