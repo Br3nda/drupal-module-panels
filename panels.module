@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.76 2008/01/08 18:01:14 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.77 2008/01/08 18:40:14 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -114,7 +114,9 @@ function panels_menu($may_cache) {
   }
   else {
     drupal_add_css(panels_get_path('css/panels.css'));
-    drupal_add_js(panels_get_path('js/panels.js'));
+    if (user_access('view pane admin links')) {
+      drupal_add_js(panels_get_path('js/panels.js'));
+    }
   }
 
   return $items;
@@ -719,7 +721,7 @@ function panels_render_panes($display) {
   // can do the leftovers of forms).
   $panes = array();
   $later = array();
-  
+
   foreach ($display->content as $pid => $pane) {
     // If the user can't see this pane, do not render it.
     if (!panels_pane_access($pane)) {
