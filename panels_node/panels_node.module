@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.14 2007/12/18 22:16:19 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.15 2008/01/08 19:04:42 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -254,6 +254,16 @@ function panels_node_insert(&$node) {
   db_query("INSERT INTO {panels_node} (nid, did, css_id) VALUES (%d, %d, '%s')", $node->nid, $display->did, $node->panels_node['css_id']);
 
   $node->panels_node['did'] = $display->did;
+}
+
+/**
+ * Implementation of hook_delete()
+ */
+function panels_node_delete(&$node) {
+  db_query("DELETE FROM {panels_node} WHERE nid = %d", $node->nid);
+  if (!empty($node->panels_node['did'])) {
+    panels_delete_display($node->panels_node['did']));
+  }
 }
 
 /**
