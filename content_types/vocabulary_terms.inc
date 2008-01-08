@@ -1,10 +1,10 @@
 <?php
-// $Id: vocabulary_terms.inc,v 1.1.2.1 2007/12/31 00:55:53 merlinofchaos Exp $
+// $Id: vocabulary_terms.inc,v 1.1.2.2 2008/01/08 18:48:53 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
 function panels_vocabulary_terms_panels_content_types() {
-  if (module_exists('comment')) {
+  if (module_exists('taxonomy')) {
     $items['vocabulary_terms'] = array(
       'title' => t('Term description'),
       'content_types' => 'panels_admin_content_types_vocabulary_terms',
@@ -36,7 +36,7 @@ function panels_content_vocabulary_terms($conf, $panel_args, $context) {
   else {
     $output = theme('item_list', _panels_content_vocabulary_terms(0, $max_depth));
   }
-  
+
   $block->module = 'node_type';
   $block->subject = $vocab->name;
   $block->content = $output;
@@ -86,14 +86,14 @@ function panels_admin_edit_vocabulary_terms($id, $parents, $conf = array()) {
   if (empty($conf)) {
     $conf = array('max_depth' => '', 'tree' => 1);
   }
-  
+
   $form['list_type'] = array(
     '#type' => 'textfield',
     '#title' => t('Max depth'),
     '#default_value' => $conf['max_depth'],
     '#description' => t('Leave blank for unlimited.'),
   );
-  
+
   $form['tree'] = array(
     '#type' => 'checkbox',
     '#title' => t('Tree'),
