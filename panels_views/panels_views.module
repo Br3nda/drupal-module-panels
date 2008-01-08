@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.3 2008/01/01 00:20:21 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.4 2008/01/08 17:58:05 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -689,6 +689,7 @@ function panels_views_panels_content_types() {
  */
 function panels_views_content_types() {
   $panes = panels_views_load_all();
+  $types = array();
   foreach ($panes as $name => $pv) {
     // Skip default but disabled panel views.
     if (!empty($pv->disabled)) {
