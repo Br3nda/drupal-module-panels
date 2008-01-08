@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.6 2008/01/08 18:05:54 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.7 2008/01/08 18:56:28 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -1114,11 +1114,6 @@ function panels_views_pane_fields() {
     'url_from_panel' => array(
       'default' => FALSE,
       'arg' => '%d',
-      'definition' => 'integer',
-    ),
-    'arguments' => array(
-      'default' => '',
-      'arg' => "'%s'",
       'definition' => 'integer',
     ),
     'contexts' => array(
