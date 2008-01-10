@@ -1,4 +1,4 @@
-# $Id: KNOWN_ISSUES.txt,v 1.1.2.6 2007/12/31 02:09:01 merlinofchaos Exp $
+# $Id: KNOWN_ISSUES.txt,v 1.1.2.7 2008/01/10 17:03:06 merlinofchaos Exp $
 
 Known Issue http://drupal.org/node/191771
   'Node' panes can have two titles or have two title areas.
@@ -78,3 +78,15 @@ Known Issue http://drupal.org/node/153399
   Solution:
     Upgrade to Safari 3 if possible. If not, use an an alternative browser
     such as Firefox or Opera.
+
+Known Issue http://drupal.org/node/207859
+  When using the secure pages module, the Panels administrative UI gives 
+  unhelpful "An error occurred" popups when trying to add or edit content.
+
+  Cause:
+    The secure pages module tries to move the entire administrative section
+    of the site to HTTPS, but Panels' AJAX calls are using a path that
+    secure pages doesn't know about. When trying to make non-secure ajax calls
+    from a secure page, the browser denies the call.
+  Solution:
+    The solution is to simply add panels/* to your Secure Pages configuration.

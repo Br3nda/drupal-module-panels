@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.35 2008/01/08 17:58:05 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.36 2008/01/10 17:03:06 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -56,7 +56,7 @@ function panels_page_list_page() {
       case 'title':
         $sorts[] = $item[0];
         break;
-      case 'title':
+      case 'name':
       default:
         $sorts[] = $item[1];
         break;
