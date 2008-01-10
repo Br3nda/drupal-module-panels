@@ -1,4 +1,4 @@
-/* $Id: panels.css,v 1.1.2.4 2008/01/10 17:38:34 merlinofchaos Exp $ */
+/* $Id: panels.css,v 1.1.2.5 2008/01/10 17:51:56 merlinofchaos Exp $ */
 
 div.panel-pane div.admin-links {
   font-size: xx-small;
@@ -33,7 +33,9 @@ div.panel-pane div.panel-hide {
   display: none;
 }
 
-div.panel-pane div.panel-hide-hover {
+/** For IE we add the class via js; for other browsers we rely on :hover **/
+div.panel-pane div.panel-hide-hover,
+div.panel-pane:hover div.panel-hide {
   display: block;
   position: absolute;
   z-index: 200;
