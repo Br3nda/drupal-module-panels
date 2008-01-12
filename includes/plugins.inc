@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.17 2007/12/18 02:39:17 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.18 2008/01/12 19:31:40 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -1024,7 +1024,9 @@ function panels_context_select($contexts, $required, $context) {
   if (is_array($required)) {
     $result = array();
     foreach ($required as $id => $r) {
-      $result[] = _panels_context_select($contexts, $r, $context[$id]);
+      if ($result[] = _panels_context_select($contexts, $r, $context[$id]) == FALSE) {
+        return FALSE;
+      }
     }
     return $result;
   }
@@ -1034,7 +1036,7 @@ function panels_context_select($contexts, $required, $context) {
 
 function _panels_context_select($contexts, $required, $context) {
   if (!is_object($required)) {
-    return;
+    return FALSE;
   }
   return $required->select($contexts, $context);
 }
