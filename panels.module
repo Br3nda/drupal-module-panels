@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.77 2008/01/08 18:40:14 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.78 2008/01/14 21:59:16 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -846,6 +846,7 @@ function panels_pane_select_context($pane, $contexts) {
   }
 
   $context = panels_context_select($contexts, $content_type[$pane->subtype]['required context'], $pane->configuration['context']);
+
   if (empty($context)) {
     return FALSE;
   }
