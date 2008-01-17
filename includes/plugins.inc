@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.19 2008/01/14 21:59:17 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.20 2008/01/17 00:11:15 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -381,12 +381,13 @@ function panels_ct_get_types($type) {
 
   $function = $content_type['content_types'];
   if (is_array($function)) {
-    return $function;
+    return (array) $function;
   }
 
   if (function_exists($function)) {
-    return $function($conf);
+    return (array) $function($conf);
   }
+  return array();
 }
 
 /**

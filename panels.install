@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.31 2007/12/31 07:20:13 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.32 2008/01/17 00:11:15 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -172,12 +172,14 @@ function panels_uninstall() {
       db_query("DROP TABLE {panels_display}");
       db_query("DROP TABLE {panels_pane}");
       db_query("DROP TABLE {panels_page}");
+      db_query("DROP TABLE {panels_object_cache}");
       break;
     case 'mysql':
     case 'mysqli':
       db_query("DROP TABLE IF EXISTS {panels_display}");
       db_query("DROP TABLE IF EXISTS {panels_pane}");
       db_query("DROP TABLE IF EXISTS {panels_page}");
+      db_query("DROP TABLE IF EXISTS {panels_object_cache}");
       break;
   }
 }
