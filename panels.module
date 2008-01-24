@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.80 2008/01/24 17:51:12 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.81 2008/01/24 19:21:06 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -719,6 +719,11 @@ function panels_render_layout($layout, $content, $css_id = NULL, $settings = arr
  * the display theme function.
  */
 function panels_render_panes($display) {
+  // Safety check.
+  if (empty($display->content)) {
+    return array();
+  }
+
   // First, render all the panes into little boxes. We do this here because
   // some panes request to be rendered after other panes (primarily so they
   // can do the leftovers of forms).
