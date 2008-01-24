@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views_legacy.module,v 1.1.2.4 2008/01/24 17:51:14 merlinofchaos Exp $
+// $Id: panels_views_legacy.module,v 1.1.2.5 2008/01/24 18:17:16 merlinofchaos Exp $
 
 /**
  * Implementation of hook_menu()
@@ -48,7 +48,11 @@ function panels_views_legacy_panels_content_types() {
  * Output function for the 'views' content type. Outputs a views
  * based on the module and delta supplied in the configuration.
  */
-function panels_views_legacy_render($conf, $panel_args, &$contexts) {
+function panels_views_legacy_render($conf, $panel_args, $contexts) {
+  if (!is_array($contexts)) {
+    $contexts = array($contexts);
+  }
+
   $view = views_get_view($conf['view']);
   if ($view) {
     if (function_exists('views_access') && !views_access($view)) {
