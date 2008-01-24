@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.18 2008/01/08 19:01:34 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.19 2008/01/24 17:51:13 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -905,7 +905,7 @@ function panels_mini_edit_mini_panel($id, $parents, $conf) {
 function panels_mini_title_mini_panel($conf) {
   $mini = panels_mini_load($conf['name']);
   if (!$mini) {
-    return t('Deleted mini panel');
+    return t('Deleted/missing mini panel @name', array('@name' => $conf['name']));
   }
 
   $title = filter_xss_admin($mini->title);

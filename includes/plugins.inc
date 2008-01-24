@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.20 2008/01/17 00:11:15 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.21 2008/01/24 17:51:12 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -72,7 +72,7 @@ class panels_required_context {
 
   function select($contexts, $context) {
     if (empty($context) || empty($contexts[$context])) {
-      return;
+      return FALSE;
     }
     return $contexts[$context];
   }
@@ -101,7 +101,13 @@ class panels_optional_context extends panels_required_context {
 
   function select($contexts, $context) {
     $this->add_empty($contexts);
-    return parent::select($contexts, $context);
+    $result = parent::select($contexts, $context);
+
+    // Because this one is optional, turn a FALSE result into a NULL.
+    if ($result === FALSE) {
+      $result = NULL;
+    }
+    return $result;
   }
 }
 
@@ -189,6 +195,7 @@ function panels_ct_get_title($type, $conf, $context = NULL, $incoming_content = 
   if ($function = panels_plugin_get_function('content_types', $type, 'title callback')) {
     return $function($conf, $context, $incoming_content);
   }
+  return t('Deleted/missing content type @type', array('@type' => $type));
 }
 
 /**
@@ -704,7 +711,7 @@ function panels_get_pane_title(&$pane, $context = array(), $incoming_content = N
   if (empty($pane->context)) {
     $pane->context = panels_pane_select_context($pane, $context);
     if ($pane->context === FALSE) {
-      return FALSE;
+      return t('Bad context requirements');
     }
   }
   return panels_ct_get_title($pane->type, $pane->configuration, $pane->context, $incoming_content);
@@ -1185,6 +1192,36 @@ function panels_context_get_form($contexts) {
       return $context;
     }
   }
+}
+
+/**
+ * Select a context for a pane.
+ *
+ * @param $pane
+ *   A fully populated pane.
+ * @param $contexts
+ *   A keyed array of available contexts.
+ *
+ * @return
+ *   The matching contexts or NULL if none or necessary, or FALSE if
+ *   requirements can't be met.
+ */
+function panels_pane_select_context($pane, $contexts) {
+  // Identify which of our possible contexts apply.
+  if (empty($pane->subtype)) {
+    return;
+  }
+
+  $content_type = panels_ct_get_types($pane->type);
+  // If the pane requires a context, fetch it; if no context is returned,
+  // do not display the pane.
+  if (empty($content_type[$pane->subtype]['required context'])) {
+    return;
+  }
+
+  $context = panels_context_select($contexts, $content_type[$pane->subtype]['required context'], $pane->configuration['context']);
+
+  return $context;
 }
 
 /**

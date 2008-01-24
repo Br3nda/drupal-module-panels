@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.36 2008/01/10 17:03:06 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.37 2008/01/24 17:51:13 merlinofchaos Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -836,6 +836,7 @@ function panels_page_import_form_submit($formid, $form) {
     $_SESSION['pp_import'] = $page;
     $output = drupal_get_form('panels_page_edit_form', $page);
     print theme('page', $output);
+    exit;
   }
   else {
     drupal_set_message(t('Unable to get a panel page out of that.'));

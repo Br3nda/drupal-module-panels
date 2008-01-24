@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.6.20 2007/12/31 05:26:50 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.6.21 2008/01/24 17:51:12 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -195,8 +195,8 @@ function panels_admin_fix_block_tree(&$form, $key = NULL) {
  */
 function panels_admin_title_block($conf) {
   $block = module_invoke($conf['module'], 'block', 'list');
-  if (empty($block)) {
-    return t('Deleted/missing block');
+  if (empty($block) || empty($block[$conf['delta']])) {
+    return t('Deleted/missing block @module-@delta', array('@module' => $conf['module'], '@delta' => $conf['delta']));
   }
 
   $title = filter_xss_admin($block[$conf['delta']]['info']);

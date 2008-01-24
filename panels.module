@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.79 2008/01/24 17:11:08 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.80 2008/01/24 17:51:12 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -821,39 +821,6 @@ function panels_render_pane(&$display, &$pane) {
       $url['absolute'], TRUE);
   }
   return $content;
-}
-
-/**
- * Select a context for a pane.
- *
- * @param $pane
- *   A fully populated pane.
- * @param $contexts
- *   A keyed array of available contexts.
- *
- * @return
- *   The matching contexts or NULL if none or necessary, or FALSE if
- *   requirements can't be met.
- */
-function panels_pane_select_context($pane, $contexts) {
-  // Identify which of our possible contexts apply.
-  if (empty($pane->subtype)) {
-    return;
-  }
-
-  $content_type = panels_ct_get_types($pane->type);
-  // If the pane requires a context, fetch it; if no context is returned,
-  // do not display the pane.
-  if (empty($content_type[$pane->subtype]['required context'])) {
-    return;
-  }
-
-  $context = panels_context_select($contexts, $content_type[$pane->subtype]['required context'], $pane->configuration['context']);
-
-  if (empty($context)) {
-    return FALSE;
-  }
-  return $context;
 }
 
 /**
