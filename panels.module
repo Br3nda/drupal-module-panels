@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.78 2008/01/14 21:59:16 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.79 2008/01/24 17:11:08 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -687,26 +687,29 @@ function panels_render_layout($layout, $content, $css_id = NULL, $settings = arr
   else {
     drupal_add_css(panels_get_path($layout['css'], false, $layout['module']));
   }
+  $display = NULL;
 
   // This now comes after the CSS is added, because panels-within-panels must
   // have their CSS added in the right order; inner content before outer content.
+
+  // If $content is an object, it's a $display and we have to render its panes.
   if (is_object($content)) {
-    $cache = FALSE;
-    if (empty($content->cache['method'])) {
-      $content = panels_render_panes($content);
+    $display = $content;
+    if (empty($display->cache['method'])) {
+      $content = panels_render_panes($display);
     }
     else {
-      $cache = panels_get_cached_content($content, $content->args, $content->context);
+      $cache = panels_get_cached_content($display, $display->args, $display->context);
       if ($cache === FALSE) {
         $cache = new panels_cache_object();
-        $cache->set_content(panels_render_panes($content));
-        panels_set_cached_content($cache, $content, $content->args, $content->context);
+        $cache->set_content(panels_render_panes($display));
+        panels_set_cached_content($cache, $display, $display->args, $display->context);
       }
       $content = $cache->content;
     }
   }
 
-  $output = theme($layout['theme'], check_plain($css_id), $content, $settings);
+  $output = theme($layout['theme'], check_plain($css_id), $content, $settings, $display);
 
   return $output;
 }

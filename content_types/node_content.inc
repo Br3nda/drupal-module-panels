@@ -1,5 +1,5 @@
 <?php
-// $Id: node_content.inc,v 1.1.2.10 2008/01/10 16:50:22 merlinofchaos Exp $
+// $Id: node_content.inc,v 1.1.2.11 2008/01/24 17:11:08 merlinofchaos Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -72,7 +72,7 @@ function panels_content_node_content($conf, $panel_args, $context) {
   }
 
   if (!empty($conf['link']) && $node) {
-    $block->title_link = "node/$nide->nid";
+    $block->title_link = "node/$node->nid";
   }
 
   return $block;
