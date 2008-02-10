@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.81 2008/01/24 19:21:06 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.82 2008/02/10 07:48:19 merlinofchaos Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -114,9 +114,7 @@ function panels_menu($may_cache) {
   }
   else {
     drupal_add_css(panels_get_path('css/panels.css'));
-    if (user_access('view pane admin links')) {
-      drupal_add_js(panels_get_path('js/panels.js'));
-    }
+    drupal_add_js(panels_get_path('js/panels.js'));
   }
 
   return $items;

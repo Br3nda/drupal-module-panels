@@ -1,5 +1,5 @@
 <?php
-// $Id: node_edit_form.inc,v 1.1.2.3 2007/12/22 19:48:52 merlinofchaos Exp $
+// $Id: node_edit_form.inc,v 1.1.2.4 2008/02/10 07:48:19 merlinofchaos Exp $
 /**
  * @file contexts/node_edit_form.inc
  *
@@ -117,10 +117,10 @@ function panels_context_node_edit_form_settings_form_validate($form, $form_value
 
   $nid = $form_values['node'];
   if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE nid = %d"), $nid));
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
   }
   else {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(title) = LOWER('%s')"), $nid));
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
     if ($node) {
       form_set_value($form['nid'], $node->nid);
     }

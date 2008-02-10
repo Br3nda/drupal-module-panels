@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node_legacy.module,v 1.1.2.5 2008/01/24 17:51:13 merlinofchaos Exp $
+// $Id: panels_node_legacy.module,v 1.1.2.6 2008/02/10 07:48:20 merlinofchaos Exp $
 
 /**
  * Implementation of hook_menu()
@@ -182,10 +182,10 @@ function panels_node_legacy_edit_validate($form, $form_values) {
     $nid = $preg_matches[1];
   }
   if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE nid = %d"), $nid));
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
   }
   else {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(title) = LOWER('%s')"), $nid));
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
   }
   if ($node) {
     form_set_value($form['nid'], $node->nid);

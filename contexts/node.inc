@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.1.2.5 2007/12/31 06:30:16 merlinofchaos Exp $
+// $Id: node.inc,v 1.1.2.6 2008/02/10 07:48:19 merlinofchaos Exp $
 /**
  * @file contexts/node.inc
  *
@@ -67,7 +67,7 @@ function panels_context_node_settings_form($conf, $external = FALSE) {
   );
 
   if (!empty($conf['nid'])) {
-    $info = db_fetch_object(db_query("SELECT * FROM {node} WHERE nid = %d", $conf['nid']));
+    $info = db_fetch_object(db_query("SELECT * FROM {node} WHERE n.nid = %d", $conf['nid']));
     if ($info) {
       $form['node']['#description'] = t('Currently set to "%title"', array('%title' => $info->title));
     }
@@ -106,10 +106,10 @@ function panels_context_node_settings_form_validate($form, $form_values) {
     $nid = $preg_matches[1];
   }
   if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE nid = %d"), $nid));
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
   }
   else {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(title) = LOWER('%s')"), $nid));
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
   }
 
   if (!$node) {

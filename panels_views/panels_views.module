@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.7 2008/01/08 18:56:28 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.8 2008/02/10 07:48:20 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -747,7 +747,7 @@ function panels_views_render($conf, $panel_args, &$contexts) {
         $args[] = $data['fixed'];
         break;
       case 'panel':
-        $args[] = $panel_ags[$data['panel']];
+        $args[] = $panel_args[$data['panel']];
         break;
       case 'user':
         $args[] = $conf['arguments'][$id];
@@ -791,10 +791,10 @@ function panels_views_render($conf, $panel_args, &$contexts) {
 
   // Turn on pager?
   if ($pv->allow_use_pager) {
-    $pager_id = empty($conf['use_pager']) ? 0 : intval($conf['pager_id']);
+    $pager_id = empty($conf['use_pager']) ? 0 : (intval($conf['pager_id']) + 1);
   }
   else {
-    $pager_id = empty($pv->use_pager) ? 0 : intval($pv->pager_id);
+    $pager_id = empty($pv->use_pager) ? 0 : (intval($pv->pager_id) + 1);
   }
 
   $nodes_per_page = ($pv->allow_nodes_per_page) ? $conf['nodes_per_page'] : $pv->nodes_per_page;
