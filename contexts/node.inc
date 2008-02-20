@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.1.2.6 2008/02/10 07:48:19 merlinofchaos Exp $
+// $Id: node.inc,v 1.1.2.7 2008/02/20 11:04:18 ax Exp $
 /**
  * @file contexts/node.inc
  *
@@ -26,9 +26,6 @@ function panels_node_panels_contexts() {
 function panels_context_create_node($empty, $data = NULL, $conf = FALSE) {
   $context = new panels_context('node');
   $context->plugin = 'node';
-  if ($empty) {
-    return $context;
-  }
 
   if ($empty) {
     return $context;
