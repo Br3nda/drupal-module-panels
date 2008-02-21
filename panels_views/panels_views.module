@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.8 2008/02/10 07:48:20 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.9 2008/02/21 01:24:30 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -726,7 +726,8 @@ function panels_views_render($conf, $panel_args, &$contexts) {
     return;
   }
 
-  $view = views_get_view($pv->view);
+  // Use clone to make sure this is fresh.
+  $view = drupal_clone(views_get_view($pv->view));
   if (empty($view)) {
     return;
   }

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.40 2007/12/18 02:05:44 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.41 2008/02/21 01:24:30 merlinofchaos Exp $
 
 /**
  * Implementation of hook_help()
@@ -981,7 +981,7 @@ function panels_page_save($panel_page) {
     if (isset($info['display'])) {
       $d = panels_save_display($info['display']);
       $page->displays[$did]['did'] = $d->did;
-      unset($page->displays[$did]['did']);
+      unset($page->displays[$did]['display']);
     }
   }
   // serialize the access string.

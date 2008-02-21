@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views_legacy.module,v 1.1.2.5 2008/01/24 18:17:16 merlinofchaos Exp $
+// $Id: panels_views_legacy.module,v 1.1.2.6 2008/02/21 01:24:30 merlinofchaos Exp $
 
 /**
  * Implementation of hook_menu()
@@ -53,8 +53,10 @@ function panels_views_legacy_render($conf, $panel_args, $contexts) {
     $contexts = array($contexts);
   }
 
-  $view = views_get_view($conf['view']);
-  if ($view) {
+  // Use clone to make sure this is fresh.
+  $v = views_get_view($conf['view']);
+  if ($v) {
+    $view = drupal_clone($v);
     if (function_exists('views_access') && !views_access($view)) {
       return NULL;
     }
