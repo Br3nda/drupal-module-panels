@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.32 2008/01/17 00:11:15 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.33 2008/03/14 04:27:52 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -147,7 +147,7 @@ EOT
           sid varchar(64),
           did integer,
           obj varchar(255),
-          data text,
+          data longtext,
           timestamp integer,
           KEY (sid, obj, did),
           KEY (timestamp)
@@ -480,6 +480,22 @@ function panels_update_5214() {
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
     );
+    case 'pgsql':
+  }
+  return $ret;
+}
+
+/**
+ * Increase the size of the data column in the {panels_object_cache} table
+ * on MySQL.
+ */
+function panels_update_5215() {
+  $ret = array();
+  switch($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {panels_object_cache} CHANGE COLUMN data data longtext");
+      break;
     case 'pgsql':
   }
   return $ret;
