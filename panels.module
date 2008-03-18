@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.82 2008/02/10 07:48:19 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.83 2008/03/18 01:30:25 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -543,10 +543,10 @@ function panels_save_display(&$display) {
 
       db_query("INSERT INTO {panels_pane} (pid, did, panel, type, subtype, configuration, cache, access, position) VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', %d)", $pane->pid, $display->did, $pane->panel, $pane->type, $pane->subtype, serialize($pane->configuration), serialize($pane->cache), !empty($pane->access) ? implode(', ', $pane->access) : '', $pane->position);
       // and put it back so our pids and positions can be used
-      $display->content[$pid] = $pane;
-      $new_panes[] = $pid;
+          $display->content[$pane->pid] = $pane;
+      $new_panes[] = $pane->pid;
     }
-    $display->panels[$id] = $panes;
+    $display->panels[$id] = $new_panes;
   }
 
   // Clear any cached content for this display.
