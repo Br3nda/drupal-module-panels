@@ -1,10 +1,9 @@
-/* $Id: panels.css,v 1.1.2.5 2008/01/10 17:51:56 merlinofchaos Exp $ */
+/* $Id: panels.css,v 1.1.2.6 2008/03/18 02:19:28 sdboyer Exp $ */
 
 div.panel-pane div.admin-links {
   font-size: xx-small;
   width: 99%;
   margin-right: 1em;
-  line-height: xx-small;
 }
 
 div.panel-pane div.admin-links li a {
