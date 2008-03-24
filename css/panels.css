@@ -1,8 +1,7 @@
-/* $Id: panels.css,v 1.1.2.6 2008/03/18 02:19:28 sdboyer Exp $ */
+/* $Id: panels.css,v 1.1.2.7 2008/03/24 20:27:29 sdboyer Exp $ */
 
 div.panel-pane div.admin-links {
   font-size: xx-small;
-  width: 99%;
   margin-right: 1em;
 }
 
