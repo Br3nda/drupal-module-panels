@@ -1,5 +1,5 @@
 <?php
-// $Id: node_comments.inc,v 1.1.2.7 2008/02/10 08:05:07 merlinofchaos Exp $
+// $Id: node_comments.inc,v 1.1.2.8 2008/03/24 04:21:04 sdboyer Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -23,7 +23,6 @@ function panels_node_comments_panels_content_types() {
  * based on the module and delta supplied in the configuration.
  */
 function panels_content_node_comments($conf, $panel_args, $context) {
-  dsm($conf);
   $node = isset($context->data) ? drupal_clone($context->data) : NULL;
   $block->module = 'comments';
   $block->delta = $node->nid;
@@ -124,7 +123,6 @@ function panels_comment_render($node, $conf) {
     $query_args[] = COMMENT_PUBLISHED;
   }
 
-  dsm($order);
   if ($order == COMMENT_ORDER_NEWEST_FIRST) {
     if ($mode == COMMENT_MODE_FLAT_COLLAPSED || $mode == COMMENT_MODE_FLAT_EXPANDED) {
       $query .= ' ORDER BY c.timestamp DESC';
@@ -142,7 +140,6 @@ function panels_comment_render($node, $conf) {
     }
   }
 
-  dsm($query);
   // Start a form, for use with comment control.
   $result = pager_query($query, $comments_per_page, 0, $query_count, $query_args);
 
