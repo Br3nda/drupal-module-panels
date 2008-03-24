@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.9 2008/02/21 01:24:30 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.10 2008/03/24 01:46:46 sdboyer Exp $
 
 /**
  * @file panels_views.module
@@ -775,7 +775,7 @@ function panels_views_render($conf, $panel_args, &$contexts) {
   $block->delta = $view->name;
 
   $view_type = $pv->view_type == 'embed' ? 'page' : $pv->view_type;
-  $block->subject = views_get_title($view, $view_type);
+  $block->subject = views_get_title($view, $view_type, $args);
 
   // link to view
   if (($pv->allow_link_to_view && !empty($conf['link_to_view'])) ||
