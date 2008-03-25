@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.33 2008/03/14 04:27:52 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.34 2008/03/25 00:50:48 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -64,7 +64,8 @@ EOT
           access varchar(128),
           configuration text,
           cache text,
-          position smallint
+          position smallint,
+          PRIMARY KEY (pid)
         );
 EOT
       );
@@ -110,7 +111,6 @@ EOT
           menu_parent_title varchar(255),
           menu_parent_tab_weight int(4),
           KEY path (path),
-          KEY (name)
         )/*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
@@ -129,7 +129,7 @@ EOT
 
       db_query(<<<EOT
         CREATE TABLE {panels_pane} (
-          pid int(10) NOT NULL DEFAULT 0,
+          pid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
           did int(10) NOT NULL DEFAULT 0,
           panel varchar(32),
           type varchar(32),
@@ -138,7 +138,7 @@ EOT
           configuration longtext,
           cache longtext,
           position int(5),
-          key (did)
+          KEY (did),
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
@@ -154,7 +154,6 @@ EOT
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
-      db_query("CREATE INDEX {panels_object_cache}_idx ON {panels_object_cache} (sid, obj, did);");
   }
   db_query("UPDATE {system} SET weight = 10 WHERE name = 'panels'");
 
@@ -482,12 +481,15 @@ EOT
     );
     case 'pgsql':
   }
-  return $ret;
+  return !empty($ret) ? $ret : $ret;
 }
 
 /**
  * Increase the size of the data column in the {panels_object_cache} table
  * on MySQL.
+ * 
+ * Also gets rid of some duplicate indexes resulting the CREATE TABLE queries
+ * in the install() of schema 5214 
  */
 function panels_update_5215() {
   $ret = array();
@@ -495,8 +497,13 @@ function panels_update_5215() {
     case 'mysql':
     case 'mysqli':
       $ret[] = update_sql("ALTER TABLE {panels_object_cache} CHANGE COLUMN data data longtext");
+      $ret[] = update_sql("ALTER TABLE {panels_mini} DROP INDEX name_2");
+      $ret[] = update_sql("ALTER TABLE {panels_page} DROP INDEX name_2");
+      $ret[] = update_sql("ALTER TABLE {panels_object_cache} DROP INDEX {panels_object_cache}_idx"); 
+      $ret[] = update_sql("ALTER TABLE {panels_pane} ADD PRIMARY KEY (pid)");
       break;
     case 'pgsql':
+      $ret[] = update_sql("ALTER TABLE {panels_pane} ADD PRIMARY KEY (pid)");
   }
   return $ret;
 }
