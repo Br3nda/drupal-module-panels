@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views_legacy.module,v 1.1.2.6 2008/02/21 01:24:30 merlinofchaos Exp $
+// $Id: panels_views_legacy.module,v 1.1.2.7 2008/03/25 19:35:09 sdboyer Exp $
 
 /**
  * Implementation of hook_menu()
@@ -90,6 +90,7 @@ function panels_views_legacy_render($conf, $panel_args, $contexts) {
       $view->url = $conf['url'];
     }
 
+    $block = new stdClass();
     $block->module = 'views';
     $block->delta = $view->name;
 
