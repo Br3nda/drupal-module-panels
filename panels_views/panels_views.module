@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.10 2008/03/24 01:46:46 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.11 2008/03/26 16:48:13 sdboyer Exp $
 
 /**
  * @file panels_views.module
@@ -726,11 +726,12 @@ function panels_views_render($conf, $panel_args, &$contexts) {
     return;
   }
 
-  // Use clone to make sure this is fresh.
-  $view = drupal_clone(views_get_view($pv->view));
-  if (empty($view)) {
+  $v = views_get_view($pv->view);
+  if (empty($v)) { // no view, we go no further
     return;
   }
+  // Use clone to make sure this is fresh.
+  $view = drupal_clone($v);
 
   // Check to make sure the user can view this view.
   if (function_exists('views_access') && !views_access($view)) {
