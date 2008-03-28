@@ -46,7 +46,7 @@ jQuery.modalContent = function(content, css, animation, speed) {
   $('body').append('<div id="modalBackdrop" style="z-index: 1000; display: none;"></div><div id="modalContent" style="z-index: 1001; position: absolute;">' + $(content).html() + '</div>');
 
   // Create our content div, get the dimensions, and hide it
-  var modalContent = $('#modalContent').top('-1000px');
+  var modalContent = $('#modalContent').css('top','-1000px');
   var mdcTop = wt + ( winHeight / 2 ) - (  modalContent.outerHeight() / 2);
   var mdcLeft = ( winWidth / 2 ) - ( modalContent.outerWidth() / 2);
   modalContent.hide();
@@ -54,18 +54,18 @@ jQuery.modalContent = function(content, css, animation, speed) {
   // Apply our css and positioning, then show
   if ( animation == 'fade' )
   {
-    $('#modalBackdrop').top(wt).css(css).height(winHeight + 'px').width(winWidth + 'px').show();
-     modalContent.top(mdcTop + 'px').left(mdcLeft + 'px').fadeIn(speed);
+    $('#modalBackdrop').css('top',wt).css('height', winHeight + 'px').css('width', winWidth + 'px').show();
+     modalContent.css('top', mdcTop + 'px').css('left', mdcLeft + 'px').fadeIn(speed);
   } else {
     if ( animation == 'slide' )
     {
-      $('#modalBackdrop').top(wt).css(css).height(winHeight + 'px').width(winWidth + 'px').show();
-      modalContent.hide().top(mdcTop + 'px').left(mdcLeft + 'px').slideDown(speed);
+      $('#modalBackdrop').css('top', wt).css('height', winHeight + 'px').css('width', winWidth + 'px').show();
+      modalContent.hide().css('top', mdcTop + 'px').css('left', mdcLeft + 'px').slideDown(speed);
     } else {
       if ( animation == 'show')
       {
-        $('#modalBackdrop').top(wt).css(css).height(winHeight + 'px').width(winWidth + 'px').show();
-        modalContent.top(mdcTop + 'px').left(mdcLeft + 'px').show();
+        $('#modalBackdrop').css('top', wt).css('height', winHeight + 'px').css('width', winWidth + 'px').show();
+        modalContent.css('top', mdcTop + 'px').css('left', mdcLeft + 'px').show();
       }
     }
   }
@@ -104,7 +104,7 @@ jQuery.modalContent = function(content, css, animation, speed) {
 
     // Apply the changes
     $('#modalBackdrop').height(winHeight + 'px').width(winWidth + 'px').show();
-    modalContent.top(mdcTop + 'px').left(mdcLeft + 'px').show();
+    modalContent.css('top', mdcTop + 'px').css('left', mdcLeft + 'px').show();
   });
 };
 
