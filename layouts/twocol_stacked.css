@@ -1,4 +1,4 @@
-/* $Id: twocol_stacked.css,v 1.4.6.4 2007/12/11 21:02:35 merlinofchaos Exp $ */
+/* $Id: twocol_stacked.css,v 1.4.6.5 2008/03/28 07:11:57 sdboyer Exp $ */
 
 .panel-2col-stacked { 
 /*  overflow: hidden;  */
@@ -27,7 +27,7 @@
 
 .panel-2col-stacked .panel-col-last { 
   float: left; 
-  width: 50%; 
+  width: 49.9%; 
 }
 
 .panel-2col-stacked .panel-col-last .inside { 

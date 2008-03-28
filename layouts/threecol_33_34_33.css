@@ -1,4 +1,4 @@
-// $Id: threecol_33_34_33.css,v 1.4.6.4 2007/12/11 21:02:35 merlinofchaos Exp $
+// $Id: threecol_33_34_33.css,v 1.4.6.5 2008/03/28 07:11:57 sdboyer Exp $
 .panel-3col-33 { 
 /*  overflow: hidden;  */
 }
@@ -14,7 +14,7 @@
 
 .panel-3col-33 .panel-col { 
   float: left; 
-  width: 34%; 
+  width: 33%; 
 }
 
 .panel-3col-33 .panel-col .inside { 
