@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.23 2008/03/14 05:20:05 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.24 2008/03/28 08:02:14 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -1279,17 +1279,19 @@ function panels_plugin_get_function($plugin, $which, $function_name) {
 function panels_load_includes($plugintype, $hook, $file = NULL) {
   // Load all our plugins.
   $directories = panels_get_directories($plugintype);
-  $directories[] = panels_get_path($plugintype);
-  $files = array();
-  foreach ($directories as $path) {
-    $files = array_merge($files, drupal_system_listing("$file" . '.inc$', $path, 'name', 0)); // Since Panels was added last, we've ensured that native Panels .inc files win all namespace conflicts
+  $directories['panels_'] = panels_get_path($plugintype);
+  $filelisting = array();
+  foreach ($directories as $module => $path) {
+    $filelisting[$module] = drupal_system_listing("$file" . '.inc$', $path, 'name', 0);
   }
   $info = array();
-  foreach($files as $file) {
-    require_once('./' . $file->filename);
-    $result = _panels_process_plugin('panels', 'panels_' . $file->name, dirname($file->filename), $hook);
-    if (is_array($result)) {
-      $info = array_merge($info, $result);
+  foreach(array_filter($filelisting) as $module => $files) {
+    foreach ($files as $file) {
+      require_once('./'. $file->filename);
+      $result = _panels_process_plugin('panels', $module . $file->name, dirname($file->filename), $hook);
+      if (is_array($result)) {
+        $info = array_merge($info, $result);
+      }
     }
   }
   return $info;
@@ -1298,21 +1300,28 @@ function panels_load_includes($plugintype, $hook, $file = NULL) {
 /**
  * Hook allowing other modules to create their own panels .inc files,
  * and have them available in panels without needing to add files to the
- * Panels include directories.
+ * Panels include directories. See API.txt for details.
+ * 
+ * PLEASE NOTE: There are strict naming conventions on implementing this hook; failure to 
+ * follow the conventions will likely cause your plugins not to work. Possibly even worse,
+ * failure to follow the conventions can result in namespace collisions between your
+ * module and other modules invoking the panels API. 
  *
  * @param string $plugintype
  *   The type of Panels plugin being requested. Can be any of the following seven:
- *  'content_types', 'contexts', 'arguments', 'layouts', 'styles', 'relationships', 'cache'
+ *  'content_types', 'contexts', 'arguments', 'layouts', 'styles', 'relationships'
  * 
  * @return array $directories
- *   Returns an array of include directories to call for the requested plugin type,
- *   keyed by the name of the module providing the include
+ *   Returns an array of include subdirectories to call for the requested plugin type. 
+ *   Subdirectories should be ONLY the subdirectory of your module where the appropriate
+ *   types of .inc files reside.
  */
 function panels_get_directories($plugintype) {
+  $directories = array();
   foreach (module_implements('panels_include_directory') as $module) {
     $result = module_invoke($module, 'panels_include_directory', $plugintype);
     if (isset($result) && is_string($result)) {
-      $directories[] = drupal_get_path('module', $module) .'/'. $result;
+      $directories[$module .'_'] = drupal_get_path('module', $module) .'/'. $result;
     }
   }
   return $directories;
