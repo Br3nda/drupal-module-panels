@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.11 2008/03/26 16:48:13 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.12 2008/03/28 03:46:57 sdboyer Exp $
 
 /**
  * @file panels_views.module
@@ -699,9 +699,11 @@ function panels_views_content_types() {
     }
 
     $contexts = array();
-    foreach ($pv->contexts as $context) {
-      if ($context['type'] == 'context') {
-        $contexts[] = new panels_required_context($context['label'], $context['context']);
+    if (!empty($pv->contexts)) {
+      foreach ($pv->contexts as $context) {
+        if ($context['type'] == 'context') {
+          $contexts[] = new panels_required_context($context['label'], $context['context']);
+        }
       }
     }
     $types[$name] = array(
@@ -739,26 +741,28 @@ function panels_views_render($conf, $panel_args, &$contexts) {
   }
 
   $args = array();
-  foreach ($pv->contexts as $id => $data) {
-    switch ($data['type']) {
-      case 'context':
-        $c = array_shift($contexts);
-        $args[] = $c->argument;
-        break;
-      case 'fixed':
-        $args[] = $data['fixed'];
-        break;
-      case 'panel':
-        $args[] = $panel_args[$data['panel']];
-        break;
-      case 'user':
-        $args[] = $conf['arguments'][$id];
-        break;
-      case 'none':
-      default:
-        $args[] = $view->arguments[$id]['wildcard'] ? $view->arguments[$id]['wildcard'] : '*';
-        // Put in the wildcard.
-        break;
+  if (!empty($pv->contexts)) {
+    foreach ($pv->contexts as $id => $data) {
+      switch ($data['type']) {
+        case 'context':
+          $c = array_shift($contexts);
+          $args[] = $c->argument;
+          break;
+        case 'fixed':
+          $args[] = $data['fixed'];
+          break;
+        case 'panel':
+          $args[] = $panel_args[$data['panel']];
+          break;
+        case 'user':
+          $args[] = $conf['arguments'][$id];
+          break;
+        case 'none':
+        default:
+          $args[] = $view->arguments[$id]['wildcard'] ? $view->arguments[$id]['wildcard'] : '*';
+          // Put in the wildcard.
+          break;
+      }
     }
   }
 
