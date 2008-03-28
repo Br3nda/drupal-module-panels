@@ -1,1 +1,4 @@
-This document is awaiting rewrite. Patches accepted.
+UPDATE 3/28/2008:
+Keep an eye on the panels project page (http://drupal.org/project/panels). Shortly after
+beta3 is released, an online version of the Panels API will be accessible via a link posted
+on the project page.
