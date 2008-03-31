@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.34 2008/03/25 00:50:48 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.35 2008/03/31 06:17:00 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -110,7 +110,7 @@ EOT
           menu_tab_default_parent_type varchar(10),
           menu_parent_title varchar(255),
           menu_parent_tab_weight int(4),
-          KEY path (path),
+          KEY path (path)
         )/*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
@@ -487,9 +487,9 @@ EOT
 /**
  * Increase the size of the data column in the {panels_object_cache} table
  * on MySQL.
- * 
+ *
  * Also gets rid of some duplicate indexes resulting the CREATE TABLE queries
- * in the install() of schema 5214 
+ * in the install() of schema 5214
  */
 function panels_update_5215() {
   $ret = array();
@@ -499,7 +499,7 @@ function panels_update_5215() {
       $ret[] = update_sql("ALTER TABLE {panels_object_cache} CHANGE COLUMN data data longtext");
       $ret[] = update_sql("ALTER TABLE {panels_mini} DROP INDEX name_2");
       $ret[] = update_sql("ALTER TABLE {panels_page} DROP INDEX name_2");
-      $ret[] = update_sql("ALTER TABLE {panels_object_cache} DROP INDEX {panels_object_cache}_idx"); 
+      $ret[] = update_sql("ALTER TABLE {panels_object_cache} DROP INDEX {panels_object_cache}_idx");
       $ret[] = update_sql("ALTER TABLE {panels_pane} ADD PRIMARY KEY (pid)");
       break;
     case 'pgsql':
