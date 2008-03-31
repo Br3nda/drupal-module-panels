@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.16 2008/01/08 19:20:48 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.1.2.17 2008/03/31 06:16:06 merlinofchaos Exp $
 
 // ---------------------------------------------------------------------------
 // General Drupal hooks
@@ -287,7 +287,7 @@ function panels_node_view($node, $teaser = FALSE, $page = FALSE) {
     $display = panels_load_display($node->panels_node['did']);
     $display->css_id = $node->panel_node['css_id'];
     // TODO: Find a way to make sure this can't node_view.
-    $display->context = array(panels_context_create('node', $node));
+    $display->context = array('panel-node' => panels_context_create('node', $node));
 
     $node->content['body'] = array(
       '#value' => panels_render_display($display),
@@ -318,7 +318,7 @@ function panels_node_settings() {
 function panels_node_edit_layout($node) {
   panels_load_include('plugins');
   $display = panels_load_display($node->panels_node['did']);
-  $display->context = array(panels_context_create('node', $node));
+  $display->context = array('panel-node' => panels_context_create('node', $node));
   return panels_edit_layout($display, t('Save'), "node/$node->nid/panel_layout");
 }
 
@@ -337,7 +337,7 @@ function panels_node_edit_layout_settings($node) {
 function panels_node_edit_content($node) {
   panels_load_include('plugins');
   $display = panels_load_display($node->panels_node['did']);
-  $display->context = array(panels_context_create('node', $node));
+  $display->context = array('panel-node' => panels_context_create('node', $node));
   panels_load_include('common');
   $content_types = panels_common_get_allowed_types('panels_node', $display->context);
 
