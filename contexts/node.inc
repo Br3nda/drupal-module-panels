@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.1.2.7 2008/02/20 11:04:18 ax Exp $
+// $Id: node.inc,v 1.1.2.8 2008/04/10 04:50:26 merlinofchaos Exp $
 /**
  * @file contexts/node.inc
  *
@@ -64,7 +64,7 @@ function panels_context_node_settings_form($conf, $external = FALSE) {
   );
 
   if (!empty($conf['nid'])) {
-    $info = db_fetch_object(db_query("SELECT * FROM {node} WHERE n.nid = %d", $conf['nid']));
+    $info = db_fetch_object(db_query("SELECT * FROM {node} n WHERE n.nid = %d", $conf['nid']));
     if ($info) {
       $form['node']['#description'] = t('Currently set to "%title"', array('%title' => $info->title));
     }
@@ -83,7 +83,7 @@ function panels_context_node_settings_form($conf, $external = FALSE) {
  */
 function panels_context_node_settings_form_validate($form, $form_values) {
   // Validate the autocomplete
-  if (empty($form_values['external']) && empty($form_values['nid']) && empty($form_values['node'])) {   
+  if (empty($form_values['external']) && empty($form_values['nid']) && empty($form_values['node'])) {
     form_error($form['node'], t('You must select a node.'));
     return;
   }
