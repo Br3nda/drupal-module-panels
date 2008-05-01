@@ -1,4 +1,4 @@
-/* $Id: panels.css,v 1.1.2.7 2008/03/24 20:27:29 sdboyer Exp $ */
+/* $Id: panels.css,v 1.1.2.8 2008/05/01 22:36:01 merlinofchaos Exp $ */
 
 div.panel-pane div.admin-links {
   font-size: xx-small;
@@ -15,7 +15,8 @@ div.panel-pane div.admin-links li {
   z-index: 201;
 }
 
-div.panel-pane div.admin-links:hover a {
+div.panel-pane div.admin-links:hover a,
+div.panel-pane div.admin-links-hover a {
   color: #000;
 }
 

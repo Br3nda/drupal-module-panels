@@ -1,4 +1,4 @@
-// $Id: panels.js,v 1.1.2.7 2008/01/10 17:51:57 merlinofchaos Exp $
+// $Id: panels.js,v 1.1.2.8 2008/05/01 22:36:01 merlinofchaos Exp $
 
 Drupal.Panels = {};
 
@@ -11,6 +11,14 @@ Drupal.Panels.autoAttach = function() {
       },
       function(){
         $('div.panel-hide', this).removeClass("panel-hide-hover"); return true;
+      }
+    );
+    $("div.admin-links").hover(
+      function() {
+        $(this).addClass("admin-links-hover"); return true;
+      },
+      function(){
+        $(this).removeClass("admin-links-hover"); return true;
       }
     );
   }
