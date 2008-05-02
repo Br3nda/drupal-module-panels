@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.24 2008/05/02 21:24:39 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.25 2008/05/02 21:36:33 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -52,6 +52,15 @@ function _panels_edit($display, $destination, $content_types) {
 
 /**
  * Form definition for the panels display editor
+ * 
+ * No validation function is necessary, as all 'validation' is handled
+ * either in the lead-up to form rendering (through the selection of 
+ * specified content types) or by the validation functions specific to
+ * the ajax modals & content types.
+ * 
+ * @ingroup forms
+ * @see panels_edit_display_submit()
+ * 
  */
 function panels_edit_display($display, $destination) {
   $form['did'] = array(
@@ -156,6 +165,18 @@ function panels_edit_display($display, $destination) {
   return $form;
 }
 
+/**
+ * Theme the display content editing form
+ * 
+ * @ingroup themeable
+ *
+ * @param array $form
+ *  A structured FAPI $form array
+ * @return string $output
+ *  HTML ready to be rendered. Note that the html produced here should be printed,
+ *  not returned, as it bypasses block rendering. Block rendering must be bypassed
+ *  because sidebars created using negative margins break ajax drag-and-drop.
+ */
 function theme_panels_edit_display($form) {
   _panels_js_files();
   $display = $form['panels_display']['#value'];
@@ -180,6 +201,13 @@ function theme_panels_edit_display($form) {
   return $output;
 }
 
+/**
+ * Handle form submission of the display content editor.
+ * 
+ * The behavior of this function is fairly complex and irregular compared to
+ * most FAPI submit handlers. See the documentation on panels_edit() for a
+ * detailed discussion of this behavior.
+ */
 function panels_edit_display_submit($form_id, $form_values) {
   $display = $form_values['panels_display'];
   if ($form_values['op'] == t('Save')) {
