@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.25 2008/05/02 21:36:33 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.26 2008/05/02 21:48:49 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -9,7 +9,7 @@
  */
 
 /**
- * Handle calling and processing of the display editing form.
+ * Handle calling and processing of the form for editing display content.
  * 
  * Helper function for panels_edit(). 
  *
@@ -60,7 +60,6 @@ function _panels_edit($display, $destination, $content_types) {
  * 
  * @ingroup forms
  * @see panels_edit_display_submit()
- * 
  */
 function panels_edit_display($display, $destination) {
   $form['did'] = array(
@@ -166,12 +165,12 @@ function panels_edit_display($display, $destination) {
 }
 
 /**
- * Theme the display content editing form
+ * Theme the form for editing display content.
  * 
  * @ingroup themeable
  *
  * @param array $form
- *  A structured FAPI $form array
+ *  A structured FAPI $form array.
  * @return string $output
  *  HTML ready to be rendered. Note that the html produced here should be printed,
  *  not returned, as it bypasses block rendering. Block rendering must be bypassed
@@ -237,7 +236,14 @@ function panels_edit_display_submit($form_id, $form_values) {
   }
 }
 
-function _panels_edit_layout($display, $finish, $destination = NULL) {
+/**
+ * Handle calling and processing of the form for editing display layouts.
+ * 
+ * Helper function for panels_edit_layout(). 
+ *
+ * @see panels_edit_layout() for details on the various behaviors of this function.
+ */
+function _panels_edit_layout($display, $finish, $destination) {
   // Break out the form pieces so we can return the new $display upon
   // successful submit.
   $form_id = 'panels_choose_layout';
@@ -252,7 +258,9 @@ function _panels_edit_layout($display, $finish, $destination = NULL) {
 }
 
 /**
- * Form to change the layout of a display.
+ * Form definition for the display layout editor.
+ * 
+ * @ingroup forms
  */
 function panels_choose_layout($display, $finish, $destination) {
   $layouts = panels_get_layouts();
@@ -308,6 +316,13 @@ function panels_choose_layout($display, $finish, $destination) {
   return $form;
 }
 
+/**
+ * Handle form submission of the display layout editor.
+ * 
+ * The behavior of this function is fairly complex and irregular compared to
+ * most FAPI submit handlers. See the documentation on panels_edit_layout() for
+ * detailed discussion of this behavior.
+ */
 function panels_choose_layout_submit($form_id, $form_values) {
   list($display, $finish, $destination) = $form_values['variables'];
   $new_layout_id = $form_values['layout'];
@@ -338,6 +353,27 @@ function panels_choose_layout_submit($form_id, $form_values) {
   return FALSE;
 }
 
+/**
+ * Form definition for the display layout converter.
+ * 
+ * This form is only triggered if the user attempts to change the layout
+ * for a display that has already had content assigned to it. It allows
+ * the user to select where the panes located in to-be-deleted panels should
+ * be relocated to.
+ * 
+ * @ingroup forms
+ * 
+ * @param array $form
+ *  A structured FAPI $form array.
+ * @param object $display instanceof panels_display \n
+ *  The panels_display object that was modified on the preceding display layout
+ *  editing form.
+ * @param string $new_layout_id
+ *  A string containing the name of the layout the display is to be converted to.
+ *  These strings correspond exactly to the filenames of the *.inc files in panels/layouts.
+ *  So, if the new layout that's been selected is the 'Two Column bricks' layout, then
+ *  $new_layout_id will be 'twocol_bricks', corresponding to panels/layouts/twocol_bricks.inc.
+ */
 function panels_change_layout(&$form, $display, $new_layout_id) {
   $new_layout = panels_get_layout($new_layout_id);
   $new_layout_panels = panels_get_panels($new_layout, $display);
