@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.26 2008/05/02 21:48:49 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.27 2008/05/02 21:55:03 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -428,7 +428,14 @@ function panels_change_layout(&$form, $display, $new_layout_id) {
   return $form;
 }
 
-function _panels_edit_layout_settings($display, $finish, $destination = NULL) {
+/**
+ * Handle calling and processing of the form for editing display layout settings.
+ * 
+ * Helper function for panels_edit_layout_settings(). 
+ *
+ * @see panels_edit_layout_settings() for details on the various behaviors of this function.
+ */
+function _panels_edit_layout_settings($display, $finish, $destination) {
   // Break out the form pieces so we can return the new $display upon
   // successful submit.
   $form_id = 'panels_edit_layout_settings_form';
@@ -443,7 +450,11 @@ function _panels_edit_layout_settings($display, $finish, $destination = NULL) {
 }
 
 /**
- * Form to change the layout of a display.
+ * Form definition for the display layout settings editor.
+ * 
+ * @ingroup forms
+ * @see panels_edit_layout_settings_form_validate()
+ * @see panels_edit_layout_settings_form_submit()
  */
 function panels_edit_layout_settings_form($display, $finish, $destination) {
   $layout = panels_get_layout($display->layout);
@@ -547,6 +558,7 @@ function panels_get_pane_edit_form($pane, $contexts, $parents) {
  *   If true, provide the outside div. Used to provide an easy way to get
  *   just the innards for ajax replacement
  */
+// TODO make this more tolerant of errors, at least until we get rid of it for panels3
 function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE) {
   $content_type = panels_get_content_type($pane->type);
   if (empty($content_type)) {
