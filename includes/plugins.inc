@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.24 2008/03/28 08:02:14 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.25 2008/05/03 00:40:30 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -1305,8 +1305,10 @@ function panels_load_includes($plugintype, $hook, $file = NULL) {
  * PLEASE NOTE: There are strict naming conventions on implementing this hook; failure to 
  * follow the conventions will likely cause your plugins not to work. Possibly even worse,
  * failure to follow the conventions can result in namespace collisions between your
- * module and other modules invoking the panels API. 
- *
+ * module and other modules invoking the panels API.
+ * 
+ * @ingroup panels-mainapi
+ * 
  * @param string $plugintype
  *   The type of Panels plugin being requested. Can be any of the following seven:
  *  'content_types', 'contexts', 'arguments', 'layouts', 'styles', 'relationships'
