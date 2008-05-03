@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.84 2008/05/02 21:15:34 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.85 2008/05/03 00:09:54 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -383,7 +383,9 @@ function panels_get($var) {
  * 
  * @param object $display instanceof panels_display \n
  *  A fully loaded panels $display object, as returned from panels_load_display().
- *  Merely passing a did is NOT sufficient.
+ *  Merely passing a did is NOT sufficient. \n
+ *  Note that 'fully loaded' means the $display must already be loaded with any contexts
+ *  the caller wishes to have set for the display.  
  * @param mixed $destination \n
  *  The redirect destination that the user should be taken to on form submission or
  *  cancellation. With panels_edit, $destination has complex effects on the return
@@ -393,7 +395,9 @@ function panels_get($var) {
  *  drupal_get_destination() is all that's necessary.
  * @param array $content_types \n
  *  An associative array of allowed content types, typically as returned from 
- *  panels_common_get_allowed_types().
+ *  panels_common_get_allowed_types(). Note that context partially governs available content types,
+ *  so you will want to create any relevant contexts using panels_create_context() or 
+ *  panels_create_context_empty() to make sure all the appropriate content types are available. 
  * @return
  *  Because the functions called by panels_edit() invoke the form API, this function
  *  returns different values depending on the stage of form submission we're at. In Drupal 5,
@@ -518,7 +522,7 @@ class panels_display {
 
 /**
  * Clean up a display and make sure it has some required information if
- * it doesn't already exist. Currently we wrequire a context, an incoming
+ * it doesn't already exist. Currently we require a context, an incoming
  * content and a css_id.
  */
 function panels_sanitize_display(&$display) {
@@ -550,7 +554,17 @@ function panels_new_display() {
 }
 
 /**
- * Load a display from the database
+
+ */
+/**
+ * Load and fill the requested $display object(s).
+ * 
+ * Helper function primarily for for panels_load_display().
+ *
+ * @param array $dids
+ *  An indexed array of dids to be loaded from the database.
+ * @return $displays
+ *  An array of displays, keyed by their display dids.
  */
 function panels_load_displays($dids) {
   $displays = array();
@@ -594,7 +608,28 @@ function panels_load_displays($dids) {
 
 /**
  * Load a single display.
+ * 
+ * @param int $did
+ *  The display id (did) of the display to be loaded.
+ * @return object $display instanceof panels_display \n
+ *  Returns a partially-loaded panels_display object. $display objects returned from
+ *  from this function have only the following data:
+ *    - $display->did (the display id)
+ *    - $display->name (the 'name' of the display, where applicable - it often isn't)
+ *    - $display->layout (a string with the system name of the display's layout)
+ *    - $display->panel_settings (custom layout style settings contained in an associative array; NULL if none)
+ *    - $display->layout_settings (panel size and configuration settings for Flexible layouts; NULL if none)
+ *    - $display->css_id (the special css_id that has been assigned to this display, if any; NULL if none)
+ *    - $display->content (an array of pane objects, keyed by pane id (pid))
+ *    - $display->panels (an associative array of panel regions, each an indexed array of pids in the order they appear in that region)
+ *    - $display->cache (any relevant data from panels_simple_cache)
+ *    - $display->args
+ *    - $display->incoming_content
+ * 
+ * While all of these members are defined, $display->context is NEVER defined in the returned $display;
+ * it must be set using one of the panels_context_create() functions.
  */
+
 function panels_load_display($did) {
   $displays = panels_load_displays(array($did));
   if (!empty($displays)) {
@@ -603,7 +638,16 @@ function panels_load_display($did) {
 }
 
 /**
- * Save a display.
+ * Save a display object.
+ * 
+ * Note that saving a new display object will cause its dids (and, if applicable,
+ * the pids of its panes) to be created, and the new id values will replace the 'new'
+ * strings once the this function has run its course.
+ * 
+ * @param object $display instanceof panels_display \n
+ *  The display object to be saved. Passed by reference so the caller need not use 
+ *  the return value for any reason except convenience.
+ * @return object $display instanceof panels_display \n
  */
 function panels_save_display(&$display) {
   if ($display->did && $display->did != 'new') {
@@ -650,7 +694,7 @@ function panels_save_display(&$display) {
 }
 
 /**
- * Delete a display
+ * Delete a display.
  */
 function panels_delete_display($display) {
   if (is_object($display)) {
@@ -664,7 +708,27 @@ function panels_delete_display($display) {
 }
 
 /**
- * Export a display into code
+ * Exports the provided display into portable code.
+ * 
+ * This function is primarily intended as a mechanism for cloning displays.
+ * It generates an exact replica (in code) of the provided $display, with
+ * the exception that it replaces all ids (dids and pids) with 'new-*' values.
+ * Only once panels_save_display() is called on the code version of $display will
+ * the exported display written to the database and permanently saved.
+ * 
+ * @see panels_page_export() or _panels_page_fetch_display() for sample implementations.
+ * 
+ * @param object $display instanceof panels_display \n
+ *  This export function does no loading of additional data about the provided
+ *  display. Consequently, the caller should make sure that all the desired data
+ *  has been loaded into the $display before calling this function.
+ * @param string $prefix
+ *  A string prefix that is prepended to each line of exported code.
+ * @return string $output
+ *  The passed-in $display expressed as code, ready to be imported. Import by running
+ *  eval($output) in the caller function; doing so will create a new $display variable
+ *  with all the exported values. Note that if you have already defined a $display variable in
+ *  the same scope as where you eval(), your existing $display variable WILL be overwritten.
  */
 function panels_export_display($display, $prefix = '') {
   $output = '';
@@ -1021,18 +1085,18 @@ function theme_panels_layout_icon($id, $image, $title = NULL) {
  *
  * A panel pane can have the following fields:
  *
- * $pane->type -- the content type inside this pane
- * $pane->subtype -- The subtype, if applicable. If a view it will be the
- *   view name; if a node it will be the nid, etc.
- * $content->title -- The title of the content
- * $content->content -- The actual content
- * $content->links -- Any links associated with the content
- * $content->more -- An optional 'more' link (destination only)
- * $content->admin_links -- Administrative links associated with the content
- * $content->feeds -- Any feed icons or associated with the content
- * $content->subject -- A legacy setting for block compatibility
- * $content->module -- A legacy setting for block compatibility
- * $content->delta -- A legacy setting for block compatibility
+ *  - $pane->type -- the content type inside this pane
+ *  - $pane->subtype -- The subtype, if applicable. If a view it will be the
+ *    view name; if a node it will be the nid, etc.
+ *  - $content->title -- The title of the content
+ *  - $content->content -- The actual content
+ *  - $content->links -- Any links associated with the content
+ *  - $content->more -- An optional 'more' link (destination only)
+ *  - $content->admin_links -- Administrative links associated with the content
+ *  - $content->feeds -- Any feed icons or associated with the content
+ *  - $content->subject -- A legacy setting for block compatibility
+ *  - $content->module -- A legacy setting for block compatibility
+ *  - $content->delta -- A legacy setting for block compatibility
  */
 function theme_panels_pane($content, $pane, $display) {
   if (!empty($content->content)) {
