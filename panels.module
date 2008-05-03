@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.85 2008/05/03 00:09:54 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.86 2008/05/03 00:38:24 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -375,11 +375,18 @@ function panels_get($var) {
 // panels display editing
 
 /**
+ * @defgroup panels-mainapi
+ * Functions comprising the main panels API
+ */
+
+/**
  * Main API entry point to edit a panel display.
  * 
  * Sample implementations utiltizing the the complex $destination behavior can be found
  * in panels_page_edit_content() and, in a separate contrib module, OG Blueprints
  * (http://drupal.org/project/og_blueprints), og_blueprints_blueprint_edit().
+ * 
+ * @ingroup panels-mainapi
  * 
  * @param object $display instanceof panels_display \n
  *  A fully loaded panels $display object, as returned from panels_load_display().
@@ -443,6 +450,8 @@ function panels_edit($display, $destination = NULL, $content_types = NULL) {
  * The only real complexity occurs when a user attempts to change the layout of a display
  * that has some content in it.
  * 
+ * @ingroup panels-mainapi
+ * 
  * @param object $display instanceof panels_display \n
  *  A fully loaded panels $display object, as returned from panels_load_display().
  *  Merely passing a did is NOT sufficient.
@@ -472,6 +481,8 @@ function panels_edit_layout($display, $finish, $destination = NULL) {
  * for their flexible layout in addition to applying styles to panels.
  * 
  * TODO and at some point, individual panes should be stylable as well as whole panels.
+ * 
+ * @ingroup panels-mainapi
  * 
  * @param object $display instanceof panels_display \n
  *  A fully loaded panels $display object, as returned from panels_load_display().
@@ -510,6 +521,8 @@ function panels_edit_layout_settings($display, $finish, $destination = NULL) {
 
 /**
  * Forms the basis of a panel display
+ * 
+ * @ingroup panels-mainapi
  */
 class panels_display {
   var $args = array();
@@ -609,6 +622,8 @@ function panels_load_displays($dids) {
 /**
  * Load a single display.
  * 
+ * @ingroup panels-mainapi
+ * 
  * @param int $did
  *  The display id (did) of the display to be loaded.
  * @return object $display instanceof panels_display \n
@@ -639,6 +654,8 @@ function panels_load_display($did) {
 
 /**
  * Save a display object.
+ * 
+ * @ingroup panels-mainapi
  * 
  * Note that saving a new display object will cause its dids (and, if applicable,
  * the pids of its panes) to be created, and the new id values will replace the 'new'
@@ -717,6 +734,8 @@ function panels_delete_display($display) {
  * the exported display written to the database and permanently saved.
  * 
  * @see panels_page_export() or _panels_page_fetch_display() for sample implementations.
+ * 
+ * @ingroup panels-mainapi
  * 
  * @param object $display instanceof panels_display \n
  *  This export function does no loading of additional data about the provided
