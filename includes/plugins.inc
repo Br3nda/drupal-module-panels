@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.26 2008/05/03 00:59:46 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.27 2008/05/05 00:56:29 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -1288,6 +1288,8 @@ function panels_load_includes($plugintype, $hook, $file = NULL) {
   foreach(array_filter($filelisting) as $module => $files) {
     foreach ($files as $file) {
       require_once('./'. $file->filename);
+      // TODO-FUTURE: this would be one of the ideal places to consider using a class for panels .inc files
+      // in order to improve their flexibility and readability.
       $result = _panels_process_plugin('panels', $module . $file->name, dirname($file->filename), $hook);
       if (is_array($result)) {
         $info = array_merge($info, $result);
@@ -1400,12 +1402,6 @@ function panels_get_plugins($plugin, $hook, $id = NULL) {
   if (!isset($all_hooks[$plugin])) {
     $all_hooks[$plugin] = TRUE;
     $plugins[$plugin] = panels_load_hooks($hook);
-    // TODO: DEPRECATED. Put in to make the transition easier! This WILL
-    // disappear by alpha 11.
-
-    if ($plugin == 'styles') {
-      $plugins[$plugin] = array_merge($plugins[$plugin], panels_load_hooks('panels_panel_style_info'));
-    }
   }
 
   // First, see if it's in our hooks before we even bother.
