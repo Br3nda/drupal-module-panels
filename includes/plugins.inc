@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.27 2008/05/05 00:56:29 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.28 2008/05/05 00:59:00 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -1405,7 +1405,7 @@ function panels_get_plugins($plugin, $hook, $id = NULL) {
   }
 
   // First, see if it's in our hooks before we even bother.
-  if ($id && array_key_exists($id, $plugins[$plugin])) {
+  if ($id && isset($id, $plugins[$plugin])) {
     return $plugins[$plugin][$id];
   }
 
@@ -1422,7 +1422,7 @@ function panels_get_plugins($plugin, $hook, $id = NULL) {
   }
 
   // Check to see if we need to look for the file
-  if (!array_key_exists($id, $plugins[$plugin])) {
+  if (!isset($id, $plugins[$plugin])) {
     $result = panels_load_includes($plugin, $hook, $id);
     // Set to either what was returned or NULL.
     $plugins[$plugin][$id] = isset($result[$id]) ? $result[$id] : NULL;
