@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.28 2008/05/05 00:59:00 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.29 2008/05/05 03:54:16 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -1300,6 +1300,8 @@ function panels_load_includes($plugintype, $hook, $file = NULL) {
 }
 
 /**
+ * Invocation of panels_include_directory(), part of the main panels API.
+ * 
  * Hook allowing other modules to create their own panels .inc files,
  * and have them available in panels without needing to add files to the
  * Panels include directories. See API.txt for details.
