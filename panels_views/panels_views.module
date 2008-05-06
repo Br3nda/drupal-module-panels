@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.12 2008/03/28 03:46:57 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.13 2008/05/06 13:42:07 sdboyer Exp $
 
 /**
  * @file panels_views.module
@@ -759,7 +759,7 @@ function panels_views_render($conf, $panel_args, &$contexts) {
           break;
         case 'none':
         default:
-          $args[] = $view->arguments[$id]['wildcard'] ? $view->arguments[$id]['wildcard'] : '*';
+          $args[] = $view->argument[$id]['wildcard'] ? $view->argument[$id]['wildcard'] : '*';
           // Put in the wildcard.
           break;
       }
