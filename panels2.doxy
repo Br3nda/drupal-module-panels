@@ -1,4 +1,4 @@
-# $Id: panels2.doxy,v 1.1.2.2 2008/05/05 00:53:45 sdboyer Exp $
+# $Id: panels2.doxy,v 1.1.2.3 2008/05/08 20:37:37 sdboyer Exp $
 # Doxyfile 1.5.5
 
 #---------------------------------------------------------------------------
@@ -76,13 +76,13 @@ FILE_VERSION_FILTER    =
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
 
-QUIET                  = YES
+QUIET                  = NO
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = NO
 WARN_IF_DOC_ERROR      = YES
 WARN_NO_PARAMDOC       = NO
 WARN_FORMAT            = "$file:$line: $text  "
-WARN_LOGFILE           = /home/sdboyer//logs/doxy/drupal-doxy.log
+WARN_LOGFILE           = /var/log/doxy/drupal-doxy.log
 
 #---------------------------------------------------------------------------
 # configuration options related to the input files

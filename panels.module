@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.87 2008/05/03 00:59:45 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.88 2008/05/08 20:36:28 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -375,8 +375,8 @@ function panels_get($var) {
 // panels display editing
 
 /**
- * @defgroup mainapi
- * Functions comprising the main panels API
+ * @defgroup mainapi Functions comprising the main panels API
+ * @{
  */
 
 /**
@@ -450,8 +450,6 @@ function panels_edit($display, $destination = NULL, $content_types = NULL) {
  * The only real complexity occurs when a user attempts to change the layout of a display
  * that has some content in it.
  * 
- * @ingroup mainapi
- * 
  * @param object $display instanceof panels_display \n
  *  A fully loaded panels $display object, as returned from panels_load_display().
  *  Merely passing a did is NOT sufficient.
@@ -481,8 +479,6 @@ function panels_edit_layout($display, $finish, $destination = NULL) {
  * for their flexible layout in addition to applying styles to panels.
  * 
  * TODO and at some point, individual panes should be stylable as well as whole panels.
- * 
- * @ingroup mainapi
  * 
  * @param object $display instanceof panels_display \n
  *  A fully loaded panels $display object, as returned from panels_load_display().
@@ -515,6 +511,9 @@ function panels_edit_layout_settings($display, $finish, $destination = NULL) {
   return _panels_edit_layout_settings( $display, $finish, $destination);
 }
 
+/**
+ * }@ End of 'degroup mainapi', although other functions are specifically added later
+ */
 
 // ---------------------------------------------------------------------------
 // panels database functions
@@ -531,6 +530,49 @@ class panels_display {
   var $incoming_content = NULL;
   var $css_id = NULL;
   var $context = array();
+  
+  function add_pane($pane, $location = FALSE) {
+    $pane->pid = $this->next_new_pid();
+    if (!$location || !isset($this->panels[$location])) {
+      foreach ($this->panels as $panel_name => $panel) {
+        if (array_key_exists($pid, $panel)) {
+          $this->panels[$panel_name][] = $pid;
+        }
+      }
+    }
+    else {
+      $this->panels[$location][] = $pane->pid;
+    }
+  }
+  
+  function duplicate_pane($pid, $location = FALSE) {
+    $pane = $this->clone_pane($pid);
+    $this->add_pane($pane, $location);
+  }
+  
+  function clone_pane($pid) {
+    $pane = drupal_clone($this->content[$pid]);
+    foreach (array_keys($this->content) as $pidcheck)
+    unset($pane->position); // necessary?
+    return $pane;
+  }
+  
+  function next_new_pid() {
+    // necessary if/until we use this method and ONLY this method for adding temporary pids.
+    // then we can do it with a nice static var.
+    foreach (array_keys($this->content) as $pid) {
+      if (!is_numeric($pid)) {
+        $id[] = substr($pid, 4);
+      }
+    }
+    $next_id = end($id);
+    return ++$next_id;
+  }
+}
+
+function panels_export_pane_across_displays($source_display, &$target_display, $pid, $location = FALSE) {
+  $pane = $source_display->clone_pane($pid);
+  $target_display->add_pane($pane, $location);
 }
 
 /**
@@ -567,9 +609,6 @@ function panels_new_display() {
 }
 
 /**
-
- */
-/**
  * Load and fill the requested $display object(s).
  * 
  * Helper function primarily for for panels_load_display().
@@ -579,7 +618,7 @@ function panels_new_display() {
  * @return $displays
  *  An array of displays, keyed by their display dids.
  */
-function panels_load_displays($dids) {
+function panels_load_displays($dids, $load_hidden = TRUE) {
   $displays = array();
   if (empty($dids) || !is_array($dids)) {
     return $displays;
@@ -588,14 +627,15 @@ function panels_load_displays($dids) {
   $subs = implode(', ', array_fill(0, count($dids), '%d'));
 
   $result = db_query("SELECT * FROM {panels_display} WHERE did IN ($subs)", $dids);
-
+  
+  $all_pids = array();
   while ($obj = db_fetch_array($result)) {
     $display = new panels_display();
 
     foreach ($obj as $key => $value) {
       $display->$key = $value;
     }
-
+    
     // unserialize important bits:
     $display->layout_settings = empty($display->layout_settings) ? array() : unserialize($display->layout_settings);
     $display->panel_settings = empty($display->panel_settings) ? array() : unserialize($display->panel_settings);
@@ -604,9 +644,12 @@ function panels_load_displays($dids) {
     $display->panels = $display->content = array();
 
     $displays[$display->did] = $display;
+    // $all_pids = array_merge($all_pids, $display->shown ? );
   }
-
-  $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) ORDER BY did, panel, position", $dids);
+  
+  $all_pids = array_unique($all_pids);
+  $pids_sql = $load_hidden ? '' : "AND pid IN (" . implode(', ', array_fill(0, count($all_pids), '%d')) . ") ";
+  $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) {$pids_sql}ORDER BY did, panel, position", array_merge($dids, $all_pids));
 
   while ($pane = db_fetch_object($result)) {
     $pane->configuration = unserialize($pane->configuration);
@@ -645,8 +688,8 @@ function panels_load_displays($dids) {
  * it must be set using one of the panels_context_create() functions.
  */
 
-function panels_load_display($did) {
-  $displays = panels_load_displays(array($did));
+function panels_load_display($did, $load_hidden = TRUE) {
+  $displays = panels_load_displays(array($did), $load_hidden);
   if (!empty($displays)) {
     return array_shift($displays);
   }
@@ -742,7 +785,8 @@ function panels_delete_display($display) {
  *  display. Consequently, the caller should make sure that all the desired data
  *  has been loaded into the $display before calling this function.
  * @param string $prefix
- *  A string prefix that is prepended to each line of exported code.
+ *  A string prefix that is prepended to each line of exported code. This is primarily
+ *  used for prepending a double space when exporting so that the code indents and lines up nicely.
  * @return string $output
  *  The passed-in $display expressed as code, ready to be imported. Import by running
  *  eval($output) in the caller function; doing so will create a new $display variable
@@ -751,7 +795,7 @@ function panels_delete_display($display) {
  */
 function panels_export_display($display, $prefix = '') {
   $output = '';
-  $output .= $prefix . '$display = new stdClass()' . ";\n";
+  $output .= $prefix . '$display = new panels_display()' . ";\n";
   $output .= $prefix . '$display->did = \'new\'' . ";\n";
   $fields = array('name', 'layout', 'layout_settings', 'panel_settings');
   foreach ($fields as $field) {
