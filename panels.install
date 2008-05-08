@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.36 2008/03/31 06:17:42 merlinofchaos Exp $
+// $Id: panels.install,v 1.1.6.37 2008/05/08 20:38:38 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -47,6 +47,8 @@ EOT
           layout_settings text,
           panel_settings text,
           cache text,
+          shown text,
+          title varchar(128),
           PRIMARY KEY (did)
         );
 EOT
@@ -119,10 +121,12 @@ EOT
         CREATE TABLE {panels_display} (
           did INT(10) NOT NULL DEFAULT 0 PRIMARY KEY,
           name varchar(255) UNIQUE,
-          layout VARCHAR(32),
+          layout varchar(32),
           layout_settings longtext,
           panel_settings longtext,
-          cache text
+          cache text,
+          shown text,
+          title varchar(128),
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
@@ -504,6 +508,27 @@ function panels_update_5215() {
       break;
     case 'pgsql':
       $ret[] = update_sql("ALTER TABLE {panels_pane} ADD PRIMARY KEY (pid)");
+  }
+  return $ret;
+}
+
+/**
+ * Enter description here...
+ * 
+ * Adds the 'shown' field to the panels_display table in order to accomodate
+ * the new show/hide panes feature.
+ */
+function panels_update_5216() {
+  $ret = array();
+  switch($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN shown text AFTER cache");
+      $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN title text AFTER shown");
+      break;
+    case 'pgsql':
+      db_add_column($ret, 'panels_display', 'shown', 'text');
+      db_add_column($ret, 'panels_display', 'title');
   }
   return $ret;
 }
