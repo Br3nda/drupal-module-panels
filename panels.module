@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.89 2008/05/08 21:55:34 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.90 2008/05/08 21:58:03 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -646,12 +646,10 @@ function panels_load_displays($dids, $load_hidden = TRUE) {
 
     foreach ($obj as $key => $value) {
       $display->$key = $value;
+      if (in_array($key, array('layout_settings', 'panel_settings', 'cache', 'shown'))) { // unserialize important bits
+        $display->$key = empty($display->$key) ? array() : unserialize($display->$key);
       }
-
-    // unserialize important bits:
-    $display->layout_settings = empty($display->layout_settings) ? array() : unserialize($display->layout_settings);
-    $display->panel_settings = empty($display->panel_settings) ? array() : unserialize($display->panel_settings);
-    $display->cache = empty($display->cache) ? array() : unserialize($display->cache);
+    }
 
     $display->panels = $display->content = array();
 
@@ -727,7 +725,7 @@ function panels_save_display(&$display) {
       $display->cache = array();
     }
 
-    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s', cache = '%s' WHERE did = %d", $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), $display->did);
+    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s', cache = '%s' , shown = '%s' , title = '%s' , hide_title = %d, WHERE did = %d", $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), serialize($display->shown), $display->title, $display->hide_title, $display->did);
     db_query("DELETE FROM {panels_pane} WHERE did = %d", $display->did);
   }
   else {
