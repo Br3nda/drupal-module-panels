@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.90 2008/05/08 21:58:03 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.91 2008/05/08 22:04:54 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -654,10 +654,10 @@ function panels_load_displays($dids, $load_hidden = TRUE) {
     $display->panels = $display->content = array();
 
     $displays[$display->did] = $display;
-    // $all_pids = array_merge($all_pids, $display->shown ? );
+    $hidden_pids = array_merge($hidden_pids, $display->shown);
   }
   
-  $all_pids = array_unique($all_pids);
+  $hidden_pids = array_unique($all_pids);
   $pids_sql = $load_hidden ? '' : "AND pid IN (" . implode(', ', array_fill(0, count($all_pids), '%d')) . ") ";
   $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) {$pids_sql}ORDER BY did, panel, position", array_merge($dids, $all_pids));
 
