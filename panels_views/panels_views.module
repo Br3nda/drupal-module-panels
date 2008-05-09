@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.13 2008/05/06 13:42:07 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.14 2008/05/09 06:50:43 sdboyer Exp $
 
 /**
  * @file panels_views.module
@@ -13,11 +13,12 @@
  * Implementation of hook_menu().
  */
 function panels_views_menu($may_cache) {
+  $access = user_access('administer panel views');
   if ($may_cache) {
     $items[] = array(
       'path' => 'admin/panels/views',
       'title' => t('Views'),
-      'access' => user_access('administer panel views'),
+      'access' => $access,
       'type' => MENU_NORMAL_ITEM,
       'callback' => 'panels_views_list_views',
       'description' => t('Configure Views to be used as panes within panel displays.'),
@@ -25,7 +26,7 @@ function panels_views_menu($may_cache) {
     $items[] = array(
       'path' => 'admin/panels/views/list',
       'title' => t('List'),
-      'access' => user_access('administer panel views'),
+      'access' => $access,
       'type' => MENU_DEFAULT_LOCAL_TASK,
       'callback' => 'panels_views_list_views',
       'weight' => -10,
@@ -33,21 +34,21 @@ function panels_views_menu($may_cache) {
     $items[] = array(
       'path' => 'admin/panels/views/add',
       'title' => t('Add'),
-      'access' => user_access('administer panel views'),
+      'access' => $access,
       'callback' => 'panels_views_add_view',
       'type' => MENU_CALLBACK,
     );
     $items[] = array(
       'path' => 'admin/panels/views/edit',
       'title' => t('Edit'),
-      'access' => user_access('administer panel views'),
+      'access' => $access,
       'callback' => 'panels_views_edit_view',
       'type' => MENU_CALLBACK,
     );
     $items[] = array(
       'path' => 'admin/panels/views/delete',
       'title' => t('Delete'),
-      'access' => user_access('administer panel views'),
+      'access' => $access,
       'callback' => 'drupal_get_form',
       'callback arguments' => array('panels_views_delete_confirm'),
       'type' => MENU_CALLBACK,
@@ -55,14 +56,14 @@ function panels_views_menu($may_cache) {
     $items[] = array(
       'path' => 'admin/panels/views/import',
       'title' => t('Import'),
-      'access' => user_access('administer panel views'),
+      'access' => $access,
       'callback' => 'panels_views_import_view',
       'type' => MENU_LOCAL_TASK,
     );
     $items[] = array(
       'path' => 'admin/panels/views/export',
       'title' => t('Export'),
-      'access' => user_access('administer panel views'),
+      'access' => $access,
       'callback' => 'drupal_get_form',
       'callback arguments' => array('panels_views_export_view'),
       'type' => MENU_CALLBACK,
