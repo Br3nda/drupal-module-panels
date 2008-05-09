@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.91 2008/05/08 22:04:54 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.92 2008/05/09 05:51:12 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -631,7 +631,7 @@ function panels_new_display() {
  *  An array of displays, keyed by their display dids.
  */
 function panels_load_displays($dids, $load_hidden = TRUE) {
-  $displays = array();
+  $hidden_pids = $displays = array();
   if (empty($dids) || !is_array($dids)) {
     return $displays;
   }
@@ -640,7 +640,6 @@ function panels_load_displays($dids, $load_hidden = TRUE) {
 
   $result = db_query("SELECT * FROM {panels_display} WHERE did IN ($subs)", $dids);
   
-  $all_pids = array();
   while ($obj = db_fetch_array($result)) {
     $display = new panels_display();
 
@@ -657,9 +656,9 @@ function panels_load_displays($dids, $load_hidden = TRUE) {
     $hidden_pids = array_merge($hidden_pids, $display->shown);
   }
   
-  $hidden_pids = array_unique($all_pids);
-  $pids_sql = $load_hidden ? '' : "AND pid IN (" . implode(', ', array_fill(0, count($all_pids), '%d')) . ") ";
-  $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) {$pids_sql}ORDER BY did, panel, position", array_merge($dids, $all_pids));
+  $hidden_pids = array_unique($hidden_pids);
+  $pids_sql = $load_hidden ? '' : "AND pid IN (" . implode(', ', array_fill(0, count($hidden_pids), '%d')) . ") ";
+  $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) {$pids_sql}ORDER BY did, panel, position", array_merge($dids, $hidden_pids));
 
   while ($pane = db_fetch_object($result)) {
     $pane->configuration = unserialize($pane->configuration);
@@ -725,7 +724,7 @@ function panels_save_display(&$display) {
       $display->cache = array();
     }
 
-    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s', cache = '%s' , shown = '%s' , title = '%s' , hide_title = %d, WHERE did = %d", $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), serialize($display->shown), $display->title, $display->hide_title, $display->did);
+    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s', cache = '%s' , shown = '%s' , title = '%s' , hide_title = %d WHERE did = %d", $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), serialize($display->shown), $display->title, $display->hide_title, $display->did);
     db_query("DELETE FROM {panels_pane} WHERE did = %d", $display->did);
   }
   else {
