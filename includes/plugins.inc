@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.31 2008/05/09 14:17:27 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.32 2008/05/09 16:38:33 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -426,7 +426,7 @@ function panels_get_panels($layout, $display) {
  * @param $has_content
  *   Whether or not the display will have incoming content
  * @param $allowed_types
- *   An array of content allowed keyed boy content_type . '-' . sub_type
+ *   An array of allowed content types (pane types) keyed by content_type . '-' . sub_type
  * @param $default_types
  *   A default allowed/denied status for content that isn't known about
  */
@@ -1304,9 +1304,14 @@ function panels_load_includes($plugintype, $hook, $file = NULL) {
 /**
  * Invocation of panels_include_directory(), part of the main panels API.
  * 
- * Hook allowing other modules to create their own panels .inc files,
- * and have them available in panels without needing to add files to the
- * Panels include directories. See API.txt for details.
+ * This hook allows other modules to create their own panels .inc files according to the 
+ * same filename and directory schema utilized by Panels itself, or some other arbitrary 
+ * schema defined in implementations of the hook. Essentially, instead of having to declare all 
+ * all callback definitions for a given plugin in a single hook implementation specific to that plugin
+ * calling this hook allows the caller to define a directory where Panels will then look for
+ * .inc files with callback declarations that conform to the naming scheme. The net result is the
+ * same, but implementing this hook does allow for better organization and flexibility in
+ * your .inc files, which is particularly preferable if you're implementing a lot of them.
  * 
  * PLEASE NOTE: There are strict naming conventions on implementing this hook; failure to 
  * follow the conventions will likely cause your plugins not to work. Possibly even worse,
