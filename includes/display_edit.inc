@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.27 2008/05/02 21:55:03 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.28 2008/05/09 13:59:55 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -435,11 +435,11 @@ function panels_change_layout(&$form, $display, $new_layout_id) {
  *
  * @see panels_edit_layout_settings() for details on the various behaviors of this function.
  */
-function _panels_edit_layout_settings($display, $finish, $destination) {
+function _panels_edit_layout_settings($display, $finish, $destination, $title) {
   // Break out the form pieces so we can return the new $display upon
   // successful submit.
   $form_id = 'panels_edit_layout_settings_form';
-  $form = drupal_retrieve_form($form_id, $display, $finish, $destination);
+  $form = drupal_retrieve_form($form_id, $display, $finish, $destination, $title);
 
   if ($result = drupal_process_form($form_id, $form)) {
     // successful submit
@@ -456,19 +456,45 @@ function _panels_edit_layout_settings($display, $finish, $destination) {
  * @see panels_edit_layout_settings_form_validate()
  * @see panels_edit_layout_settings_form_submit()
  */
-function panels_edit_layout_settings_form($display, $finish, $destination) {
+function panels_edit_layout_settings_form($display, $finish, $destination, $title) {
   $layout = panels_get_layout($display->layout);
-  if (!empty($layout['settings form']) && function_exists($layout['settings form'])) {
+  if (!empty($layout['settings form']) && function_exists($layout['settings form'])) { // TODO doc the ability to do this as part of the API
     $form['layout_settings'] = $layout['settings form']($display, $layout, $display->layout_settings);
   }
 
   $form['layout_settings']['#tree'] = TRUE;
+  
+  if ($title) {
+    $form['display_title'] = array (
+      '#type' => 'fieldset',
+      '#title' => t('Panel Title'),
+      '#tree' => TRUE,
+    );
+      
+    $form['display_title']['title'] = array(
+      '#type' => 'textfield',
+      '#size' => 35,
+      '#default_value' => $display->title,
+      '#title' => t('Title'),
+      '#description' => t('The title of this panel. Your theme will render this text as the main page title users view this display, unless this text is overridden elsewhere.'),
+    );
+    
+    $form['display_title']['hide_title'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Hide Title?'),
+      '#description' => t('Check this box to hide the main page title for this panel.'),
+    );
+          
+    if (is_string($title)) {
+      $form['display_title']['title']['#description'] .= t(" If you leave this field blank, then the default title, '@title', will be used instead.", array('@title' => $title));
+    }
+  }
 
   $form += panels_panel_settings($display);
 
   $form['variables'] = array(
     '#type' => 'value',
-    '#value' => array($display, $finish, $destination),
+    '#value' => array($display, $finish, $destination, $title),
   );
 
   if (empty($destination)) {
@@ -508,12 +534,17 @@ function panels_edit_layout_settings_form_validate($form_id, $form_values, $form
 }
 
 function panels_edit_layout_settings_form_submit($form_id, $form_values) {
-  list($display, $finish, $destination) = $form_values['variables'];
+  list($display, $finish, $destination, $title) = $form_values['variables'];
   panels_panel_settings_submit($form_id, $form_values);
 
   $layout = $form_values['layout'];
   if (!empty($layout['settings submit']) && function_exists($layout['settings submit'])) {
     $layout['settings submit']($form_values['layout_settings'], $display, $layout, $display->layout_settings);
+  }
+  
+  if (isset($form_values['display_title']['title'])) {
+    $display->title = $form_values['display_title']['title'];
+    $display->hide_title = $form_values['display_title']['hide_title'];
   }
 
   if ($form_values['op'] == $finish || $form_values['op'] == t('Save')) {
@@ -586,7 +617,14 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
  */
 
 /**
- * entry point into all the ajax stuff
+ * Entry point into all ajax operations.
+ *
+ * @param string $op
+ *  The name of the edit operation being performed.
+ * @param integer $did
+ *  The id of the $display object being edited (if any).
+ * @param integer $pid
+ *  The id of the pane object being edited (if any).
  */
 function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
   switch ($op) {
@@ -1226,7 +1264,7 @@ function panels_panel_settings($display) {
     '#type' => 'checkbox',
     '#title' => t('Per panel settings'),
     '#id' => 'panel-settings-individual',
-    '#description' => t('If this is checked, each pane (region) in the display can have its own style.'),
+    '#description' => t('If this is checked, each region in the display can have its own style.'),
     '#default_value' => $panel_settings['individual'],
   );
 
@@ -1302,8 +1340,15 @@ function panels_panel_settings_submit($form_id, $form_values) {
   panels_common_cache_clear('style_settings', $form_values['panel_settings']['did']);
 }
 
+
+/**
+ * }@ End of 'defgroup panels_ajax'
+ */
+
 /**
  * AJAX incoming to deal with the style settings modal
+ * 
+ * @ingroup panels_ajax
  */
 function panels_panel_settings_ajax($did, $panel, $name) {
   if ($name == '0') {
@@ -1329,6 +1374,8 @@ function panels_panel_settings_ajax($did, $panel, $name) {
 
 /**
  * Form for the style settings modal.
+ * 
+ * @ingroup panels_ajax
  */
 function panels_common_style_settings_form($did, $style, $style_settings) {
   $form['start_form'] = array('#value' => '<div class="modal-form">');
