@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.37 2008/01/24 17:51:13 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.38 2008/05/09 13:55:33 sdboyer Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -275,7 +275,7 @@ function panels_page_edit_form($panel_page, $next = NULL) {
     '#size' => 35,
     '#default_value' => $panel_page->title,
     '#title' => t('Page title'),
-    '#description' => t('The page title for this panels layout'),
+    '#description' => t("The page title for this panels layout. It will be used as the main title on this panel page, unless it is overriden later."),
   );
 
   $form['left']['info']['css_id'] = array(
@@ -720,7 +720,7 @@ function panels_page_edit_layout_settings($panel_page, $did = NULL, $next = NULL
 
   // The following form will return the $display upon successful submit, if
   // we didn't send the $dest. Which we don't, here.
-  $output = panels_edit_layout_settings($display, $button);
+  $output = panels_edit_layout_settings($display, $button, NULL, $panel_page->title);
   if (is_object($output)) {
     panels_page_set_display($panel_page, $did, $output);
     drupal_goto($dest);

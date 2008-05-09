@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.42 2008/05/09 00:13:21 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.43 2008/05/09 13:57:02 sdboyer Exp $
 
 /**
  * Implementation of hook_help()
@@ -384,7 +384,7 @@ function _panels_page_create_menu_item(&$items, $panel_page, $path, $args = arra
   if ($type == MENU_LOCAL_TASK || $type == MENU_DEFAULT_LOCAL_TASK) {
     $weight = $panel_page->menu_tab_weight;
   }
-  $items[] = _panels_page_menu_item($path, $title, $panel_page, $args, $access, $type, $weight);
+  $items[] = _panels_page_menu_item($path, $title, $panel_page, $args, $access, $type, isset($weight) ? $weight : NULL);
 
   if ($type == MENU_DEFAULT_LOCAL_TASK && dirname($path) && dirname($path) != '.') {
     switch ($panel_page->menu_tab_default_parent_type) {
@@ -495,7 +495,11 @@ function _panels_page_get_title($panel_page, $context, $default_title) {
   if (in_array($context, array('menu', 'menu-parent')) && $panel_page->menu_title) {
     return $panel_page->menu_title;
   }
-
+  
+  if (isset($panel_page->display->title) && $panel_page->did != $panel_page->display->did) {
+    return $panel_page->display->title;
+  }  
+  
   if ($panel_page->context) {
     $title = NULL;
     foreach ($panel_page->context as $id => $context) {
@@ -512,7 +516,7 @@ function _panels_page_get_title($panel_page, $context, $default_title) {
       return $title;
     }
   }
-
+  
   if ($panel_page->title) {
     return $panel_page->title;
   }
@@ -678,7 +682,7 @@ function panels_page_view_page($panel_page, $admin) {
   // Figure out which display to use.
   $display_id = panels_argument_get_display($panel_page->arguments, $panel_page->context);
 
-  $display = panels_page_fetch_display($panel_page, $display_id);
+  $panel_page->display = $display = panels_page_fetch_display($panel_page, $display_id);
 
   // Figure out if these contexts include a form; will be NULL if there
   // isn't one, or the context if there is.
@@ -712,7 +716,9 @@ function panels_page_view_page($panel_page, $admin) {
     return drupal_not_found();
   }
 
-  drupal_set_title(filter_xss_admin(panels_page_get_title($panel_page, 'page', '')));
+  if (!$display->hide_title) {
+    drupal_set_title(filter_xss_admin(panels_page_get_title($panel_page, 'page', '')));
+  }
 
   if ($panel_page->css) {
     drupal_set_html_head("<style type=\"text/css\" media=\"all\">" . filter_xss_admin($panel_page->css) . "</style>\n");
