@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.30 2008/05/05 04:11:17 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.31 2008/05/09 14:17:27 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -193,7 +193,7 @@ function panels_ct_get_content($type, $conf, $args, $context, $incoming_content)
  *   The configuration for the content type.
  * @param $context
  *   The panels_context object.
- * @Param $incoming_content
+ * @param $incoming_content
  *   Any incoming content, if this display is a wrapper.
  */
 function panels_ct_get_title($type, $conf, $context = NULL, $incoming_content = NULL) {
@@ -328,12 +328,14 @@ function panels_ct_submit_add_form($type, $form_values) {
  *
  * @param $type
  *   The content type. May be the name or an already loaded content type object.
- * @param $id
- *   The identifier for the content to add; this is specific to the type of
- *   content.
+ * @param $subtype
+ * @param $contexts
+ * @param $conf
  * @param $parents
  *   The #parents to be used on the form, because some form gadgets need to
  *   know where they live.
+ * @return $form
+ *   The basic $form elements for the content type configuration form
  */
 function panels_ct_get_edit_form($type, $subtype, $contexts, $conf, $parents) {
   $form = panels_ct_conf_form($type, $subtype, $contexts, $conf);
@@ -817,7 +819,7 @@ function panels_argument_load_contexts($arguments, &$contexts, $args) {
  *
  * @param $arguments
  *   The array of argument definitions
- * @param &$contexts
+ * @param $contexts
  *   The array of existing contexts.
  *
  * @return
@@ -1146,7 +1148,7 @@ function panels_context_get_contexts($contexts, $type = 'context') {
  */
 function panels_context_load_contexts($object, $placeholders = TRUE, $contexts = array()) {
   if ($placeholders) {
-    // This will load empty contexts as placeholders for argumens that come
+    // This will load empty contexts as placeholders for arguments that come
     // from external sources. If this isn't set, it's assumed these context
     // will already have been matched up and loaded.
     if (!empty($object->requiredcontexts) && is_array($object->requiredcontexts)) {
