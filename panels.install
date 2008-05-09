@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.37 2008/05/08 20:38:38 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.38 2008/05/09 05:50:01 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -49,6 +49,7 @@ EOT
           cache text,
           shown text,
           title varchar(128),
+          hide_title tinyint DEFAULT 0,
           PRIMARY KEY (did)
         );
 EOT
@@ -127,6 +128,7 @@ EOT
           cache text,
           shown text,
           title varchar(128),
+          hide_title int(1) DEFAULT 0
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
       );
@@ -524,11 +526,15 @@ function panels_update_5216() {
     case 'mysql':
     case 'mysqli':
       $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN shown text AFTER cache");
-      $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN title text AFTER shown");
+      $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN title varchar(128) AFTER shown");
+      $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN hide_title int(1) AFTER title");
+      $ret[] = update_sql("ALTER TABLE {panels_display} DROP COLUMN name");
       break;
     case 'pgsql':
       db_add_column($ret, 'panels_display', 'shown', 'text');
-      db_add_column($ret, 'panels_display', 'title');
+      db_add_column($ret, 'panels_display', 'title', 'varchar(128)');
+      db_add_column($ret, 'panels_display', 'hide_title', 'tinyint', array('default' => 0));
+      $ret = update_sql("ALTER TABLE {panels_display} DROP name");
   }
   return $ret;
 }
