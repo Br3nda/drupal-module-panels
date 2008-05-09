@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.92 2008/05/09 05:51:12 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.93 2008/05/09 18:20:51 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -459,15 +459,18 @@ function panels_edit($display, $destination = NULL, $content_types = NULL) {
  * @param mixed $destination
  *  Basic usage is a string containing the URL that the form should redirect to upon submission.
  *  For a discussion of advanced usages, see panels_edit().
+ * @param array $layout_types
+ *  An array of layout system names indicating which layouts are to be allowed for selection when
+ *  the form is generated. If no value is provided, then all available layouts are allowed.
  * @return
  *  Can return nothing, or a modified $display object, or a redirection string; return values for the 
  *  panels_edit* family of functions are quite complex. See panels_edit() for detailed discussion. 
  * @see panels_edit()
  */
-function panels_edit_layout($display, $finish, $destination = NULL) {
+function panels_edit_layout($display, $finish, $destination = NULL, $allowed_layouts = NULL) {
   panels_load_include('display_edit');
   panels_load_include('plugins');
-  return _panels_edit_layout($display, $finish, $destination);
+  return _panels_edit_layout($display, $finish, $destination, $allowed_layouts);
 }
 
 /**
