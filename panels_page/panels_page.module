@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.41 2008/02/21 01:24:30 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.42 2008/05/09 00:13:21 sdboyer Exp $
 
 /**
  * Implementation of hook_help()
@@ -1041,7 +1041,12 @@ function panels_page_save($panel_page) {
 function panels_page_delete($panel_page) {
   db_query("DELETE FROM {panels_page} WHERE pid = %d", $panel_page->pid);
   menu_rebuild();
-  return panels_delete_display($panel_page->did);
+  panels_delete_display($panel_page->did);
+  foreach ($panel_page->displays as $info) {
+    if ($info['did'] !== 'new') {
+      panels_delete_display($info['did']);
+    }
+  }
 }
 
 /**
