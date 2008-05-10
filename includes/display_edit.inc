@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.28 2008/05/09 13:59:55 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.29 2008/05/10 21:59:47 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -243,11 +243,25 @@ function panels_edit_display_submit($form_id, $form_values) {
  *
  * @see panels_edit_layout() for details on the various behaviors of this function.
  */
-function _panels_edit_layout($display, $finish, $destination) {
+function _panels_edit_layout($display, $finish, $destination, $allowed_layouts) {
+  panels_load_include('common');
+  if (is_string($allowed_layouts)) { // module_name has been provided; the data was saved by the api_save() method.
+    $allowed_layouts = unserialize(variable_get($allowed_layouts . "_allowed_layouts", serialize('')));
+  }
+  if (!$allowed_layouts) { // if no parameter was provided, or the variable_get failed
+    $allowed_layouts = unserialize(variable_get('panels_common_allowed_layouts', serialize(''))); // tries to load the common panels allowed layouts
+    if (!$allowed_layouts) { 
+      $allowed_layouts = new panels_allowed_layouts(); // still no dice. simply creates a dummy version where all layouts are allowed.
+      $allowed_layouts->inclusive = TRUE;
+    }
+  }
+  // sanitize allowed layout listing; this is redundant if the $allowed_layouts param was null, but the data is cached anyway
+  $allowed_layouts->sync_with_available();
+  unset ($allowed_layouts->layout_settings['flexible'], $allowed_layouts->layout_settings['twocol_stacked'], $allowed_layouts->layout_settings['twocol_bricks'], $allowed_layouts->layout_settings['twocol']);
   // Break out the form pieces so we can return the new $display upon
   // successful submit.
   $form_id = 'panels_choose_layout';
-  $form = drupal_retrieve_form($form_id, $display, $finish, $destination);
+  $form = drupal_retrieve_form($form_id, $display, $finish, $destination, array_filter($allowed_layouts->layout_settings));
 
   if ($result = drupal_process_form($form_id, $form)) {
     // successful submit
@@ -262,9 +276,8 @@ function _panels_edit_layout($display, $finish, $destination) {
  * 
  * @ingroup forms
  */
-function panels_choose_layout($display, $finish, $destination) {
-  $layouts = panels_get_layouts();
-
+function panels_choose_layout($display, $finish, $destination, $allowed_layouts) {
+  $layouts = array_intersect_key(panels_get_layouts(), $allowed_layouts);
   foreach ($layouts as $id => $layout) {
     $options[$id] = panels_print_layout_icon($id, $layout, check_plain($layout['title']));
   }
@@ -274,7 +287,7 @@ function panels_choose_layout($display, $finish, $destination) {
     '#type' => 'radios',
     '#title' => t('Choose layout'),
     '#options' => $options,
-    '#default_value' => $display->layout,
+    '#default_value' => in_array($display->layout, array_keys($layouts)) ? $display->layout : NULL, 
   );
 
   $form['clearer'] = array(

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.93 2008/05/09 18:20:51 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.94 2008/05/10 21:59:46 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -384,7 +384,7 @@ function panels_get($var) {
  * 
  * Sample implementations utiltizing the the complex $destination behavior can be found
  * in panels_page_edit_content() and, in a separate contrib module, OG Blueprints
- * (http://drupal.org/project/og_blueprints), og_blueprints_blueprint_edit().
+ * (@link http://drupal.org/project/og_blueprints), og_blueprints_blueprint_edit().
  * 
  * @ingroup mainapi
  * 
@@ -459,9 +459,22 @@ function panels_edit($display, $destination = NULL, $content_types = NULL) {
  * @param mixed $destination
  *  Basic usage is a string containing the URL that the form should redirect to upon submission.
  *  For a discussion of advanced usages, see panels_edit().
- * @param array $layout_types
- *  An array of layout system names indicating which layouts are to be allowed for selection when
- *  the form is generated. If no value is provided, then all available layouts are allowed.
+ * @param mixed $allowed_layouts
+ *  Allowed layouts has three different behaviors that depend on which of three value types 
+ *  are passed in by the caller:
+ *    #- if $allowed_layouts instanceof panels_allowed_layouts (includes subclasses): the most
+ *       complex use of the API. The caller is passing in a loaded panels_allowed_layouts object
+ *       that the client module previously created and stored somewhere using a custom storage
+ *       mechanism.
+ *    #- if is_string($allowed_layouts): the string will be used in a call to variable_get() which
+ *       will call the $allowed_layouts . '_allowed_layouts' var. If the data was stored properly
+ *       in the system var, the $allowed_layouts object will be unserialized and recreated.
+ *       @see panels_common_set_allowed_layouts()
+ *    #- if is_null($allowed_layouts): the default behavior, which also provides backwards 
+ *       compatibility for implementations of the Panels2 API written before beta4. In this case,
+ *       a dummy panels_allowed_layouts object is created which does not restrict any layouts.
+ *       Subsequent behavior is indistinguishable from pre-beta4 behavior.
+ * 
  * @return
  *  Can return nothing, or a modified $display object, or a redirection string; return values for the 
  *  panels_edit* family of functions are quite complex. See panels_edit() for detailed discussion. 
@@ -526,9 +539,6 @@ function panels_edit_layout_settings($display, $finish, $destination = NULL, $ti
   return _panels_edit_layout_settings( $display, $finish, $destination, $title);
 }
 
-/**
- * }@ End of 'degroup mainapi', although other functions are specifically added later
- */
 
 // ---------------------------------------------------------------------------
 // panels database functions
@@ -536,7 +546,6 @@ function panels_edit_layout_settings($display, $finish, $destination = NULL, $ti
 /**
  * Forms the basis of a panel display
  * 
- * @ingroup mainapi
  */
 class panels_display {
   var $args = array();
@@ -584,6 +593,10 @@ class panels_display {
     return ++$next_id;
   }
 }
+
+/**
+ * }@ End of 'degroup mainapi', although other functions are specifically added later
+ */
 
 function panels_export_pane_across_displays($source_display, &$target_display, $pid, $location = FALSE) {
   $pane = $source_display->clone_pane($pid);
