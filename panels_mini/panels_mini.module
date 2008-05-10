@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.21 2008/05/10 23:34:20 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.22 2008/05/10 23:44:25 sdboyer Exp $
 
 /**
  * Implementation of hook_help()
@@ -553,6 +553,7 @@ function panels_mini_edit_form_submit($form_id, $form_values) {
 
   if ($panel_mini->pid == 'new') {
     unset($_SESSION['pm_import']);
+    drupal_set_message(t('Your new mini panel %title has been saved.', array('%title' => $panel_mini->title)));
     panels_mini_save($panel_mini);
     $GLOBALS['form_values']['pid'] = $panel_mini->pid;
 

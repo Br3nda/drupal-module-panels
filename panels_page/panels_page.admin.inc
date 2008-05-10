@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.40 2008/05/10 23:34:20 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.41 2008/05/10 23:44:25 sdboyer Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -355,6 +355,7 @@ function panels_page_edit_form_submit($form_id, $form_values) {
 
   if ($panel_page->pid == 'new') {
     unset($_SESSION['pp_import']);
+    drupal_set_message(t('Your new panel page %title has been saved.', array('%title' => $panel_page->title)));
     $pid = panels_page_save($panel_page);
     $GLOBALS['form_values']['pid'] = $pid;
     $layout = panels_get_layout($panel_page->display->layout);
