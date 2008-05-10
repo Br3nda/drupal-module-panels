@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.20 2008/05/10 23:06:28 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.21 2008/05/10 23:34:20 sdboyer Exp $
 
 /**
  * Implementation of hook_help()
@@ -350,13 +350,13 @@ function panels_mini_import_form() {
     '#type' => 'textarea',
     '#title' => t('Panel mini code'),
     '#cols' => 60,
-    '#rows' => 6,
-    '#description' => t('Cut and paste the results of an Export Panel mini here.'),
+    '#rows' => 15,
+    '#description' => t('Cut and paste the results of an exported mini panel here.'),
   );
 
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => t("Submit"),
+    '#value' => t('Import'),
   );
 
   $form['#redirect'] = NULL;
@@ -372,7 +372,7 @@ function panels_mini_import_form_submit($form_id, $form) {
   ob_end_clean();
 
   if (isset($mini)) {
-    drupal_set_title(t('Import panel mini "@s"', array('@s' => $mini->title)));
+    drupal_set_title(t('Import mini panel "@s"', array('@s' => $mini->title)));
     $_SESSION['pm_import'] = $mini;
     $output = drupal_get_form('panels_mini_edit_form', $mini);
     print theme('page', $output);
