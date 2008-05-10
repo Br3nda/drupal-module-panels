@@ -1,4 +1,4 @@
-# $Id: panels2.doxy,v 1.1.2.3 2008/05/08 20:37:37 sdboyer Exp $
+# $Id: panels2.doxy,v 1.1.2.4 2008/05/10 21:44:24 sdboyer Exp $
 # Doxyfile 1.5.5
 
 #---------------------------------------------------------------------------
@@ -94,7 +94,7 @@ FILE_PATTERNS          = *.module *.theme *.engine *.install *.inc
 RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = 
+EXCLUDE_PATTERNS       = .svn CVS
 EXCLUDE_SYMBOLS        = 
 EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       = 
