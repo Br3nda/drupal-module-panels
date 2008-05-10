@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.38 2008/05/09 13:55:33 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.39 2008/05/10 23:06:28 sdboyer Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -145,7 +145,7 @@ function panels_page_delete_confirm($panel_page) {
 /*
  * Handle the submit button to delete a panel page.
  */
-function panels_page_delete_confirm_submit($formid, $form) {
+function panels_page_delete_confirm_submit($form_id, $form) {
   if ($form['confirm']) {
     panels_page_delete((object) $form);
     // TODO: Is this necessary or did we feed it the location already?
@@ -826,7 +826,7 @@ function panels_page_import_form() {
 /*
  * Handle the submit button on importing a panel page.
  */
-function panels_page_import_form_submit($formid, $form) {
+function panels_page_import_form_submit($form_id, $form) {
   ob_start();
   eval($form['panel_page']);
   ob_end_clean();
