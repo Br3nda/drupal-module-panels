@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.30 2008/05/14 22:00:38 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.31 2008/05/14 22:12:12 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -491,6 +491,7 @@ function panels_edit_layout_settings_form($display, $finish, $destination, $titl
     $form['display_title']['hide_title'] = array(
       '#type' => 'checkbox',
       '#title' => t('Hide Title?'),
+      '#default_value' => $display->hide_title,
       '#description' => t('Check this box to hide the main page title for this panel.'),
     );
           
