@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.29 2008/05/10 21:59:47 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.30 2008/05/14 22:00:38 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -157,10 +157,6 @@ function panels_edit_display($display, $destination) {
     '#id' => 'panels-cache-settings',
   );
 
-  if ($submit) {
-    // The caller wants their own submit.
-    $form['#submit'] = array($submit => array());
-  }
   return $form;
 }
 
