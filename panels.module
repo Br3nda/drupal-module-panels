@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.94 2008/05/10 21:59:46 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.95 2008/05/16 00:44:27 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -384,7 +384,7 @@ function panels_get($var) {
  * 
  * Sample implementations utiltizing the the complex $destination behavior can be found
  * in panels_page_edit_content() and, in a separate contrib module, OG Blueprints
- * (@link http://drupal.org/project/og_blueprints), og_blueprints_blueprint_edit().
+ * (http://drupal.org/project/og_blueprints), og_blueprints_blueprint_edit().
  * 
  * @ingroup mainapi
  * 
@@ -595,7 +595,7 @@ class panels_display {
 }
 
 /**
- * }@ End of 'degroup mainapi', although other functions are specifically added later
+ * }@ End of 'defgroup mainapi', although other functions are specifically added later
  */
 
 function panels_export_pane_across_displays($source_display, &$target_display, $pid, $location = FALSE) {
@@ -871,6 +871,7 @@ function panels_var_export($object, $prefix = '') {
  * if $incoming_content is NULL, default content will be applied. Use
  * an empty string to indicate no content.
  * @render
+ * @ingroup hook_invocations
  */
 function panels_render_display(&$display) {
   panels_load_include('plugins');
@@ -975,7 +976,7 @@ function panels_render_panes($display) {
 
   foreach ($display->content as $pid => $pane) {
     // If the user can't see this pane, do not render it.
-    if (!panels_pane_access($pane)) {
+    if (!panels_pane_access($pane)) { // TODO this is where visibility should be called.
       continue;
     }
 
