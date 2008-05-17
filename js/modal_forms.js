@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.9 2008/05/17 07:05:45 sdboyer Exp $
+// $Id: modal_forms.js,v 1.1.2.10 2008/05/17 07:07:36 sdboyer Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -115,7 +115,7 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
   }
   else if (data.type == 'add') {
     // Give it all the goodies that our existing panes have.   
-    $('#panel-pane-' + data.area).append(data.output);
+    $('#panel-pane-' + data.region).append(data.output);
     
     Drupal.Panels.attachPane('#panel-pane-' + data.id);
     Drupal.Panels.changed($('#panel-pane-' + data.id));
