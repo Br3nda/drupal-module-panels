@@ -15,7 +15,7 @@ div.panels-display h2.label {
   font-size: 13pt;
   margin: 0 0 .5em 0;
   padding-right: 16px;
-  vertical-align: center;
+  vertical-align: middle;
 }
 
 div.panels-display .pane-add {
@@ -88,9 +88,11 @@ div.panels-display .pane-add {
   display: inline;
 }
 
-.panel-pane .buttons input.pane-delete, 
-.panel-pane .buttons input.pane-cache, 
-.panel-pane .buttons input.pane-configure {
+.panel-pane .buttons input.pane-delete,
+.panel-pane .buttons input.pane-cache,
+.panel-pane .buttons input.pane-configure,
+.panel-pane .buttons input.pane-show,
+.panel-pane .buttons input.pane-hide {
   margin: 2px 1px;
 }
 
