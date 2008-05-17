@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.95 2008/05/16 00:44:27 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.96 2008/05/17 16:56:35 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -281,14 +281,6 @@ function panels_add_button($image, $name, $text, $class, $id = NULL) {
  */
 function panels_cache_get($did) {
   return panels_common_cache_get('panels', $did);
-/*
-  static $cache = array();
-  if (!array_key_exists($did, $cache)) {
-    $data = cache_get('panels_display:' . session_id() . ':' . $did, 'cache');
-    $cache[$did] = unserialize($data->data);
-  }
-  return $cache[$did];
-*/
 }
 
 /**
@@ -296,7 +288,6 @@ function panels_cache_get($did) {
  */
 function panels_cache_set($did, $cache) {
   return panels_common_cache_set('panels', $did, $cache);
-//  cache_set('panels_display:' . session_id() . ':' . $did, 'cache', serialize($cache), time() + 86400);
 }
 
 /**
@@ -304,7 +295,6 @@ function panels_cache_set($did, $cache) {
  */
 function panels_cache_clear($did) {
   return panels_common_cache_clear('panels', $did);
-//  cache_clear_all('panels_display:' . session_id() . ':' . $did, 'cache');
 }
 
 // ---------------------------------------------------------------------------
