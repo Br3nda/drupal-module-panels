@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.31 2008/05/14 22:12:12 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.32 2008/05/17 02:22:35 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -580,7 +580,7 @@ function panels_edit_layout_settings_form_submit($form_id, $form_values) {
  * @param $pane
  *   The pane to edit.
  * @param $parents
- *   The form api #parents array for that this subform will live in.
+ *   The form api #parents array that this subform will live in.
  */
 function panels_get_pane_edit_form($pane, $contexts, $parents) {
   return panels_ct_get_edit_form($pane->type, $pane->subtype, $contexts, $pane->configuration, $parents);
@@ -594,7 +594,7 @@ function panels_get_pane_edit_form($pane, $contexts, $parents) {
  * @param $left_buttons
  *   Buttons that go on the left side of the pane.
  * @param $buttons
- *   Buttons that go on the right side of
+ *   Buttons that go on the right side of the pane.
  * @param $skin
  *   If true, provide the outside div. Used to provide an easy way to get
  *   just the innards for ajax replacement
@@ -1070,7 +1070,7 @@ function panels_edit_cache_method_form_submit($form_id, $form_values) {
  * Handle the cache settings form
  */
 function panels_ajax_cache_settings($cache, $pid, $method = NULL) {
-  if (empty($method)) {
+  if (empty($method) && isset($_POST['method'])) {
     // Retrieve the method from the form.
     $method = $_POST['method'];
   }

@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.33 2008/05/14 22:02:08 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.34 2008/05/17 02:22:35 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -283,10 +283,10 @@ function panels_ct_conf_form($type, $id, $contexts, $conf) {
  *   The #parents to be used on the form, because some form gadgets need to
  *   know where they live.
  */
-function panels_ct_get_add_form($type, $id, $contexts, $parents) {
-  $form = panels_ct_conf_form($type, $id, $contexts, array());
+function panels_ct_get_add_form($content_type, $id, $contexts, $parents) {
+  $form = panels_ct_conf_form($content_type, $id, $contexts, array());
 
-  if ($function = panels_plugin_get_function('content_types', $type, 'add callback')) {
+  if ($function = panels_plugin_get_function('content_types', $content_type, 'add callback')) {
     $result = $function($id, $parents);
     if (is_array($result)) {
       $form += $result;
@@ -304,8 +304,8 @@ function panels_ct_get_add_form($type, $id, $contexts, $parents) {
  * @param $form_values
  *   The actual Forms API values being validated.
  */
-function panels_ct_validate_add_form($type, $form, $form_values) {
-  if ($function = panels_plugin_get_function('content_types', $type, 'add validate callback')) {
+function panels_ct_validate_add_form($content_type, $form, $form_values) {
+  if ($function = panels_plugin_get_function('content_types', $content_type, 'add validate callback')) {
     return $function($form, $form_values);
   }
 }
@@ -337,10 +337,10 @@ function panels_ct_submit_add_form($type, $form_values) {
  * @return $form
  *   The basic $form elements for the content type configuration form
  */
-function panels_ct_get_edit_form($type, $subtype, $contexts, $conf, $parents) {
-  $form = panels_ct_conf_form($type, $subtype, $contexts, $conf);
+function panels_ct_get_edit_form($content_type, $subtype, $contexts, $conf, $parents) {
+  $form = panels_ct_conf_form($content_type, $subtype, $contexts, $conf);
 
-  if ($function = panels_plugin_get_function('content_types', $type, 'edit callback')) {
+  if ($function = panels_plugin_get_function('content_types', $content_type, 'edit callback')) {
     $result = $function($subtype, $parents, $conf);
     if (is_array($result)) {
       $form += $result;

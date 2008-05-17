@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.23 2008/05/10 22:58:53 sdboyer Exp $
+// $Id: common.inc,v 1.1.2.24 2008/05/17 02:22:35 sdboyer Exp $
 
 /**
  * @file
@@ -337,7 +337,7 @@ function panels_common_get_allowed_types($module, $contexts = array(), $has_cont
 /**
  * The FAPI code for generating an 'allowed layouts' selection form.
  * 
- * NOTE: Because the Panels API does not guarantee a particular method of storing the data on layouts,
+ * NOTE: Because the Panels API does not guarantee a particular method of storing the data on allowed layouts,
  * it is not_possible for the Panels API to implement any checks that determine whether reductions in
  * the set of allowed layouts conflict with pre-existing layout selections. $displays in that category 
  * will continue to function with their current layout as normal until the user/owner/admin attempts
