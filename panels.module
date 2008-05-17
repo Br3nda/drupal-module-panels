@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.96 2008/05/17 16:56:35 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.97 2008/05/17 22:49:34 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -574,6 +574,7 @@ class panels_display {
   function next_new_pid() {
     // necessary if/until we use this method and ONLY this method for adding temporary pids.
     // then we can do it with a nice static var.
+    $id = array(0);
     foreach (array_keys($this->content) as $pid) {
       if (!is_numeric($pid)) {
         $id[] = substr($pid, 4);
@@ -735,7 +736,7 @@ function panels_save_display(&$display) {
   }
   else {
     $display->did = db_next_id("{panels_display}_did");
-    db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings, cache) VALUES (%d, '%s', '%s', '%s', '%s')", $display->did, $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache));
+    db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings, cache, shown, title, hide_title) VALUES (%d, '%s', '%s', '%s', '%s', '%s' , '%s' , %d)", $display->did, $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), serialize($display->shown), $display->title, $display->hide_title);
   }
 
   // update all the panes
@@ -753,7 +754,7 @@ function panels_save_display(&$display) {
         $pane->cache = array();
       }
 
-      db_query("INSERT INTO {panels_pane} (pid, did, panel, type, subtype, configuration, cache, access, position) VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', %d)", $pane->pid, $display->did, $pane->panel, $pane->type, $pane->subtype, serialize($pane->configuration), serialize($pane->cache), !empty($pane->access) ? implode(', ', $pane->access) : '', $pane->position);
+      db_query("INSERT INTO {panels_pane} (pid, did, panel, type, subtype, configuration, cache, access, visibility, position) VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s' %d)", $pane->pid, $display->did, $pane->panel, $pane->type, $pane->subtype, serialize($pane->configuration), serialize($pane->cache), !empty($pane->access) ? implode(', ', $pane->access) : '', serialize($pane->visibility), $pane->position);
       // and put it back so our pids and positions can be used
           $display->content[$pane->pid] = $pane;
       $new_panes[] = $pane->pid;
