@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.11 2007/12/31 06:35:47 merlinofchaos Exp $
+// $Id: list.js,v 1.1.2.12 2008/05/17 07:05:46 sdboyer Exp $
 
 /**
  * List object
@@ -396,7 +396,7 @@ Drupal.list = function(base, settings) {
               bindAjaxResponse(data);
             },
             error: function(data) {
-              alert('An error occurred');
+              alert('An error occurred while attempting to process the data.');
               $(input).parent().removeClass('throbbing');
               $(input).attr('disabled', false);
             }
@@ -422,7 +422,7 @@ Drupal.list = function(base, settings) {
             global: true,
             success: bindAjaxResponse,
             error: function(data) {
-              alert('An error occurred');
+              alert('An error occurred  while attempting to process the data.');
             }
           });
           return false;
