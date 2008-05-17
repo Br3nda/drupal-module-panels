@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.38 2008/05/09 05:50:01 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.39 2008/05/17 05:39:16 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -65,6 +65,7 @@ EOT
           type varchar(32),
           subtype varchar(64),
           access varchar(128),
+          visibility text,
           configuration text,
           cache text,
           position smallint,
@@ -141,6 +142,7 @@ EOT
           type varchar(32),
           subtype varchar(64),
           access varchar(128),
+          visibility text,
           configuration longtext,
           cache longtext,
           position int(5),
@@ -529,12 +531,15 @@ function panels_update_5216() {
       $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN title varchar(128) AFTER shown");
       $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN hide_title int(1) AFTER title");
       $ret[] = update_sql("ALTER TABLE {panels_display} DROP COLUMN name");
+      $ret[] = update_sql("ALTER TABLE {panels_pane ADD COLUMN visibility text AFTER access");
       break;
     case 'pgsql':
       db_add_column($ret, 'panels_display', 'shown', 'text');
       db_add_column($ret, 'panels_display', 'title', 'varchar(128)');
       db_add_column($ret, 'panels_display', 'hide_title', 'tinyint', array('default' => 0));
       $ret = update_sql("ALTER TABLE {panels_display} DROP name");
+      db_add_column($ret, 'panels_pane', 'visibility', 'text');
   }
   return $ret;
 }
+
