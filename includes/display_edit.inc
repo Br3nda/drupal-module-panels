@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.32 2008/05/17 02:22:35 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.33 2008/05/17 02:29:22 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -102,10 +102,12 @@ function panels_edit_display($display, $destination) {
     // This test ensures we don't put anything for panes that are in panels
     // that don't exist -- as can happen when flexible changes.
     if ($layout_panels[$pane->panel]) {
+      $is_hidden = in_array($pid, $display->shown);
       $form['button'][$pid]['#tree'] = TRUE;
       if ($caches && user_access('use panels caching features')) {
         $form['button'][$pid]['cache'] = panels_add_button('icon-cache.png', t('Caching'), t('Control caching'), 'pane-cache');
       }
+      $form['button'][$pid]['shown'] = panels_add_button('icon-showhide.png', t('Show/Hide'), $is_hidden ? t('Show this pane') : t('Hide this pane'), $is_hidden ? 'pane-hidden' : 'pane-shown');
       $form['button'][$pid]['configure'] = panels_add_button('icon-configure.png', t('Configure'), t('Configure this pane'), 'pane-configure');
       $form['button'][$pid]['delete'] = panels_add_button('icon-delete.png', t('Delete'), t('Remove this pane'), 'pane-delete');
     }
@@ -183,6 +185,7 @@ function theme_panels_edit_display($form) {
     foreach ((array) $display->panels[$panel_id] as $pid) {
       $pane = $display->content[$pid];
       $left_buttons = NULL;
+      $buttons .= drupal_render($form['button'][$pid]['show_hide']);
       $buttons = !empty($form['button'][$pid]['cache']) ? drupal_render($form['button'][$pid]['cache']) : '';
       $buttons .= drupal_render($form['button'][$pid]['configure']);
       $buttons .= drupal_render($form['button'][$pid]['delete']);
@@ -932,7 +935,7 @@ function panels_edit_pane_config_form($display, $pid = NULL) {
   $return->title = t('Configure !s', array('!s' => panels_get_pane_title($pane, $display->context)));
 
   $form['configuration'] = panels_get_pane_edit_form($pane, $display->context, array('configuration'));
-  $form['configuration']['#tree'] = true;
+  $form['configuration']['#tree'] = TRUE;
 
   if (user_access('administer pane visibility')) {
     $rids = array();
