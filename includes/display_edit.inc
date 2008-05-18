@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.34 2008/05/18 07:48:51 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.35 2008/05/18 07:56:06 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -122,7 +122,7 @@ function panels_edit_display($display, $destination) {
 
   foreach ($layout_panels as $panel_id => $title) {
     $form['panel']['pane'][$panel_id] = array(
-      '#type' => 'hidden',
+      '#type' => 'value',
       '#default_value' => implode(',', (array) $display->panels[$panel_id]),
     );
   }
@@ -609,11 +609,16 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
   $content_type = panels_get_content_type($pane->type);
   if (empty($content_type)) {
     $block = new stdClass();
-    $block->title = t('Missing content type');
+    $block->title = '<em>' . t('Missing content type') . '</em>';
     $block->content = t('This pane\'s content type is either missing or has been deleted. This pane will not render.');
   }
+  elseif (in_array($pane->type, array('views', 'views2'))) {
+    $block = _panels_render_preview_views_pane();
+  }
   else {
-    $block = panels_render_pane($display, $pane);
+    // $block = panels_render_pane($display, $pane);
+    $block->title = t('Placeholder');
+    $block->title = t('Temporarily disabling all pane rendering on display edit form.');
   }
 
     $title = panels_get_pane_title($pane, $display->context);
@@ -641,6 +646,7 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
  * @param integer $pid
  *  The id of the pane object being edited (if any).
  */
+// TODO deprecated. should be able to remove it.
 function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
   switch ($op) {
     case 'submit-form':
@@ -653,6 +659,16 @@ function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
   panels_ajax_render($output);
 }
 
+/**
+ * Entry point for AJAX: 'Add Content' modal form, from which the user selects the
+ * type of pane to add.
+ *
+ * @param int $did
+ *  The display id of the $display object currently being edited.
+ * @param string $panel_id
+ *  A string with the name of the panel region to which the selected
+ *  pane type will be added.
+ */
 function panels_ajax_add_content($did = NULL, $panel_id = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
     $display = $cache->display;
@@ -671,7 +687,7 @@ function panels_ajax_add_content($did = NULL, $panel_id = NULL) {
 function panels_add_content($cache, $panel_id) {
   $return->type = 'display';
   $return->title = t('Choose type');
-  panels_set('return', $return);
+  panels_set('return', $return); // TODO get rid of this deprecated method
 
   if (!isset($cache->content_types)) {
     $cache->content_types = panels_get_available_content_types();
@@ -1345,6 +1361,10 @@ function panels_panel_settings($display) {
 
   return $form;
 }
+
+/**
+ * }@ End of 'defgroup panels_ajax'
+ */
 
 function panels_panel_settings_validate($form_id, $form_values, $form) {
   $settings = panels_common_cache_get('style_settings', $form_values['panel_settings']['did']);
