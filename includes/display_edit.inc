@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.33 2008/05/17 02:29:22 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.34 2008/05/18 07:48:51 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -107,7 +107,7 @@ function panels_edit_display($display, $destination) {
       if ($caches && user_access('use panels caching features')) {
         $form['button'][$pid]['cache'] = panels_add_button('icon-cache.png', t('Caching'), t('Control caching'), 'pane-cache');
       }
-      $form['button'][$pid]['shown'] = panels_add_button('icon-showhide.png', t('Show/Hide'), $is_hidden ? t('Show this pane') : t('Hide this pane'), $is_hidden ? 'pane-hidden' : 'pane-shown');
+      $form['button'][$pid]['show_hide'] = panels_add_button($is_hidden ? 'icon-showpane.png' : 'icon-hidepane.png', t('Show/Hide Toggle'), $is_hidden ? t('Show this pane') : t('Hide this pane'), $is_hidden ? 'pane-show' : 'pane-hide');
       $form['button'][$pid]['configure'] = panels_add_button('icon-configure.png', t('Configure'), t('Configure this pane'), 'pane-configure');
       $form['button'][$pid]['delete'] = panels_add_button('icon-delete.png', t('Delete'), t('Remove this pane'), 'pane-delete');
     }
@@ -185,8 +185,10 @@ function theme_panels_edit_display($form) {
     foreach ((array) $display->panels[$panel_id] as $pid) {
       $pane = $display->content[$pid];
       $left_buttons = NULL;
-      $buttons .= drupal_render($form['button'][$pid]['show_hide']);
-      $buttons = !empty($form['button'][$pid]['cache']) ? drupal_render($form['button'][$pid]['cache']) : '';
+      $buttons = drupal_render($form['button'][$pid]['show_hide']);
+      if (!empty($form['button'][$pid]['cache'])) {
+        $buttons .= drupal_render($form['button'][$pid]['cache']);
+      }
       $buttons .= drupal_render($form['button'][$pid]['configure']);
       $buttons .= drupal_render($form['button'][$pid]['delete']);
       $content[$pane->panel] .= panels_show_pane($display, $pane, $left_buttons, $buttons);
@@ -1353,10 +1355,6 @@ function panels_panel_settings_submit($form_id, $form_values) {
   panels_common_cache_clear('style_settings', $form_values['panel_settings']['did']);
 }
 
-
-/**
- * }@ End of 'defgroup panels_ajax'
- */
 
 /**
  * AJAX incoming to deal with the style settings modal
