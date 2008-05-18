@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.24 2008/05/17 02:22:35 sdboyer Exp $
+// $Id: common.inc,v 1.1.2.25 2008/05/18 00:46:52 sdboyer Exp $
 
 /**
  * @file
@@ -43,11 +43,12 @@
  */
 class panels_allowed_layouts {
   /** 
-   *  Indicates whether $this treats newly-added layouts inclusively or exclusively:
-   *    - (if TRUE, the default: newly added layouts ARE available) or exclusively
-   *    - (if FALSE: newly added layouts are NOT available until explicitly added).
+   *  Specifies whether newly-added layouts (as in, new .inc files) should be automatically
+   *  allowed (TRUE) or disallowed (FALSE) for $this. Defaults to TRUE, which is more 
+   *  permissive but less of an administrative hassle if/when you add new layouts. Note
+   *  that this parameter will be derived from $allowed_layouts if a value is passed in.
    */
-  var $inclusive = TRUE;
+  var $allow_new = TRUE;
   
   /**
    *  Optional member. If provided, the Panels API will generate a drupal variable using
@@ -65,11 +66,11 @@ class panels_allowed_layouts {
    *  An associative array of all available layouts, keyed by layout name (as defined
    *  in the corresponding layout plugin definition), with value = 1 if the layout is
    *  allowed, and value = 0 if the layout is not allowed.
-   *  Calling array_filter(panels_allowed_layouts::$layout_settings) will return an associative array 
+   *  Calling array_filter(panels_allowed_layouts::$allowed_layout_settings) will return an associative array 
    *  containing only the allowed layouts, and wrapping that in array_keys() will
    *  return an indexed version of that array.
    */
-  var $layout_settings = array();
+  var $allowed_layout_settings = array();
 
   /**
    * Hack-imitation of D6's $form_state. Used by the panels_common_set_allowed_types()
@@ -79,7 +80,7 @@ class panels_allowed_layouts {
   var $form_state;
 
   /**
-   * Constructor function; loads the $layout_settings array with initial values according
+   * Constructor function; loads the $allowed_layout_settings array with initial values according
    * to $start_allowed
    *
    * @param bool $start_allowed
@@ -89,14 +90,14 @@ class panels_allowed_layouts {
    */
   function panels_allowed_layouts($start_allowed = TRUE) {
     foreach ($this->list_layouts() as $layout_name) { // TODO would be nice if there was a way to just fetch the names easily
-      $this->layout_settings[$layout_name] = $start_allowed ? 1 : 0;
+      $this->allowed_layout_settings[$layout_name] = $start_allowed ? 1 : 0;
     }
   }
     
   /**
    * Manage panels_common_set_allowed_layouts(), the FAPI code for selecting allowed layouts.
    * 
-   * MAKE SURE to set panels_allowed_layouts::inclusive before calling this method. If you want the panels API
+   * MAKE SURE to set panels_allowed_layouts::allow_new before calling this method. If you want the panels API
    * to handle saving these allowed layout settings, panels_allowed_layouts::module_name must also be set.
    * 
    * Below is a sample implementation; refer to the rest of the class documentation to understand all the 
@@ -107,7 +108,7 @@ class panels_allowed_layouts {
    *    panels_load_include('common');
    *    if (!is_a($allowed_layouts = unserialize(variable_get('panels_common_allowed_layouts', serialize(''))), 'panels_allowed_layouts')) {
    *     $allowed_layouts = new panels_allowed_layouts();
-   *      $allowed_layouts->inclusive = TRUE;
+   *      $allowed_layouts->allow_new = TRUE;
    *      $allowed_layouts->module_name = '<client_module_name>';
    *    }
    *    $result = $allowed_layouts->set_allowed('<Desired client module form title>');
@@ -139,7 +140,7 @@ class panels_allowed_layouts {
    *  - On the first passthrough when the form is being rendered, $result is the form's structured 
    *    HTML, ready to be pushed to the screen with a call to theme('page', ...).
    *  - A successful second passthrough indicates a successful submit, and 
-   *    $result === panels_allowed_layouts::layout_settings. Returning it is simply for convenience.
+   *    $result === panels_allowed_layouts::allowed_layout_settings. Returning it is simply for convenience.
    */
   function set_allowed($title = 'Panels: Allowed Layouts') {
     $this->sync_with_available();
@@ -157,18 +158,18 @@ class panels_allowed_layouts {
   }
   
   /**
-   * Checks for newly-added layouts and deleted layouts. If any are found, updates panels_allowed_layouts::layout_settings;
-   * new additions are made according to panels_allowed_layouts::inclusive, while deletions are unset().
+   * Checks for newly-added layouts and deleted layouts. If any are found, updates panels_allowed_layouts::allowed_layout_settings;
+   * new additions are made according to panels_allowed_layouts::allow_new, while deletions are unset().
    * 
    * Note that any changes made by this function are not saved in any permanent location.
    */
   function sync_with_available() {
     $layouts = $this->list_layouts();
-    foreach (array_diff($layouts, array_keys($this->layout_settings)) as $new_layout) {
-      $this->layout_settings[$new_layout] = $this->inclusive ? 1 : 0;
+    foreach (array_diff($layouts, array_keys($this->allowed_layout_settings)) as $new_layout) {
+      $this->allowed_layout_settings[$new_layout] = $this->allow_new ? 1 : 0;
     }
-    foreach (array_diff(array_keys($this->layout_settings), $layouts) as $deleted_layout) {
-      unset($this->layout_settings[$deleted_layout]);
+    foreach (array_diff(array_keys($this->allowed_layout_settings), $layouts) as $deleted_layout) {
+      unset($this->allowed_layout_settings[$deleted_layout]);
     }
   }
   
@@ -354,13 +355,9 @@ function panels_common_get_allowed_types($module, $contexts = array(), $has_cont
  * @param array $allowed_layouts
  *  The set of allowed layouts that should be used as the default values
  *  for this form. If none is provided, then by default no layouts will be restricted.
-
-  * @param bool $inclusive
- *  Specifies whether the list of allowed layouts should be inclusive (a list of the layouts
- *  that ARE allowed) or exclusive (a list of the layouts that are NOT allowed). Defaults to
- *  exclusive, which is more permissive but less of an administrative hassle if/when you
- *  add new layouts. Note that this parameter will be derived from $allowed_layouts if a value
- *  is passed in.
+ * @param string $title
+ *  The title that will be used for the form. Defaults to 'Panels: Allowed Layouts' if
+ *  no value was provided in panels_allowed_layouts::set_allowed.
  */ // TODO need to add something that handles $finish & $destination-type stuff. 
 function panels_common_set_allowed_layouts($allowed_layouts, $title) {
   $layouts = panels_get_layouts();
@@ -378,7 +375,7 @@ function panels_common_set_allowed_layouts($allowed_layouts, $title) {
     '#title' => t('Select allowed layouts'),
     '#options' => $options,
     '#description' => t('Check the boxes for all layouts you want to allow users choose from when picking a layout. You must allow at least one layout.'),
-    '#default_value' => array_keys(array_filter($allowed_layouts->layout_settings)),
+    '#default_value' => array_keys(array_filter($allowed_layouts->allowed_layout_settings)),
   );
   
   $form['clearer'] = array(
@@ -405,10 +402,10 @@ function panels_common_set_allowed_layouts_validate($form_id, $form_values, $for
 function panels_common_set_allowed_layouts_submit($form_id, $form_values) {
   list($allowed_layouts) = $form_values['variables'];
   foreach ($form_values['layouts'] as $layout => $setting) {
-    $allowed_layouts->layout_settings[$layout] = $setting === 0 ? 0 : 1;
+    $allowed_layouts->allowed_layout_settings[$layout] = $setting === 0 ? 0 : 1;
   }
   method_exists($allowed_layouts, 'save') ? $allowed_layouts->save() : $allowed_layouts->api_save();
-  return $allowed_layouts->layout_settings;
+  return $allowed_layouts->allowed_layout_settings;
 }
 
 /**
