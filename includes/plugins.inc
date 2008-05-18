@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.36 2008/05/18 07:38:25 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.37 2008/05/18 07:41:29 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -204,18 +204,13 @@ function panels_ct_get_title($type, $conf, $context = NULL, $incoming_content = 
 }
 
 /**
- * Create the basic config form
- *
- * TODO: This is in the wrong place, it should be part of the master form.
+ * Add the default FAPI elements to the content type configuration form
  */
-function panels_ct_conf_form($type, $id, $contexts, $conf) {
-  $content_type = panels_get_content_type($type);
-  $subtype = panels_ct_get_types($type);
-
-  $form = array();
-
-  if (!empty($subtype[$id]['required context']) && is_array($contexts)) {
-    $form['context'] = panels_context_selector($contexts, $subtype[$id]['required context'], $conf['context']);
+function panels_ct_conf_form($ct_data, $contexts, $conf) {
+  list($subtype, $content_type) = array($ct_data['subtype'], $ct_data['type']);
+  
+  if (!empty($subtype['required context']) && is_array($contexts)) {
+    $form['context'] = panels_context_selector($contexts, $subtype['required context'], isset($conf['context']) ? $conf['context'] : array());
   }
 
   // Unless we're not allowed to overide the title on this content type, add this
@@ -270,109 +265,63 @@ function panels_ct_conf_form($type, $id, $contexts, $conf) {
 }
 
 /**
- * Get the form to add a new instance of a content type.
- *
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $id
- *   The identifier for the content to add; this is specific to the type of
- *   content.
+ * Call any content type-defined add/edit callbacks so that additions
+ * to $form['configuration'] can be made.
+ * 
+ * @see panels_content_config_form()
+ * 
+ * @param object $pane
+ *   The $pane object currently being edited.
  * @param $contexts
  *   A list of possible contexts.
  * @param $parents
  *   The #parents to be used on the form, because some form gadgets need to
  *   know where they live.
+ * @param string $op
+ *  Either 'add' or 'edit' depending on the operation being performed.
+ * @param mixed $content_type
+ *  This variable should only be passed if the calling function already has access to the
+ *  relevant content_type data and wants to save a little on performance.
  */
-function panels_ct_get_add_form($content_type, $id, $contexts, $parents) {
-  $form = panels_ct_conf_form($content_type, $id, $contexts, array());
-
-  if ($function = panels_plugin_get_function('content_types', $content_type, 'add callback')) {
-    $result = $function($id, $parents);
-    if (is_array($result)) {
-      $form += $result;
-    }
+function panels_ct_pane_config_form($pane, $contexts, $parents, $op, $content_type = 'content_types') {
+  if ($function = panels_plugin_get_function($content_type, $pane->type, "$op callback")) {
+    return $function($pane->subtype, $parents, $pane->configuration);
   }
-  return $form;
 }
 
+
 /**
- * Call the validate handler for the add form for a content type.
+ * Call any add/edit validators defined by the content type.
+ * 
+ * @see panels_content_config_form_validate()
+ * 
  * @param $type
  *   The content type. May be the name or an already loaded content type object.
  * @param $form
  *   The actual Forms API form that is being validated.
  * @param $form_values
  *   The actual Forms API values being validated.
+ * @param string $op
+ *  Either 'add' or 'edit' depending on the operation being performed.
  */
-function panels_ct_validate_add_form($content_type, $form, $form_values) {
-  if ($function = panels_plugin_get_function('content_types', $content_type, 'add validate callback')) {
+function panels_ct_pane_validate_form($content_type, $form, $form_values, $op) {
+  if ($function = panels_plugin_get_function('content_types', $content_type, "$op validate callback")) {
     return $function($form, $form_values);
   }
 }
-
 /**
- * Call the submit handler for the add form for a content type.
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $form_values
- *   The actual Forms API values being validated.
- */
-function panels_ct_submit_add_form($type, $form_values) {
-  if ($function = panels_plugin_get_function('content_types', $type, 'add submit callback')) {
-    return $function($form_values);
-  }
-}
-
-/**
- * Get the form to edit an instance of a content type.
+ * Call any add/edit submit handlers defined by the content type.
  *
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $subtype
- * @param $contexts
- * @param $conf
- * @param $parents
- *   The #parents to be used on the form, because some form gadgets need to
- *   know where they live.
- * @return $form
- *   The basic $form elements for the content type configuration form
- */
-function panels_ct_get_edit_form($content_type, $subtype, $contexts, $conf, $parents) {
-  $form = panels_ct_conf_form($content_type, $subtype, $contexts, $conf);
-
-  if ($function = panels_plugin_get_function('content_types', $content_type, 'edit callback')) {
-    $result = $function($subtype, $parents, $conf);
-    if (is_array($result)) {
-      $form += $result;
-    }
-  }
-  return $form;
-}
-
-/**
- * Call the validate handler for the edit form for a content type.
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $form
- *   The actual Forms API form that is being validated.
+ * @param string $content_type
+ *  A string value containing the name of the content type.
  * @param $form_values
- *   The actual Forms API values being validated.
+ *  The $form_values['configuration'] sub-array generated by FAPI for the
+ *  overall ct add/edit submit handler.
+ * @param string $op
+ *  Either 'add' or 'edit' depending on the operation being performed.
  */
-function panels_ct_validate_edit_form($type, $form, $form_values) {
-  if ($function = panels_plugin_get_function('content_types', $type, 'edit validate callback')) {
-    return $function($form, $form_values);
-  }
-}
-
-/**
- * Call the submit handler for the edit form for a content type.
- * @param $type
- *   The content type. May be the name or an already loaded content type object.
- * @param $form_values
- *   The actual Forms API values being validated.
- */
-function panels_ct_submit_edit_form($type, $form_values) {
-  if ($function = panels_plugin_get_function('content_types', $type, 'edit submit callback')) {
+function panels_ct_pane_submit_form($content_type, $form_values, $op) {
+  if ($function = panels_plugin_get_function('content_types', $content_type, "$op submit callback")) {
     return $function($form_values);
   }
 }
@@ -1387,6 +1336,10 @@ function _panels_process_plugin($module, $identifier, $path, $hook) {
     $result[$name]['module'] = $module;
     $result[$name]['name'] = $name;
     $result[$name]['path'] = $path;
+    // Add some content type-specific defaults, but allow them to be overridden by declarations in the content type.
+    if (preg_match('/content_type/', $hook)) {
+      $result[$name] = array_merge(array('single' => FALSE, 'visibility serialize' => FALSE, 'ignore roles' => FALSE), $result[$name]);
+    }
   }
   return $result;
 }
