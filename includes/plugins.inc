@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.35 2008/05/18 07:35:37 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.36 2008/05/18 07:38:25 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -1237,7 +1237,8 @@ function panels_pane_select_context($pane, $contexts) {
  * @param $plugin
  *   The type of plugin
  * @param $which
- *   Either the loaded plugin object, or the specific plugin.
+ *   Either the loaded plugin object (or the same data in array form)
+ *   or a string with the name of the desired the specific plugin.
  * @param $function_name
  *   The identifier of the function. For example, 'settings form'.
  *
@@ -1246,17 +1247,16 @@ function panels_pane_select_context($pane, $contexts) {
  *   does not exist.
  */
 function panels_plugin_get_function($plugin, $which, $function_name) {
-  if (is_object($which)) {
-    $object = $which;
+  if (is_object($which) || is_array($which)) {
+    $plugin_data = $which;
   }
   else {
     $hook = "panels_$plugin";
-    $object = panels_get_plugins($plugin, $hook, $which);
+    $plugin_data = panels_get_plugins($plugin, $hook, $which);
   }
 
-  $function = $object[$function_name];
-  if (function_exists($function)) {
-    return $function;
+  if (isset($plugin_data[$function_name]) && function_exists($plugin_data[$function_name])) {
+    return $plugin_data[$function_name];
   }
 }
 
