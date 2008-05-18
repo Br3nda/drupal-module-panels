@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.34 2008/05/17 02:22:35 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.35 2008/05/18 07:35:37 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -226,13 +226,13 @@ function panels_ct_conf_form($type, $id, $contexts, $conf) {
     );
     $form['override_title'] = array(
       '#type' => 'checkbox',
-      '#default_value' => $conf['override_title'],
+      '#default_value' => isset($conf['override_title']) ? $conf['override_title'] : '',
       '#title' => t('Override title'),
       '#id' => 'override-title-checkbox',
     );
     $form['override_title_text'] = array(
       '#type' => 'textfield',
-      '#default_value' => $conf['override_title_text'],
+      '#default_value' => isset($conf['override_title_text']) ? $conf['override_title_text'] : '',
       '#size' => 35,
       '#id' => 'override-title-textfield',
     );
@@ -250,7 +250,7 @@ function panels_ct_conf_form($type, $id, $contexts, $conf) {
   if (user_access('administer advanced pane settings')) {
     $form['css_id'] = array(
       '#type' => 'textfield',
-      '#default_value' => $conf['css_id'],
+      '#default_value' => isset($conf['css_id']) ? $conf['css_id'] : '',
       '#title' => t('CSS ID'),
       '#description' => t('CSS ID to apply to this content. This may be blank.'),
       '#weight' => 2,
@@ -258,7 +258,7 @@ function panels_ct_conf_form($type, $id, $contexts, $conf) {
     );
     $form['css_class'] = array(
       '#type' => 'textfield',
-      '#default_value' => $conf['css_class'],
+      '#default_value' => isset($conf['css_class']) ? $conf['css_class'] : '',
       '#title' => t('CSS class'),
       '#description' => t('CSS class to apply to this content. This may be blank.'),
       '#weight' => 2,
@@ -505,7 +505,7 @@ function panels_get_pane_content($display, $pane, $args = array(), $context = NU
   if (!$context) {
     $context = new panels_context;
   }
-  if (!$incoming_content === '') {
+  if (!$incoming_content === '') { // FIXME misplaced bang?
     $incoming_content = t('Incoming content will be displayed here.');
   }
 
