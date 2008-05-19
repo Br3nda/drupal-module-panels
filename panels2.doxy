@@ -1,4 +1,4 @@
-# $Id: panels2.doxy,v 1.1.2.5 2008/05/18 07:28:33 sdboyer Exp $
+# $Id: panels2.doxy,v 1.1.2.6 2008/05/19 01:45:45 sdboyer Exp $
 # Doxyfile 1.5.5
 
 #---------------------------------------------------------------------------
@@ -6,13 +6,13 @@
 #---------------------------------------------------------------------------
 
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "Panels"
-PROJECT_NUMBER         = 2.0
-OUTPUT_DIRECTORY       = /var/www/doxy
+PROJECT_NAME           = "Panels 2"
+PROJECT_NUMBER         = dev
+OUTPUT_DIRECTORY       = doc
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
-REPEAT_BRIEF           = YES
+REPEAT_BRIEF           = NO
 ABBREVIATE_BRIEF       = 
 ALWAYS_DETAILED_SEC    = YES
 INLINE_INHERITED_MEMB  = YES
@@ -30,7 +30,7 @@ TAB_SIZE               = 2
 ALIASES                = 
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
-BUILTIN_STL_SUPPORT    = NO
+BUILTIN_STL_SUPPORT    = YES
 CPP_CLI_SUPPORT        = NO
 DISTRIBUTE_GROUP_DOC   = NO
 SUBGROUPING            = YES
@@ -66,23 +66,23 @@ GENERATE_TODOLIST      = YES
 GENERATE_TESTLIST      = YES
 GENERATE_BUGLIST       = YES
 GENERATE_DEPRECATEDLIST= YES
-ENABLED_SECTIONS       = 
+ENABLED_SECTIONS       = YES
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
-SHOW_DIRECTORIES       = YES
+SHOW_DIRECTORIES       = NO
 FILE_VERSION_FILTER    = 
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
 
-QUIET                  = NO
+QUIET                  = YES
 WARNINGS               = YES
-WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
-WARN_NO_PARAMDOC       = NO
+WARN_NO_PARAMDOC       = YES
 WARN_FORMAT            = "$file:$line: $text  "
-WARN_LOGFILE           = /var/log/doxy/drupal-doxy.log
+WARN_LOGFILE           = 
 
 #---------------------------------------------------------------------------
 # configuration options related to the input files
@@ -94,7 +94,7 @@ FILE_PATTERNS          = *.module *.theme *.engine *.install *.inc
 RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = .svn CVS
+EXCLUDE_PATTERNS       = .svn CVS cvs-release-notes.php
 EXCLUDE_SYMBOLS        = 
 EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       = 
@@ -110,11 +110,11 @@ FILTER_SOURCE_FILES    = NO
 
 SOURCE_BROWSER         = YES
 INLINE_SOURCES         = YES 
-STRIP_CODE_COMMENTS    = YES
+STRIP_CODE_COMMENTS    = NO
 REFERENCED_BY_RELATION = YES
 REFERENCES_RELATION    = YES
-REFERENCES_LINK_SOURCE = YES
-USE_HTAGS              = NO
+REFERENCES_LINK_SOURCE = NO
+USE_HTAGS              = YES
 VERBATIM_HEADERS       = YES
 
 #---------------------------------------------------------------------------
@@ -130,13 +130,13 @@ IGNORE_PREFIX          =
 #---------------------------------------------------------------------------
 
 GENERATE_HTML          = YES
-HTML_OUTPUT            = panels2
+HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
 HTML_HEADER            =
 HTML_FOOTER            =
 HTML_STYLESHEET        =
 HTML_ALIGN_MEMBERS     = YES
-GENERATE_HTMLHELP      = NO
+GENERATE_HTMLHELP      = YES
 HTML_DYNAMIC_SECTIONS  = YES
 CHM_FILE               = 
 HHC_LOCATION           = 
@@ -152,17 +152,17 @@ TREEVIEW_WIDTH         = 250
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
 
-GENERATE_LATEX         = NO
+GENERATE_LATEX         = YES
 LATEX_OUTPUT           = latex
 LATEX_CMD_NAME         = latex
 MAKEINDEX_CMD_NAME     = makeindex
 COMPACT_LATEX          = NO
-PAPER_TYPE             = a4wide
+PAPER_TYPE             = letter
 EXTRA_PACKAGES         = 
 LATEX_HEADER           = 
-PDF_HYPERLINKS         = NO
-USE_PDFLATEX           = NO
-LATEX_BATCHMODE        = NO
+PDF_HYPERLINKS         = YES
+USE_PDFLATEX           = YES
+LATEX_BATCHMODE        = YES
 LATEX_HIDE_INDICES     = NO
 
 #---------------------------------------------------------------------------
@@ -189,7 +189,7 @@ MAN_LINKS              = NO
 # configuration options related to the XML output
 #---------------------------------------------------------------------------
 
-GENERATE_XML           = NO
+GENERATE_XML           = YES
 XML_OUTPUT             = xml
 XML_SCHEMA             = 
 XML_DTD                = 
@@ -239,21 +239,20 @@ PERL_PATH              = /usr/bin/perl
 #---------------------------------------------------------------------------
 
 CLASS_DIAGRAMS         = YES
-MSCGEN_PATH            = 
+MSCGEN_PATH            = /usr/local/bin
 HIDE_UNDOC_RELATIONS   = NO
 HAVE_DOT               = YES
-DOT_FONTNAME           = FreeSans
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = YES
 GROUP_GRAPHS           = YES
 UML_LOOK               = YES
-TEMPLATE_RELATIONS     = NO
+TEMPLATE_RELATIONS     = YES
 INCLUDE_GRAPH          = YES
 INCLUDED_BY_GRAPH      = YES
-CALL_GRAPH             = NO
-CALLER_GRAPH           = NO
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
 GRAPHICAL_HIERARCHY    = YES
-DIRECTORY_GRAPH        = YES
+DIRECTORY_GRAPH        = NO
 DOT_IMAGE_FORMAT       = png
 DOT_PATH               = 
 DOTFILE_DIRS           = 
