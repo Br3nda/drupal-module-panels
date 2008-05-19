@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.22 2008/05/10 23:44:25 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.23 2008/05/19 03:29:38 sdboyer Exp $
 
 /**
  * Implementation of hook_help()
@@ -499,7 +499,7 @@ function panels_mini_edit_form($panel_mini) {
     );
   }
 
-  $label = ($panel_mini->pid == 'new') ? t('Next') : t('Save');
+  $label = ($panel_mini->pid == 'new') ? t('Save and proceed') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => $label,
@@ -620,7 +620,7 @@ function panels_mini_context_form($panel_mini, $next = NULL) {
   $settings += panels_common_add_relationship_form('panel_mini', $form, $form['right']['relationships_table'], $panel_mini);
   panels_common_add_context_js($settings);
 
-  $label = $next ? t('Next') : t('Save');
+  $label = $next ? t('Save and proceed') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => $label,
@@ -644,7 +644,7 @@ function panels_mini_context_form_submit($form_id, $form_values) {
   drupal_set_message(t('Your changes have been saved.'));
   panels_mini_save($panel_mini);
   panels_common_cache_clear('panel_object:panel_mini', $panel_mini->name);
-  if ($form_values['submit'] == t('Next')) {
+  if ($form_values['submit'] == t('Save and proceed')) {
     return "admin/panels/panel-mini/$panel_mini->name/edit/content";
   }
 }
@@ -737,7 +737,7 @@ function panels_mini_edit_layout_settings($panel_mini, $next = NULL) {
     $dest = "admin/panels/panel-mini/$panel_mini->name/edit/settings";
   }
   else {
-    $button = t('Next');
+    $button = t('Save and proceed');
     $dest = "admin/panels/panel-mini/$panel_mini->name/edit/context/next";
   }
 

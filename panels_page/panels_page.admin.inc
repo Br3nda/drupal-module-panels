@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.41 2008/05/10 23:44:25 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.42 2008/05/19 03:29:38 sdboyer Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -295,7 +295,7 @@ function panels_page_edit_form($panel_page, $next = NULL) {
     '#required' => TRUE,
   );
 
-  $label = ($panel_page->pid == 'new') ? t('Next') : t('Save');
+  $label = ($panel_page->pid == 'new') ? t('Save and proceed') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => $label,
@@ -519,7 +519,7 @@ function panels_page_advanced_form($panel_page, $next = NULL) {
     '#description' => t('If the Parent Menu Item is being defined by this panel (if you set the %type_field to either %tab or %menu), you can specify its title here.  If blank, the menu title will be used if that is defined, or the page title if not.', array('%type_field' => t('Parent Menu Item Type'), '%tab' => t('Tab'), '%menu' => t('Normal menu item'))),
   );
 
-  $label = ($next) ? t('Next') : t('Save');
+  $label = ($next) ? t('Save and proceed') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => $label,
@@ -550,7 +550,7 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
 
   drupal_set_message(t('Your changes have been saved.'));
   panels_page_save($panel_page);
-  if ($form_values['submit'] == t('Next')) {
+  if ($form_values['submit'] == t('Save and proceed')) {
     return "admin/panels/panel-page/$panel_page->name/edit/context/next";
   }
 }
@@ -600,7 +600,7 @@ function panels_page_context_form($panel_page, $next = NULL) {
   $settings += panels_common_add_relationship_form('panel_page', $form, $form['left']['relationships_table'], $panel_page);
   panels_common_add_context_js($settings);
 
-  $label = ($next) ? t('Next') : t('Save');
+  $label = ($next) ? t('Save and proceed') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => $label,
@@ -663,7 +663,7 @@ function panels_page_context_form_submit($form_id, $form_values) {
   drupal_set_message(t('Your changes have been saved.'));
   panels_page_save($panel_page);
   panels_common_cache_clear('panel_object:panel_page', $panel_page->name);
-  if ($form_values['submit'] == t('Next')) {
+  if ($form_values['submit'] == t('Save and proceed')) {
     return "admin/panels/panel-page/$panel_page->name/edit/content";
   }
 }
@@ -715,7 +715,7 @@ function panels_page_edit_layout_settings($panel_page, $did = NULL, $next = NULL
     }
   }
   else {
-    $button = t('Next');
+    $button = t('Save and proceed');
     $dest = "admin/panels/panel-page/$panel_page->name/edit/advanced/next";
   }
 
