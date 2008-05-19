@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.36 2008/05/18 08:00:48 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.37 2008/05/19 03:09:35 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -253,16 +253,15 @@ function _panels_edit_layout($display, $finish, $destination, $allowed_layouts) 
     $allowed_layouts = unserialize(variable_get('panels_common_allowed_layouts', serialize(''))); // tries to load the common panels allowed layouts
     if (!$allowed_layouts) { 
       $allowed_layouts = new panels_allowed_layouts(); // still no dice. simply creates a dummy version where all layouts are allowed.
-      $allowed_layouts->inclusive = TRUE;
+      $allowed_layouts->allow_new = TRUE;
     }
   }
   // sanitize allowed layout listing; this is redundant if the $allowed_layouts param was null, but the data is cached anyway
   $allowed_layouts->sync_with_available();
-  unset($allowed_layouts->layout_settings['flexible'], $allowed_layouts->layout_settings['twocol_stacked'], $allowed_layouts->layout_settings['twocol_bricks'], $allowed_layouts->layout_settings['twocol']);
   // Break out the form pieces so we can return the new $display upon
   // successful submit.
   $form_id = 'panels_choose_layout';
-  $form = drupal_retrieve_form($form_id, $display, $finish, $destination, array_filter($allowed_layouts->layout_settings));
+  $form = drupal_retrieve_form($form_id, $display, $finish, $destination, array_filter($allowed_layouts->allowed_layout_settings));
 
   if ($result = drupal_process_form($form_id, $form)) {
     // successful submit
