@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.37 2008/05/18 07:41:29 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.38 2008/05/19 02:53:17 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -122,24 +122,49 @@ class panels_optional_context extends panels_required_context {
  */
 
 /**
- * Determine visibility of a panel pane
- *
+ * Master pane access function; combines all the relevant parameters that 
+ * natively used by the Panels API to determine a pane's access.
+ * 
  * @param $pane
- *   The pane object to test.
- * @param $account
- *   The account to test access against.
+ *   The pane object to test for access.
+ * @param $display
+ *   The display object containing the pane object to be tested.
  */
-function panels_pane_access($pane, $account = NULL) {
-  if (!$account) {
-    global $user;
-    $account = $user;
-  }
-
+function panels_pane_access($pane, $display) {
+  global $user;
+  
   // Administrator privileges
-  if (user_access('view all pane', $account)) {
+/*  if (user_access('view all pane', $user)) {
     return TRUE;
+  }*/
+  
+  $role_access = _panels_pane_access_role($pane, $user);
+  $type = panels_get_content_type($pane->type);
+  
+  if (!$visibility_check = panels_plugin_get_function('content_types', $type, 'visibility check')) {
+    return $role_access;
   }
+  // Call the content type's custom-defined visibility rendering check.
+  // Pass as much possibly relevant data as possible.
+  $visibility_access = $visibility_check($pane, $display, $user);
+  if (!empty($type['roles and visibility'])) { // Content type marked both access modes to be ANDed together.
+    return ($visibility_access === TRUE && $role_access === TRUE) ? TRUE : FALSE;
+  }
+  // Err on the safe side: if EVERYTHING else has failed, then don't render the pane.
+  return isset($visibility_access) ? $visibility_access : FALSE;
+}
 
+/**
+ * Determine role-based access to a panel pane for the current user
+ *
+ * @param object $pane
+ *  The pane object to test.
+ * @param object $account
+ *  The current $user object.
+ * @return bool $role_access
+ *  The boolean result of the roles-based segment of the Panels access system.
+ */
+function _panels_pane_access_role($pane, $account) {
   // All views with an empty access setting are available to all roles.
   if (!$pane->access || !is_array($pane->access)) {
     return TRUE;
@@ -152,7 +177,7 @@ function panels_pane_access($pane, $account = NULL) {
     $roles[$account->uid][] = $account->uid ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;
   }
 
-  return array_intersect($pane->access, $roles[$account->uid]);
+  return array_intersect($pane->access, $roles[$account->uid]) ? TRUE : FALSE;
 }
 
 /**
@@ -462,7 +487,7 @@ function panels_get_pane_content($display, $pane, $args = array(), $context = NU
   if (empty($pane->cache['method'])) {
     $content = panels_ct_get_content($pane->type, $pane->configuration, $args, $context, $incoming_content);
     foreach (module_implements('panels_pane_content_alter') as $module) {
-      $function = $module . 'panels_pane_content_alter';
+      $function = $module . 'panels_pane_content_alter'; // TODO This makes the third hook invocation on the render path. How badly is this hindering performance?
       $function($content, $pane, $args, $context);
     }
   }
