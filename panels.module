@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.98 2008/05/18 07:28:33 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.99 2008/05/19 03:07:01 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -637,6 +637,11 @@ function panels_new_display() {
  *
  * @param array $dids
  *  An indexed array of dids to be loaded from the database.
+ * @param bool $load_hidden
+ *  Boolean value indicating whether hidden panes should be loaded from the database.
+ *  Note that of the three access-related mechanisms in the Panels API (the other two
+ *  being Roles/Access and Visibility), this is the only one that acts during db data
+ *  retrieval; consequently, it takes priority over the other two in ALL circumstances.
  * @return $displays
  *  An array of displays, keyed by their display dids.
  */
@@ -667,8 +672,8 @@ function panels_load_displays($dids, $load_hidden = TRUE) {
   }
   
   $hidden_pids = array_unique($hidden_pids);
-  $pids_sql = $load_hidden ? '' : "AND pid IN (" . implode(', ', array_fill(0, count($hidden_pids), '%d')) . ") ";
-  $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) {$pids_sql}ORDER BY did, panel, position", array_merge($dids, $hidden_pids));
+  $pids_sql = $load_hidden ? '' : "AND pid IN (" . implode(', ', array_fill(0, count($hidden_pids), '%d')) . ")";
+  $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) $pids_sql ORDER BY did, panel, position", array_merge($dids, $hidden_pids));
 
   while ($pane = db_fetch_object($result)) {
     $pane->configuration = unserialize($pane->configuration);
@@ -970,9 +975,10 @@ function panels_render_panes($display) {
   $panes = array();
   $later = array();
 
-  foreach ($display->content as $pid => $pane) {
+  foreach ($display->content as $pid => $pane) { 
+    // TODO Really ought to design a method for creating a quick-access set of content_type (and other plugin) data to help optimize render performance
     // If the user can't see this pane, do not render it.
-    if (!panels_pane_access($pane)) { // TODO this is where visibility should be called.
+    if (!panels_pane_access($pane, $display)) {
       continue;
     }
 
