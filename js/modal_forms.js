@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.10 2008/05/17 07:07:36 sdboyer Exp $
+// $Id: modal_forms.js,v 1.1.2.11 2008/05/21 21:27:55 sdboyer Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -71,9 +71,6 @@ Drupal.Panels.Subform.bindAutocomplete = function() {
 Drupal.Panels.Subform.bindAjaxResponse = function(data) {
   // On success, append the returned HTML to the panel's element.
   if (data.type == 'display') {
-    if (data.debug) {
-      alert(data.debug);
-    }
     // append the output
     $('#modalContent span.modal-title').html(data.title);
     $('#modalContent div.modal-content').html(data.output);
