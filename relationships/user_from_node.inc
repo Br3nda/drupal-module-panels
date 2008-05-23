@@ -1,4 +1,5 @@
 <?php
+// $Id: user_from_node.inc,v 1.1.2.2 2008/05/23 22:17:37 sdboyer Exp $
 
 /**
  * Plugin to provide an relationship handler for node from user

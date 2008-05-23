@@ -1,3 +1,4 @@
+; $Id: panels_simple_cache.info,v 1.1.2.2 2008/05/23 22:17:37 sdboyer Exp $
 name = "Panels simple cache"
 description = "Adds the simple cache as an option when configuring panel panes."
 package = "Panels"

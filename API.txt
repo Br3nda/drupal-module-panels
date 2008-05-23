@@ -1,4 +1,4 @@
-UPDATE 3/28/2008:
-Keep an eye on the panels project page (http://drupal.org/project/panels). Shortly after
-beta3 is released, an online version of the Panels API will be accessible via a link posted
-on the project page.
+# $Id: API.txt,v 1.2.6.3 2008/05/23 22:17:37 sdboyer Exp $
+
+The most current (usually -dev) version of the Panels 2 API Documentation can be
+found online at http://doxy.samboyer.org/panels2/. 

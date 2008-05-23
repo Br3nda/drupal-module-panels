@@ -1,3 +1,21 @@
+# $Id: TODO.txt,v 1.2.6.20 2008/05/23 22:17:37 sdboyer Exp $
+
+PLEASE NOTE THAT THIS FILE CONTAINS VERY OUTDATED INFORMATION, KEPT ONLY FOR HISTORICAL PURPOSES.
+
+For the current plans related to Panels2, you should consult the groups.drupal.org Panels group:
+
+http://groups.drupal.org/panels
+
+Here's a rough sketch of the work plan shortly prior to the 5.x-2.0-beta4 release:
+
+5.x-beta3 ==> beta4 ==> beta5 ==> RC1 ==> RCs... ==> 5.x RELEASE!! ==> 5.x-2.1
+                                   |
+                               6.x port ==> 6.x RCs... ==> 6.x RELEASE!! ==> 6.x-2.1
+                                                             |
+                                                           6.x-3.x-ALPHA ==> (FUTURE OF PANELS)
+
+==========================================================
+
 TODO:
 
 X = DONE

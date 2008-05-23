@@ -1,3 +1,7 @@
-This is Panels 2. 
+# $Id: README.txt,v 1.4.6.2 2008/05/23 22:17:37 sdboyer Exp $
 
-This file needs some text to explain what to do; but at this stage, I'm assuming that the people using this have some idea what it is.
+Welcome to Panels 2.
+
+A little documentation should go here, but Panels 2 is a beast - you're best
+off checking the online handbook on Drupal.org, or the developer/API docs,
+which are available at http://doxy.samboyer.org/panels2/ 
