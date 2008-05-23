@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.16 2008/05/10 23:34:20 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.17 2008/05/23 17:48:10 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -17,7 +17,7 @@ function panels_views_menu($may_cache) {
   if ($may_cache) {
     $items[] = array(
       'path' => 'admin/panels/views',
-      'title' => t('Views'),
+      'title' => t('Views panes'),
       'access' => $access,
       'type' => MENU_NORMAL_ITEM,
       'callback' => 'panels_views_list_views',

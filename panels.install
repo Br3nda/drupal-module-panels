@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.39 2008/05/17 05:39:16 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.40 2008/05/23 17:48:09 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -22,6 +22,9 @@ function panels_install() {
           contexts text,
           relationships text,
           no_blocks smallint DEFAULT 0,
+          switcher_type varchar(128),
+          switcher_name varchar(128),
+          switcher_options text,
           -- menu fields
           menu smallint DEFAULT 0,
           menu_tab smallint,
@@ -105,6 +108,9 @@ EOT
           contexts longtext,
           relationships longtext,
           no_blocks int(1) DEFAULT 0,
+          switcher_type varchar(128),
+          switcher_name varchar(128),
+          switcher_options longtext,
           -- menu fields
           menu int(1) DEFAULT 0,
           menu_tab int(1),
@@ -518,7 +524,7 @@ function panels_update_5215() {
 
 /**
  * Enter description here...
- * 
+ *
  * Adds the 'shown' field to the panels_display table in order to accomodate
  * the new show/hide panes feature.
  */
@@ -543,3 +549,22 @@ function panels_update_5216() {
   return $ret;
 }
 
+/**
+ * Add the switcher fields to the database
+ */
+function panels_update_5217() {
+  $ret = array();
+  switch($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN switcher_type varchar(128) AFTER no_blocks");
+      $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN switcher_name varchar(128) AFTER no_blocks");
+      $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN switcher_options longtext AFTER switcher_type");
+      break;
+    case 'pgsql':
+      db_add_column($ret, 'panels_page', 'switcher_type', 'varchar(128)');
+      db_add_column($ret, 'panels_page', 'switcher_name', 'varchar(128)');
+      db_add_column($ret, 'panels_page', 'switcher_options', 'text');
+  }
+  return $ret;
+}

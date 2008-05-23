@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.38 2008/05/19 02:53:17 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.39 2008/05/23 17:48:09 merlinofchaos Exp $
 /**
  * @file plugins.inc
  *
@@ -122,9 +122,9 @@ class panels_optional_context extends panels_required_context {
  */
 
 /**
- * Master pane access function; combines all the relevant parameters that 
+ * Master pane access function; combines all the relevant parameters that
  * natively used by the Panels API to determine a pane's access.
- * 
+ *
  * @param $pane
  *   The pane object to test for access.
  * @param $display
@@ -132,15 +132,15 @@ class panels_optional_context extends panels_required_context {
  */
 function panels_pane_access($pane, $display) {
   global $user;
-  
+
   // Administrator privileges
 /*  if (user_access('view all pane', $user)) {
     return TRUE;
   }*/
-  
+
   $role_access = _panels_pane_access_role($pane, $user);
   $type = panels_get_content_type($pane->type);
-  
+
   if (!$visibility_check = panels_plugin_get_function('content_types', $type, 'visibility check')) {
     return $role_access;
   }
@@ -233,7 +233,7 @@ function panels_ct_get_title($type, $conf, $context = NULL, $incoming_content = 
  */
 function panels_ct_conf_form($ct_data, $contexts, $conf) {
   list($subtype, $content_type) = array($ct_data['subtype'], $ct_data['type']);
-  
+
   if (!empty($subtype['required context']) && is_array($contexts)) {
     $form['context'] = panels_context_selector($contexts, $subtype['required context'], isset($conf['context']) ? $conf['context'] : array());
   }
@@ -292,9 +292,9 @@ function panels_ct_conf_form($ct_data, $contexts, $conf) {
 /**
  * Call any content type-defined add/edit callbacks so that additions
  * to $form['configuration'] can be made.
- * 
+ *
  * @see panels_content_config_form()
- * 
+ *
  * @param object $pane
  *   The $pane object currently being edited.
  * @param $contexts
@@ -317,9 +317,9 @@ function panels_ct_pane_config_form($pane, $contexts, $parents, $op, $content_ty
 
 /**
  * Call any add/edit validators defined by the content type.
- * 
+ *
  * @see panels_content_config_form_validate()
- * 
+ *
  * @param $type
  *   The content type. May be the name or an already loaded content type object.
  * @param $form
@@ -1205,6 +1205,33 @@ function panels_pane_select_context($pane, $contexts) {
   return $context;
 }
 
+
+// ---------------------------------------------------------------------------
+// switcher passthrough
+
+/**
+ * Switch one object for another just prior to load.
+ *
+ * @param $plugin
+ *   The name or loaded plugin to delegate switching to.
+ * @param $type
+ *   The object type. eg, 'panels_page', 'panels_mini', etc.
+ * @param $name
+ *   The name of the object that might be switched.
+ * @param $candidates
+ *   A list of possible objects to switch to. The data conforms to
+ *   what was set in the settings, and is keyed to the panel.
+ *
+ * @return
+ *   The object to switch to. NULL if electing not to switch.
+ */
+function panels_switcher_switch($plugin, $type, $name, $candidates) {
+  $function = panels_plugin_get_function('switchers', $plugin, 'switch');
+  if ($function) {
+    return $function($type, $name, $candidates);
+  }
+}
+
 /**
  * Get a function from a plugin, if it exists.
  *
@@ -1233,7 +1260,6 @@ function panels_plugin_get_function($plugin, $which, $function_name) {
     return $plugin_data[$function_name];
   }
 }
-
 
 // ---------------------------------------------------------------------------
 // panels data loading
@@ -1277,29 +1303,29 @@ function panels_load_includes($plugin_type, $hook, $file = NULL) {
 
 /**
  * Invocation of panels_include_directory(), part of the main panels API.
- * 
- * This hook allows other modules to create their own panels .inc files according to the 
- * same filename and directory schema utilized by Panels itself, or some other arbitrary 
- * schema defined in implementations of the hook. Essentially, instead of having to declare all 
+ *
+ * This hook allows other modules to create their own panels .inc files according to the
+ * same filename and directory schema utilized by Panels itself, or some other arbitrary
+ * schema defined in implementations of the hook. Essentially, instead of having to declare all
  * all callback definitions for a given plugin in a single hook implementation specific to that plugin
  * calling this hook allows the caller to define a directory where Panels will then look for
  * .inc files with callback declarations that conform to the naming scheme. The net result is the
  * same, but implementing this hook does allow for better organization and flexibility in
  * your .inc files, which is particularly preferable if you're implementing a lot of them.
- * 
- * PLEASE NOTE: There are strict naming conventions on implementing this hook; failure to 
+ *
+ * PLEASE NOTE: There are strict naming conventions on implementing this hook; failure to
  * follow the conventions will likely cause your plugins not to work. Possibly even worse,
  * failure to follow the conventions can result in namespace collisions between your
  * module and other modules invoking the panels API.
- * 
+ *
  * @ingroup mainapi
- * 
+ *
  * @param string $plugintype
  *   The type of Panels plugin being requested. Can be any of the following seven:
  *  'content_types', 'contexts', 'arguments', 'layouts', 'styles', 'relationships'
- * 
+ *
  * @return array $directories
- *   Returns an array of include subdirectories to call for the requested plugin type. 
+ *   Returns an array of include subdirectories to call for the requested plugin type.
  *   Subdirectories should be ONLY the subdirectory of your module where the appropriate
  *   types of .inc files reside.
  */
@@ -1571,4 +1597,26 @@ function panels_get_cache($cache) {
  */
 function panels_get_caches() {
   return panels_get_plugins('cache', 'panels_cache');
+}
+
+/**
+ * Fetch a switcher plugin
+ *
+ * @param $switcher
+ *   Name of a panel switcher.
+ * @return
+ *   An array with information about the requested panel switcher.
+ */
+function panels_get_switcher($switcher) {
+  return panels_get_plugins('switchers', 'panels_switchers', $switcher);
+}
+
+/**
+ * Fetch all switcher plugins
+ *
+ * @return
+ *   An array of arrays with information about all available panel switchers.
+ */
+function panels_get_switchers() {
+  return panels_get_plugins('switchers', 'panels_switchers');
 }
