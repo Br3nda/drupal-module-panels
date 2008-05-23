@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.99 2008/05/19 03:07:01 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.100 2008/05/23 18:06:10 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -88,6 +88,14 @@ function panels_menu($may_cache) {
       'type' => MENU_CALLBACK
     );
     $items[] = array(
+      'path' => 'panels/ajax/toggle-hidden',
+      'title' => t('ajax'),
+      'callback' => 'panels_ajax_passthru',
+      'callback arguments' => array('panels_ajax_toggle_hidden'),
+      'access' => user_access('access content'),
+      'type' => MENU_CALLBACK
+    );    
+    $items[] = array(
       'path' => 'panels/ajax/cache',
       'title' => t('ajax'),
       'callback' => 'panels_ajax_passthru',
@@ -148,6 +156,7 @@ function panels_ajax_passthru() {
  * Simple render function to make sure output is what we want.
  * @ingroup panels_ajax
  */
+// TODO it's the presence/absence of the $url var that determines whether or not the deprecated submit function gets called in the js; ensure that nothing needs in, then get rid of it.
 function panels_ajax_render($output = NULL, $title = NULL, $url = NULL) {
   if (!is_object($output)) {
     $temp = new stdClass();
@@ -546,7 +555,7 @@ class panels_display {
   var $context = array();
   var $title = '';
   var $hide_title = 0;
-  var $shown = array();
+  var $hidden = array();
   
   function add_pane($pane, $location = FALSE) {
     $pane->pid = $this->next_new_pid();
@@ -660,7 +669,7 @@ function panels_load_displays($dids, $load_hidden = TRUE) {
 
     foreach ($obj as $key => $value) {
       $display->$key = $value;
-      if (in_array($key, array('layout_settings', 'panel_settings', 'cache', 'shown'))) { // unserialize important bits
+      if (in_array($key, array('layout_settings', 'panel_settings', 'cache', 'hidden'))) { // unserialize important bits
         $display->$key = empty($display->$key) ? array() : unserialize($display->$key);
       }
     }
@@ -668,11 +677,11 @@ function panels_load_displays($dids, $load_hidden = TRUE) {
     $display->panels = $display->content = array();
 
     $displays[$display->did] = $display;
-    $hidden_pids = array_merge($hidden_pids, $display->shown);
+    $hidden_pids = array_merge($hidden_pids, $display->hidden);
   }
   
   $hidden_pids = array_unique($hidden_pids);
-  $pids_sql = $load_hidden ? '' : "AND pid IN (" . implode(', ', array_fill(0, count($hidden_pids), '%d')) . ")";
+  $pids_sql = $load_hidden ? '' : "AND pid NOT IN (" . implode(', ', array_fill(0, count($hidden_pids), '%d')) . ")";
   $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) $pids_sql ORDER BY did, panel, position", array_merge($dids, $hidden_pids));
 
   while ($pane = db_fetch_object($result)) {
@@ -739,15 +748,15 @@ function panels_save_display(&$display) {
     if (empty($display->cache)) {
       $display->cache = array();
     }
-
-    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s', cache = '%s', shown = '%s', title = '%s', hide_title = %d WHERE did = %d", $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), serialize($display->shown), $display->title, $display->hide_title, $display->did);
+    db_query("UPDATE {panels_display} SET layout = '%s', layout_settings = '%s', panel_settings = '%s', cache = '%s', title = '%s', hide_title = %d WHERE did = %d", $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), $display->title, $display->hide_title, $display->did);
     db_query("DELETE FROM {panels_pane} WHERE did = %d", $display->did);
   }
   else {
     $display->did = db_next_id("{panels_display}_did");
-    db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings, cache, shown, title, hide_title) VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%s', %d)", $display->did, $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), serialize($display->shown), $display->title, $display->hide_title);
+    db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings, cache, title, hide_title) VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%s', %d)", $display->did, $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), $display->title, $display->hide_title);
   }
-
+  
+  $display->hidden = array();
   // update all the panes
   foreach ((array) $display->panels as $id => $panes) {
     $position = 0;
@@ -768,9 +777,13 @@ function panels_save_display(&$display) {
       // and put it back so our pids and positions can be used
       $display->content[$pane->pid] = $pane;
       $new_panes[] = $pane->pid;
+      if (!$pane->shown) {
+        $display->hidden[] = $pane->pid;
+      }
     }
     $display->panels[$id] = $new_panes;
   }
+  db_query("UPDATE {panels_display} SET hidden = '%s' WHERE did = %d", serialize($display->hidden), $display->did);
 
   // Clear any cached content for this display.
   panels_load_include('plugins');
