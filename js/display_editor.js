@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.30 2008/05/17 07:05:46 sdboyer Exp $
+// $Id: display_editor.js,v 1.1.2.31 2008/05/23 18:11:07 sdboyer Exp $
 /**
  * @file display_editor.js 
  *
@@ -51,6 +51,25 @@ Drupal.Panels.clickCacheSettings = function () {
     dataType: 'json'
   });
   return false;
+}
+
+/** Toggle pane show/hide button **/
+Drupal.Panels.bindClickToggleHidden = function (o) {
+  $('input.pane-toggle-hidden').unbind('click');
+  $('input.pane-toggle-hidden').click(function() {
+    var id = $(this)[0].id.replace('edit-button-', '').replace('-show-hide', '');
+    var op = $(this)[0].title.replace(' this pane', '');
+    $.ajax({
+      type: "POST",
+      url: Drupal.settings.panelsAjaxURL + "/toggle-hidden/" + $('#panel-did').val() + '/' + id + '/' + op,
+      data: '',
+      global: true,
+      success: Drupal.Panels.Subform.bindAjaxResponse,
+      error: function() { alert("An error occurred while attempting to toggle the pane's hidden status.")},
+      dataType: 'json'
+    });
+    return false;
+  });
 }
 
 /** Configure pane button */
@@ -498,6 +517,7 @@ Drupal.Panels.attachPane = function(parent) {
 
   $(parent).find('div.grabber').panelsDraggable();
 
+  Drupal.Panels.bindClickToggleHidden();
   Drupal.Panels.bindClickCache();
   Drupal.Panels.bindClickConfigure();
   Drupal.Panels.bindClickDelete();

@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.11 2008/05/21 21:27:55 sdboyer Exp $
+// $Id: modal_forms.js,v 1.1.2.12 2008/05/23 18:11:07 sdboyer Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -74,7 +74,8 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
     // append the output
     $('#modalContent span.modal-title').html(data.title);
     $('#modalContent div.modal-content').html(data.output);
-
+    
+    // TODO this is the code that we want to see go away
     var url = data.url;
     if (!url) {
       url = Drupal.settings.panelsAjaxURL + '/submit-form/' +  $('#panel-did').val();
@@ -127,11 +128,21 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
 
     // dismiss the dialog
     $('#panels-modal').unmodalContent();
-  } 
+  }
+  else if (data.type == 'toggle-hidden') {
+    var src_url = $('#panel-pane-' + data.id + ' input.pane-toggle-hidden').attr('src');
+    $('#panel-pane-' + data.id + ' input.pane-toggle-hidden').attr({
+      title: data.output + " this pane",
+      alt: data.output + " this pane",
+      src: src_url.replace(data.old_op + 'pane.png', data.new_op + 'pane.png')
+    });
+    $('#panel-pane-' + data.id).toggleClass('hidden-pane');
+    Drupal.Panels.changed($('#panel-pane-' + data.id));
+  }
   else {
     // just dismiss the dialog.
     $('#panels-modal').unmodalContent();
-  } 
+  }
 }
 
 /**

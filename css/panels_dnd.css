@@ -34,6 +34,10 @@ div.panels-display .pane-add {
   border-left: 1px solid #78BAE3;
 }
 
+.panel-pane.hidden-pane {
+  background: #ececec;
+}
+
 .panel-pane .content {
   margin: .5em 0 .5em 0;
   padding: 0 .25em 0 .25em;
@@ -46,14 +50,23 @@ div.panels-display .pane-add {
   cursor: move;
   margin: 0 0 0.5em 0;
   color: #fff;
-  background: #3D9CD7;
-  overflow: hidden; 
+  background-color: #3D9CD7;
+  overflow: hidden;
+}
+
+.panel-pane.hidden-pane .grabber {
+  background-color: #87B8D6;
 }
 
 .changed div.grabber {
   background-color: #FFFFDD !important;
   border-bottom: 1px solid #3D9CD7 !important;
   color: black !important;
+}
+
+.changed.hidden-pane div.grabber {
+  background-color: #E5E5C8 !important;
+  border-bottom: 1px solid #3D9CD7 !important;
 }
 
 .changed div.grabber span.star {
@@ -63,12 +76,16 @@ div.panels-display .pane-add {
 
 .panel-pane .grabber:hover {
   color: #fff;
-  background: #2F78A5;
+  background-color: #2F78A5;
+}
+
+panel-pane.hidden-pane .grabber:hover {
+  background-color: #506D7F;
 }
 
 .panel-pane .grabber:active {
   color: #fff;
-  background: red;
+  background-color: red;
 }
 
 .panel-pane .grabber .text {
@@ -91,8 +108,7 @@ div.panels-display .pane-add {
 .panel-pane .buttons input.pane-delete,
 .panel-pane .buttons input.pane-cache,
 .panel-pane .buttons input.pane-configure,
-.panel-pane .buttons input.pane-show,
-.panel-pane .buttons input.pane-hide {
+.panel-pane .buttons input.pane-toggle-hidden {
   margin: 2px 1px;
 }
 

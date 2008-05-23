@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.37 2008/05/19 03:09:35 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.38 2008/05/23 18:11:07 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -28,8 +28,10 @@ function _panels_edit($display, $destination, $content_types) {
   else {
     panels_cache_clear($did);
     $cache = new stdClass();
+    foreach ($display->content as $pid => $pane) {
+      $display->content[$pid]->shown = in_array($pid, $display->hidden) ? 0 : 1;
+    }
     $cache->display = $display;
-    $cache->highest = 0;
     $cache->content_types = $content_types;
     panels_cache_set($did, $cache);
   }
@@ -102,12 +104,11 @@ function panels_edit_display($display, $destination) {
     // This test ensures we don't put anything for panes that are in panels
     // that don't exist -- as can happen when flexible changes.
     if ($layout_panels[$pane->panel]) {
-      $is_hidden = in_array($pid, $display->shown);
       $form['button'][$pid]['#tree'] = TRUE;
       if ($caches && user_access('use panels caching features')) {
         $form['button'][$pid]['cache'] = panels_add_button('icon-cache.png', t('Caching'), t('Control caching'), 'pane-cache');
       }
-      $form['button'][$pid]['show_hide'] = panels_add_button($is_hidden ? 'icon-showpane.png' : 'icon-hidepane.png', t('Show/Hide Toggle'), $is_hidden ? t('Show this pane') : t('Hide this pane'), $is_hidden ? 'pane-show' : 'pane-hide');
+      $form['button'][$pid]['show_hide'] = panels_add_button($pane->shown ? 'icon-hidepane.png' : 'icon-showpane.png' , t('Show/Hide Toggle'), $pane->shown ? t('Hide this pane') : t('Show this pane'), 'pane-toggle-hidden');
       $form['button'][$pid]['configure'] = panels_add_button('icon-configure.png', t('Configure'), t('Configure this pane'), 'pane-configure');
       $form['button'][$pid]['delete'] = panels_add_button('icon-delete.png', t('Delete'), t('Remove this pane'), 'pane-delete');
     }
@@ -603,7 +604,7 @@ function panels_get_pane_edit_form($pane, $contexts, $parents) {
  *   If true, provide the outside div. Used to provide an easy way to get
  *   just the innards for ajax replacement
  */
-// TODO make this more tolerant of errors, at least until we get rid of it for panels3
+// TODO check and see if $skin is EVER false; pane show/hide setting is dependent on it being TRUE. can't imagine it could be...
 function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE) {
   $content_type = panels_get_content_type($pane->type);
   if (empty($content_type)) {
@@ -620,11 +621,12 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
     $block->title = t('Temporarily disabling all pane rendering on display edit form.');
   }
 
-    $title = panels_get_pane_title($pane, $display->context);
-
+  $title = panels_get_pane_title($pane, $display->context);
+  
   $output = theme('panels_pane_dnd', $block, $pane->pid, $title, $left_buttons, $buttons);
   if ($skin) {
-    $output = '<div class="panel-pane" id="panel-pane-' . $pane->pid . '">' . $output . '</div>';
+    $class = 'panel-pane' . ($pane->shown ? '' : ' hidden-pane');
+    $output = '<div class="' . $class . '" id="panel-pane-' . $pane->pid . '">' . $output . '</div>';
   }
   return $output;
 }
@@ -666,6 +668,8 @@ function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
         $output = panels_edit_submit_subform($cache->display);
       }
       break;
+    default:
+      pdbg('panels_ajax', serialize(array('did' => $did, 'data' => array('op' => $op, 'pid' => $pid))));
   }
 
   panels_ajax_render($output);
@@ -784,6 +788,39 @@ function panels_add_content($cache, $panel_id) {
 }
 
 /**
+ * Entry point for AJAX: toggle pane show/hide status.
+ *
+ * @param int $did
+ *  The display id for the display object currently being edited. Errors out silently if absent.
+ * @param int $pid
+ *  The pane id for the pane object whose show/hide state we're toggling.
+ * @param string $op
+ *  The op - showing or hiding - that this should perform. This could be calculated from
+ *  cached values, but given that this is a toggle button and people may click it too fast,
+ *  it's better to leave the decision on which $op to use up to the js than to calculate it here.
+ */
+function panels_ajax_toggle_hidden($did = NULL, $pid = NULL, $op = NULL) {
+  if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
+    $ajax_vars = new stdClass();
+    list($ajax_vars->type, $ajax_vars->id, $ajax_vars->old_op) = array('toggle-hidden', $pid, strtolower($op));
+    
+    if ($op == 'Show') {
+      list($cache->display->content[$pid]->shown, $ajax_vars->output, $ajax_vars->new_op) = array(1, 'Hide', 'hide');
+    }
+    elseif ($op == 'Hide') {
+      list($cache->display->content[$pid]->shown, $ajax_vars->output, $ajax_vars->new_op) = array(0, 'Show', 'show');
+    }
+    else {
+      panels_ajax_render();
+    }
+    
+    panels_cache_set($cache->display->did, $cache);
+    panels_ajax_render($ajax_vars);
+  }
+  panels_ajax_render();
+}
+
+/**
  * Entry point for AJAX: Add pane configuration.
  * 
  * After updating the $cache data and equipping a new $pane object with basic values,
@@ -839,14 +876,15 @@ function panels_ajax_add_config($did = NULL, $pane_info = NULL) {
  * Once form submission is completed, data is pushed back into js by panels_ajax_render().
  * 
  * @param int $did
- *  The display id for the display object currently being edited. Errors out silently if absent.
+ *  The display id of the display object currently being edited. Errors out silently if absent.
  * @param 
+ *  The pane id of the pane object whose configuration form we're calling up to edit.
  * 
  * @see panels_content_config_form()
  */
 function panels_ajax_configure($did = NULL, $pid = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
-    if (in_array($pid, $cache->display->content) && $pane = $cache->display->content[$pid]) {
+    if (isset($cache->display->content[$pid]) && $pane = $cache->display->content[$pid]) {//  && $pane = $cache->display->content[$pid]) {
       if (!isset($_POST['form_id']) && empty($cc['built'])) { // Only perform on a form rendering passthrough and if the data hasn't already been built.
         $cc =& $cache->content_config[$pane->pid];
         if (!isset($cc)) {
@@ -1032,7 +1070,7 @@ function panels_content_config_add_form_submit($form_values, $cache, $pane) {
   $cache->display->panels[$cache->content_config[$pane->pid]['panel_id']][] = $pane->pid;
   
   // we need to fake the buttons a little.
-  $buttons['show_hide'] = panels_add_button('icon-hidepane.png', t('Show/Hide Toggle'), t('Hide this pane'), 'pane-hide'); // new panes are shown by default
+  $buttons['show_hide'] = panels_add_button('icon-hidepane.png', t('Show/Hide Toggle'), t('Hide this pane'), 'pane-toggle-hidden'); // new panes are shown by default
   $buttons['show_hide']['#parents'] = array('button', $pane->pid, 'show_hide');
   
   if (panels_get_caches() && user_access('use panels caching features')) {
