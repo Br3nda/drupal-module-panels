@@ -108,7 +108,7 @@ panel-pane.hidden-pane .grabber:hover {
 .panel-pane .buttons input.pane-delete,
 .panel-pane .buttons input.pane-cache,
 .panel-pane .buttons input.pane-configure,
-.panel-pane .buttons input.pane-toggle-hidden {
+.panel-pane .buttons input.pane-toggle-shown {
   margin: 2px 1px;
 }
 

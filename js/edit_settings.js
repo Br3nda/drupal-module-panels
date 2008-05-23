@@ -1,4 +1,4 @@
-// $Id: edit_settings.js,v 1.1.2.4 2008/05/17 07:05:45 sdboyer Exp $
+// $Id: edit_settings.js,v 1.1.2.5 2008/05/23 21:41:42 sdboyer Exp $
 /**
  * @file edit_settings.js 
  *
@@ -20,7 +20,7 @@ Drupal.Panels.clickEdit = function() {
     data: '',
     global: true,
     success: Drupal.Panels.Subform.bindAjaxResponse,
-    error: function() { alert("An error occurred while attempting to render the pane styles configuration modal form."); $('#panels-modal').unmodalContent(); },
+    error: function() { alert("An error occurred while attempting to process the pane styles configuration modal form."); $('#panels-modal').unmodalContent(); },
     dataType: 'json'
   });
   return false;

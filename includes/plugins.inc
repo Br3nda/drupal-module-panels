@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.39 2008/05/23 17:48:09 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.40 2008/05/23 21:41:42 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -134,9 +134,9 @@ function panels_pane_access($pane, $display) {
   global $user;
 
   // Administrator privileges
-/*  if (user_access('view all pane', $user)) {
+  if (user_access('view all pane', $user)) {
     return TRUE;
-  }*/
+  }
 
   $role_access = _panels_pane_access_role($pane, $user);
   $type = panels_get_content_type($pane->type);

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.100 2008/05/23 18:06:10 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.101 2008/05/23 21:41:42 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -88,10 +88,10 @@ function panels_menu($may_cache) {
       'type' => MENU_CALLBACK
     );
     $items[] = array(
-      'path' => 'panels/ajax/toggle-hidden',
+      'path' => 'panels/ajax/toggle-shown',
       'title' => t('ajax'),
       'callback' => 'panels_ajax_passthru',
-      'callback arguments' => array('panels_ajax_toggle_hidden'),
+      'callback arguments' => array('panels_ajax_toggle_shown'),
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK
     );    
@@ -555,7 +555,6 @@ class panels_display {
   var $context = array();
   var $title = '';
   var $hide_title = 0;
-  var $hidden = array();
   
   function add_pane($pane, $location = FALSE) {
     $pane->pid = $this->next_new_pid();
@@ -646,16 +645,11 @@ function panels_new_display() {
  *
  * @param array $dids
  *  An indexed array of dids to be loaded from the database.
- * @param bool $load_hidden
- *  Boolean value indicating whether hidden panes should be loaded from the database.
- *  Note that of the three access-related mechanisms in the Panels API (the other two
- *  being Roles/Access and Visibility), this is the only one that acts during db data
- *  retrieval; consequently, it takes priority over the other two in ALL circumstances.
  * @return $displays
  *  An array of displays, keyed by their display dids.
  */
-function panels_load_displays($dids, $load_hidden = TRUE) {
-  $hidden_pids = $displays = array();
+function panels_load_displays($dids) {
+  $displays = array();
   if (empty($dids) || !is_array($dids)) {
     return $displays;
   }
@@ -669,7 +663,7 @@ function panels_load_displays($dids, $load_hidden = TRUE) {
 
     foreach ($obj as $key => $value) {
       $display->$key = $value;
-      if (in_array($key, array('layout_settings', 'panel_settings', 'cache', 'hidden'))) { // unserialize important bits
+      if (in_array($key, array('layout_settings', 'panel_settings', 'cache'))) { // unserialize important bits
         $display->$key = empty($display->$key) ? array() : unserialize($display->$key);
       }
     }
@@ -677,12 +671,9 @@ function panels_load_displays($dids, $load_hidden = TRUE) {
     $display->panels = $display->content = array();
 
     $displays[$display->did] = $display;
-    $hidden_pids = array_merge($hidden_pids, $display->hidden);
   }
   
-  $hidden_pids = array_unique($hidden_pids);
-  $pids_sql = $load_hidden ? '' : "AND pid NOT IN (" . implode(', ', array_fill(0, count($hidden_pids), '%d')) . ")";
-  $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) $pids_sql ORDER BY did, panel, position", array_merge($dids, $hidden_pids));
+  $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) ORDER BY did, panel, position", $dids);
 
   while ($pane = db_fetch_object($result)) {
     $pane->configuration = unserialize($pane->configuration);
@@ -721,8 +712,8 @@ function panels_load_displays($dids, $load_hidden = TRUE) {
  * it must be set using one of the panels_context_create() functions.
  */
 
-function panels_load_display($did, $load_hidden = TRUE) {
-  $displays = panels_load_displays(array($did), $load_hidden);
+function panels_load_display($did) {
+  $displays = panels_load_displays(array($did));
   if (!empty($displays)) {
     return array_shift($displays);
   }
@@ -756,7 +747,6 @@ function panels_save_display(&$display) {
     db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings, cache, title, hide_title) VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%s', %d)", $display->did, $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), $display->title, $display->hide_title);
   }
   
-  $display->hidden = array();
   // update all the panes
   foreach ((array) $display->panels as $id => $panes) {
     $position = 0;
@@ -773,17 +763,18 @@ function panels_save_display(&$display) {
       }
       
       $type = panels_get_content_type($pane->type);
-      db_query("INSERT INTO {panels_pane} (pid, did, panel, type, subtype, configuration, cache, access, visibility, position) VALUES (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)", $pane->pid, $display->did, $pane->panel, $pane->type, $pane->subtype, serialize($pane->configuration), serialize($pane->cache), isset($pane->access) ? implode(', ', $pane->access) : '', $type['visibility serialize'] ? serialize($pane->visibility) : $pane->visibility, $pane->position);
+      $access = isset($pane->access) ? implode(', ', $pane->access) : '';
+      $visibility = $type['visibility serialize'] ? serialize($pane->visibility) : $pane->visibility;
+      $f = 'pid, did, panel, type, subtype, configuration, cache, shown, access, visibility, position'; // doin it this way for readability
+      $q = "%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d";
+      $v = array($pane->pid, $display->did, $pane->panel, $pane->type, $pane->subtype, serialize($pane->configuration), serialize($pane->cache), $pane->shown, $access, $visibility, $pane->position);
+      db_query("INSERT INTO {panels_pane} ($f) VALUES ($q)", $v);
       // and put it back so our pids and positions can be used
       $display->content[$pane->pid] = $pane;
       $new_panes[] = $pane->pid;
-      if (!$pane->shown) {
-        $display->hidden[] = $pane->pid;
-      }
     }
     $display->panels[$id] = $new_panes;
   }
-  db_query("UPDATE {panels_display} SET hidden = '%s' WHERE did = %d", serialize($display->hidden), $display->did);
 
   // Clear any cached content for this display.
   panels_load_include('plugins');
@@ -991,7 +982,7 @@ function panels_render_panes($display) {
   foreach ($display->content as $pid => $pane) { 
     // TODO Really ought to design a method for creating a quick-access set of content_type (and other plugin) data to help optimize render performance
     // If the user can't see this pane, do not render it.
-    if (!panels_pane_access($pane, $display)) {
+    if (!$pane->shown || !panels_pane_access($pane, $display)) {
       continue;
     }
 

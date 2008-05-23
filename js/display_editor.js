@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.31 2008/05/23 18:11:07 sdboyer Exp $
+// $Id: display_editor.js,v 1.1.2.32 2008/05/23 21:41:42 sdboyer Exp $
 /**
  * @file display_editor.js 
  *
@@ -16,7 +16,7 @@ Drupal.Panels.clickAdd = function() {
     data: '',
     global: true,
     success: Drupal.Panels.Subform.bindAjaxResponse,
-    error: function() { alert("An error occurred while attempting to render the Add Content modal form."); Drupal.Panels.Subform.dismiss(); },
+    error: function() { alert("An error occurred while attempting to process the Add Content modal form."); Drupal.Panels.Subform.dismiss(); },
     dataType: 'json'
   });
   return false;
@@ -47,25 +47,25 @@ Drupal.Panels.clickCacheSettings = function () {
     data: '',
     global: true,
     success: Drupal.Panels.Subform.bindAjaxResponse,
-    error: function() { alert("An error occurred while attempting to render the Caching modal form."); Drupal.Panels.Subform.dismiss(); },
+    error: function() { alert("An error occurred while attempting to process the Caching modal form."); Drupal.Panels.Subform.dismiss(); },
     dataType: 'json'
   });
   return false;
 }
 
 /** Toggle pane show/hide button **/
-Drupal.Panels.bindClickToggleHidden = function (o) {
-  $('input.pane-toggle-hidden').unbind('click');
-  $('input.pane-toggle-hidden').click(function() {
+Drupal.Panels.bindClickToggleShown = function (o) {
+  $('input.pane-toggle-shown').unbind('click');
+  $('input.pane-toggle-shown').click(function() {
     var id = $(this)[0].id.replace('edit-button-', '').replace('-show-hide', '');
     var op = $(this)[0].title.replace(' this pane', '');
     $.ajax({
       type: "POST",
-      url: Drupal.settings.panelsAjaxURL + "/toggle-hidden/" + $('#panel-did').val() + '/' + id + '/' + op,
+      url: Drupal.settings.panelsAjaxURL + "/toggle-shown/" + $('#panel-did').val() + '/' + id + '/' + op,
       data: '',
       global: true,
       success: Drupal.Panels.Subform.bindAjaxResponse,
-      error: function() { alert("An error occurred while attempting to toggle the pane's hidden status.")},
+      error: function() { alert("An error occurred while attempting to toggle the pane's shown status.")},
       dataType: 'json'
     });
     return false;
@@ -86,7 +86,7 @@ Drupal.Panels.bindClickConfigure = function (o) {
       data: '',
       global: true,
       success: Drupal.Panels.Subform.bindAjaxResponse,
-      error: function() { alert("An error occurred while attempting to render the pane configuration modal form."); Drupal.Panels.Subform.dismiss(); },
+      error: function() { alert("An error occurred while attempting to process the pane configuration modal form."); Drupal.Panels.Subform.dismiss(); },
       dataType: 'json'
     });
     return false;
@@ -107,7 +107,7 @@ Drupal.Panels.bindClickCache = function (o) {
       data: '',
       global: true,
       success: Drupal.Panels.Subform.bindAjaxResponse,
-      error: function() { alert("An error occurred while attempting to render the Caching modal form."); Drupal.Panels.Subform.dismiss(); },
+      error: function() { alert("An error occurred while attempting to process the Caching modal form."); Drupal.Panels.Subform.dismiss(); },
       dataType: 'json'
     });
     return false;
@@ -321,7 +321,7 @@ Drupal.Panels.Draggable = {
     }
   },
 
-  /** save button clicked **/
+  /** save button clicked, or pane deleted **/
   savePositions: function() {
     var draggable = Drupal.Panels.Draggable;
     $(draggable.accept).each(function() {
@@ -517,7 +517,7 @@ Drupal.Panels.attachPane = function(parent) {
 
   $(parent).find('div.grabber').panelsDraggable();
 
-  Drupal.Panels.bindClickToggleHidden();
+  Drupal.Panels.bindClickToggleShown();
   Drupal.Panels.bindClickCache();
   Drupal.Panels.bindClickConfigure();
   Drupal.Panels.bindClickDelete();

@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.38 2008/05/23 18:11:07 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.39 2008/05/23 21:41:42 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -28,9 +28,6 @@ function _panels_edit($display, $destination, $content_types) {
   else {
     panels_cache_clear($did);
     $cache = new stdClass();
-    foreach ($display->content as $pid => $pane) {
-      $display->content[$pid]->shown = in_array($pid, $display->hidden) ? 0 : 1;
-    }
     $cache->display = $display;
     $cache->content_types = $content_types;
     panels_cache_set($did, $cache);
@@ -108,7 +105,7 @@ function panels_edit_display($display, $destination) {
       if ($caches && user_access('use panels caching features')) {
         $form['button'][$pid]['cache'] = panels_add_button('icon-cache.png', t('Caching'), t('Control caching'), 'pane-cache');
       }
-      $form['button'][$pid]['show_hide'] = panels_add_button($pane->shown ? 'icon-hidepane.png' : 'icon-showpane.png' , t('Show/Hide Toggle'), $pane->shown ? t('Hide this pane') : t('Show this pane'), 'pane-toggle-hidden');
+      $form['button'][$pid]['show_hide'] = panels_add_button($pane->shown ? 'icon-hidepane.png' : 'icon-showpane.png' , t('Show/Hide Toggle'), $pane->shown ? t('Hide this pane') : t('Show this pane'), 'pane-toggle-shown');
       $form['button'][$pid]['configure'] = panels_add_button('icon-configure.png', t('Configure'), t('Configure this pane'), 'pane-configure');
       $form['button'][$pid]['delete'] = panels_add_button('icon-delete.png', t('Delete'), t('Remove this pane'), 'pane-delete');
     }
@@ -123,7 +120,7 @@ function panels_edit_display($display, $destination) {
 
   foreach ($layout_panels as $panel_id => $title) {
     $form['panel']['pane'][$panel_id] = array(
-      '#type' => 'value',
+      '#type' => 'hidden', // Use 'hidden' instead of 'value' so the js can access it.
       '#default_value' => implode(',', (array) $display->panels[$panel_id]),
     );
   }
@@ -219,7 +216,7 @@ function panels_edit_display_submit($form_id, $form_values) {
       $display->panels[$panel_id] = array();
       if ($panes) {
         $pids = explode(',', $panes);
-        foreach ($pids as $pid) {
+        foreach (array_filter($pids) as $pid) { // need to filter the array, b/c passing it in a hidden field can generate trash
           if ($old_content[$pid]) {
             $display->panels[$panel_id][] = $pid;
             $old_content[$pid]->panel = $panel_id;
@@ -799,10 +796,10 @@ function panels_add_content($cache, $panel_id) {
  *  cached values, but given that this is a toggle button and people may click it too fast,
  *  it's better to leave the decision on which $op to use up to the js than to calculate it here.
  */
-function panels_ajax_toggle_hidden($did = NULL, $pid = NULL, $op = NULL) {
+function panels_ajax_toggle_shown($did = NULL, $pid = NULL, $op = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
     $ajax_vars = new stdClass();
-    list($ajax_vars->type, $ajax_vars->id, $ajax_vars->old_op) = array('toggle-hidden', $pid, strtolower($op));
+    list($ajax_vars->type, $ajax_vars->id, $ajax_vars->old_op) = array('toggle-shown', $pid, strtolower($op));
     
     if ($op == 'Show') {
       list($cache->display->content[$pid]->shown, $ajax_vars->output, $ajax_vars->new_op) = array(1, 'Hide', 'hide');
@@ -811,7 +808,7 @@ function panels_ajax_toggle_hidden($did = NULL, $pid = NULL, $op = NULL) {
       list($cache->display->content[$pid]->shown, $ajax_vars->output, $ajax_vars->new_op) = array(0, 'Show', 'show');
     }
     else {
-      panels_ajax_render();
+      panels_ajax_render(); // bad args, error out.
     }
     
     panels_cache_set($cache->display->did, $cache);
@@ -1070,7 +1067,7 @@ function panels_content_config_add_form_submit($form_values, $cache, $pane) {
   $cache->display->panels[$cache->content_config[$pane->pid]['panel_id']][] = $pane->pid;
   
   // we need to fake the buttons a little.
-  $buttons['show_hide'] = panels_add_button('icon-hidepane.png', t('Show/Hide Toggle'), t('Hide this pane'), 'pane-toggle-hidden'); // new panes are shown by default
+  $buttons['show_hide'] = panels_add_button('icon-hidepane.png', t('Show/Hide Toggle'), t('Hide this pane'), 'pane-toggle-shown'); // new panes are shown by default
   $buttons['show_hide']['#parents'] = array('button', $pane->pid, 'show_hide');
   
   if (panels_get_caches() && user_access('use panels caching features')) {

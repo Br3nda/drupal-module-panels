@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.12 2008/05/23 18:11:07 sdboyer Exp $
+// $Id: modal_forms.js,v 1.1.2.13 2008/05/23 21:41:42 sdboyer Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -23,7 +23,7 @@ Drupal.Panels.Subform.bindClickAddLink = function() {
     data: '',
     global: true,
     success: Drupal.Panels.Subform.bindAjaxResponse,
-  	error: function() { alert("An error occurred while attempting to render the pane configuration modal form.."); $('#panels-modal').unmodalContent(); },
+  	error: function() { alert("An error occurred while attempting to process the pane configuration modal form.."); $('#panels-modal').unmodalContent(); },
     dataType: 'json'
   });
   return false;
@@ -129,9 +129,9 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
     // dismiss the dialog
     $('#panels-modal').unmodalContent();
   }
-  else if (data.type == 'toggle-hidden') {
-    var src_url = $('#panel-pane-' + data.id + ' input.pane-toggle-hidden').attr('src');
-    $('#panel-pane-' + data.id + ' input.pane-toggle-hidden').attr({
+  else if (data.type == 'toggle-shown') {
+    var src_url = $('#panel-pane-' + data.id + ' input.pane-toggle-shown').attr('src');
+    $('#panel-pane-' + data.id + ' input.pane-toggle-shown').attr({
       title: data.output + " this pane",
       alt: data.output + " this pane",
       src: src_url.replace(data.old_op + 'pane.png', data.new_op + 'pane.png')
