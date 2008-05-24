@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.42 2008/05/23 21:41:42 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.43 2008/05/24 00:28:42 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -45,7 +45,6 @@ EOT
       db_query(<<<EOT
         CREATE TABLE {panels_display} (
           did integer NOT NULL DEFAULT 0,
-          name varchar(255) UNIQUE,
           layout varchar(32),
           layout_settings text,
           panel_settings text,
@@ -128,7 +127,6 @@ EOT
       db_query(<<<EOT
         CREATE TABLE {panels_display} (
           did INT(10) NOT NULL DEFAULT 0 PRIMARY KEY,
-          name varchar(255) UNIQUE,
           layout varchar(32),
           layout_settings longtext,
           panel_settings longtext,
