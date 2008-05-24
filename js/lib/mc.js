@@ -6,8 +6,8 @@
  * @copyright Copyright (c) 2006 Glyphix Studio, Inc. http://www.glyphix.com
  * @author    Gavin M. Roy <gmr@glyphix.com>
  * @license   MIT http://www.opensource.org/licenses/mit-license.php
- * @requires  >= jQuery 1.0.3			http://jquery.com/
- * @requires  dimensions.js				http://jquery.com/dev/svn/trunk/plugins/dimensions/dimensions.js?format=raw
+ * @requires  >= jQuery 1.0.3     http://jquery.com/
+ * @requires  dimensions.js       http://jquery.com/dev/svn/trunk/plugins/dimensions/dimensions.js?format=raw
  *
  * Call modalContent() on a DOM object and it will make a centered modal box over a div overlay preventing access to the page.
  * Create an element (anchor/img/etc) with the class "close" in your content to close the modal box on click.
@@ -31,11 +31,11 @@ jQuery.modalContent = function(content, css, animation, speed) {
 
   // position code lifted from http://www.quirksmode.org/viewport/compatibility.html
   if (self.pageYOffset) { // all except Explorer
-  	var wt = self.pageYOffset;
+    var wt = self.pageYOffset;
   } else if (document.documentElement && document.documentElement.scrollTop) { 	// Explorer 6 Strict
-	  var wt = document.documentElement.scrollTop;
+      var wt = document.documentElement.scrollTop;
   } else if (document.body) { // all other Explorers
-	  var wt = document.body.scrollTop;
+      var wt = document.body.scrollTop;
   }
 
   // Get our dimensions

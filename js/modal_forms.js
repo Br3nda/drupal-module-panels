@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.13 2008/05/23 21:41:42 sdboyer Exp $
+// $Id: modal_forms.js,v 1.1.2.14 2008/05/24 00:09:51 sdboyer Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -23,7 +23,7 @@ Drupal.Panels.Subform.bindClickAddLink = function() {
     data: '',
     global: true,
     success: Drupal.Panels.Subform.bindAjaxResponse,
-  	error: function() { alert("An error occurred while attempting to process the pane configuration modal form.."); $('#panels-modal').unmodalContent(); },
+    error: function() { alert("An error occurred while attempting to process the pane configuration modal form.."); $('#panels-modal').unmodalContent(); },
     dataType: 'json'
   });
   return false;
