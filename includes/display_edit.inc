@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.42 2008/05/24 04:59:04 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.43 2008/05/24 18:10:21 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -604,23 +604,16 @@ function panels_get_pane_edit_form($pane, $contexts, $parents) {
 // TODO check and see if $skin is EVER false; pane show/hide setting is dependent on it being TRUE. can't imagine it could be...
 function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE) {
   $content_type = panels_get_content_type($pane->type);
+  $block = new stdClass();
   if (empty($content_type)) {
-    $block = new stdClass();
     $block->title = '<em>' . t('Missing content type') . '</em>';
     $block->content = t('This pane\'s content type is either missing or has been deleted. This pane will not render.');
   }
-  elseif (in_array($pane->type, array('views', 'views2'))) {
-    $block = _panels_render_preview_views_pane();
-  }
   else {
-    // $block = panels_render_pane($display, $pane);
-    $block->title = t('Placeholder');
-    $block->title = t('Temporarily disabling all pane rendering on display edit form.');
+    $block = _panels_render_preview_pane_disabled($pane, $display->context);
   }
-
-  $title = panels_get_pane_title($pane, $display->context);
-  
-  $output = theme('panels_pane_dnd', $block, $pane->pid, $title, $left_buttons, $buttons);
+ 
+  $output = theme('panels_pane_dnd', $block, $pane->pid, empty($content_type) ? panels_get_pane_title($pane, $display->context) : $block->title, $left_buttons, $buttons);
   if ($skin) {
     $class = 'panel-pane' . ($pane->shown ? '' : ' hidden-pane');
     $output = '<div class="' . $class . '" id="panel-pane-' . $pane->pid . '">' . $output . '</div>';
@@ -629,18 +622,17 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
 }
 
 /**
- * Provide filler content for previewed views panes, as they
- * can cause recursion errors and unwanted RSS feeds when
- * rendered on the content edit form.
+ * Provide filler content for dynamic pane previews in the editor, as they're just a
+ * bad idea to have anyway, and can also cause infinite recursion loops that render the
+ * editor inaccessible in some cases.
  *
  */
-function _panels_render_preview_views_pane() {
+function _panels_render_preview_pane_disabled($pane, $context) {
   $block = new stdClass();
-  $block->title = '<em><strong>' . t('Preview rendering is disabled for View panes.') . '</strong></em>';
-  $block->content = t("This pane is a View, and so has had its rendering disabled for better performance and stability.");
+  $block->title = panels_get_pane_title($pane, $context);
+  $block->content = '<em>' . t("Dynamic content previews have been disabled to improve performance and stability for this editing screen.") . '</em>';
   return $block;
 }
-
 
 /**
  * @defgroup panels_ajax Functions for panels ajax features
@@ -860,7 +852,9 @@ function panels_ajax_add_config($did = NULL, $pane_info = NULL) {
       unset ($cache->pane);
     }
     
-    $ajax_vars = panels_ajax_form('panels_content_config_form', t('Configure !subtype_title', array('!subtype_title' => $cache->content_config[$pane->pid]['ct_data']['subtype']['title'])), url($_GET['q'], NULL, NULL, TRUE), $cache, $pane, TRUE);
+    $ajax_vars = panels_ajax_form('panels_content_config_form',
+      t('Configure !subtype_title', array('!subtype_title' => $cache->content_config[$pane->pid]['ct_data']['subtype']['title'])),
+      url($_GET['q'], NULL, NULL, TRUE), $cache, $pane, TRUE);
     panels_ajax_render($ajax_vars);
   }
   panels_ajax_render();
@@ -893,7 +887,9 @@ function panels_ajax_configure($did = NULL, $pid = NULL) {
         }
       }
       
-      $ajax_vars = panels_ajax_form('panels_content_config_form', t('Configure !subtype_title', array('!subtype_title' => $cache->content_config[$pane->pid]['ct_data']['subtype']['title'])), url($_GET['q'], NULL, NULL, TRUE), $cache, $pane);
+      $ajax_vars = panels_ajax_form('panels_content_config_form',
+        t('Configure !subtype_title', array('!subtype_title' => $cache->content_config[$pane->pid]['ct_data']['subtype']['title'])),
+        url($_GET['q'], NULL, NULL, TRUE), $cache, $pane);
       panels_ajax_render($ajax_vars);
     }
   }
@@ -1067,6 +1063,7 @@ function panels_content_config_add_form_submit($form_values, $cache, $pane) {
   $ajax_vars->region = $cache->content_config[$pane->pid]['panel_id'];
   
   $cache->display->panels[$cache->content_config[$pane->pid]['panel_id']][] = $pane->pid;
+  $cache->display->content[$pane->pid]->shown = 1;
   
   // we need to fake the buttons a little.
   $buttons['show_hide'] = panels_add_button('icon-hidepane.png', t('Show/Hide Toggle'), t('Hide this pane'), 'pane-toggle-shown'); // new panes are shown by default
@@ -1090,17 +1087,7 @@ function panels_content_config_add_form_submit($form_values, $cache, $pane) {
 }
 
 function panels_content_config_edit_form_submit($form_values, $cache, $pane) {
-  if (in_array($pane->type, array('views', 'views2'))) {
-    $block = _panels_render_preview_views_pane();
-  }
-  else {
-    // $block = panels_render_pane($cache->display, $cache->display->content[$pane->pid]);
-    $block->title = t('Placeholder');
-    $block->title = t('Temporarily disabling all pane rendering on display edit form.');
-  }
-  if (!$block->title) {
-    $block->title = t('No title');
-  }
+  $block = _panels_render_preview_pane_disabled($pane, $cache->display->context);
   
   $ajax_vars = new stdClass();
   $ajax_vars->type = 'replace';
