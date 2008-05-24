@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.44 2008/05/24 04:59:04 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.45 2008/05/24 05:37:14 sdboyer Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -159,15 +159,17 @@ function panels_page_delete_confirm_submit($form_id, $form) {
 function panels_page_add_page($layout = NULL) {
   $layouts = panels_get_layouts();
 
+  // If the layout given is invalid, unset it.
+  if (is_array($layout) && isset($layouts[$layout])) {
+    drupal_set_message(t('The chosen layout %layout is invalid. Please select a new one.', array('%layout' => $layout)), 'warning');
+    unset($layout);
+  }
+  // If no page layout is given, choose one first.  
   if ($layout === NULL) {
     foreach ($layouts as $id => $layout) {
       $output .= panels_print_layout_link($id, $layout, $_GET['q'] . '/' . $id);
     }
     return $output;
-  }
-
-  if (!$layouts[$layout]) {
-    return drupal_not_found();
   }
 
   $panel_page = new stdClass();
