@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.45 2008/05/24 00:38:47 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.46 2008/05/24 17:27:36 sdboyer Exp $
 
 /**
  * Implementation of hook_help()
@@ -596,6 +596,9 @@ function panels_move_menu_tabs($path, $tab) {
 
   // Check the existing children to see if there is a default local task
   // already.
+  if (!isset($_menu['items'][$my_parent]['children'])) {
+    $_menu['items'][$my_parent]['children'] = array();
+  }
   $local_tasks = FALSE;
 
   if ($my_parent != 1) {
