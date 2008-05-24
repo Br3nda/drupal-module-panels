@@ -1,5 +1,5 @@
 <?php
-// $Id: node_attachments.inc,v 1.1.2.6 2007/12/21 03:21:36 merlinofchaos Exp $
+// $Id: node_attachments.inc,v 1.1.2.7 2008/05/24 01:39:13 sdboyer Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -22,6 +22,7 @@ function panels_node_attachments_panels_content_types() {
  */
 function panels_content_node_attachments($conf, $panel_args, $context) {
   $node = isset($context->data) ? drupal_clone($context->data) : NULL;
+  $block = new stdClass();
   $block->module = 'attachments';
 
   $block->subject = t('Attached files');

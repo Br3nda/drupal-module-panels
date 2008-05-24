@@ -1,5 +1,5 @@
 <?php
-// $Id: node_content.inc,v 1.1.2.11 2008/01/24 17:11:08 merlinofchaos Exp $
+// $Id: node_content.inc,v 1.1.2.12 2008/05/24 01:39:13 sdboyer Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -43,6 +43,7 @@ function panels_content_node_content($conf, $panel_args, $context) {
   }
 
   $node = isset($context->data) ? drupal_clone($context->data) : NULL;
+  $block = new stdClass();
   $block->module = 'node';
   $block->delta = $node->nid;
 

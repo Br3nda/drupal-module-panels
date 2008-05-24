@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.40 2008/05/24 01:07:21 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.41 2008/05/24 01:39:13 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -683,6 +683,7 @@ function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
  *  pane type will be added.
  */
 function panels_ajax_add_content($did = NULL, $panel_id = NULL) {
+  $output = new stdClass();
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
     $display = $cache->display;
     $layout = panels_get_layout($display->layout);
@@ -698,6 +699,7 @@ function panels_ajax_add_content($did = NULL, $panel_id = NULL) {
 }
 
 function panels_add_content($cache, $panel_id) {
+  $return = new stdClass();
   $return->type = 'display';
   $return->title = t('Choose type');
   panels_set('return', $return); // TODO get rid of this deprecated method

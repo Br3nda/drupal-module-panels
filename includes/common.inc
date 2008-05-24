@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.25 2008/05/18 00:46:52 sdboyer Exp $
+// $Id: common.inc,v 1.1.2.26 2008/05/24 01:39:14 sdboyer Exp $
 
 /**
  * @file
@@ -1042,6 +1042,7 @@ function panels_common_ajax_context_item_edit($module, $type, $panel_name) {
 
   $retval = drupal_process_form($form_id, $form);
   if ($retval) {
+  	$output = new stdClass();
     // successful submit
 
     // Save changes

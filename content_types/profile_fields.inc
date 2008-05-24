@@ -1,5 +1,5 @@
 <?php
-// $Id: profile_fields.inc,v 1.1.2.2 2008/05/24 00:09:51 sdboyer Exp $
+// $Id: profile_fields.inc,v 1.1.2.3 2008/05/24 01:39:13 sdboyer Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -24,6 +24,7 @@ function panels_profile_fields_panels_content_types() {
  */
 function panels_profile_fields_content($conf, $panel_args, $context) {
   $account = isset($context->data) ? drupal_clone($context->data) : NULL;
+  $block = new stdClass();
   $block->module = 'profile fields';
 
   if ($account) { 

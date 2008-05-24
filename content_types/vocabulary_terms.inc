@@ -1,5 +1,5 @@
 <?php
-// $Id: vocabulary_terms.inc,v 1.1.2.2 2008/01/08 18:48:53 merlinofchaos Exp $
+// $Id: vocabulary_terms.inc,v 1.1.2.3 2008/05/24 01:39:13 sdboyer Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -37,6 +37,7 @@ function panels_content_vocabulary_terms($conf, $panel_args, $context) {
     $output = theme('item_list', _panels_content_vocabulary_terms(0, $max_depth));
   }
 
+  $block = new stdClass();
   $block->module = 'node_type';
   $block->subject = $vocab->name;
   $block->content = $output;

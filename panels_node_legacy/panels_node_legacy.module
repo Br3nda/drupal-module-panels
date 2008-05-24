@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node_legacy.module,v 1.1.2.6 2008/02/10 07:48:20 merlinofchaos Exp $
+// $Id: panels_node_legacy.module,v 1.1.2.7 2008/05/24 01:39:14 sdboyer Exp $
 
 /**
  * Implementation of hook_menu()
@@ -53,6 +53,8 @@ function panels_node_panels_content_types() {
  */
 function panels_node_legacy_render($conf, $panel_args) {
   $nid = $conf['nid'];
+  $block = new stdClass();
+
   foreach (explode('/', $_GET['q']) as $id => $arg) {
     $nid = str_replace("%$id", $arg, $nid);
   }

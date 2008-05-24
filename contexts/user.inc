@@ -1,5 +1,5 @@
 <?php
-// $Id: user.inc,v 1.1.2.5 2007/12/22 19:48:52 merlinofchaos Exp $
+// $Id: user.inc,v 1.1.2.6 2008/05/24 01:39:14 sdboyer Exp $
 /**
  * @file contexts/user.inc
  *
@@ -45,7 +45,6 @@ function panels_context_create_user($empty, $data = NULL, $conf = FALSE) {
 }
 
 function panels_context_user_settings_form($conf, $external = FALSE) {
-  $options = array();
-
+  $form = array();
   return $form;
 }

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.42 2008/05/19 03:29:38 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.43 2008/05/24 01:39:13 sdboyer Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -170,6 +170,7 @@ function panels_page_add_page($layout = NULL) {
     return drupal_not_found();
   }
 
+  $panel_page = new stdClass();
   $panel_page->display = panels_new_display();
   $panel_page->display->layout = $layout;
   $panel_page->pid = 'new';

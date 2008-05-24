@@ -1,5 +1,5 @@
 <?php
-// $Id: term_list.inc,v 1.1.2.6 2007/12/21 03:21:36 merlinofchaos Exp $
+// $Id: term_list.inc,v 1.1.2.7 2008/05/24 01:39:13 sdboyer Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -22,6 +22,7 @@ function panels_term_list_panels_content_types() {
  */
 function panels_content_term_list($conf, $panel_args, $context) {
   $term = isset($context->data) ? drupal_clone($context->data) : NULL;
+  $block = new stdClass();
   $block->module = 'term-list';
 
   $options = panels_admin_term_list_options();
@@ -121,5 +122,5 @@ function panels_admin_edit_term_list($id, $parents, $conf = array()) {
 
 function panels_admin_title_term_list($conf, $context) {
   $options = panels_admin_term_list_options();
-  return t('"@s" @type', array('@s' => $context->identifier, '@type' => strtolower($choices[$options[$conf['type']]])));
+  return t('"@s" @type', array('@s' => $context->identifier, '@type' => strtolower($options[$conf['type']])));
 }

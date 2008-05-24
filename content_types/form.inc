@@ -1,5 +1,5 @@
 <?php
-// $Id: form.inc,v 1.1.2.6 2007/12/21 03:21:36 merlinofchaos Exp $
+// $Id: form.inc,v 1.1.2.7 2008/05/24 01:39:13 sdboyer Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -38,6 +38,7 @@ function panels_admin_content_types_form() {
  * based on the module and delta supplied in the configuration.
  */
 function panels_content_form($conf, $panel_args, &$context) {
+  $block = new stdClass();
   $block->module = 'form';
 
   if (isset($context->form)) {

@@ -1,5 +1,5 @@
 <?php
-// $Id: node_form.inc,v 1.1.2.5 2007/10/25 22:33:03 merlinofchaos Exp $
+// $Id: node_form.inc,v 1.1.2.6 2008/05/24 01:39:13 sdboyer Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -121,6 +121,7 @@ function panels_admin_content_types_node_form() {
  * based on the module and delta supplied in the configuration.
  */
 function panels_content_node_form($conf, $panel_args, &$context) {
+  $block = new stdClass();
   $block->module = 'node-form';
 
   switch ($conf['id']) {

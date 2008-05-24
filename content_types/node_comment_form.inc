@@ -1,5 +1,5 @@
 <?php
-// $Id: node_comment_form.inc,v 1.1.2.6 2007/12/19 20:27:28 merlinofchaos Exp $
+// $Id: node_comment_form.inc,v 1.1.2.7 2008/05/24 01:39:13 sdboyer Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -24,6 +24,7 @@ function panels_node_comment_form_panels_content_types() {
  */
 function panels_content_node_comment_form($conf, $panel_args, $context) {
   $node = isset($context->data) ? drupal_clone($context->data) : NULL;
+  $block = new stdClass();
   $block->module = 'comments';
   $block->delta = $node->nid;
 
