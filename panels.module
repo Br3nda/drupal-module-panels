@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.102 2008/05/24 00:38:46 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.103 2008/05/24 01:18:27 sdboyer Exp $
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -560,8 +560,8 @@ class panels_display {
     $pane->pid = $this->next_new_pid();
     if (!$location || !isset($this->panels[$location])) {
       foreach ($this->panels as $panel_name => $panel) {
-        if (array_key_exists($pid, $panel)) {
-          $this->panels[$panel_name][] = $pid;
+        if (array_key_exists($pane->pid, $panel)) {
+          $this->panels[$panel_name][] = $pane->pid;
         }
       }
     }
