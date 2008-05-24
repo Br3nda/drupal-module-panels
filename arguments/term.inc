@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.1.2.6 2007/12/31 04:31:06 merlinofchaos Exp $
+// $Id: term.inc,v 1.1.2.7 2008/05/24 05:20:17 sdboyer Exp $
 /**
  * @file arguments/term.inc
  *
@@ -95,6 +95,7 @@ function panels_term_settings_form($conf) {
     '#title' => t('Vocabularies'),
     '#type' => 'checkboxes',
     '#options' => $options,
+    '#description' => t('You can restrict this argument to use the checked node types. Arguments from non-conforming node types will be ignored, and Panels will behave as if no argument were given. Leave all unchecked to impose no restriction.'),
     '#default_value' => $conf['vids'],
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',

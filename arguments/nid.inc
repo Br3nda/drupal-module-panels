@@ -1,5 +1,5 @@
 <?php
-// $Id: nid.inc,v 1.1.2.5 2007/10/25 02:23:19 merlinofchaos Exp $
+// $Id: nid.inc,v 1.1.2.6 2008/05/24 05:20:17 sdboyer Exp $
 /**
  * @file arguments/nid.inc
  *
@@ -58,6 +58,7 @@ function panels_nid_settings_form($conf) {
     '#title' => t('Node types'),
     '#type' => 'checkboxes',
     '#options' => $options,
+    '#description' => t('You can restrict this argument to use the checked node types. Arguments from non-conforming node types will be ignored, and Panels will behave as if no argument were given. Leave all unchecked to impose no restriction.'),
     '#default_value' => $conf['types'],
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
