@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.43 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.44 2008/05/24 04:59:04 sdboyer Exp $
 /**
  * @file panels_page.admin.inc Administrative screens and functions for panel pages
  */
@@ -69,7 +69,7 @@ function panels_page_list_page() {
     }
   }
 
-  if (strtolower($ts['sort']) == 'desc') {
+  if (drupal_strtolower($ts['sort']) == 'desc') {
     arsort($sorts);
   }
   else {

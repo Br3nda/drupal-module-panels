@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.17 2008/05/23 17:48:10 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.18 2008/05/24 04:59:04 sdboyer Exp $
 
 /**
  * @file panels_views.module
@@ -157,7 +157,7 @@ function panels_views_list_views() {
     }
   }
 
-  if (strtolower($ts['sort']) == 'desc') {
+  if (drupal_strtolower($ts['sort']) == 'desc') {
     arsort($sorts);
   }
   else {

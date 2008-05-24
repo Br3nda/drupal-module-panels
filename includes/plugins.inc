@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.40 2008/05/23 21:41:42 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.41 2008/05/24 04:59:04 sdboyer Exp $
 /**
  * @file plugins.inc
  *
@@ -1290,8 +1290,6 @@ function panels_load_includes($plugin_type, $hook, $file = NULL) {
   foreach(array_filter($file_list) as $module => $files) {
     foreach ($files as $file) {
       require_once('./'. $file->filename);
-      // TODO-FUTURE: this would be one of the ideal places to consider using a class for panels .inc files
-      // in order to improve their flexibility and readability.
       $result = _panels_process_plugin('panels', $module . $file->name, dirname($file->filename), $hook);
       if (is_array($result)) {
         $info = array_merge($info, $result);

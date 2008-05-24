@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.41 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.42 2008/05/24 04:59:04 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -801,7 +801,7 @@ function panels_add_content($cache, $panel_id) {
 function panels_ajax_toggle_shown($did = NULL, $pid = NULL, $op = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
     $ajax_vars = new stdClass();
-    list($ajax_vars->type, $ajax_vars->id, $ajax_vars->old_op) = array('toggle-shown', $pid, strtolower($op));
+    list($ajax_vars->type, $ajax_vars->id, $ajax_vars->old_op) = array('toggle-shown', $pid, drupal_strtolower($op));
     
     if ($op == 'Show') {
       list($cache->display->content[$pid]->shown, $ajax_vars->output, $ajax_vars->new_op) = array(1, 'Hide', 'hide');

@@ -1,5 +1,5 @@
 <?php
-// $Id: node_form.inc,v 1.1.2.6 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: node_form.inc,v 1.1.2.7 2008/05/24 04:59:05 sdboyer Exp $
 /**
  * Callback function to supply a list of content types.
  */
@@ -288,5 +288,5 @@ function panels_admin_edit_node_form($id, $parents, $conf = array()) {
 
 function panels_admin_title_node_form($conf, $context) {
   $choices = panels_admin_content_types_node_form();
-  return t('"@s" @type', array('@s' => $context->identifier, '@type' => strtolower($choices[$conf['id']]['title'])));
+  return t('"@s" @type', array('@s' => $context->identifier, '@type' => drupal_strtolower($choices[$conf['id']]['title'])));
 }
