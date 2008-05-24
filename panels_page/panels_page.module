@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.46 2008/05/24 17:27:36 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.47 2008/05/24 23:26:16 sdboyer Exp $
 
 /**
  * Implementation of hook_help()
@@ -496,7 +496,10 @@ function _panels_page_get_title($panel_page, $context, $default_title) {
     return $panel_page->menu_title;
   }
 
-  if (isset($panel_page->display->title) && $panel_page->did != $panel_page->display->did) {
+  if ($panel_page->did == $panel_page->display->did || $panel_page->display->did == 'new') {
+    return !empty($panel_page->display->title) ? $panel_page->display->title : $panel_page->title;
+  }
+  elseif (isset($panel_page->display->title)) {
     return $panel_page->display->title;
   }
 
