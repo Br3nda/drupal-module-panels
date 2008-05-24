@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.44 2008/05/23 17:48:10 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.45 2008/05/24 00:38:47 sdboyer Exp $
 
 /**
  * Implementation of hook_help()
@@ -978,9 +978,9 @@ function panels_page_fields() {
     "css_id" => "'%s'",
     "css" => "'%s'",
     "no_blocks" => "%d",
-    "switcher_type" => "%s",
-    "switcher_name" => "%s",
-    "switcher_options" => "%s",
+    "switcher_type" => "'%s'",
+    "switcher_name" => "'%s'",
+    "switcher_options" => "'%s'",
     "menu" => "%d",
     "menu_tab" => "%d",
     "menu_tab_weight" => "%d",
