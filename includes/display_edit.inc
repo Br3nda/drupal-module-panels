@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.39 2008/05/23 21:41:42 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.40 2008/05/24 01:07:21 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -1251,8 +1251,7 @@ function panels_edit_cache_settings_form($display, $pid, $method, $settings_func
  * Validate cache settings.
  */
 function panels_edit_cache_settings_form_validate($form_id, $form_values, $form) {
-  $method = $form_values['method'];
-  if ($function = panels_plugin_get_function('cache', $method, 'settings form validate')) {
+  if ($function = panels_plugin_get_function('cache', $form_values['method'], 'settings form validate')) {
     $function($form, $form_values['settings']);
   }
 }
@@ -1261,7 +1260,7 @@ function panels_edit_cache_settings_form_validate($form_id, $form_values, $form)
  * Allows panel styles to validate their style settings.
  */
 function panels_edit_cache_settings_form_submit($form_id, $form_values) {
-  if ($function = panels_plugin_get_function('cache', $method, 'settings form submit')) {
+  if ($function = panels_plugin_get_function('cache', $form_values['method'], 'settings form submit')) {
     $function($form_values['settings']);
   }
 
