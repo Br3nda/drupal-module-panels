@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.1.2.8 2008/04/10 04:50:26 merlinofchaos Exp $
+// $Id: node.inc,v 1.1.2.9 2008/05/24 06:15:33 sdboyer Exp $
 /**
  * @file contexts/node.inc
  *
@@ -66,7 +66,8 @@ function panels_context_node_settings_form($conf, $external = FALSE) {
   if (!empty($conf['nid'])) {
     $info = db_fetch_object(db_query("SELECT * FROM {node} n WHERE n.nid = %d", $conf['nid']));
     if ($info) {
-      $form['node']['#description'] = t('Currently set to "%title"', array('%title' => $info->title));
+      $link = l("'$info->title' [node id: $info->nid]", "node/$info->nid", array('target' => '_blank', 'title' => t('Open in new window')));
+      $form['node']['#description'] = t('Currently set to !link', array('!link' => $link));
     }
   }
 
