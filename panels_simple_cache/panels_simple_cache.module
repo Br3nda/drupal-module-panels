@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_simple_cache.module,v 1.1.2.4 2007/12/18 22:16:19 merlinofchaos Exp $
+// $Id: panels_simple_cache.module,v 1.1.2.5 2008/05/24 05:02:36 sdboyer Exp $
 /**
  * @file panels_simple_cache.module
  *
@@ -172,6 +172,7 @@ function panels_simple_cache_settings_form($conf, $display, $pid) {
       'none' => t('None'),
     ),
     '#description' => t('If "arguments" are selected, this content will be cached per individual argument to the entire display; if "contexts" are selected, this content will be cached per unique context in the pane or display; if "neither" there will be only one cache for this pane.'),
+    '#default_value' => $conf['granularity'],
   );
 
   return $form;
