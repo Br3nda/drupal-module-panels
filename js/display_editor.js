@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.32 2008/05/23 21:41:42 sdboyer Exp $
+// $Id: display_editor.js,v 1.1.2.33 2008/05/24 18:05:10 sdboyer Exp $
 /**
  * @file display_editor.js 
  *
@@ -148,7 +148,7 @@ Drupal.Panels.bindPortlet = function() {
 Drupal.Panels.changed = function(item) {
   if (!item.is('.changed')) {
     item.addClass('changed');
-    item.children('div.grabber span.text').append(' <span class="star">*</span> ');
+    item.find('div.grabber span.text').append(' <span class="star">*</span> ');
   }
 };
 
