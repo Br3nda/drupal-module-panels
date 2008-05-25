@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.44 2008/05/25 00:09:22 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.45 2008/05/25 17:10:14 sdboyer Exp $
 
 /*
  * @file display_edit.inc
@@ -87,8 +87,15 @@ function panels_edit_display($display, $destination) {
     $form['#redirect'] = FALSE;
   }
 
+  $explanation_text = '<p>Grab the title bar of any pane to drag-and-drop it into another panel. Click the add pane button (!addicon) in any panel to add more content. Click the configure (!configicon) button on any pane to re-configure that pane. Click the cache (!cacheicon) button to configure caching for that pane specifically. Click the show/hide (!showicon/!hideicon) toggle button to show or hide that pane. Panes hidden in this way will be hidden from <em>everyone</em> until the hidden status is toggled off.</p>';
   $form['explanation'] = array(
-    '#value' => '<p>' . t('Grab the title bar of any pane to drag it to another panel. Click the add pane button in any panel to add more content. Click the configure button on any pane to re-configure that pane.') . '</p>',
+    '#value' => t($explanation_text, array(
+        '!addicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-addcontent.png') . '" title="Add content to this panel" /></span>',
+        '!configicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-configure.png') . '" title="Configure this pane" /></span>',
+        '!cacheicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-cache.png') . '" title="Control caching" /></span>',
+        '!showicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-showpane.png') . '" title="Show this pane" /></span>',
+        '!hideicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-hidepane.png') . '" title="Hide this pane" /></span>',
+      )),
   );
 
   $layout = panels_get_layout($display->layout);

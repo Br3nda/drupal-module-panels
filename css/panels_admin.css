@@ -1,4 +1,4 @@
-/* $Id: panels_admin.css,v 1.1.2.20 2008/05/23 22:17:36 sdboyer Exp $ */
+/* $Id: panels_admin.css,v 1.1.2.21 2008/05/25 17:10:14 sdboyer Exp $ */
 
 .layout-link {
   float: left; 
@@ -111,6 +111,11 @@
 #panels-edit-display .panel-pane,
 #panels-edit-display .helperclass {
   margin: .5em;
+}
+
+#panels-edit-display .inline-icon-help {
+  vertical-align: middle;
+  margin: 2px 1px;
 }
 
 table .operation {
