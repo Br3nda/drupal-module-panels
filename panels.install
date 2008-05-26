@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.46 2008/05/25 16:22:55 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.47 2008/05/26 21:23:07 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -533,7 +533,7 @@ function panels_update_5216() {
       $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN title varchar(128) AFTER cache");
       $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN hide_title int(1) AFTER title");
       $ret[] = update_sql("ALTER TABLE {panels_display} DROP COLUMN name");
-      $ret[] = update_sql("ALTER TABLE {panels_pane ADD COLUMN visibility text AFTER access");
+      $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN visibility text AFTER access");
       break;
     case 'pgsql':
       db_add_column($ret, 'panels_pane', 'shown', 'tinyint', array('default' => 1));
