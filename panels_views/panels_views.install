@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.install,v 1.1.2.6 2008/05/24 23:22:46 sdboyer Exp $
+// $Id: panels_views.install,v 1.1.2.7 2008/05/26 21:39:39 sdboyer Exp $
 
 /**
  * Implementation of hook_install().
@@ -19,8 +19,9 @@ function panels_views_install() {
     if ($sql) {
       $sql .= ', ';
     }
+    // offset is a reserved word in postgres, needs to be quoted
     if ($field == "offset" && $GLOBALS['db_type'] == 'pgsql') {
-        $field = '"offset"';        // offset is a reserved word in postgres, needs to be quoted
+        $field = '"offset"';
     }    
     $sql .= $field . ' ' . $data['definition'];
   }
