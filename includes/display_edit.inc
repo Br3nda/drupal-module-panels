@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.47 2008/05/27 20:21:13 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.48 2008/05/27 21:44:28 sdboyer Exp $
 
 
 /*
@@ -92,11 +92,11 @@ function panels_edit_display($display, $destination) {
   $explanation_text .= 'Grab the title bar of any pane to drag-and-drop it into another panel. Click the add pane button (!addicon) in any panel to add more content. Click the configure (!configicon) button on any pane to re-configure that pane. Click the cache (!cacheicon) button to configure caching for that pane specifically. Click the show/hide (!showicon/!hideicon) toggle button to show or hide that pane. Panes hidden in this way will be hidden from <em>everyone</em> until the hidden status is toggled off.';
   $explanation_text .= '</p>';
   $explanation_subs = array(
-    '!addicon' => '<span class="inline-icon-help"><img src="/' . panels_get_path('images/icon-addcontent.png') . '" title="Add content to this panel" /></span>',
-    '!configicon' => '<span class="inline-icon-help"><img src="/' . panels_get_path('images/icon-configure.png') . '" title="Configure this pane" /></span>',
-    '!cacheicon' => '<span class="inline-icon-help"><img src="/' . panels_get_path('images/icon-cache.png') . '" title="Control caching" /></span>',
-    '!showicon' => '<span class="inline-icon-help"><img src="/' . panels_get_path('images/icon-showpane.png') . '" title="Show this pane" /></span>',
-    '!hideicon' => '<span class="inline-icon-help"><img src="/' . panels_get_path('images/icon-hidepane.png') . '" title="Hide this pane" /></span>',
+    '!addicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-addcontent.png', TRUE) . '" title="Add content to this panel" /></span>',
+    '!configicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-configure.png', TRUE) . '" title="Configure this pane" /></span>',
+    '!cacheicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-cache.png', TRUE) . '" title="Control caching" /></span>',
+    '!showicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-showpane.png', TRUE) . '" title="Show this pane" /></span>',
+    '!hideicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-hidepane.png', TRUE) . '" title="Hide this pane" /></span>',
   );
   
   $form['explanation'] = array(
