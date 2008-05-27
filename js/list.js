@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.12 2008/05/17 07:05:46 sdboyer Exp $
+// $Id: list.js,v 1.1.2.13 2008/05/27 19:25:57 sdboyer Exp $
 
 /**
  * List object
@@ -36,7 +36,7 @@ Drupal.list = function(base, settings) {
        array[i] = tempj;
        array[j] = tempi;
      }
-  }
+  };
 
   this.settings = settings;
   this.base = '#' + base;
@@ -46,7 +46,7 @@ Drupal.list = function(base, settings) {
     var temp = array[a];
     array[a] = array[b];
     array[b] = temp;
-  }
+  };
 
   var saveOrder = function(order) {
     var new_order = '';
@@ -62,7 +62,7 @@ Drupal.list = function(base, settings) {
       $(settings.hidden).show();
     }
 //    console.log(order);
-  }
+  };
 
   var changeOrder = function(item, how) {
     // If there isn't an order field, don't process this.
@@ -120,7 +120,7 @@ Drupal.list = function(base, settings) {
     }
     
     saveOrder(order);
-  }
+  };
 
   this.changeOrder = changeOrder;
 
@@ -135,7 +135,7 @@ Drupal.list = function(base, settings) {
       .end()
       .filter(':odd')
         .addClass('even');
-  }
+  };
 
   this.restripeTable = restripeTable;
 
@@ -144,7 +144,7 @@ Drupal.list = function(base, settings) {
       item.addClass('changed');
       item.children('td:first').append(' <span class="star">*</span> ');
     }
-  }
+  };
 
   // Set as a function so we can be both a closure and called later
   // when more items get added.
@@ -370,7 +370,7 @@ Drupal.list = function(base, settings) {
           alert("Unknown response from server.");
           return;
       }
-    }
+    };
 
     if (settings.add) {
       $(settings.add + ':not(.list-processed)')
@@ -428,7 +428,7 @@ Drupal.list = function(base, settings) {
           return false;
         });
     }
-  }
+  };
 
   // Focus if we're told to.
   if (settings.focus) {
@@ -452,7 +452,7 @@ Drupal.list.autoAttach = function() {
     }
   }
   Drupal.Panels.Subform.createModal();
-}
+};
 
 if (Drupal.jsEnabled) {
   $(document).ready(Drupal.list.autoAttach);

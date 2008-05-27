@@ -1,4 +1,4 @@
-// $Id: panels.js,v 1.1.2.8 2008/05/01 22:36:01 merlinofchaos Exp $
+// $Id: panels.js,v 1.1.2.9 2008/05/27 19:25:57 sdboyer Exp $
 
 Drupal.Panels = {};
 
@@ -9,7 +9,7 @@ Drupal.Panels.autoAttach = function() {
       function() {
         $('div.panel-hide', this).addClass("panel-hide-hover"); return true;
       },
-      function(){
+      function() {
         $('div.panel-hide', this).removeClass("panel-hide-hover"); return true;
       }
     );
@@ -22,6 +22,6 @@ Drupal.Panels.autoAttach = function() {
       }
     );
   }
-}
+};
 
 $(Drupal.Panels.autoAttach);

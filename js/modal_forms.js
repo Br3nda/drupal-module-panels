@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.14 2008/05/24 00:09:51 sdboyer Exp $
+// $Id: modal_forms.js,v 1.1.2.15 2008/05/27 19:25:57 sdboyer Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -12,7 +12,7 @@ Drupal.Panels.Subform.bindClickSubmit = function() {
     dataType: 'json'
   });
   return false;
-}
+};
 
 Drupal.Panels.Subform.bindClickAddLink = function() {
   var id = $(this)[0].id;
@@ -27,7 +27,7 @@ Drupal.Panels.Subform.bindClickAddLink = function() {
     dataType: 'json'
   });
   return false;
-}
+};
 
 /** ripped from Drupal cause it's not easy to re-autoattach cleanly */
 Drupal.Panels.Subform.bindCollapsible = function() {
@@ -51,7 +51,7 @@ Drupal.Panels.Subform.bindCollapsible = function() {
       return false;
     })).after($('<div class="fieldset-wrapper"></div>').append(fieldset.children(':not(legend)')));
   });
-}
+};
 
 /** ripped from Drupal cause it's not easy to re-autoattach cleanly */
 Drupal.Panels.Subform.bindAutocomplete = function() {
@@ -66,7 +66,7 @@ Drupal.Panels.Subform.bindAutocomplete = function() {
     $(input.form).submit(Drupal.autocompleteSubmit);
     new Drupal.jsAC(input, acdb[uri]);
   });
-}
+};
 
 Drupal.Panels.Subform.bindAjaxResponse = function(data) {
   // On success, append the returned HTML to the panel's element.
@@ -143,26 +143,25 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
     // just dismiss the dialog.
     $('#panels-modal').unmodalContent();
   }
-}
+};
 
 /**
  * Display the modal
  */
 Drupal.Panels.Subform.show = function() {
   $('#panels-modal').modalContent({
-      opacity: '.40', 
-      background: '#fff'
-    }
-  );
+    opacity: '.40', 
+    background: '#fff'
+  });
   $('#modalContent .modal-content').html($('div#panels-throbber').html());
-}
+};
 
 /**
  * Hide the modal
  */
 Drupal.Panels.Subform.dismiss = function() {
   $('#panels-modal').unmodalContent();
-}
+};
 
 Drupal.Panels.Subform.createModal = function() {
   var html = ''
@@ -187,7 +186,7 @@ Drupal.Panels.Subform.createModal = function() {
   html += '</div>';
 
   $('body').append(html);
-}
+};
 
 /**
  * Bind a modal form to a button and a URL to go to.
@@ -211,7 +210,7 @@ Drupal.Panels.Subform.bindModal = function(id, info) {
     });
     return false;
   });
-}
+};
 
 /**
  * Bind all modals to their buttons. They'll be in the settings like so:
@@ -227,6 +226,6 @@ Drupal.Panels.Subform.autoAttach = function() {
       }
     }
   }
-}
+};
 
 $(Drupal.Panels.Subform.autoAttach);

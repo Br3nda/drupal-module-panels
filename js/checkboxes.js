@@ -1,4 +1,4 @@
-// $Id: checkboxes.js,v 1.1.2.5 2007/12/31 07:26:53 merlinofchaos Exp $
+// $Id: checkboxes.js,v 1.1.2.6 2008/05/27 19:25:57 sdboyer Exp $
 
 Drupal.Panels.Checkboxes = {};
 
@@ -10,13 +10,12 @@ Drupal.Panels.Checkboxes.bindCheckbox = function(checkbox, gadget) {
     for (var i in gadget) {
       $(gadget[i]).attr('disabled', status);
     }
-  }
+  };
 
   $(checkbox).unbind('change'); // unset any existing
   $(checkbox).change(clickCheckBox);
   clickCheckBox();
-}
-
+};
 
 Drupal.Panels.Checkboxes.bindCheckboxes = function() {
   if (Drupal.settings && Drupal.settings.panels && Drupal.settings.panels.checkboxes) {
@@ -27,6 +26,6 @@ Drupal.Panels.Checkboxes.bindCheckboxes = function() {
       }
     }
   }
-}
+};
 
 $(Drupal.Panels.Checkboxes.bindCheckboxes);

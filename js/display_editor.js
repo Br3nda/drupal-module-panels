@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.33 2008/05/24 18:05:10 sdboyer Exp $
+// $Id: display_editor.js,v 1.1.2.34 2008/05/27 19:25:57 sdboyer Exp $
 /**
  * @file display_editor.js 
  *
@@ -20,21 +20,21 @@ Drupal.Panels.clickAdd = function() {
     dataType: 'json'
   });
   return false;
-}
+};
 
 /** hide all button **/
 Drupal.Panels.clickHideAll = function() {
   $('div.panel-portlet div.content').hide(200);
   $('div.panel-portlet div.toggle').addClass('toggle-collapsed');
   return false;
-}
+};
 
 /** show all button **/
 Drupal.Panels.clickShowAll = function() {
   $('div.panel-portlet div.content').show(200);
   $('div.panel-portlet div.toggle').removeClass('toggle-collapsed');
   return false;
-}
+};
 
 /** Configure cache button */
 Drupal.Panels.clickCacheSettings = function () {
@@ -51,7 +51,7 @@ Drupal.Panels.clickCacheSettings = function () {
     dataType: 'json'
   });
   return false;
-}
+};
 
 /** Toggle pane show/hide button **/
 Drupal.Panels.bindClickToggleShown = function (o) {
@@ -91,7 +91,7 @@ Drupal.Panels.bindClickConfigure = function (o) {
     });
     return false;
   });
-}
+};
 
 /** Configure cache button */
 Drupal.Panels.bindClickCache = function (o) {
@@ -112,7 +112,7 @@ Drupal.Panels.bindClickCache = function (o) {
     });
     return false;
   });
-}
+};
 
 /** Delete pane button **/
 Drupal.Panels.bindClickDelete = function(o) {
@@ -125,7 +125,7 @@ Drupal.Panels.bindClickDelete = function(o) {
     }
     return false;
   });
-}
+};
 
 Drupal.Panels.bindPortlet = function() {
   var handle = $(this).find('h2.title');
@@ -143,7 +143,7 @@ Drupal.Panels.bindPortlet = function() {
     });
     content.hide();
   }
-}
+};
 
 Drupal.Panels.changed = function(item) {
   if (!item.is('.changed')) {
@@ -338,8 +338,8 @@ Drupal.Panels.Draggable = {
       $(draggable.formId + this.id.replace(/_/g, '-')).val(val);
     });
     return false;
-  }
-}
+  },
+};
 
 
 Drupal.Panels.DraggableHandler = function() {
@@ -347,7 +347,7 @@ Drupal.Panels.DraggableHandler = function() {
 
   getMouseOffset = function(docPos, mousePos, windowPos) {
     return { x: mousePos.x - docPos.x + windowPos.x, y: mousePos.y - docPos.y + windowPos.y};
-  }  
+  };
   
   getMousePos = function(ev) {
     ev = ev || window.event;
@@ -359,7 +359,7 @@ Drupal.Panels.DraggableHandler = function() {
       x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
       y:ev.clientY + document.body.scrollTop  - document.body.clientTop
     };
-  }
+  };
 
   getPosition = function(e) {   
     /*
@@ -384,7 +384,7 @@ Drupal.Panels.DraggableHandler = function() {
     top  += e.offsetTop;
 
     return { x:left, y:top };
-  }
+  };
 
   mouseUp = function(e) {
     draggable.dropzones = [];
@@ -409,7 +409,7 @@ Drupal.Panels.DraggableHandler = function() {
 
     $(document).unbind('mouseup').unbind('mousemove');
     draggable.savePositions();
-  }
+  };
 
   mouseMove = function(e) {
     var mousePos = getMousePos(e);
@@ -420,7 +420,7 @@ Drupal.Panels.DraggableHandler = function() {
     draggable.object.style.top = mousePos.y - draggable.mouseOffset.y + windowMoved + 'px';
     draggable.object.style.left = mousePos.x - draggable.mouseOffset.x  + 'px';
     $(draggable.object).toggleClass('moving');
-  }
+  };
 
   mouseDown = function(e) {
     if (e.target.nodeName == 'A' || e.target.nodeName == 'INPUT') {
@@ -496,10 +496,10 @@ Drupal.Panels.DraggableHandler = function() {
 
     draggable.calculateDropZones(mousePos, e);
     return false;
-  }
+  };
 
   $(this).mousedown(mouseDown);
-}
+};
 
 jQuery.fn.extend({
   panelsDraggable: Drupal.Panels.DraggableHandler
@@ -522,7 +522,7 @@ Drupal.Panels.attachPane = function(parent) {
   Drupal.Panels.bindClickConfigure();
   Drupal.Panels.bindClickDelete();
   Drupal.Panels.Draggable.savePositions();
-}
+};
 
 Drupal.Panels.autoAttach = function() {
   // Show javascript only items.
@@ -535,6 +535,6 @@ Drupal.Panels.autoAttach = function() {
   $('input#panels-cache-settings').click(Drupal.Panels.clickCacheSettings);
 
   Drupal.Panels.attachPane(document);
-}
+};
 
 $(Drupal.Panels.autoAttach);

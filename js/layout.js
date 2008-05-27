@@ -1,4 +1,4 @@
-// $Id: layout.js,v 1.1.2.2 2007/12/06 02:35:45 merlinofchaos Exp $
+// $Id: layout.js,v 1.1.2.3 2008/05/27 19:25:57 sdboyer Exp $
 /**
  * @file layout.js 
  *
@@ -10,6 +10,6 @@ Drupal.Panels.Layout.autoAttach = function() {
   $('div.form-item div.layout-icon').click(function() {
     $(this).prev().find('input').attr('checked', true);
   });
-}
+};
 
 $(Drupal.Panels.Layout.autoAttach);

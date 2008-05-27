@@ -1,4 +1,4 @@
-// $Id: edit_settings.js,v 1.1.2.5 2008/05/23 21:41:42 sdboyer Exp $
+// $Id: edit_settings.js,v 1.1.2.6 2008/05/27 19:25:57 sdboyer Exp $
 /**
  * @file edit_settings.js 
  *
@@ -9,10 +9,9 @@
 Drupal.Panels.clickEdit = function() {
   // show the empty dialog right away.
   $('#panels-modal').modalContent({
-      opacity: '.40', 
-      background: '#fff'
-    }
-  );
+    opacity: '.40', 
+    background: '#fff'
+  });
   $('#modalContent .modal-content').html($('div#panels-throbber').html());
   $.ajax({
     type: "POST",
@@ -24,13 +23,13 @@ Drupal.Panels.clickEdit = function() {
     dataType: 'json'
   });
   return false;
-}
+};
 
 Drupal.Panels.autoAttach = function() {
   // Bind buttons.
   Drupal.Panels.Subform.createModal();
-  $('input#panels-style-settings').click(function() { return false; } );
+  $('input#panels-style-settings').click(function() { return false; });
   $('input#panels-style-settings').click(Drupal.Panels.clickEdit);
-}
+};
 
 $(Drupal.Panels.autoAttach);
