@@ -1,5 +1,7 @@
 <?php
-// $Id: node_comments.inc,v 1.1.2.9 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: node_comments.inc,v 1.1.2.10 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -8,7 +10,8 @@ function panels_node_comments_panels_content_types() {
     $items['node_comments'] = array(
       'title' => t('Node comments'),
       'content_types' => 'panels_admin_content_types_node_comments',
-      'single' => TRUE, // only provides a single content type
+      // only provides a single content type
+      'single' => TRUE,
       'render callback' => 'panels_content_node_comments',
       'add callback' => 'panels_admin_edit_node_comments',
       'edit callback' => 'panels_admin_edit_node_comments',
@@ -26,7 +29,7 @@ function panels_content_node_comments($conf, $panel_args, $context) {
   $node = isset($context->data) ? drupal_clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'comments';
-  $block->delta = $node->nid;
+  $block->delta  = $node->nid;
 
   $block->subject = t('Comments');
   if (empty($node)) {
@@ -119,7 +122,7 @@ function panels_comment_render($node, $conf) {
 
   $query_args = array($node->nid);
   if (!user_access('administer comments')) {
-    $query .= ' AND c.status = %d';
+    $query       .= ' AND c.status = %d';
     $query_count .= ' AND status = %d';
     $query_args[] = COMMENT_PUBLISHED;
   }
@@ -149,7 +152,7 @@ function panels_comment_render($node, $conf) {
   drupal_add_css(drupal_get_path('module', 'comment') .'/comment.css');
   while ($comment = db_fetch_object($result)) {
     $comment = drupal_unpack($comment);
-    $comment->name = $comment->uid ? $comment->registered_name : $comment->name;
+    $comment->name  = $comment->uid ? $comment->registered_name : $comment->name;
     $comment->depth = count(explode('.', $comment->thread)) - 1;
 
     if ($mode == COMMENT_MODE_THREADED_COLLAPSED || $mode == COMMENT_MODE_THREADED_EXPANDED) {
@@ -187,3 +190,4 @@ function panels_comment_render($node, $conf) {
 
   return $output;
 }
+

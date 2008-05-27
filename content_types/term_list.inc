@@ -1,5 +1,7 @@
 <?php
-// $Id: term_list.inc,v 1.1.2.8 2008/05/24 04:59:05 sdboyer Exp $
+// $Id: term_list.inc,v 1.1.2.9 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,7 +9,8 @@ function panels_term_list_panels_content_types() {
   $items['term_list'] = array(
     'title' => t('List of related terms'),
     'content_types' => 'panels_admin_content_types_term_list',
-    'single' => TRUE, // only provides a single content type
+    // only provides a single content type
+    'single' => TRUE,
     'render callback' => 'panels_content_term_list',
     'add callback' => 'panels_admin_edit_term_list',
     'edit callback' => 'panels_admin_edit_term_list',
@@ -33,19 +36,23 @@ function panels_content_term_list($conf, $panel_args, $context) {
       case 'related':
         $terms = taxonomy_get_related($term->tid);
         break;
+
       case 'child':
       default:
         $terms = taxonomy_get_children($term->tid);
         break;
+
       case 'top':
         $terms = taxonomy_get_children(0, $term->vid);
         break;
+
       case 'sibling':
         $parent = db_result(db_query("SELECT parent FROM {term_hierarchy} WHERE tid = %d", $term->tid));
         $terms = taxonomy_get_children($parent, $term->vid);
         // Remove the term that started this.
         unset($terms[$term->tid]);
         break;
+
       case 'synonyms':
         $terms = taxonomy_get_synonyms($term->tid);
         break;
@@ -124,3 +131,4 @@ function panels_admin_title_term_list($conf, $context) {
   $options = panels_admin_term_list_options();
   return t('"@s" @type', array('@s' => $context->identifier, '@type' => drupal_strtolower($options[$conf['type']])));
 }
+

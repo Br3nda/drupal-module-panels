@@ -1,8 +1,9 @@
 <?php
-// $Id: panels_node.install,v 1.1.2.4 2007/11/22 16:43:31 merlinofchaos Exp $
+// $Id: panels_node.install,v 1.1.2.5 2008/05/27 20:21:14 sdboyer Exp $
+
 
 /**
- * Install the panels node tables
+ * Install the panels node tables.
  */
 function panels_node_install() {
   switch ($GLOBALS['db_type']) {
@@ -17,6 +18,7 @@ function panels_node_install() {
 EOT
       );
       break;
+
     case 'mysql':
     case 'mysqli':
       db_query(<<<EOT
@@ -32,7 +34,7 @@ EOT
 }
 
 /**
- * Uninstall the panels node tables
+ * Uninstall the panels node tables.
  */
 function panels_node_uninstall() {
   // TODO: Delete all actual nodes that are panels_nodes.
@@ -41,6 +43,7 @@ function panels_node_uninstall() {
     case 'pgsql':
       db_query("DROP TABLE {panels_node}");
       break;
+
     case 'mysql':
     case 'mysqli':
       db_query("DROP TABLE IF EXISTS {panels_node}");
@@ -54,3 +57,4 @@ function panels_node_update_5000() {
   menu_rebuild();
   return $ret;
 }
+

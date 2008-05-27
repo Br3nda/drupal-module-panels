@@ -1,5 +1,7 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.41 2008/05/24 04:59:04 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.42 2008/05/27 20:21:13 sdboyer Exp $
+
+
 /**
  * @file plugins.inc
  *
@@ -13,15 +15,18 @@
 class panels_context {
   var $type = NULL;
   var $data = NULL;
-  var $title = ''; // The title of this object.
-  var $page_title = ''; // The title of the page if this object exists
-  var $identifier = ''; // The identifier (in the UI) of this object
+  // The title of this object.
+  var $title = '';
+  // The title of the page if this object exists
+  var $page_title = '';
+  // The identifier (in the UI) of this object
+  var $identifier = '';
   var $argument = NULL;
   var $keyword = '';
 
   function panels_context($type = 'none', $data = NULL) {
-    $this->type = $type;
-    $this->data = $data;
+    $this->type  = $type;
+    $this->data  = $data;
     $this->title = t('Unknown context');
   }
 
@@ -35,11 +40,25 @@ class panels_context {
     return (bool) array_intersect($a, $b);
   }
 
-  function get_argument() { return $this->argument; }
-  function get_keyword() { return $this->keyword; }
-  function get_identifier() { return $this->identifier; }
-  function get_title() { return $this->title; }
-  function get_page_title() { return $this->page_title; }
+  function get_argument() {
+    return $this->argument;
+  }
+
+  function get_keyword() {
+    return $this->keyword;
+  }
+
+  function get_identifier() {
+    return $this->identifier;
+  }
+
+  function get_title() {
+    return $this->title;
+  }
+
+  function get_page_title() {
+    return $this->page_title;
+  }
 }
 
 /**
@@ -89,7 +108,7 @@ class panels_optional_context extends panels_required_context {
    */
   function add_empty(&$contexts) {
     $context = new panels_context('any');
-    $context->title = t('No context');
+    $context->title      = t('No context');
     $context->identifier = t('No context');
     $contexts = array_merge(array('empty' => $context), $contexts);
   }
@@ -147,7 +166,8 @@ function panels_pane_access($pane, $display) {
   // Call the content type's custom-defined visibility rendering check.
   // Pass as much possibly relevant data as possible.
   $visibility_access = $visibility_check($pane, $display, $user);
-  if (!empty($type['roles and visibility'])) { // Content type marked both access modes to be ANDed together.
+  // Content type marked both access modes to be ANDed together.
+  if (!empty($type['roles and visibility'])) {
     return ($visibility_access === TRUE && $role_access === TRUE) ? TRUE : FALSE;
   }
   // Err on the safe side: if EVERYTHING else has failed, then don't render the pane.
@@ -161,6 +181,7 @@ function panels_pane_access($pane, $display) {
  *  The pane object to test.
  * @param object $account
  *  The current $user object.
+ *
  * @return bool $role_access
  *  The boolean result of the roles-based segment of the Panels access system.
  */
@@ -262,7 +283,7 @@ function panels_ct_conf_form($ct_data, $contexts, $conf) {
     $form['override_title_markup'] = array(
       '#prefix' => '<div class="description">',
       '#suffix' => '</div>',
-      '#value' =>  t('You may use %keywords from contexts, as well as %title to contain the original title.'),
+      '#value' => t('You may use %keywords from contexts, as well as %title to contain the original title.'),
     );
   }
 
@@ -314,7 +335,6 @@ function panels_ct_pane_config_form($pane, $contexts, $parents, $op, $content_ty
   }
 }
 
-
 /**
  * Call any add/edit validators defined by the content type.
  *
@@ -334,6 +354,7 @@ function panels_ct_pane_validate_form($content_type, $form, $form_values, $op) {
     return $function($form, $form_values);
   }
 }
+
 /**
  * Call any add/edit submit handlers defined by the content type.
  *
@@ -479,7 +500,8 @@ function panels_get_pane_content($display, $pane, $args = array(), $context = NU
   if (!$context) {
     $context = new panels_context;
   }
-  if (!$incoming_content === '') { // FIXME misplaced bang?
+  // FIXME misplaced bang?
+  if (!$incoming_content === '') {
     $incoming_content = t('Incoming content will be displayed here.');
   }
 
@@ -487,7 +509,8 @@ function panels_get_pane_content($display, $pane, $args = array(), $context = NU
   if (empty($pane->cache['method'])) {
     $content = panels_ct_get_content($pane->type, $pane->configuration, $args, $context, $incoming_content);
     foreach (module_implements('panels_pane_content_alter') as $module) {
-      $function = $module . 'panels_pane_content_alter'; // TODO This makes the third hook invocation on the render path. How badly is this hindering performance?
+      // TODO This makes the third hook invocation on the render path. How badly is this hindering performance?
+      $function = $module . 'panels_pane_content_alter';
       $function($content, $pane, $args, $context);
     }
   }
@@ -650,9 +673,11 @@ class panels_cache_object {
               case 'setting':
                 $this->js[] = array($info, $type, $scope);
                 break;
+
               case 'inline':
                 $this->js[] = array($info['code'], $type, $scope, $info['defer']);
                 break;
+
               default:
                 $this->js[] = array($id, $type, $scope, $info['defer'], $info['cache']);
             }
@@ -715,7 +740,7 @@ function panels_argument_get_context($argument, $arg, $empty = FALSE) {
     if ($context) {
       $context->identifier = $argument['identifier'];
       $context->page_title = $argument['title'];
-      $context->keyword = $argument['keyword'];
+      $context->keyword    = $argument['keyword'];
       return $context;
     }
   }
@@ -893,7 +918,7 @@ function panels_relationship_get_context($relationship, $arg) {
     if ($context) {
       $context->identifier = $relationship['identifier'];
       $context->page_title = $relationship['title'];
-      $context->keyword = $relationship['keyword'];
+      $context->keyword    = $relationship['keyword'];
       return $context;
     }
   }
@@ -1095,7 +1120,7 @@ function panels_context_get_context($context, $type = 'context') {
     if ($return) {
       $return->identifier = $context['identifier'];
       $return->page_title = $context['title'];
-      $return->keyword = $context['keyword'];
+      $return->keyword    = $context['keyword'];
       return $return;
     }
   }
@@ -1150,7 +1175,6 @@ function panels_context_load_contexts($object, $placeholders = TRUE, $contexts =
  * Match up external contexts to our required contexts. It shouldn't be
  * possible to get here without the contexts already lining up properly.
  */
-
 function panels_context_match_required_contexts($required, $contexts) {
   $return = array();
   if (!is_array($required)) {
@@ -1287,9 +1311,9 @@ function panels_load_includes($plugin_type, $hook, $file = NULL) {
     $file_list[$module] = drupal_system_listing("$file" . '.inc$', $path, 'name', 0);
   }
   $info = array();
-  foreach(array_filter($file_list) as $module => $files) {
+  foreach (array_filter($file_list) as $module => $files) {
     foreach ($files as $file) {
-      require_once('./'. $file->filename);
+      require_once ('./' . $file->filename);
       $result = _panels_process_plugin('panels', $module . $file->name, dirname($file->filename), $hook);
       if (is_array($result)) {
         $info = array_merge($info, $result);
@@ -1376,7 +1400,7 @@ function _panels_process_plugin($module, $identifier, $path, $hook) {
     return NULL;
   }
   $result = $function();
-  if (!isset($result) ||  !is_array($result)) {
+  if (!isset($result) || !is_array($result)) {
     return NULL;
   }
 
@@ -1448,6 +1472,7 @@ function panels_get_plugins($plugin, $hook, $id = NULL) {
  *
  * @param $layout
  *   Name of a panel layout.
+ *
  * @return
  *   An array with information about the requested panel layout.
  */
@@ -1470,6 +1495,7 @@ function panels_get_layouts() {
  *
  * @param $style
  *   Name of a panel style.
+ *
  * @return
  *   An array with information about the requested panel style.
  */
@@ -1492,6 +1518,7 @@ function panels_get_styles() {
  *
  * @param $argument
  *   Name of a panel argument.
+ *
  * @return
  *   An array with information about the requested panel argument.
  */
@@ -1514,6 +1541,7 @@ function panels_get_arguments() {
  *
  * @param $content type
  *   Name of a panel content type.
+ *
  * @return
  *   An array with information about the requested panel content type.
  */
@@ -1536,6 +1564,7 @@ function panels_get_content_types() {
  *
  * @param $content type
  *   Name of a panel content type.
+ *
  * @return
  *   An array with information about the requested relationship
  */
@@ -1558,6 +1587,7 @@ function panels_get_relationships() {
  *
  * @param $context
  *   Name of a panel context.
+ *
  * @return
  *   An array with information about the requested panel context.
  */
@@ -1580,6 +1610,7 @@ function panels_get_contexts() {
  *
  * @param $cache
  *   Name of a panel cache.
+ *
  * @return
  *   An array with information about the requested panel cache.
  */
@@ -1602,6 +1633,7 @@ function panels_get_caches() {
  *
  * @param $switcher
  *   Name of a panel switcher.
+ *
  * @return
  *   An array with information about the requested panel switcher.
  */
@@ -1618,3 +1650,4 @@ function panels_get_switcher($switcher) {
 function panels_get_switchers() {
   return panels_get_plugins('switchers', 'panels_switchers');
 }
+

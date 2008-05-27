@@ -1,5 +1,7 @@
 <?php
-// $Id: node_add_form.inc,v 1.1.2.3 2007/12/22 19:48:52 merlinofchaos Exp $
+// $Id: node_add_form.inc,v 1.1.2.4 2008/05/27 20:21:13 sdboyer Exp $
+
+
 /**
  * @file contexts/node_add_form.inc
  *
@@ -46,15 +48,17 @@ function panels_context_create_node_add_form($empty, $data = NULL, $conf = FALSE
 
       $form = drupal_retrieve_form($type . '_node_form', $node);
       drupal_process_form($type . '_node_form', $form);
-      $context->data = $type; // In a form, $data is the object being edited.
-      $context->title = $types[$type]->name;
+      // In a form, $data is the object being edited.
+      $context->data     = $type;
+      $context->title    = $types[$type]->name;
       $context->argument = $type;
 
       // These are specific pieces of data to this form.
-      $context->form = $form; // All forms should place the form here.
-      $context->form_id = $type . '_node_form';
+      // All forms should place the form here.
+      $context->form       = $form;
+      $context->form_id    = $type . '_node_form';
       $context->form_title = t('Submit @name', array('@name' => $types[$type]->name));
-      $context->node_type = $type;
+      $context->node_type  = $type;
       return $context;
     }
   }
@@ -65,7 +69,7 @@ function panels_context_node_add_form_settings_form($conf, $external = FALSE) {
     $options[0] = t('External source');
   }
 
-   foreach (node_get_types() as $type => $info) {
+  foreach (node_get_types() as $type => $info) {
     $options[$type] = $info->name;
   }
 
@@ -83,3 +87,4 @@ function panels_context_node_add_form_settings_form($conf, $external = FALSE) {
 
   return $form;
 }
+

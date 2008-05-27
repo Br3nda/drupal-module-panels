@@ -1,5 +1,7 @@
 <?php
-// $Id: vocabulary_terms.inc,v 1.1.2.3 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: vocabulary_terms.inc,v 1.1.2.4 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -24,7 +26,7 @@ function panels_vocabulary_terms_panels_content_types() {
  */
 function panels_content_vocabulary_terms($conf, $panel_args, $context) {
   $vocab = isset($context->data) ? drupal_clone($context->data) : NULL;
-  $max_depth = (!empty($conf['max_depth'])? (int)$conf['max_depth'] : NULL);
+  $max_depth = (!empty($conf['max_depth']) ? (int)$conf['max_depth'] : NULL);
   if ($conf['tree'] == FALSE) {
     $terms = taxonomy_get_tree($vocab->vid, 0, -1, $max_depth);
     $items = array();
@@ -38,10 +40,10 @@ function panels_content_vocabulary_terms($conf, $panel_args, $context) {
   }
 
   $block = new stdClass();
-  $block->module = 'node_type';
+  $block->module  = 'node_type';
   $block->subject = $vocab->name;
   $block->content = $output;
-  $block->delta = $vocab->tid;
+  $block->delta   = $vocab->tid;
 
   return $block;
 }
@@ -104,3 +106,4 @@ function panels_admin_edit_vocabulary_terms($id, $parents, $conf = array()) {
 
   return $form;
 }
+

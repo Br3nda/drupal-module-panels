@@ -1,28 +1,46 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.47 2008/05/24 23:26:16 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.48 2008/05/27 20:21:13 sdboyer Exp $
+
 
 /**
- * Implementation of hook_help()
+ * @file panels_page.module
+ *
+ * This module is the primary implementation pf the Panels API.
+ * It provides Panel pages that are used to create full page layouts.
+ *
+ * Code exclusively used on admin pages can be found in panels_page.admin.inc.
+ */
+
+/**
+ * Implementation of hook_help().
  */
 function panels_page_help($section = '') {
   switch ($section) {
     case 'admin/panels/panel-page':
     case 'admin/panels/panel-page/list':
-      return t('<p>You may peruse a list of your current panels layouts and edit them, or click add to create a new page.</p>');
+      $output = '<p>';
+      $output .= t('You may peruse a list of your current panels layouts and edit them, or click add to create a new page.');
+      $output .= '</p>';
+      break;
+
     case 'admin/panels/panel-page/add':
-      return t('<p>Choose a layout for your new page from the list below.</p>');
+      $output = '<p>';
+      $output .= t('Choose a layout for your new page from the list below.');
+      $output .= '</p>';
+      break;
   }
+  return $output;
 }
 
 /**
- * Implementation of hook_perm()
+ * Implementation of hook_perm().
  */
 function panels_page_perm() {
   return array('create panel-pages', 'access all panel-pages');
 }
 
 /**
- * Implementation of hook_menu()
+ * Implementation of hook_menu().
  */
 function panels_page_menu($may_cache) {
   $items = array();
@@ -378,8 +396,8 @@ function panels_page_admin_menu_items(&$items, $base, $page) {
  */
 function _panels_page_create_menu_item(&$items, $panel_page, $path, $args = array()) {
   $access = panels_page_access($panel_page);
-  $title = filter_xss_admin(panels_page_get_title($panel_page, 'menu'));
-  $type = _panels_page_menu_type($panel_page);
+  $title  = filter_xss_admin(panels_page_get_title($panel_page, 'menu'));
+  $type   = _panels_page_menu_type($panel_page);
 
   if ($type == MENU_LOCAL_TASK || $type == MENU_DEFAULT_LOCAL_TASK) {
     $weight = $panel_page->menu_tab_weight;
@@ -391,17 +409,19 @@ function _panels_page_create_menu_item(&$items, $panel_page, $path, $args = arra
       case 'tab':
         $parent_type = MENU_LOCAL_TASK;
         break;
+
       case 'normal':
         $parent_type = MENU_NORMAL_ITEM;
         break;
+
       default:
       case 'existing':
         $parent_type = 0;
         break;
     }
     if ($parent_type) {
-      $title = filter_xss_admin(panels_page_get_title($panel_page, 'menu-parent'));
-      $weight = $panel_page->menu_parent_tab_weight;
+      $title   = filter_xss_admin(panels_page_get_title($panel_page, 'menu-parent'));
+      $weight  = $panel_page->menu_parent_tab_weight;
       $items[] = _panels_page_menu_item(dirname($path), $title, $panel_page, $args, $access, $parent_type, $weight);
     }
   }
@@ -473,7 +493,6 @@ function panels_page_access($panel_page, $account = NULL) {
 
   return array_intersect($panel_page->access, $roles[$account->uid]);
 }
-
 
 /**
  * Get the title for a panel page, given a context.
@@ -569,7 +588,7 @@ function panels_page_get_current($page = NULL) {
 // panel page administrative pages
 
 /**
- * Settings for panel pages
+ * Settings for panel pages.
  */
 function panels_page_settings() {
   panels_load_include('common');
@@ -577,7 +596,7 @@ function panels_page_settings() {
 }
 
 /**
- * Pass-through to admin.inc
+ * Pass-through to admin.inc.
  */
 function panels_page_passthru() {
   $args = func_get_args();
@@ -665,7 +684,7 @@ function panels_page_view_page($panel_page, $admin) {
       }
 
       // go through switcher types and switch the first one that matches.
-      foreach($pages as $plugin => $candidates) {
+      foreach ($pages as $plugin => $candidates) {
         if ($page = panels_switcher_switch($plugin, 'panel_page', $panel_page->name, $candidates)) {
           $panel_page = $page;
           break;
@@ -675,8 +694,10 @@ function panels_page_view_page($panel_page, $admin) {
   }
 
   $args = func_get_args();
-  array_shift($args); // remove the name.
-  array_shift($args); // remove the admin flag.
+  // remove the name.
+  array_shift($args);
+  // remove the admin flag.
+  array_shift($args);
 
   $output = '';
   if ($admin) {
@@ -722,12 +743,13 @@ function panels_page_view_page($panel_page, $admin) {
   // This is the first point at which it is safe to add items to the display
   // as the argument handling, above, may choose which display is actually
   // used.
-  $display->args = $args;
-  $display->context = $panel_page->context;
+  $display->args     = $args;
+  $display->context  = $panel_page->context;
   $display->keywords = $panel_page->keywords;
-  $display->css_id = $panel_page->css_id;
-  $display->owner = $panel_page;
-  $display->owner->id = $panel_page->name; // unique id of this display's owner.
+  $display->css_id   = $panel_page->css_id;
+  $display->owner    = $panel_page;
+  // unique id of this display's owner.
+  $display->owner->id = $panel_page->name;
   $display->type = 'panel_page';
 
   // Set this as 'current' so that other stuff can utilize it.
@@ -763,14 +785,14 @@ function panels_page_view_page($panel_page, $admin) {
 }
 
 /**
- * Theme function to render our panel as a form. We need to do this so that
- * the entire display is inside the form.
+ * Theme function to render our panel as a form.
+ *
+ * We need to do this so that the entire display is inside the form.
  */
 function theme_panels_page_render_form($form) {
   $form['#children'] = panels_render_display($form['#display']);
   return theme('form', $form);
 }
-
 
 /**
  * Load a display based upon information from the $displays list.
@@ -799,7 +821,7 @@ function panels_page_fetch_display(&$panel_page, $id = NULL) {
 }
 
 /**
- * Fetch a display from a panel pages alternative list of displays
+ * Fetch a display from a panel pages alternative list of displays.
  */
 function _panels_page_fetch_display(&$panel_page, $id) {
   $info = $panel_page->displays[$id];
@@ -833,8 +855,7 @@ function _panels_page_fetch_display(&$panel_page, $id) {
 }
 
 /**
- * Get a display based on whether it's already in code or needs to be
- * loaded
+ * Get a display based on whether it's already in code or needs to be loaded.
  */
 function _panels_fetch_display_from_info($info) {
   // If the 'display' is set it's the result of an export/default
@@ -883,7 +904,9 @@ function panels_page_set_display($panel_page, $id, $display) {
 // Database functions
 
 /**
- * Fetch all panel pages in the system. This function does not cache.
+ * Fetch all panel pages in the system.
+ *
+ * This function does not cache.
  */
 function panels_page_load_all($names = array(), $page_size = 0) {
   $pages = $dids = array();
@@ -931,7 +954,7 @@ function panels_page_load_all($names = array(), $page_size = 0) {
 }
 
 /**
- * Load a panel page
+ * Load a panel page.
  */
 function panels_page_load($pid, $load_display = FALSE) {
   static $cache = array();
@@ -1098,8 +1121,9 @@ function panels_page_delete($panel_page) {
 }
 
 /**
- * Export a panel page into PHP code for use in import. The code returned from
- * can be used directly in panels_page_save().
+ * Export a panel page into PHP code for use in import.
+ *
+ * The code returned from can be used directly in panels_page_save().
  */
 function panels_page_export($panel_page, $prefix = '') {
   $output = '';
@@ -1143,7 +1167,7 @@ function panels_page_default_panels() {
 }
 
 /**
- * Implementation of hook_panels_exportables()
+ * Implementation of hook_panels_exportables().
  */
 function panels_page_panels_exportables($op = 'list', $panels = NULL, $name = 'foo') {
   static $all_panels = NULL;
@@ -1172,3 +1196,4 @@ function panels_page_panels_exportables($op = 'list', $panels = NULL, $name = 'f
     return $code;
   }
 }
+

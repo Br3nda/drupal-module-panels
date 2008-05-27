@@ -1,5 +1,7 @@
 <?php
-// $Id: custom.inc,v 1.2.6.17 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: custom.inc,v 1.2.6.18 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,7 +9,8 @@ function panels_custom_panels_content_types() {
   $items['custom'] = array(
     'title' => t('Custom'),
     'weight' => -10,
-    'single' => TRUE, // only provides a single content type
+    // only provides a single content type
+    'single' => TRUE,
     'content_types' => 'panels_admin_content_types_custom',
     'render callback' => 'panels_content_custom',
     'add callback' => 'panels_admin_edit_custom',
@@ -25,9 +28,9 @@ function panels_custom_panels_content_types() {
 function panels_content_custom($conf) {
   static $delta = 0;
 
-  $block = new stdClass();
-  $block->module = 'custom';
-  $block->delta = ++$delta;
+  $block          = new stdClass();
+  $block->module  = 'custom';
+  $block->delta   = ++$delta;
   $block->subject = filter_xss_admin($conf['title']);
   $block->content = check_markup($conf['body'], $conf['format'], FALSE);
 

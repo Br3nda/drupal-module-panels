@@ -1,5 +1,7 @@
 <?php
-// $Id: node_book_nav.inc,v 1.1.2.5 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: node_book_nav.inc,v 1.1.2.6 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,7 +9,8 @@ function panels_node_book_nav_panels_content_types() {
   if (module_exists('book')) {
     $items['node_book_nav'] = array(
       'title' => t('Node book navigation'),
-      'single' => TRUE, // only provides a single content type
+      // only provides a single content type
+      'single' => TRUE,
       'content_types' => 'panels_admin_content_types_node_book_nav',
       'render callback' => 'panels_content_node_book_nav',
 //      'add callback' => 'panels_admin_edit_node_book_nav',
@@ -59,3 +62,4 @@ function panels_admin_content_types_node_book_nav() {
 function panels_admin_title_node_book_nav($conf, $context) {
   return t('"@s" book navigation', array('@s' => $context->identifier));
 }
+

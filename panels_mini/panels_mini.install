@@ -1,5 +1,6 @@
 <?php
-// $Id: panels_mini.install,v 1.1.2.5 2007/12/31 04:43:28 merlinofchaos Exp $
+// $Id: panels_mini.install,v 1.1.2.6 2008/05/27 20:21:14 sdboyer Exp $
+
 
 /**
  * Implementation of hook_install().
@@ -23,6 +24,7 @@ EOT
       db_query("CREATE SEQUENCE {panels_mini}_pid_seq;");
       db_query("CREATE INDEX {panels_mini}_name_idx ON {panels_mini} (name);");
       break;
+
     case 'mysql':
     case 'mysqli':
       db_query(<<<EOT
@@ -64,6 +66,7 @@ function panels_mini_uninstall() {
       db_query("DROP TABLE {panels_mini}");
       db_query("DROP SEQUENCE {panels_mini}_pid_seq");
       break;
+
     case 'mysql':
     case 'mysqli':
       db_query("DROP TABLE IF EXISTS {panels_mini}");
@@ -79,6 +82,7 @@ function panels_mini_update_5000() {
       db_add_column($ret, 'panels_mini', 'contexts', 'text', array());
       db_add_column($ret, 'panels_mini', 'name', 'varchar(255) UNIQUE', array());
       break;
+
     case 'mysql':
     case 'mysqli':
       $ret[] = update_sql("ALTER TABLE {panels_mini} ADD COLUMN relationships longtext");
@@ -126,6 +130,7 @@ function panels_mini_update_5001() {
     case 'pgsql':
       db_add_column($ret, 'panels_mini', 'requiredcontexts', 'text', array());
       break;
+
     case 'mysql':
     case 'mysqli':
       $ret[] = update_sql("ALTER TABLE {panels_mini} ADD COLUMN requiredcontexts longtext");
@@ -133,3 +138,4 @@ function panels_mini_update_5001() {
 
   return $ret;
 }
+

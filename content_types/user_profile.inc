@@ -1,5 +1,7 @@
 <?php
-// $Id: user_profile.inc,v 1.1.2.2 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: user_profile.inc,v 1.1.2.3 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -22,7 +24,7 @@ function panels_content_user_profile($conf, $panel_args, $context) {
   $account = isset($context->data) ? drupal_clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'term-list';
-  
+
   if ($account === FALSE || ($account->access == 0 && !user_access('administer users'))) {
     return drupal_not_found();
   }
@@ -75,3 +77,4 @@ function panels_admin_content_types_user_profile() {
 function panels_admin_title_user_profile($conf, $context) {
   return t('"@s" user profile', array('@s' => $context->identifier));
 }
+

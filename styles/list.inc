@@ -1,5 +1,7 @@
 <?php
-// $Id: list.inc,v 1.1.2.6 2008/01/08 18:03:08 merlinofchaos Exp $
+// $Id: list.inc,v 1.1.2.7 2008/05/27 20:21:13 sdboyer Exp $
+
+
 /**
  * @file styles/list.inc
  * Definition of the 'list' panel style.
@@ -51,10 +53,11 @@ function panels_list_style_settings_form($style_settings) {
     '#title' => t('List type'),
     '#options' => array(
       'ul' => t('Unordered'),
-      'ol' => t('Ordered')
+      'ol' => t('Ordered'),
     ),
     '#default_value' => (isset($style_settings['list_type'])) ? $style_settings['list_type'] : 'ul',
   );
 
   return $form;
 }
+

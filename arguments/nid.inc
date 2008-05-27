@@ -1,15 +1,17 @@
 <?php
-// $Id: nid.inc,v 1.1.2.6 2008/05/24 05:20:17 sdboyer Exp $
+// $Id: nid.inc,v 1.1.2.7 2008/05/27 20:21:12 sdboyer Exp $
+
+
 /**
  * @file arguments/nid.inc
  *
  * Plugin to provide an argument handler for a node id
  */
-
 function panels_nid_panels_arguments() {
   $args['nid'] = array(
     'title' => t("Node ID"),
-    'keyword' => 'node', // keyword to use for %substitution
+    // keyword to use for %substitution
+    'keyword' => 'node',
     'description' => t('Restricts the argument to a node id.'),
     'context' => 'panels_nid_context',
     'settings form' => 'panels_nid_settings_form',
@@ -157,3 +159,4 @@ function panels_nid_choose_display($conf, $context) {
   // Empty return says to use the default display.
   return;
 }
+

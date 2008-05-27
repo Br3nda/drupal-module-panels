@@ -1,17 +1,33 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.25 2008/05/24 04:59:05 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.26 2008/05/27 20:21:14 sdboyer Exp $
+
 
 /**
- * Implementation of hook_help()
+ * @file panels_mini.module
+ *
+ * This module provides mini panels which are basically panels that can be
+ * used within blocks or other panels.
+ */
+
+/**
+ * Implementation of hook_help().
  */
 function panels_mini_help($section = '') {
   switch ($section) {
     case 'admin/panels/panel-mini':
     case 'admin/panels/panel-mini/list':
-      return t('<p>You can edit existing mini panels, or click add to create a new one.</p>');
+      $output = '<p>';
+      $output .= t('You can edit existing mini panels, or click add to create a new one.');
+      $output .= '</p>';
+      break;
+
     case 'admin/panels/panel-mini/add':
-      return t('<p>Mini panels are the small variants of panel pages. Instead of pages, they define blocks.</p>');
+      $output = '<p>';
+      $output .= t('Mini panels are the small variants of panel pages. Instead of pages, they define blocks.');
+      $output .= '</p>';
+      break;
   }
+  return $output;
 }
 
 /**
@@ -22,7 +38,7 @@ function panels_mini_perm() {
 }
 
 /**
- * Implementation of hook_menu()
+ * Implementation of hook_menu().
  */
 function panels_mini_menu($may_cache) {
   if ($may_cache) {
@@ -83,7 +99,7 @@ function panels_mini_menu($may_cache) {
     if (arg(0) == 'admin' && arg(1) == 'panels' && arg(2) == 'panel-mini') {
       $mini = panels_mini_load(arg(3));
       if ($mini && empty($mini->disabled)) {
-      	 $items = array();
+        $items = array();
         panels_mini_menu_items($items, "admin/panels/panel-mini/$mini->name", $mini);
       }
     }
@@ -230,7 +246,8 @@ function panels_mini_list_page() {
     $item = array();
     $item[] = check_plain($panel_mini->title);
     $item[] = check_plain($panel_mini->name);
-    $item[] = $panel_mini->type; // this is safe as it's always programmatic
+    // this is safe as it's always programmatic
+    $item[] = $panel_mini->type;
 
     if (empty($panel_mini->display)) {
       $panel_mini->display = panels_load_display($panel_mini->did);
@@ -244,10 +261,12 @@ function panels_mini_list_page() {
       case 'title':
         $sorts[] = $item[0];
         break;
+
       case 'name':
       default:
         $sorts[] = $item[1];
         break;
+
       case 'type':
         $sorts[] = $panel_mini->type . $item[0];
         break;
@@ -312,7 +331,7 @@ function panels_mini_preview_panel($mini) {
 }
 
 /**
- * Page callback to export a panel page to PHP code.
+ * Page callback to export a mini panel to PHP code.
  */
 function panels_mini_edit_export($panel_mini) {
   if (!is_object($panel_mini)) {
@@ -326,11 +345,12 @@ function panels_mini_edit_export($panel_mini) {
     '#type' => 'textarea',
     '#title' => $panel_mini->title,
     '#default_value' => $code,
-    '#rows' => $lines);
+    '#rows' => $lines,
+  );
   return $form;
 }
 
-/*
+/**
  * Page callback to import a mini panel from PHP code.
  */
 function panels_mini_import_mini() {
@@ -343,8 +363,8 @@ function panels_mini_import_mini() {
   return drupal_get_form('panels_mini_import_form');
 }
 
-/*
- * Form for the mini panel import
+/**
+ * Form for the mini panel import.
  */
 function panels_mini_import_form() {
   $form['panel_mini'] = array(
@@ -364,8 +384,8 @@ function panels_mini_import_form() {
   return $form;
 }
 
-/*
- * Handle the submit button on importing a panel mini.
+/**
+ * Handle the submit button on importing a mini panel.
  */
 function panels_mini_import_form_submit($form_id, $form) {
   ob_start();
@@ -383,7 +403,6 @@ function panels_mini_import_form_submit($form_id, $form) {
     drupal_set_message(t('Unable to get a mini panel out of that.'));
   }
 }
-
 
 /**
  * Handle the add mini panel page.
@@ -412,8 +431,9 @@ function panels_mini_add_page($layout = NULL) {
 }
 
 /**
- * Edit a mini panel. Called from both the add and edit points to provide for
- * common flow.
+ * Edit a mini panel.
+ *
+ * Called from both the add and edit points to provide for common flow.
  */
 function panels_mini_edit($panel_mini) {
   if (!is_object($panel_mini)) {
@@ -424,7 +444,7 @@ function panels_mini_edit($panel_mini) {
 }
 
 /**
- * The form to edit the settings of a mini panel.
+ * Form to edit the settings of a mini panel.
  */
 function panels_mini_edit_form($panel_mini) {
   panels_load_include('common');
@@ -436,7 +456,7 @@ function panels_mini_edit_form($panel_mini) {
   );
   $form['panel_mini'] = array(
     '#type' => 'value',
-    '#value' => $panel_mini
+    '#value' => $panel_mini,
   );
 
   $form['right'] = array(
@@ -486,7 +506,7 @@ function panels_mini_edit_form($panel_mini) {
     '#value' => check_plain($layout['title']),
   );
   $form['right']['layout']['layout-content'] = array(
-    '#value' => theme('panels_common_content_list', $panel_mini->display), //$content,
+    '#value' => theme('panels_common_content_list', $panel_mini->display),
   );
 
   $contexts = theme('panels_common_context_list', $panel_mini);
@@ -550,7 +570,7 @@ function panels_mini_edit_form_submit($form_id, $form_values) {
     }
   }
 
-  $panel_mini->title  = $form_values['title'];
+  $panel_mini->title = $form_values['title'];
   $panel_mini->name = $form_values['name'];
 
   if ($panel_mini->pid == 'new') {
@@ -573,7 +593,7 @@ function panels_mini_edit_form_submit($form_id, $form_values) {
 }
 
 /**
- * Form to edit context features of a mini panel
+ * Form to edit context features of a mini panel.
  */
 function panels_mini_edit_context($panel_mini, $next = NULL) {
   if (!empty($_POST)) {
@@ -588,7 +608,7 @@ function panels_mini_edit_context($panel_mini, $next = NULL) {
 }
 
 /**
- * The form to edit the context settings of a panel mini
+ * Form to edit the context settings of a mini panel.
  */
 function panels_mini_context_form($panel_mini, $next = NULL) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
@@ -602,7 +622,7 @@ function panels_mini_context_form($panel_mini, $next = NULL) {
 
   $form['panel_mini'] = array(
     '#type' => 'value',
-    '#value' => $panel_mini
+    '#value' => $panel_mini,
   );
 
   $form['right'] = array(
@@ -631,9 +651,8 @@ function panels_mini_context_form($panel_mini, $next = NULL) {
   return $form;
 }
 
-
 /**
- * Process submission of the panel mini edit form
+ * Process submission of the mini panel edit form.
  */
 function panels_mini_context_form_submit($form_id, $form_values) {
   $panel_mini = $form_values['panel_mini'];
@@ -652,7 +671,7 @@ function panels_mini_context_form_submit($form_id, $form_values) {
 }
 
 /**
- * Enable a default panel mini
+ * Enable a default mini panel.
  */
 function panels_mini_enable_page($name = NULL) {
   $defaults = panels_mini_default_panels();
@@ -666,7 +685,7 @@ function panels_mini_enable_page($name = NULL) {
 }
 
 /**
- * Disable a default panel.
+ * Disable a default mini panel.
  */
 function panels_mini_disable_page($name = NULL) {
   $defaults = panels_mini_default_panels();
@@ -759,8 +778,9 @@ function panels_mini_edit_layout_settings($panel_mini, $next = NULL) {
 // Allow the rest of the system access to mini panels
 
 /**
- * Implementation of hook_block(). Expose qualifying mini panels to Drupal's
- * block system.
+ * Implementation of hook_block().
+ *
+ * Expose qualifying mini panels to Drupal's block system.
  */
 function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
   if ($op == 'list') {
@@ -783,7 +803,7 @@ function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
     $panel_mini->context = $panel_mini->display->context = panels_context_load_contexts($panel_mini);
     $block = array(
       'subject' => $panel_mini->title,
-      'content' => panels_render_display($panel_mini->display)
+      'content' => panels_render_display($panel_mini->display),
     );
     return $block;
   }
@@ -805,7 +825,7 @@ function panels_mini_panels_content_types() {
 }
 
 /**
- * Return each available mini panel available as a sub type
+ * Return each available mini panel available as a subtype.
  */
 function panels_mini_content_types() {
   $types = array();
@@ -836,8 +856,7 @@ function panels_mini_content_types() {
 }
 
 /**
- * Statically store what IDs have been used so that we can ensure
- * all mini panels get a unique id.
+ * Statically store all used IDs to ensure all mini panels get a unique id.
  */
 function panels_mini_get_id($name) {
   static $id_cache = array();
@@ -854,7 +873,7 @@ function panels_mini_get_id($name) {
 }
 
 /**
- * Render a mini panel called from a panels display
+ * Render a mini panel called from a panels display.
  */
 function panels_mini_content($conf, $panel_args, &$contexts) {
   $mini = panels_mini_load($conf['name']);
@@ -875,18 +894,19 @@ function panels_mini_content($conf, $panel_args, &$contexts) {
   $mini->display->args = $panel_args;
   $mini->display->css_id = panels_mini_get_id($conf['name']);
   $mini->display->owner = $mini;
-  $mini->display->owner->id = $mini->name; // unique ID of this mini.
+  // unique ID of this mini.
+  $mini->display->owner->id = $mini->name;
 
   $block = new stdClass();
-  $block->module = 'panels_mini';
-  $block->delta = $conf['name'];
+  $block->module  = 'panels_mini';
+  $block->delta   = $conf['name'];
   $block->subject = filter_xss_admin($mini->title);
   $block->content = panels_render_display($mini->display);
   return $block;
-
 }
+
 /**
- * From to add a mini panel to a panel.
+ * Form to add a mini panel to a panel.
  */
 function panels_mini_add_mini_panel($id, $parents, $conf = array()) {
   $conf['name'] = $id;
@@ -894,8 +914,9 @@ function panels_mini_add_mini_panel($id, $parents, $conf = array()) {
 }
 
 /**
- * Returns an edit form for the mini panel; there isn't much here as most
- * of this is set up at mini panel creation time.
+ * Returns an edit form for the mini panel.
+ *
+ * There isn't much here as most of this is set up at mini panel creation time.
  */
 function panels_mini_edit_mini_panel($id, $parents, $conf) {
   $form['name'] = array(
@@ -923,7 +944,7 @@ function panels_mini_title_mini_panel($conf) {
 // Database functions.
 
 /**
- * Sanitize a mini, to guarantee certain data is as we believe it will be.
+ * Sanitize a mini panel, to guarantee certain data is as we believe it will be.
  */
 function panels_mini_sanitize($mini) {
   foreach (array('contexts', 'relationships', 'requiredcontexts') as $id) {
@@ -936,7 +957,9 @@ function panels_mini_sanitize($mini) {
 }
 
 /**
- * Fetch all panel pages in the system. This function does not cache.
+ * Fetch all mini panels in the system.
+ *
+ * This function does not cache.
  */
 function panels_mini_load_all($page_size = 0) {
   $panels = $dids = array();
@@ -1083,8 +1106,9 @@ function panels_mini_delete($panel_mini) {
 }
 
 /**
- * Export a panel page into PHP code for use in import. The code returned from
- * can be used directly in panels_mini_save().
+ * Export a mini panel into PHP code for use in import.
+ *
+ * The code returned from can be used directly in panels_mini_save().
  */
 function panels_mini_export($panel_mini, $prefix = '') {
   $output = '';
@@ -1103,7 +1127,7 @@ function panels_mini_export($panel_mini, $prefix = '') {
 }
 
 /**
- * Get all 'default' panels.
+ * Get all 'default' mini panels.
  */
 function panels_mini_default_panels() {
   $panels = module_invoke_all('default_panel_minis');
@@ -1115,7 +1139,7 @@ function panels_mini_default_panels() {
 }
 
 /**
- * Provide panels mini with its own category
+ * Provide mini panels with its own category.
  */
 function panels_mini_panels_block_info($module, $delta, &$info) {
   // Remove the block version of mini panels from being available content types.
@@ -1123,7 +1147,7 @@ function panels_mini_panels_block_info($module, $delta, &$info) {
 }
 
 /**
- * Implementation of hook_panels_exportables()
+ * Implementation of hook_panels_exportables().
  */
 function panels_mini_panels_exportables($op = 'list', $panels = NULL, $name = 'foo') {
   static $all_panels = NULL;
@@ -1151,5 +1175,5 @@ function panels_mini_panels_exportables($op = 'list', $panels = NULL, $name = 'f
     $code .= "}\n";
     return $code;
   }
-
 }
+

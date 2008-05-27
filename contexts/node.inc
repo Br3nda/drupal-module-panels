@@ -1,5 +1,7 @@
 <?php
-// $Id: node.inc,v 1.1.2.9 2008/05/24 06:15:33 sdboyer Exp $
+// $Id: node.inc,v 1.1.2.10 2008/05/27 20:21:13 sdboyer Exp $
+
+
 /**
  * @file contexts/node.inc
  *
@@ -35,8 +37,8 @@ function panels_context_create_node($empty, $data = NULL, $conf = FALSE) {
     $data = node_load($data['nid']);
   }
   if (!empty($data)) {
-    $context->data = $data;
-    $context->title = $data->title;
+    $context->data     = $data;
+    $context->title    = $data->title;
     $context->argument = $data->nid;
     return $context;
   }
@@ -60,7 +62,7 @@ function panels_context_node_settings_form($conf, $external = FALSE) {
     '#type' => 'textfield',
     '#maxlength' => 512,
     '#autocomplete_path' => 'panels/node/autocomplete',
-    '#weight'  => -10,
+    '#weight' => -10,
   );
 
   if (!empty($conf['nid'])) {
@@ -116,5 +118,5 @@ function panels_context_node_settings_form_validate($form, $form_values) {
   else {
     form_set_value($form['nid'], $node->nid);
   }
-
 }
+

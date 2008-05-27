@@ -1,15 +1,17 @@
 <?php
-// $Id: node_edit.inc,v 1.1.2.5 2008/05/24 05:20:17 sdboyer Exp $
+// $Id: node_edit.inc,v 1.1.2.6 2008/05/27 20:21:12 sdboyer Exp $
+
+
 /**
  * @file arguments/nid.inc
  *
  * Plugin to provide an argument handler for a Node edit form
  */
-
 function panels_node_edit_panels_arguments() {
   $args['node_edit'] = array(
     'title' => t("Node edit form"),
-    'keyword' => 'node', // keyword to use for %substitution
+    // keyword to use for %substitution
+    'keyword' => 'node',
     'description' => t('Displays the node edit form for a node.'),
     'context' => 'panels_node_edit_context',
     'settings form' => 'panels_node_edit_settings_form',
@@ -83,6 +85,7 @@ function panels_node_edit_settings_form($conf) {
 
   return $form;
 }
+
 /**
  * There appears to be a bit of a bug with the way we're handling forms; it causes
  * 'checkboxes' to get invalid values added to them when empty. This takes care

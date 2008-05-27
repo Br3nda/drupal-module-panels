@@ -1,5 +1,7 @@
 <?php
-// $Id: panels.module,v 1.10.4.104 2008/05/24 23:37:14 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.105 2008/05/27 20:21:15 sdboyer Exp $
+
+
 /**
  * @file panels.module
  * Core API for Panels. Provides display editing and rendering capabilities.
@@ -12,9 +14,9 @@ function panels_help($section = NULL) {
       $output = '<p>'. t('Panels is the core engine for a number of submodules, including panels-pages, panels-nodes, and mini-panels.  Panels allows the website adminstrator (or sometimes the end-user) to manipulate the layout of individual pages, sidebars, and content pieces, as well as easily dictate what content is displayed in the layout.') .'</p>';
       $output .= '<p>'. t('Most Drupal users are familiar with the block to region layout mechanism in which you can assign a block to any region defined in your theme.  Panels takes this concept a massive step forward.  Through the panels interface you can start by creating a layout with any number of columns, headers, and footer, and control the width of those areas.') .'</p>';
       $output .= '<p>'. t('After creating your layout, you can assign pieces of content to those areas in an easy drag and drop interface.  Content is not limited to blocks, but can be nodes, views, blocks, or other types of content that extend themselves to panels.') .'</p>';
-      $output .= '<p><b>'. t('Panels-pages') .'</b>' .t(', is the the primary panels module, you can use this for creating single full page layouts.  This replaces the standard panel that existed in the earlier versions of panels. If you are upgrading your site from Panels 1, and you cannot find where your panels went, be sure to enable the panel pages module!') .'</p>';
-      $output .= '<p><b>'. t('Panels-nodes') .'</b>' .t(', is useful for creating layouts that only occupy the content area of your pages.  Frequently, it is desirable to add an area to a node layout, such as a pull quote for a newspaper or a photo block, that you don\'t necessarily want on every node.  Panels Nodes lets you control the layout of a single node at a time and place content such as blog posts, images, blogs in and around the post.') .'</p>';
-      $output .= '<p><b>'. t('Mini-panels') .'</b>' .t(', is a layout mechanism for blocks.  It won\'t take long using panels before you get to a point when you want a panel inside of a panel.  Or a panel that can be used as a block.  That is exactly what mini-panels does. You can create a small panel here with various pieces of content and then put it inside of a panels-page or panels-node.') .'</p>';
+      $output .= '<p><b>'. t('Panels-pages') .'</b>'. t(', is the the primary panels module, you can use this for creating single full page layouts.  This replaces the standard panel that existed in the earlier versions of panels. If you are upgrading your site from Panels 1, and you cannot find where your panels went, be sure to enable the panel pages module!') .'</p>';
+      $output .= '<p><b>'. t('Panels-nodes') .'</b>'. t(', is useful for creating layouts that only occupy the content area of your pages.  Frequently, it is desirable to add an area to a node layout, such as a pull quote for a newspaper or a photo block, that you don\'t necessarily want on every node.  Panels Nodes lets you control the layout of a single node at a time and place content such as blog posts, images, blogs in and around the post.') .'</p>';
+      $output .= '<p><b>'. t('Mini-panels') .'</b>'. t(', is a layout mechanism for blocks.  It won\'t take long using panels before you get to a point when you want a panel inside of a panel.  Or a panel that can be used as a block.  That is exactly what mini-panels does. You can create a small panel here with various pieces of content and then put it inside of a panels-page or panels-node.') .'</p>';
       return $output;
   }
 }
@@ -45,15 +47,16 @@ function panels_menu($may_cache) {
       'title' => t('Autocomplete node'),
       'callback' => 'panels_node_autocomplete',
       'access' => user_access('access content'),
-      'type' => MENU_CALLBACK
+      'type' => MENU_CALLBACK,
     );
-    $items[] = array( // TODO Deprecated generalized ajax handler. Remove if at all possible.
+    // TODO Deprecated generalized ajax handler. Remove if at all possible.
+    $items[] = array(
       'path' => 'panels/ajax',
       'title' => t('ajax'),
       'callback' => 'panels_ajax_passthru',
       'callback arguments' => array('panels_ajax'),
       'access' => user_access('access content'),
-      'type' => MENU_CALLBACK
+      'type' => MENU_CALLBACK,
     );
     $items[] = array(
       'path' => 'panels/common/ajax',
@@ -61,7 +64,7 @@ function panels_menu($may_cache) {
       'callback' => 'panels_ajax_passthru',
       'callback arguments' => array('panels_common_ajax'),
       'access' => user_access('access content'),
-      'type' => MENU_CALLBACK
+      'type' => MENU_CALLBACK,
     );
     $items[] = array(
       'path' => 'panels/ajax/add-content',
@@ -69,7 +72,7 @@ function panels_menu($may_cache) {
       'callback' => 'panels_ajax_passthru',
       'callback arguments' => array('panels_ajax_add_content'),
       'access' => user_access('access content'),
-      'type' => MENU_CALLBACK
+      'type' => MENU_CALLBACK,
     );
     $items[] = array(
       'path' => 'panels/ajax/add-config',
@@ -77,7 +80,7 @@ function panels_menu($may_cache) {
       'callback' => 'panels_ajax_passthru',
       'callback arguments' => array('panels_ajax_add_config'),
       'access' => user_access('access content'),
-      'type' => MENU_CALLBACK
+      'type' => MENU_CALLBACK,
     );
     $items[] = array(
       'path' => 'panels/ajax/configure',
@@ -85,7 +88,7 @@ function panels_menu($may_cache) {
       'callback' => 'panels_ajax_passthru',
       'callback arguments' => array('panels_ajax_configure'),
       'access' => user_access('access content'),
-      'type' => MENU_CALLBACK
+      'type' => MENU_CALLBACK,
     );
     $items[] = array(
       'path' => 'panels/ajax/toggle-shown',
@@ -93,15 +96,15 @@ function panels_menu($may_cache) {
       'callback' => 'panels_ajax_passthru',
       'callback arguments' => array('panels_ajax_toggle_shown'),
       'access' => user_access('access content'),
-      'type' => MENU_CALLBACK
-    );    
+      'type' => MENU_CALLBACK,
+    );
     $items[] = array(
       'path' => 'panels/ajax/cache',
       'title' => t('ajax'),
       'callback' => 'panels_ajax_passthru',
       'callback arguments' => array('panels_ajax_cache'),
       'access' => user_access('access content'),
-      'type' => MENU_CALLBACK
+      'type' => MENU_CALLBACK,
     );
     $items[] = array(
       'path' => 'panels/ajax/cache-settings',
@@ -109,7 +112,7 @@ function panels_menu($may_cache) {
       'callback' => 'panels_ajax_passthru',
       'callback arguments' => array('panels_ajax_cache_settings'),
       'access' => user_access('access content'),
-      'type' => MENU_CALLBACK
+      'type' => MENU_CALLBACK,
     );
     $items[] = array(
       'path' => 'panels/ajax/panel_settings',
@@ -117,7 +120,7 @@ function panels_menu($may_cache) {
       'callback' => 'panels_ajax_passthru',
       'callback arguments' => array('panels_panel_settings_ajax'),
       'access' => user_access('access content'),
-      'type' => MENU_CALLBACK
+      'type' => MENU_CALLBACK,
     );
   }
   else {
@@ -165,23 +168,23 @@ function panels_ajax_render($output = NULL, $title = NULL, $url = NULL) {
       case 'dismiss':
         $temp->type = $output;
         break;
+
       default:
         $temp->type = 'display';
     }
     $temp->title = $title;
-    $temp->url = $url;
-    $output = $temp;
+    $temp->url   = $url;
+    $output      = $temp;
   }
   if (!$output->output || !$output->type) {
     $output->output = t('The input was invalid');
-    $output->type = 'display';
-    $output->title = t('Error');
+    $output->type   = 'display';
+    $output->title  = t('Error');
   }
   drupal_set_header('Content-Type: text/javascript; charset=utf-8');
   print drupal_to_js($output);
   exit;
 }
-
 
 /**
  * Handle a form for AJAX in a manner that happens to be basically the
@@ -243,7 +246,7 @@ function panels_perm() {
  * Custom form element to do our nice images.
  */
 function panels_elements() {
-  $type['panels_imagebutton'] = array('#input' => TRUE, '#button_type' => 'submit',);
+  $type['panels_imagebutton'] = array('#input' => TRUE, '#button_type' => 'submit');
   return $type;
 }
 
@@ -380,18 +383,18 @@ function panels_get($var) {
 
 /**
  * Main API entry point to edit a panel display.
- * 
+ *
  * Sample implementations utiltizing the the complex $destination behavior can be found
  * in panels_page_edit_content() and, in a separate contrib module, OG Blueprints
  * (http://drupal.org/project/og_blueprints), og_blueprints_blueprint_edit().
- * 
+ *
  * @ingroup mainapi
- * 
+ *
  * @param object $display instanceof panels_display \n
  *  A fully loaded panels $display object, as returned from panels_load_display().
  *  Merely passing a did is NOT sufficient. \n
  *  Note that 'fully loaded' means the $display must already be loaded with any contexts
- *  the caller wishes to have set for the display.  
+ *  the caller wishes to have set for the display.
  * @param mixed $destination \n
  *  The redirect destination that the user should be taken to on form submission or
  *  cancellation. With panels_edit, $destination has complex effects on the return
@@ -400,10 +403,11 @@ function panels_get($var) {
  *  at different stages of FAPI. Under most circumstances, simply passing in
  *  drupal_get_destination() is all that's necessary.
  * @param array $content_types \n
- *  An associative array of allowed content types, typically as returned from 
+ *  An associative array of allowed content types, typically as returned from
  *  panels_common_get_allowed_types(). Note that context partially governs available content types,
- *  so you will want to create any relevant contexts using panels_create_context() or 
- *  panels_create_context_empty() to make sure all the appropriate content types are available. 
+ *  so you will want to create any relevant contexts using panels_create_context() or
+ *  panels_create_context_empty() to make sure all the appropriate content types are available.
+ *
  * @return
  *  Because the functions called by panels_edit() invoke the form API, this function
  *  returns different values depending on the stage of form submission we're at. In Drupal 5,
@@ -411,14 +415,14 @@ function panels_get($var) {
  *  get at different stages:
  *    -# If !$_POST['op']: then we're on on the initial passthrough and the form is being
  *       rendered, so it's the $form itself that's being returned. Because negative margins,
- *       a common CSS technique, bork the display editor's ajax drag-and-drop, it's important 
+ *       a common CSS technique, bork the display editor's ajax drag-and-drop, it's important
  *       that the $output be printed, not returned. Use this syntax in the caller function: \n
  *          print theme('page', panels_edit($display, $destination, $content_types), FALSE); \n
  *    -# If $_POST['op'] == t('Cancel'): form submission has been cancelled. If empty($destination) == FALSE,
- *       then there is no return value and the panels API takes care of redirecting to $destination. 
+ *       then there is no return value and the panels API takes care of redirecting to $destination.
  *       If empty($destination) == TRUE, then there's still no return value, but the caller function
  *       has to take care of form redirection.
- *    -# If $_POST['op'] == ('Save'): the form has been submitted successfully and has run through 
+ *    -# If $_POST['op'] == ('Save'): the form has been submitted successfully and has run through
  *        panels_edit_display_submit(). $output depends on the value of $destination:
  *      - If empty($destination) == TRUE: $output contains the modified $display
  *        object, and no redirection will occur. This option is useful if the caller
@@ -426,14 +430,14 @@ function panels_get($var) {
  *        the page request is complete. Using hook_form_alter() to add an additional submit
  *        handler is typically the preferred method for something like this, but there
  *        are certain use cases where that is infeasible and $destination = NULL should
- *        be used instead. If this method is employed, the caller will need to handle form 
+ *        be used instead. If this method is employed, the caller will need to handle form
  *        redirection. Note that having $_REQUEST['destination'] set, whether via
  *        drupal_get_destination() or some other method, will NOT interfere with this
  *        functionality; consequently, you can use drupal_get_destination() to safely store
  *        your desired redirect in the caller function, then simply use drupal_goto() once
  *        panels_edit() has done its business.
  *      - If empty($destination) == FALSE: the form will redirect to the URL string
- *        given in $destination and NO value will be returned. 
+ *        given in $destination and NO value will be returned.
  */
 function panels_edit($display, $destination = NULL, $content_types = NULL) {
   panels_load_include('display_edit');
@@ -443,12 +447,12 @@ function panels_edit($display, $destination = NULL, $content_types = NULL) {
 
 /**
  * API entry point for selecting a layout for a given display.
- * 
+ *
  * Layout selection is nothing more than a list of radio items encompassing the available
  * layouts for this display, as defined by .inc files in the panels/layouts subdirectory.
  * The only real complexity occurs when a user attempts to change the layout of a display
  * that has some content in it.
- * 
+ *
  * @param object $display instanceof panels_display \n
  *  A fully loaded panels $display object, as returned from panels_load_display().
  *  Merely passing a did is NOT sufficient.
@@ -459,7 +463,7 @@ function panels_edit($display, $destination = NULL, $content_types = NULL) {
  *  Basic usage is a string containing the URL that the form should redirect to upon submission.
  *  For a discussion of advanced usages, see panels_edit().
  * @param mixed $allowed_layouts
- *  Allowed layouts has three different behaviors that depend on which of three value types 
+ *  Allowed layouts has three different behaviors that depend on which of three value types
  *  are passed in by the caller:
  *    #- if $allowed_layouts instanceof panels_allowed_layouts (includes subclasses): the most
  *       complex use of the API. The caller is passing in a loaded panels_allowed_layouts object
@@ -469,14 +473,14 @@ function panels_edit($display, $destination = NULL, $content_types = NULL) {
  *       will call the $allowed_layouts . '_allowed_layouts' var. If the data was stored properly
  *       in the system var, the $allowed_layouts object will be unserialized and recreated.
  *       @see panels_common_set_allowed_layouts()
- *    #- if is_null($allowed_layouts): the default behavior, which also provides backwards 
+ *    #- if is_null($allowed_layouts): the default behavior, which also provides backwards
  *       compatibility for implementations of the Panels2 API written before beta4. In this case,
  *       a dummy panels_allowed_layouts object is created which does not restrict any layouts.
  *       Subsequent behavior is indistinguishable from pre-beta4 behavior.
- * 
+ *
  * @return
- *  Can return nothing, or a modified $display object, or a redirection string; return values for the 
- *  panels_edit* family of functions are quite complex. See panels_edit() for detailed discussion. 
+ *  Can return nothing, or a modified $display object, or a redirection string; return values for the
+ *  panels_edit* family of functions are quite complex. See panels_edit() for detailed discussion.
  * @see panels_edit()
  */
 function panels_edit_layout($display, $finish, $destination = NULL, $allowed_layouts = NULL) {
@@ -487,26 +491,26 @@ function panels_edit_layout($display, $finish, $destination = NULL, $allowed_lay
 
 /**
  * API entry point for configuring the layout settings for a given display.
- * 
+ *
  * For all layouts except Flexible, the layout settings form allows the user to select styles,
  * as defined by .inc files in the panels/styles subdirectory, for the panels in their display.
  * For the Flexible layout, the layout settings form allows the user to provide dimensions
  * for their flexible layout in addition to applying styles to panels.
- * 
+ *
  * TODO and at some point, individual panes should be stylable as well as whole panels.
- * 
+ *
  * @param object $display instanceof panels_display \n
  *  A fully loaded panels $display object, as returned from panels_load_display().
  *  Merely passing a did is NOT sufficient.
  * @param string $finish
- *  A string that will be used for the text of (one of) the form submission button(s). Note that 
- *  panels will NOT wrap $finish in t() for you, so your caller should make sure to do so. \n 
- *  The submit behavior of the form is primarily governed by the value of $destination (see 
+ *  A string that will be used for the text of (one of) the form submission button(s). Note that
+ *  panels will NOT wrap $finish in t() for you, so your caller should make sure to do so. \n
+ *  The submit behavior of the form is primarily governed by the value of $destination (see
  *  below), but is secondarily governed by $finish as follows:
  *    -# If $finish != t('Save'), then two #submit buttons will be present: one with the button
  *       text t('Save'), and the other with the button text $finish. .
- *      - Clicking the 'Save' button will save any changes on the form to the $display object and 
- *        keep the user on the same editing page. 
+ *      - Clicking the 'Save' button will save any changes on the form to the $display object and
+ *        keep the user on the same editing page.
  *      - Clicking the $finish button will also save the $display object, but the user will be
  *        redirected to the URL specified in $destination.
  *    -# If $finish == t('Save'), then there is only one button, still called t('Save'), but it
@@ -527,15 +531,16 @@ function panels_edit_layout($display, $finish, $destination = NULL, $allowed_lay
  *       on the title textfield will indicate that the $title string will be used as the default page title
  *       if none is provided on this form. When utilizing this option, note that the panels API can only
  *       provide the data for these values; you must implement the appropriate conditionals to make it true.
+ *
  * @return
- *  Can return nothing, or a modified $display object, or a redirection string; return values for the 
- *  panels_edit* family of functions are quite complex. See panels_edit() for detailed discussion. 
+ *  Can return nothing, or a modified $display object, or a redirection string; return values for the
+ *  panels_edit* family of functions are quite complex. See panels_edit() for detailed discussion.
  * @see panels_edit()
  */
 function panels_edit_layout_settings($display, $finish, $destination = NULL, $title = FALSE) {
   panels_load_include('display_edit');
   panels_load_include('plugins');
-  return _panels_edit_layout_settings( $display, $finish, $destination, $title);
+  return _panels_edit_layout_settings($display, $finish, $destination, $title);
 }
 
 
@@ -544,7 +549,7 @@ function panels_edit_layout_settings($display, $finish, $destination = NULL, $ti
 
 /**
  * Forms the basis of a panel display
- * 
+ *
  */
 class panels_display {
   var $args = array();
@@ -569,19 +574,21 @@ class panels_display {
       $this->panels[$location][] = $pane->pid;
     }
   }
-  
+
   function duplicate_pane($pid, $location = FALSE) {
     $pane = $this->clone_pane($pid);
     $this->add_pane($pane, $location);
   }
-  
+
   function clone_pane($pid) {
     $pane = drupal_clone($this->content[$pid]);
-    foreach (array_keys($this->content) as $pidcheck)
-    unset($pane->position); // necessary?
+    foreach (array_keys($this->content) as $pidcheck) {
+      // necessary?
+      unset($pane->position);
+    }
     return $pane;
   }
-  
+
   function next_new_pid() {
     // necessary if/until we use this method and ONLY this method for adding temporary pids.
     // then we can do it with a nice static var.
@@ -628,7 +635,6 @@ function panels_sanitize_display(&$display) {
   }
 }
 
-
 /**
  * Creates a new display, setting the ID to our magic new id.
  */
@@ -640,11 +646,12 @@ function panels_new_display() {
 
 /**
  * Load and fill the requested $display object(s).
- * 
+ *
  * Helper function primarily for for panels_load_display().
  *
  * @param array $dids
  *  An indexed array of dids to be loaded from the database.
+ *
  * @return $displays
  *  An array of displays, keyed by their display dids.
  */
@@ -657,13 +664,14 @@ function panels_load_displays($dids) {
   $subs = implode(', ', array_fill(0, count($dids), '%d'));
 
   $result = db_query("SELECT * FROM {panels_display} WHERE did IN ($subs)", $dids);
-  
+
   while ($obj = db_fetch_array($result)) {
     $display = new panels_display();
 
     foreach ($obj as $key => $value) {
       $display->$key = $value;
-      if (in_array($key, array('layout_settings', 'panel_settings', 'cache'))) { // unserialize important bits
+      // unserialize important bits
+      if (in_array($key, array('layout_settings', 'panel_settings', 'cache'))) {
         $display->$key = empty($display->$key) ? array() : unserialize($display->$key);
       }
     }
@@ -672,7 +680,7 @@ function panels_load_displays($dids) {
 
     $displays[$display->did] = $display;
   }
-  
+
   $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) ORDER BY did, panel, position", $dids);
 
   while ($pane = db_fetch_object($result)) {
@@ -688,11 +696,12 @@ function panels_load_displays($dids) {
 
 /**
  * Load a single display.
- * 
+ *
  * @ingroup mainapi
- * 
+ *
  * @param int $did
  *  The display id (did) of the display to be loaded.
+ *
  * @return object $display instanceof panels_display \n
  *  Returns a partially-loaded panels_display object. $display objects returned from
  *  from this function have only the following data:
@@ -707,11 +716,10 @@ function panels_load_displays($dids) {
  *    - $display->cache (any relevant data from panels_simple_cache)
  *    - $display->args
  *    - $display->incoming_content
- * 
+ *
  * While all of these members are defined, $display->context is NEVER defined in the returned $display;
  * it must be set using one of the panels_context_create() functions.
  */
-
 function panels_load_display($did) {
   $displays = panels_load_displays(array($did));
   if (!empty($displays)) {
@@ -721,17 +729,18 @@ function panels_load_display($did) {
 
 /**
  * Save a display object.
- * 
+ *
  * @ingroup mainapi
- * 
+ *
  * Note a new $display only receives a real did once it is run through this function.
  * Until then, it uses a string placeholder, 'new', in place of a real did. The same
  * applies to all new panes (whether on a new $display or not); in addition,
  * panes have sequential numbers appended, of the form 'new-1', 'new-2', etc.
- * 
+ *
  * @param object $display instanceof panels_display \n
- *  The display object to be saved. Passed by reference so the caller need not use 
+ *  The display object to be saved. Passed by reference so the caller need not use
  *  the return value for any reason except convenience.
+ *
  * @return object $display instanceof panels_display \n
  */
 function panels_save_display(&$display) {
@@ -746,7 +755,7 @@ function panels_save_display(&$display) {
     $display->did = db_next_id("{panels_display}_did");
     db_query("INSERT INTO {panels_display} (did, layout, layout_settings, panel_settings, cache, title, hide_title) VALUES (%d, '%s', '%s', '%s', '%s', '%s', %d)", $display->did, $display->layout, serialize($display->layout_settings), serialize($display->panel_settings), serialize($display->cache), $display->title, $display->hide_title);
   }
-  
+
   // update all the panes
   foreach ((array) $display->panels as $id => $panes) {
     $position = 0;
@@ -761,11 +770,12 @@ function panels_save_display(&$display) {
       if (empty($pane->cache)) {
         $pane->cache = array();
       }
-      
+
       $type = panels_get_content_type($pane->type);
       $access = isset($pane->access) ? implode(', ', $pane->access) : '';
       $visibility = $type['visibility serialize'] ? serialize($pane->visibility) : $pane->visibility;
-      $f = 'pid, did, panel, type, subtype, configuration, cache, shown, access, visibility, position'; // doin it this way for readability
+      // doin it this way for readability
+      $f = 'pid, did, panel, type, subtype, configuration, cache, shown, access, visibility, position';
       $q = "%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d";
       $v = array($pane->pid, $display->did, $pane->panel, $pane->type, $pane->subtype, serialize($pane->configuration), serialize($pane->cache), $pane->shown, $access, $visibility, $pane->position);
       db_query("INSERT INTO {panels_pane} ($f) VALUES ($q)", $v);
@@ -780,7 +790,8 @@ function panels_save_display(&$display) {
   panels_load_include('plugins');
   panels_clear_cached_content($display);
 
-  return $display; // to be nice, even tho we have a reference.
+  // to be nice, even tho we have a reference.
+  return $display;
 }
 
 /**
@@ -799,17 +810,17 @@ function panels_delete_display($display) {
 
 /**
  * Exports the provided display into portable code.
- * 
+ *
  * This function is primarily intended as a mechanism for cloning displays.
  * It generates an exact replica (in code) of the provided $display, with
  * the exception that it replaces all ids (dids and pids) with 'new-*' values.
  * Only once panels_save_display() is called on the code version of $display will
  * the exported display written to the database and permanently saved.
- * 
+ *
  * @see panels_page_export() or _panels_page_fetch_display() for sample implementations.
- * 
+ *
  * @ingroup mainapi
- * 
+ *
  * @param object $display instanceof panels_display \n
  *  This export function does no loading of additional data about the provided
  *  display. Consequently, the caller should make sure that all the desired data
@@ -817,6 +828,7 @@ function panels_delete_display($display) {
  * @param string $prefix
  *  A string prefix that is prepended to each line of exported code. This is primarily
  *  used for prepending a double space when exporting so that the code indents and lines up nicely.
+ *
  * @return string $output
  *  The passed-in $display expressed as code, ready to be imported. Import by running
  *  eval($output) in the caller function; doing so will create a new $display variable
@@ -979,7 +991,7 @@ function panels_render_panes($display) {
   $panes = array();
   $later = array();
 
-  foreach ($display->content as $pid => $pane) { 
+  foreach ($display->content as $pid => $pane) {
     // TODO Really ought to design a method for creating a quick-access set of content_type (and other plugin) data to help optimize render performance
     // If the user can't see this pane, do not render it.
     if (!$pane->shown || !panels_pane_access($pane, $display)) {
@@ -1110,6 +1122,7 @@ function panels_get_panel_style_and_settings($panel_settings, $panel) {
  *   The ID of the panel being rendered
  * @param $panes
  *   An array of panes that are assigned to the panel that's being rendered.
+ *
  * @return
  *   The rendered HTML for a panel.
  * @render
@@ -1129,14 +1142,13 @@ function panels_render_panel($display, $panel, $panes) {
   return theme($style['render panel'], $display, $owner_id, $panes, $style_settings, $panel);
 }
 
-
 /**
  * Print the layout link. Sends out to a theme function.
  * @layout
  */
 function panels_print_layout_link($id, $layout, $link) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
-  $file = panels_get_path($layout['icon'], false, $layout['module']);
+  $file  = panels_get_path($layout['icon'], false, $layout['module']);
   $image = l(theme('image', $file), $link, NULL, NULL, NULL, NULL, TRUE);
   $title = l($layout['title'], $link);
   return theme('panels_layout_link', $title, $id, $image, $link);
@@ -1241,7 +1253,8 @@ function theme_panels_pane($content, $pane, $display) {
 function panels_node_autocomplete($string) {
   // TODO: Compare this to the nodequeue version, see which is better.
   // TODO: The nodequeue version is totally better. Steal it.
-  if ($string != '') { // if there are node_types passed, we'll use those in a MySQL IN query.
+  // if there are node_types passed, we'll use those in a MySQL IN query.
+  if ($string != '') {
     $preg_matches = array();
     $match = preg_match('/\[nid: (\d+)\]/', $string, $preg_matches);
     if (!$match) {
@@ -1266,3 +1279,4 @@ function panels_node_autocomplete($string) {
     print drupal_to_js($matches);
   }
 }
+

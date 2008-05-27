@@ -1,5 +1,7 @@
 <?php
-// $Id: term_from_node.inc,v 1.1.2.4 2007/11/21 17:14:39 merlinofchaos Exp $
+// $Id: term_from_node.inc,v 1.1.2.5 2008/05/27 20:21:14 sdboyer Exp $
+
+
 /**
  * @file relationships/term_from_node.inc
  *
@@ -56,3 +58,4 @@ function panels_term_from_node_settings_form($conf) {
 
   return $form;
 }
+

@@ -1,5 +1,7 @@
 <?php
-// $Id: node_type_desc.inc,v 1.1.2.8 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: node_type_desc.inc,v 1.1.2.9 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,7 +9,8 @@ function panels_node_type_desc_panels_content_types() {
   $items['node_type_desc'] = array(
     'title' => t('Node type description'),
     'content_types' => 'panels_admin_content_types_node_type_desc',
-    'single' => TRUE, // only provides a single content type
+    // only provides a single content type
+    'single' => TRUE,
     'render callback' => 'panels_content_node_type_desc',
     'add callback' => 'panels_admin_edit_node_type_desc',
     'edit callback' => 'panels_admin_edit_node_type_desc',
@@ -29,12 +32,12 @@ function panels_content_node_type_desc($conf, $panel_args, $context) {
     $type = node_get_types('type', $node);
     $block->subject = $type->name;
     $block->content = filter_xss_admin($type->description);
-    $block->delta = $node->type;
+    $block->delta   = $node->type;
   }
   else {
     $block->subject = t('Node type description');
     $block->content = t('Node type description goes here.');
-    $block->delta = 'unknown';
+    $block->delta   = 'unknown';
   }
 
   return $block;
@@ -59,3 +62,4 @@ function panels_admin_content_types_node_type_desc() {
 function panels_admin_title_node_type_desc($conf, $context) {
   return t('"@s" type description', array('@s' => $context->identifier));
 }
+

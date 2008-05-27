@@ -1,8 +1,13 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.45 2008/05/24 05:37:14 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.46 2008/05/27 20:21:13 sdboyer Exp $
+
+
 /**
- * @file panels_page.admin.inc Administrative screens and functions for panel pages
+ * @file panels_page.admin.inc
+ *
+ * Administrative screens and functions for panel pages.
  */
+
 /**
  * Provide a list of panels, with links to edit or delete them.
  */
@@ -43,7 +48,8 @@ function panels_page_list_page() {
     $item = array();
     $item[] = check_plain(panels_page_get_title($panel_page));
     $item[] = check_plain($panel_page->name);
-    $item[] = $panel_page->type; // this is safe as it's always programmatic
+    // this is safe as it's always programmatic
+    $item[] = $panel_page->type;
 
     $display = panels_page_fetch_display($panel_page);
 
@@ -56,13 +62,16 @@ function panels_page_list_page() {
       case 'title':
         $sorts[] = $item[0];
         break;
+
       case 'name':
       default:
         $sorts[] = $item[1];
         break;
+
       case 'type':
         $sorts[] = $panel_page->type . $item[0];
         break;
+
       case 'url':
         $sorts[] = $panel_page->path;
         break;
@@ -115,7 +124,7 @@ function panels_page_disable_page($name = NULL) {
   drupal_goto();
 }
 
-/*
+/**
  * Provide a form to confirm deletion of a panel page.
  */
 function panels_page_delete_confirm($panel_page) {
@@ -125,7 +134,7 @@ function panels_page_delete_confirm($panel_page) {
   $form['pid'] = array('#type' => 'value', '#value' => $panel_page->pid);
   $form['did'] = array('#type' => 'value', '#value' => $panel_page->did);
   if ($panel_page->type != t('Overridden')) {
-    return confirm_form( $form,
+    return confirm_form($form,
       t('Are you sure you want to delete "@title"?', array('@title' => panels_page_get_title($panel_page))),
       $_GET['destination'] ? $_GET['destination'] : 'admin/panels/panel-page',
       t('This action cannot be undone.'),
@@ -133,7 +142,7 @@ function panels_page_delete_confirm($panel_page) {
     );
   }
   else {
-    return confirm_form( $form,
+    return confirm_form($form,
       t('Are you sure you want to revert "@title" to its default setup?', array('@title' => panels_page_get_title($panel_page))),
       $_GET['destination'] ? $_GET['destination'] : 'admin/panels/panel-page',
       t('This action cannot be undone.'),
@@ -142,7 +151,7 @@ function panels_page_delete_confirm($panel_page) {
   }
 }
 
-/*
+/**
  * Handle the submit button to delete a panel page.
  */
 function panels_page_delete_confirm_submit($form_id, $form) {
@@ -154,7 +163,7 @@ function panels_page_delete_confirm_submit($form_id, $form) {
 }
 
 /**
- * Handle the add panel-page page
+ * Handle the add panel-page page.
  */
 function panels_page_add_page($layout = NULL) {
   $layouts = panels_get_layouts();
@@ -164,7 +173,7 @@ function panels_page_add_page($layout = NULL) {
     drupal_set_message(t('The chosen layout %layout is invalid. Please select a new one.', array('%layout' => $layout)), 'warning');
     unset($layout);
   }
-  // If no page layout is given, choose one first.  
+  // If no page layout is given, choose one first.
   if ($layout === NULL) {
     foreach ($layouts as $id => $layout) {
       $output .= panels_print_layout_link($id, $layout, $_GET['q'] . '/' . $id);
@@ -182,10 +191,10 @@ function panels_page_add_page($layout = NULL) {
   return drupal_get_form('panels_page_edit_form', panels_page_sanitize($panel_page));
 }
 
-
 /**
- * Edit a panel page. Called from both the add and edit points to provide
- * for common flow.
+ * Edit a panel page.
+ *
+ * Called from both the add and edit points to provide for common flow.
  */
 function panels_page_edit($panel_page) {
   if (!is_object($panel_page)) {
@@ -215,7 +224,7 @@ function panels_page_edit_form($panel_page, $next = NULL) {
 
   $form['panel_page'] = array(
     '#type' => 'value',
-    '#value' => $panel_page
+    '#value' => $panel_page,
   );
 
   $form['right'] = array(
@@ -308,7 +317,7 @@ function panels_page_edit_form($panel_page, $next = NULL) {
 }
 
 /**
- * Validate a panel page edit form
+ * Validate a panel page edit form.
  */
 function panels_page_edit_form_validate($form_id, $form_values, $form) {
   // Test uniqueness of name:
@@ -352,9 +361,9 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
 
   $panel_page->title  = $form_values['title'];
-  $panel_page->name  = preg_replace("/[\W]+/", '', $form_values['name']);
+  $panel_page->name   = preg_replace("/[\W]+/", '', $form_values['name']);
   $panel_page->css_id = $form_values['css_id'];
-  $panel_page->path  = $form_values['path'];
+  $panel_page->path   = $form_values['path'];
 
   if ($panel_page->pid == 'new') {
     unset($_SESSION['pp_import']);
@@ -375,7 +384,7 @@ function panels_page_edit_form_submit($form_id, $form_values) {
 }
 
 /**
- * Edit advanced settings of a panel page
+ * Edit advanced settings of a panel page.
  */
 function panels_page_edit_advanced($name, $next = NULL) {
   $panel_page = panels_page_load($name);
@@ -384,14 +393,14 @@ function panels_page_edit_advanced($name, $next = NULL) {
 }
 
 /**
- * The form to edit the advanced settings of a panel page
+ * The form to edit the advanced settings of a panel page.
  */
 function panels_page_advanced_form($panel_page, $next = NULL) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
 
   $form['panel_page'] = array(
     '#type' => 'value',
-    '#value' => $panel_page
+    '#value' => $panel_page,
   );
 
   $form['right'] = array(
@@ -531,9 +540,8 @@ function panels_page_advanced_form($panel_page, $next = NULL) {
   return $form;
 }
 
-
 /**
- * Process submission of the panel page edit form
+ * Process submission of the panel page edit form.
  */
 function panels_page_advanced_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
@@ -559,7 +567,7 @@ function panels_page_advanced_form_submit($form_id, $form_values) {
 }
 
 /**
- * Edit advanced settings of a panel page
+ * Edit advanced settings of a panel page.
  */
 function panels_page_edit_context($name, $next = NULL) {
   if (!empty($_POST)) {
@@ -575,7 +583,7 @@ function panels_page_edit_context($name, $next = NULL) {
 }
 
 /**
- * The form to edit the context settings of a panel page
+ * The form to edit the context settings of a panel page.
  */
 function panels_page_context_form($panel_page, $next = NULL) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
@@ -583,7 +591,7 @@ function panels_page_context_form($panel_page, $next = NULL) {
 
   $form['panel_page'] = array(
     '#type' => 'value',
-    '#value' => $panel_page
+    '#value' => $panel_page,
   );
 
   $form['right'] = array(
@@ -598,7 +606,7 @@ function panels_page_context_form($panel_page, $next = NULL) {
 
   panels_load_include('common');
 
-  $settings =  panels_common_add_argument_form('panel_page', $form, $form['left']['arguments_table'], $panel_page);
+  $settings = panels_common_add_argument_form('panel_page', $form, $form['left']['arguments_table'], $panel_page);
   $settings += panels_common_add_context_form('panel_page', $form, $form['right']['contexts_table'], $panel_page);
   $settings += panels_common_add_relationship_form('panel_page', $form, $form['left']['relationships_table'], $panel_page);
   panels_common_add_context_js($settings);
@@ -612,9 +620,8 @@ function panels_page_context_form($panel_page, $next = NULL) {
   return $form;
 }
 
-
 /**
- * Process submission of the panel page edit form
+ * Process submission of the panel page edit form.
  */
 function panels_page_context_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
@@ -789,11 +796,12 @@ function panels_page_edit_export($panel_page) {
     '#type' => 'textarea',
     '#title' => $panel_page->title,
     '#default_value' => $code,
-    '#rows' => $lines);
+    '#rows' => $lines,
+  );
   return $form;
 }
 
-/*
+/**
  * Page callback to import a panel page from PHP code.
  */
 function panels_page_import_page() {
@@ -806,7 +814,7 @@ function panels_page_import_page() {
   return drupal_get_form('panels_page_import_form');
 }
 
-/*
+/**
  * Form to for the panel page import
  */
 function panels_page_import_form() {
@@ -827,7 +835,7 @@ function panels_page_import_form() {
   return $form;
 }
 
-/*
+/**
  * Handle the submit button on importing a panel page.
  */
 function panels_page_import_form_submit($form_id, $form) {
@@ -895,11 +903,11 @@ function panels_page_admin_view($panel_page, $args) {
 
   $form['panel_page'] = array(
     '#type' => 'value',
-    '#value' => $panel_page
+    '#value' => $panel_page,
   );
   $form['contexts'] = array(
     '#type' => 'value',
-    '#value' => $contexts
+    '#value' => $contexts,
   );
 
   return $form;
@@ -917,3 +925,4 @@ function panels_page_admin_view_submit($form_id, $form_values) {
   }
   return $url;
 }
+

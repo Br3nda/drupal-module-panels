@@ -1,5 +1,7 @@
 <?php
-// $Id: node_edit_form.inc,v 1.1.2.5 2008/05/24 06:15:33 sdboyer Exp $
+// $Id: node_edit_form.inc,v 1.1.2.6 2008/05/27 20:21:13 sdboyer Exp $
+
+
 /**
  * @file contexts/node_edit_form.inc
  *
@@ -33,7 +35,7 @@ function panels_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
 
   if ($conf) {
     // In this case, $node is actually our $conf array.
-    $node  = node_load($node['nid']);
+    $node = node_load($node['nid']);
   }
 
   if (!empty($node) && node_access('update', $node)) {
@@ -50,14 +52,14 @@ function panels_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
     $form = drupal_retrieve_form($node->type . '_node_form', $node);
     drupal_process_form($node->type . '_node_form', $form);
     // Fill in the 'node' portion of the context
-    $context->data = $node;
-    $context->title = $node->title;
+    $context->data     = $node;
+    $context->title    = $node->title;
     $context->argument = $node->nid;
 
-    $context->form = $form;
-    $context->form_id = $node->type . '_node_form';
+    $context->form       = $form;
+    $context->form_id    = $node->type . '_node_form';
     $context->form_title = $node->title;
-    $context->node_type = $node->type;
+    $context->node_type  = $node->type;
     return $context;
   }
 }
@@ -79,7 +81,7 @@ function panels_context_node_edit_form_settings_form($conf, $external = FALSE) {
     '#type' => 'textfield',
     '#maxlength' => 512,
     '#autocomplete_path' => 'panels/node/autocomplete',
-    '#weight'  => -10,
+    '#weight' => -10,
   );
 
   if (!empty($conf['nid'])) {
@@ -131,3 +133,4 @@ function panels_context_node_edit_form_settings_form_validate($form, $form_value
     form_error($form['node'], t('Invalid post selected'));
   }
 }
+

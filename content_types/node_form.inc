@@ -1,5 +1,7 @@
 <?php
-// $Id: node_form.inc,v 1.1.2.7 2008/05/24 04:59:05 sdboyer Exp $
+// $Id: node_form.inc,v 1.1.2.8 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -140,6 +142,7 @@ function panels_content_node_form($conf, $panel_args, &$context) {
         $block->content = t('Publishing options.');
       }
       break;
+
     case 'comment':
       $block->subject = t('Comment options');
       $block->delta = 'comment-options';
@@ -155,6 +158,7 @@ function panels_content_node_form($conf, $panel_args, &$context) {
         $block->content = t('Comment options.');
       }
       break;
+
     case 'author':
       $block->subject = $block->content = t('Authoring information');
       $block->delta = 'author-options';
@@ -172,6 +176,7 @@ function panels_content_node_form($conf, $panel_args, &$context) {
         $block->content = t('Authoring information.');
       }
       break;
+
     case 'menu':
       $block->subject = t('Menu options');
       $block->delta = 'menu-options';
@@ -189,6 +194,7 @@ function panels_content_node_form($conf, $panel_args, &$context) {
         $block->content = t('Menu options.');
       }
       break;
+
     case 'url_path':
       $block->subject = t('URL path options');
       $block->delta = 'url-path-options';
@@ -205,6 +211,7 @@ function panels_content_node_form($conf, $panel_args, &$context) {
         $block->content = t('URL Path options.');
       }
       break;
+
     case 'attachments':
       $block->subject = t('Attach files');
       $block->delta = 'url-path-options';
@@ -220,6 +227,7 @@ function panels_content_node_form($conf, $panel_args, &$context) {
         $block->content = t('Attach files.');
       }
       break;
+
     case 'taxonomy':
       $block->subject = t('Categories');
       $block->delta = 'url-path-options';
@@ -235,6 +243,7 @@ function panels_content_node_form($conf, $panel_args, &$context) {
         $block->content = t('Categories.');
       }
       break;
+
     case 'book':
       $block->subject = t('Book options');
       $block->delta = 'book-options';
@@ -254,6 +263,7 @@ function panels_content_node_form($conf, $panel_args, &$context) {
         $block->content = t('Book options.');
       }
       break;
+
     case 'input_format':
       $block->subject = t('Input format');
       $block->delta = 'format-options';
@@ -290,3 +300,4 @@ function panels_admin_title_node_form($conf, $context) {
   $choices = panels_admin_content_types_node_form();
   return t('"@s" @type', array('@s' => $context->identifier, '@type' => drupal_strtolower($choices[$conf['id']]['title'])));
 }
+

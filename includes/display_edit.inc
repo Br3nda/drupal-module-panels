@@ -1,5 +1,6 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.46 2008/05/25 21:19:57 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.47 2008/05/27 20:21:13 sdboyer Exp $
+
 
 /*
  * @file display_edit.inc
@@ -10,8 +11,8 @@
 
 /**
  * Handle calling and processing of the form for editing display content.
- * 
- * Helper function for panels_edit(). 
+ *
+ * Helper function for panels_edit().
  *
  * @see panels_edit() for details on the various behaviors of this function.
  */
@@ -51,12 +52,12 @@ function _panels_edit($display, $destination, $content_types) {
 
 /**
  * Form definition for the panels display editor
- * 
+ *
  * No validation function is necessary, as all 'validation' is handled
- * either in the lead-up to form rendering (through the selection of 
+ * either in the lead-up to form rendering (through the selection of
  * specified content types) or by the validation functions specific to
  * the ajax modals & content types.
- * 
+ *
  * @ingroup forms
  * @see panels_edit_display_submit()
  */
@@ -74,28 +75,32 @@ function panels_edit_display($display, $destination) {
 
   $form['panels_display'] = array(
     '#type' => 'value',
-    '#value' => $display
+    '#value' => $display,
   );
 
   if (!empty($destination)) {
     $form['destination'] = array(
       '#type' => 'value',
-      '#value' => $destination
+      '#value' => $destination,
     );
   }
   else {
     $form['#redirect'] = FALSE;
   }
-
-  $explanation_text = '<p>Grab the title bar of any pane to drag-and-drop it into another panel. Click the add pane button (!addicon) in any panel to add more content. Click the configure (!configicon) button on any pane to re-configure that pane. Click the cache (!cacheicon) button to configure caching for that pane specifically. Click the show/hide (!showicon/!hideicon) toggle button to show or hide that pane. Panes hidden in this way will be hidden from <em>everyone</em> until the hidden status is toggled off.</p>';
+  
+  $explanation_text = '<p>';
+  $explanation_text .= 'Grab the title bar of any pane to drag-and-drop it into another panel. Click the add pane button (!addicon) in any panel to add more content. Click the configure (!configicon) button on any pane to re-configure that pane. Click the cache (!cacheicon) button to configure caching for that pane specifically. Click the show/hide (!showicon/!hideicon) toggle button to show or hide that pane. Panes hidden in this way will be hidden from <em>everyone</em> until the hidden status is toggled off.';
+  $explanation_text .= '</p>';
+  $explanation_subs = array(
+    '!addicon' => '<span class="inline-icon-help"><img src="/' . panels_get_path('images/icon-addcontent.png') . '" title="Add content to this panel" /></span>',
+    '!configicon' => '<span class="inline-icon-help"><img src="/' . panels_get_path('images/icon-configure.png') . '" title="Configure this pane" /></span>',
+    '!cacheicon' => '<span class="inline-icon-help"><img src="/' . panels_get_path('images/icon-cache.png') . '" title="Control caching" /></span>',
+    '!showicon' => '<span class="inline-icon-help"><img src="/' . panels_get_path('images/icon-showpane.png') . '" title="Show this pane" /></span>',
+    '!hideicon' => '<span class="inline-icon-help"><img src="/' . panels_get_path('images/icon-hidepane.png') . '" title="Hide this pane" /></span>',
+  );
+  
   $form['explanation'] = array(
-    '#value' => t($explanation_text, array(
-        '!addicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-addcontent.png') . '" title="Add content to this panel" /></span>',
-        '!configicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-configure.png') . '" title="Configure this pane" /></span>',
-        '!cacheicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-cache.png') . '" title="Control caching" /></span>',
-        '!showicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-showpane.png') . '" title="Show this pane" /></span>',
-        '!hideicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-hidepane.png') . '" title="Hide this pane" /></span>',
-      )),
+    '#value' => t($explanation_text, $explanation_subs),
   );
 
   $layout = panels_get_layout($display->layout);
@@ -112,7 +117,7 @@ function panels_edit_display($display, $destination) {
       if ($caches && user_access('use panels caching features')) {
         $form['button'][$pid]['cache'] = panels_add_button('icon-cache.png', t('Caching'), t('Control caching'), 'pane-cache');
       }
-      $form['button'][$pid]['show_hide'] = panels_add_button($pane->shown ? 'icon-hidepane.png' : 'icon-showpane.png' , t('Show/Hide Toggle'), $pane->shown ? t('Hide this pane') : t('Show this pane'), 'pane-toggle-shown');
+      $form['button'][$pid]['show_hide'] = panels_add_button($pane->shown ? 'icon-hidepane.png' : 'icon-showpane.png', t('Show/Hide Toggle'), $pane->shown ? t('Hide this pane') : t('Show this pane'), 'pane-toggle-shown');
       $form['button'][$pid]['configure'] = panels_add_button('icon-configure.png', t('Configure'), t('Configure this pane'), 'pane-configure');
       $form['button'][$pid]['delete'] = panels_add_button('icon-delete.png', t('Delete'), t('Remove this pane'), 'pane-delete');
     }
@@ -127,7 +132,8 @@ function panels_edit_display($display, $destination) {
 
   foreach ($layout_panels as $panel_id => $title) {
     $form['panel']['pane'][$panel_id] = array(
-      '#type' => 'hidden', // Use 'hidden' instead of 'value' so the js can access it.
+      // Use 'hidden' instead of 'value' so the js can access it.
+      '#type' => 'hidden',
       '#default_value' => implode(',', (array) $display->panels[$panel_id]),
     );
   }
@@ -169,11 +175,12 @@ function panels_edit_display($display, $destination) {
 
 /**
  * Theme the form for editing display content.
- * 
+ *
  * @ingroup themeable
  *
  * @param array $form
  *  A structured FAPI $form array.
+ *
  * @return string $output
  *  HTML ready to be rendered. Note that the html produced here should be printed,
  *  not returned, as it bypasses block rendering. Block rendering must be bypassed
@@ -208,7 +215,7 @@ function theme_panels_edit_display($form) {
 
 /**
  * Handle form submission of the display content editor.
- * 
+ *
  * The behavior of this function is fairly complex and irregular compared to
  * most FAPI submit handlers. See the documentation on panels_edit() for a
  * detailed discussion of this behavior.
@@ -223,7 +230,8 @@ function panels_edit_display_submit($form_id, $form_values) {
       $display->panels[$panel_id] = array();
       if ($panes) {
         $pids = explode(',', $panes);
-        foreach (array_filter($pids) as $pid) { // need to filter the array, b/c passing it in a hidden field can generate trash
+        // need to filter the array, b/c passing it in a hidden field can generate trash
+        foreach (array_filter($pids) as $pid) {
           if ($old_content[$pid]) {
             $display->panels[$panel_id][] = $pid;
             $old_content[$pid]->panel = $panel_id;
@@ -244,20 +252,24 @@ function panels_edit_display_submit($form_id, $form_values) {
 
 /**
  * Handle calling and processing of the form for editing display layouts.
- * 
+ *
  * Helper function for panels_edit_layout().
  *
  * @see panels_edit_layout() for details on the various behaviors of this function.
  */
 function _panels_edit_layout($display, $finish, $destination, $allowed_layouts) {
   panels_load_include('common');
-  if (is_string($allowed_layouts)) { // module_name has been provided; the data was saved by the api_save() method.
+  // module_name has been provided; the data was saved by the api_save() method.
+  if (is_string($allowed_layouts)) {
     $allowed_layouts = unserialize(variable_get($allowed_layouts . "_allowed_layouts", serialize('')));
   }
-  if (!$allowed_layouts) { // if no parameter was provided, or the variable_get failed
-    $allowed_layouts = unserialize(variable_get('panels_common_allowed_layouts', serialize(''))); // tries to load the common panels allowed layouts
-    if (!$allowed_layouts) { 
-      $allowed_layouts = new panels_allowed_layouts(); // still no dice. simply creates a dummy version where all layouts are allowed.
+  // if no parameter was provided, or the variable_get failed
+  if (!$allowed_layouts) {
+    // tries to load the common panels allowed layouts
+    $allowed_layouts = unserialize(variable_get('panels_common_allowed_layouts', serialize('')));
+    if (!$allowed_layouts) {
+      // still no dice. simply creates a dummy version where all layouts are allowed.
+      $allowed_layouts = new panels_allowed_layouts();
       $allowed_layouts->allow_new = TRUE;
     }
   }
@@ -278,7 +290,7 @@ function _panels_edit_layout($display, $finish, $destination, $allowed_layouts) 
 
 /**
  * Form definition for the display layout editor.
- * 
+ *
  * @ingroup forms
  */
 function panels_choose_layout($display, $finish, $destination, $allowed_layouts) {
@@ -298,7 +310,7 @@ function panels_choose_layout($display, $finish, $destination, $allowed_layouts)
     '#type' => 'radios',
     '#title' => t('Choose layout'),
     '#options' => $options,
-    '#default_value' => in_array($display->layout, array_keys($layouts)) ? $display->layout : NULL, 
+    '#default_value' => in_array($display->layout, array_keys($layouts)) ? $display->layout : NULL,
   );
 
   $form['clearer'] = array(
@@ -336,13 +348,14 @@ function panels_choose_layout($display, $finish, $destination, $allowed_layouts)
     );
   }
 
-  $form['#token'] = FALSE; // no token please
+  // no token please
+  $form['#token'] = FALSE;
   return $form;
 }
 
 /**
  * Handle form submission of the display layout editor.
- * 
+ *
  * The behavior of this function is fairly complex and irregular compared to
  * most FAPI submit handlers. See the documentation on panels_edit_layout() for
  * detailed discussion of this behavior.
@@ -355,7 +368,7 @@ function panels_choose_layout_submit($form_id, $form_values) {
     if (!empty($form_values['old'])) {
       foreach ($form_values['old'] as $id => $new_id) {
         $content[$new_id] = array_merge((array) $content[$new_id], $display->panels[$id]);
-        foreach($content[$new_id] as $pid) {
+        foreach ($content[$new_id] as $pid) {
           $display->content[$pid]->panel = $new_id;
         }
       }
@@ -379,14 +392,14 @@ function panels_choose_layout_submit($form_id, $form_values) {
 
 /**
  * Form definition for the display layout converter.
- * 
+ *
  * This form is only triggered if the user attempts to change the layout
  * for a display that has already had content assigned to it. It allows
  * the user to select where the panes located in to-be-deleted panels should
  * be relocated to.
- * 
+ *
  * @ingroup forms
- * 
+ *
  * @param array $form
  *  A structured FAPI $form array.
  * @param object $display instanceof panels_display \n
@@ -454,8 +467,8 @@ function panels_change_layout(&$form, $display, $new_layout_id) {
 
 /**
  * Handle calling and processing of the form for editing display layout settings.
- * 
- * Helper function for panels_edit_layout_settings(). 
+ *
+ * Helper function for panels_edit_layout_settings().
  *
  * @see panels_edit_layout_settings() for details on the various behaviors of this function.
  */
@@ -482,6 +495,7 @@ function _panels_edit_layout_settings($display, $finish, $destination, $title) {
  */
 function panels_edit_layout_settings_form($display, $finish, $destination, $title) {
   $layout = panels_get_layout($display->layout);
+  $form = array();
   if (!empty($layout['settings form']) && function_exists($layout['settings form'])) { // TODO doc the ability to do this as part of the API
     $form['layout_settings'] = $layout['settings form']($display, $layout, $display->layout_settings);
     $form['layout_settings']['#tree'] = TRUE;
@@ -501,14 +515,14 @@ function panels_edit_layout_settings_form($display, $finish, $destination, $titl
       '#title' => t('Title'),
       '#description' => t('The title of this panel. Your theme will render this text as the main page title users view this display, unless this text is overridden elsewhere.'),
     );
-    
+
     $form['display_title']['hide_title'] = array(
       '#type' => 'checkbox',
       '#title' => t('Hide Title?'),
       '#default_value' => $display->hide_title,
       '#description' => t('Check this box to hide the main page title for this panel.'),
     );
-    
+
     if (is_string($title)) {
       $form['display_title']['title']['#description'] .= t(" If you leave this field blank, then the default title, '@title', will be used instead.", array('@title' => $title));
     }
@@ -565,7 +579,7 @@ function panels_edit_layout_settings_form_submit($form_id, $form_values) {
   if (!empty($layout['settings submit']) && function_exists($layout['settings submit'])) {
     $layout['settings submit']($form_values['layout_settings'], $display, $layout, $display->layout_settings);
   }
-  
+
   if (isset($form_values['display_title']['title'])) {
     $display->title = $form_values['display_title']['title'];
     $display->hide_title = $form_values['display_title']['hide_title'];
@@ -624,7 +638,7 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
   else {
     $block = _panels_render_preview_pane_disabled($pane, $display->context);
   }
- 
+
   $output = theme('panels_pane_dnd', $block, $pane->pid, empty($content_type) ? panels_get_pane_title($pane, $display->context) : $block->title, $left_buttons, $buttons);
   if ($skin) {
     $class = 'panel-pane' . ($pane->shown ? '' : ' hidden-pane');
@@ -641,7 +655,7 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
  */
 function _panels_render_preview_pane_disabled($pane, $context) {
   $block = new stdClass();
-  $block->title = panels_get_pane_title($pane, $context);
+  $block->title   = panels_get_pane_title($pane, $context);
   $block->content = '<em>' . t("Dynamic content previews have been disabled to improve performance and stability for this editing screen.") . '</em>';
   return $block;
 }
@@ -669,6 +683,7 @@ function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
         $output = panels_edit_submit_subform($cache->display);
       }
       break;
+
     default:
       pdbg('panels_ajax', serialize(array('did' => $did, 'data' => array('op' => $op, 'pid' => $pid))));
   }
@@ -695,8 +710,8 @@ function panels_ajax_add_content($did = NULL, $panel_id = NULL) {
 
     if ($layout && array_key_exists($panel_id, $layout_panels)) {
       $output->output = panels_add_content($cache, $panel_id);
-      $output->type = 'display';
-      $output->title = t('Add content to !s', array('!s' => $layout_panels[$panel_id]));
+      $output->type   = 'display';
+      $output->title  = t('Add content to !s', array('!s' => $layout_panels[$panel_id]));
     }
   }
   panels_ajax_render($output);
@@ -704,17 +719,18 @@ function panels_ajax_add_content($did = NULL, $panel_id = NULL) {
 
 function panels_add_content($cache, $panel_id) {
   $return = new stdClass();
-  $return->type = 'display';
+  $return->type  = 'display';
   $return->title = t('Choose type');
-  panels_set('return', $return); // TODO get rid of this deprecated method
+  // TODO get rid of this deprecated method
+  panels_set('return', $return);
 
   if (!isset($cache->content_types)) {
     $cache->content_types = panels_get_available_content_types();
   }
 
-  $weights = array(t('Contributed modules') => 0);
+  $weights    = array(t('Contributed modules') => 0);
   $categories = array();
-  $titles = array();
+  $titles     = array();
 
   foreach ($cache->content_types as $id => $types) {
     if (is_array($types)) {
@@ -806,7 +822,7 @@ function panels_ajax_toggle_shown($did = NULL, $pid = NULL, $op = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
     $ajax_vars = new stdClass();
     list($ajax_vars->type, $ajax_vars->id, $ajax_vars->old_op) = array('toggle-shown', $pid, drupal_strtolower($op));
-    
+
     if ($op == 'Show') {
       list($cache->display->content[$pid]->shown, $ajax_vars->output, $ajax_vars->new_op) = array(1, 'Hide', 'hide');
     }
@@ -814,9 +830,10 @@ function panels_ajax_toggle_shown($did = NULL, $pid = NULL, $op = NULL) {
       list($cache->display->content[$pid]->shown, $ajax_vars->output, $ajax_vars->new_op) = array(0, 'Show', 'show');
     }
     else {
-      panels_ajax_render(); // bad args, error out.
+      // bad args, error out.
+      panels_ajax_render();
     }
-    
+
     panels_cache_set($cache->display->did, $cache);
     panels_ajax_render($ajax_vars);
   }
@@ -825,13 +842,13 @@ function panels_ajax_toggle_shown($did = NULL, $pid = NULL, $op = NULL) {
 
 /**
  * Entry point for AJAX: Add pane configuration.
- * 
+ *
  * After updating the $cache data and equipping a new $pane object with basic values,
  * the general-purpose ajax form handler, panels_ajax_form(), is called and pushes the
  * configuration form to the screen.
- * 
+ *
  * Once form submission is completed, data is pushed back into js by panels_ajax_render().
- * 
+ *
  * @param int $did
  *  The display id for the display object currently being edited. Errors out silently if absent.
  * @param string $pane_info
@@ -841,7 +858,7 @@ function panels_ajax_toggle_shown($did = NULL, $pid = NULL, $op = NULL) {
  *  @endcode \n
  *  $id contains the name of the content type, $panel_id the name of the panel region
  *  to which the pane will be added, and $content_id is the name of the content subtype.
- * 
+ *
  * @see panels_content_config_form()
  */
 function panels_ajax_add_config($did = NULL, $pane_info = NULL) {
@@ -850,23 +867,26 @@ function panels_ajax_add_config($did = NULL, $pane_info = NULL) {
       $pid = $cache->display->next_new_pid();
       $pane = new stdClass();
       $pane->pid = "new-$pid";
-      unset($cache->content_config[$pane->pid], $cache->pane); // Ensure there's no data relics.
-      $cc =& $cache->content_config[$pane->pid];
-      
-      list($cc['content_type'], $cc['panel_id'], $cc['content_subtype']) = explode('-', $pane_info, 3);    
+      // Ensure there's no data relics.
+      unset($cache->content_config[$pane->pid], $cache->pane);
+      $cc = &$cache->content_config[$pane->pid];
+
+      list($cc['content_type'], $cc['panel_id'], $cc['content_subtype']) = explode('-', $pane_info, 3);
       list($pane->type, $pane->subtype, $pane->configuration, $pane->access) = array($cc['content_type'], $cc['content_subtype'], array(), array());
       _panels_ajax_ct_preconfigure($cache, $pane);
       $cache->pane = drupal_clone($pane);
       panels_cache_set($did, $cache);
     }
-    else { // Not the render passthrough, so the above data has been cached; we retrieve $pane from $cache.
+    else {
+      // Not the render passthrough, so the above data has been cached; we retrieve $pane from $cache.
       $pane = $cache->pane;
-      unset ($cache->pane);
+      unset($cache->pane);
     }
-    
+
     $ajax_vars = panels_ajax_form('panels_content_config_form',
       t('Configure !subtype_title', array('!subtype_title' => $cache->content_config[$pane->pid]['ct_data']['subtype']['title'])),
-      url($_GET['q'], NULL, NULL, TRUE), $cache, $pane, TRUE);
+      url($_GET['q'], NULL, NULL, TRUE), $cache, $pane, TRUE
+    );
     panels_ajax_render($ajax_vars);
   }
   panels_ajax_render();
@@ -874,34 +894,36 @@ function panels_ajax_add_config($did = NULL, $pane_info = NULL) {
 
 /**
  * Entry point for AJAX: Edit pane configuration.
- * 
+ *
  * Prepares the display $cache and a pre-existing $pane so that the pane configuration
  * form for the $pane can be rendered.
- * 
+ *
  * Once form submission is completed, data is pushed back into js by panels_ajax_render().
- * 
+ *
  * @param int $did
  *  The display id of the display object currently being edited. Errors out silently if absent.
- * @param 
+ * @param
  *  The pane id of the pane object whose configuration form we're calling up to edit.
- * 
+ *
  * @see panels_content_config_form()
  */
 function panels_ajax_configure($did = NULL, $pid = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
-    if (isset($cache->display->content[$pid]) && $pane = $cache->display->content[$pid]) {//  && $pane = $cache->display->content[$pid]) {
-      if (!isset($_POST['form_id']) && empty($cc['built'])) { // Only perform on a form rendering passthrough and if the data hasn't already been built.
-        $cc =& $cache->content_config[$pane->pid];
+    if (isset($cache->display->content[$pid]) && $pane = $cache->display->content[$pid]) {
+      // Only perform on a form rendering passthrough and if the data hasn't already been built.
+      if (!isset($_POST['form_id']) && empty($cc['built'])) { 
+        $cc = &$cache->content_config[$pane->pid];
         if (!isset($cc)) {
           list($cc['content_type'], $cc['content_subtype']) = array($pane->type, $pane->subtype);
           _panels_ajax_ct_preconfigure($cache, $pane);
           panels_cache_set($did, $cache);
         }
       }
-      
+
       $ajax_vars = panels_ajax_form('panels_content_config_form',
         t('Configure !subtype_title', array('!subtype_title' => $cache->content_config[$pane->pid]['ct_data']['subtype']['title'])),
-        url($_GET['q'], NULL, NULL, TRUE), $cache, $pane);
+        url($_GET['q'], NULL, NULL, TRUE), $cache, $pane
+      );
       panels_ajax_render($ajax_vars);
     }
   }
@@ -916,31 +938,33 @@ function panels_ajax_configure($did = NULL, $pid = NULL) {
  *  The loaded $cache object containing all the current $display editing data.
  * @param object $pane
  *  The $pane object this ajax callback intends to operate on.
- * 
+ *
  * @see panels_ajax_configure()
  * @see panels_ajax_add_config()
  */
 function _panels_ajax_ct_preconfigure(&$cache, &$pane) {
-  $cc =& $cache->content_config[$pane->pid]; 
-  $cc['built'] = TRUE; // indicates that the data for this pane has been built for this round of edits and need not be rebuilt
+  $cc = &$cache->content_config[$pane->pid];
+  // indicates that the data for this pane has been built for this round of edits and need not be rebuilt
+  $cc['built'] = TRUE;
   $subtype = $cc['ct_data']['subtype'] = $cache->content_types[$pane->type][$pane->subtype];
   $type = $cc['ct_data']['type'] = panels_get_content_type($pane->type);
-  
+
   $cc['ignore_roles'] = $type['ignore roles'];
-  
+
   if (panels_plugin_get_function('content_types', $type, 'visibility control')) {
     $cc['visibility_controller'] = $type['visibility control'];
-    $cc['ignore_roles'] = TRUE; // defaults to NOT using the built-in pane access system if the ct defines a visibility callback
+    // defaults to NOT using the built-in pane access system if the ct defines a visibility callback
+    $cc['ignore_roles'] = TRUE;
     if (isset($type['roles and visibility']) && $type['roles and visibility'] === TRUE) {
       $cc['ignore_roles'] = FALSE;
     }
   }
-  
+
   if (panels_plugin_get_function('content_types', $type, 'form control')) {
     $cc['form_controller'] = $type['form control'];
   }
 }
-  
+
 /**
  * Master FAPI definition for all pane add/edit configuration forms.
  *
@@ -951,14 +975,16 @@ function _panels_ajax_ct_preconfigure(&$cache, &$pane) {
  * @param bool $add
  *  A boolean indicating whether we are adding a new pane ($add === TRUE)
  *  operation in this operation, or editing an existing pane ($add === FALSE).
+ *
  * @return array $form
  *  A structured FAPI form definition, having been passed through all the appropriate
  *  content-type specific callbacks.
  */
 function panels_content_config_form($cache, $pane, $add = FALSE) {
   $op = $add ? 'add' : 'edit';
-  $cc = $cache->content_config[$pane->pid]; // for brevity and readability.
-  
+  // for brevity and readability.
+  $cc = $cache->content_config[$pane->pid];
+
   $form['start_form'] = array('#value' => '<div class="modal-form">');
 
   $form['configuration'] = panels_ct_conf_form($cc['ct_data'], $cache->display->context, $pane->configuration);
@@ -966,7 +992,7 @@ function panels_content_config_form($cache, $pane, $add = FALSE) {
     $form['configuration'] += $form_additions;
   }
   $form['configuration']['#tree'] = TRUE;
-  
+
   if (!$cc['ignore_roles']) {
     if (user_access('administer pane access')) {
       $rids = array();
@@ -974,7 +1000,7 @@ function panels_content_config_form($cache, $pane, $add = FALSE) {
       while ($obj = db_fetch_object($result)) {
         $rids[$obj->rid] = $obj->name;
       }
-  
+
       $form['access'] = array(
         '#type' => 'checkboxes',
         '#title' => t('Access'),
@@ -990,20 +1016,20 @@ function panels_content_config_form($cache, $pane, $add = FALSE) {
       );
     }
   }
-  
+
   if (isset($cc['visibility_controller'])) {
     $form['visibility'] = $cc['visibility_controller']($cache->display->context, $pane->subtype, $pane->configuration, $add);
   }
-  
+
   $form['end_form'] = array('#value' => '</div>');
 
   $form['next'] = array(
     '#type' => 'submit',
     '#value' => $add ? t('Add pane') : t('Save'),
   );
-  
+
   $form['vars'] = array('#type' => 'value', '#value' => array($cache, $pane, $add, $op));
-  
+
   // Allows content types that define this callback to have full control over the pane config form.
   if (isset($cc['form_controller'])) {
     call_user_func_array($cc['form_controller'], array(&$form, &$cache, $add));
@@ -1013,9 +1039,9 @@ function panels_content_config_form($cache, $pane, $add = FALSE) {
 
 /**
  * FAPI validator for panels_content_config_form().
- * 
+ *
  * Call any validation functions defined by the content type.
- * 
+ *
  */
 function panels_content_config_form_validate($form_id, $form_values, $form) {
   list($cache, $pane, $add, $op) = $form_values['vars'];
@@ -1024,44 +1050,45 @@ function panels_content_config_form_validate($form_id, $form_values, $form) {
 
 /**
  * FAPI submit handler for panels_content_config_form().
- * 
- * Call any submit handlers defined by the content type, update 
- * the $cache object with the relevant data, save $cache to the 
+ *
+ * Call any submit handlers defined by the content type, update
+ * the $cache object with the relevant data, save $cache to the
  * object_cache table, and return data for ajax updates.
- * 
+ *
  * @return object $ajax_vars
  *  Variables to be passed to the ajax handler so that the overall edit form can
  *  be updated as needed.
  */
 function panels_content_config_form_submit($form_id, $form_values) {
   list($cache, $pane, $add, $op) = $form_values['vars'];
-  $cache->display->content[$pane->pid] = $pane;   // Start by saving all initial $pane values into the array of pane data in $display->content.
-  
-  panels_ct_pane_submit_form($pane->type, $form_values['configuration'], $op); // Call the submit handler provided by the pane type, if any.
+  // Start by saving all initial $pane values into the array of pane data in $display->content.
+  $cache->display->content[$pane->pid] = $pane;
+  // Call the submit handler provided by the pane type, if any.
+  panels_ct_pane_submit_form($pane->type, $form_values['configuration'], $op);
 
   if (isset($form_values['visibility'])) {
     if ($visibility_submit = panels_plugin_get_function('content_types', $cache->content_config[$pane->pid]['ct_data']['type'], 'visibility submit')) {
       $cache->display->content[$pane->pid]->visibility = $visibility_submit($form_values['visibility']);
     }
     else {
-      // If no visibility submit callback is defined, fall back to the default storage behavior. Should be 
-      // adequate for the vast majority of use cases, so most client modules won't need to define callbacks. 
+      // If no visibility submit callback is defined, fall back to the default storage behavior. Should be
+      // adequate for the vast majority of use cases, so most client modules won't need to define callbacks.
       $cache->display->content[$pane->pid]->visibility = is_array($form_values['visibility']) ? array_keys(array_filter($form_values['visibility'])) : $form_values['visibility'];
     }
   }
   else {
     $cache->display->content[$pane->pid]->visibility = '';
   }
-  
+
   if (isset($form_values['access'])) {
     $cache->display->content[$pane->pid]->access = array_keys(array_filter($form_values['access']));
   }
   else {
     $cache->display->content[$pane->pid]->access = array();
   }
-  
+
   $cache->display->content[$pane->pid]->configuration = $form_values['configuration'];
-  
+
   // Call submit handlers specific to the $op ('add' or 'edit').
   $ajax_vars = call_user_func_array("panels_content_config_" . $op . "_form_submit", array($form_values, &$cache, $pane));
   $ajax_vars->id = $pane->pid;
@@ -1071,16 +1098,17 @@ function panels_content_config_form_submit($form_id, $form_values) {
 
 function panels_content_config_add_form_submit($form_values, $cache, $pane) {
   $ajax_vars = new stdClass();
-  $ajax_vars->type = 'add';
+  $ajax_vars->type   = 'add';
   $ajax_vars->region = $cache->content_config[$pane->pid]['panel_id'];
-  
+
   $cache->display->panels[$cache->content_config[$pane->pid]['panel_id']][] = $pane->pid;
   $cache->display->content[$pane->pid]->shown = 1;
-  
+
   // we need to fake the buttons a little.
-  $buttons['show_hide'] = panels_add_button('icon-hidepane.png', t('Show/Hide Toggle'), t('Hide this pane'), 'pane-toggle-shown'); // new panes are shown by default
+  // new panes are shown by default
+  $buttons['show_hide'] = panels_add_button('icon-hidepane.png', t('Show/Hide Toggle'), t('Hide this pane'), 'pane-toggle-shown');
   $buttons['show_hide']['#parents'] = array('button', $pane->pid, 'show_hide');
-  
+
   if (panels_get_caches() && user_access('use panels caching features')) {
     $buttons['cache'] = panels_add_button('icon-cache.png', t('Caching'), t('Control caching'), 'pane-cache');
     $buttons['cache']['#parents'] = array('button', $pane->pid, 'cache');
@@ -1100,9 +1128,9 @@ function panels_content_config_add_form_submit($form_values, $cache, $pane) {
 
 function panels_content_config_edit_form_submit($form_values, $cache, $pane) {
   $block = _panels_render_preview_pane_disabled($pane, $cache->display->context);
-  
+
   $ajax_vars = new stdClass();
-  $ajax_vars->type = 'replace';
+  $ajax_vars->type   = 'replace';
   $ajax_vars->output = theme('panels_pane_collapsible', $block, $cache->display);
   return $ajax_vars;
 }
@@ -1122,8 +1150,9 @@ function panels_ajax_cache($did = NULL, $pid = NULL) {
   }
 
   $method = panels_ajax_form('panels_edit_cache_method_form',
-     t('Select cache method'), url($_GET['q'], NULL, NULL, TRUE),
-     $cache->display, $pid);
+    t('Select cache method'), url($_GET['q'], NULL, NULL, TRUE),
+    $cache->display, $pid
+  );
   return panels_ajax_cache_settings($cache, $pid, $method);
 }
 
@@ -1189,7 +1218,8 @@ function panels_ajax_cache_settings($cache, $pid, $method = NULL) {
   else {
     $cache->display = panels_ajax_form('panels_edit_cache_settings_form',
       t('Configure cache settings'), url($_GET['q'], NULL, NULL, TRUE),
-      $cache->display, $pid, $method, $function);
+      $cache->display, $pid, $method, $function
+    );
   }
 
   panels_cache_set($cache->display->did, $cache);
@@ -1386,8 +1416,8 @@ function panels_panel_settings($display) {
   );
 
   $layout_options = array_merge(array('-1' => t('Use the default panel style')), $options);
-  $layout = panels_get_layout($display->layout);
-  $layout_panels = panels_get_panels($layout, $display);
+  $layout         = panels_get_layout($display->layout);
+  $layout_panels  = panels_get_panels($layout, $display);
 
   $checkboxes = array();
   foreach ($layout_panels as $id => $name) {
@@ -1463,7 +1493,7 @@ function panels_panel_settings_submit($form_id, $form_values) {
 
 /**
  * AJAX incoming to deal with the style settings modal
- * 
+ *
  * @ingroup panels_ajax
  */
 function panels_panel_settings_ajax($did, $panel, $name) {
@@ -1480,9 +1510,10 @@ function panels_panel_settings_ajax($did, $panel, $name) {
   // Render the panels ajax form. This only returns to us on successful
   // submit; otherwise the form is rendered for us and nothing else happens.
   $style_settings[$panel] = panels_ajax_form('panels_common_style_settings_form',
-     t('Edit style settings for @style', array('@style' => $style['title'])),
+    t('Edit style settings for @style', array('@style' => $style['title'])),
     url($_GET['q'], NULL, NULL, TRUE),
-    $did, $style, $style_settings[$panel]);
+    $did, $style, $style_settings[$panel]
+  );
 
   panels_common_cache_set('style_settings', $did, $style_settings);
   panels_ajax_render('dismiss');
@@ -1490,7 +1521,7 @@ function panels_panel_settings_ajax($did, $panel, $name) {
 
 /**
  * Form for the style settings modal.
- * 
+ *
  * @ingroup panels_ajax
  */
 function panels_common_style_settings_form($did, $style, $style_settings) {
@@ -1622,10 +1653,10 @@ function theme_panels_pane_collapsible($block) {
  */
 // @DND
 function theme_panels_hidden() {
-  $close_text = t('Close Window');
-  $close_image = theme('image', panels_get_path('images/icon-delete.png'), t('Close window'), t('Close window'));
+  $close_text     = t('Close Window');
+  $close_image    = theme('image', panels_get_path('images/icon-delete.png'), t('Close window'), t('Close window'));
   $throbber_image = theme('image', panels_get_path('images/throbber.gif'), t('Loading...'), t('Loading'));
-  $output = <<<EOF
+  $output         = <<<EOF
 <div class="panels-hidden">\n
   <div id="panels-modal">\n
     <div class="panels-modal-content">\n
@@ -1647,3 +1678,4 @@ EOF;
 
   return $output;
 }
+

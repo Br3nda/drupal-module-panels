@@ -1,15 +1,17 @@
 <?php
-// $Id: term.inc,v 1.1.2.7 2008/05/24 05:20:17 sdboyer Exp $
+// $Id: term.inc,v 1.1.2.8 2008/05/27 20:21:12 sdboyer Exp $
+
+
 /**
  * @file arguments/term.inc
  *
  * Plugin to provide an argument handler for a Taxonomy term
  */
-
 function panels_term_panels_arguments() {
   $args['term'] = array(
     'title' => t("Taxonomy term"),
-    'keyword' => 'term', // keyword to use for %substitution
+    // keyword to use for %substitution
+    'keyword' => 'term',
     'description' => t('Restricts the argument to a taxonomy term.'),
     'context' => 'panels_term_context',
     'settings form' => 'panels_term_settings_form',
@@ -20,7 +22,6 @@ function panels_term_panels_arguments() {
   );
   return $args;
 }
-
 
 /**
  * Discover if this argument gives us the term we crave.
@@ -39,6 +40,7 @@ function panels_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
       }
       $term = taxonomy_get_term($arg);
       break;
+
     case 'term':
       $terms = taxonomy_get_term_by_name($arg);
       if (count($terms) != 1) {
@@ -46,7 +48,8 @@ function panels_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
           foreach ($conf['vids'] as $vid => $active) {
             if ($active == 1 && $potential->vid == $vid) {
               $term = $potential;
-              break 3; // break out of the foreaches AND the case
+              // break out of the foreaches AND the case
+              break 3;
             }
           }
         }
@@ -207,3 +210,4 @@ function panels_term_title($context) {
     return $context->page_title;
   }
 }
+

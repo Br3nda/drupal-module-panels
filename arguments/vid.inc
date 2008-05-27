@@ -1,15 +1,17 @@
 <?php
-// $Id: vid.inc,v 1.1.2.1 2007/11/05 22:14:37 merlinofchaos Exp $
+// $Id: vid.inc,v 1.1.2.2 2008/05/27 20:21:12 sdboyer Exp $
+
+
 /**
  * @file arguments/vid.inc
  *
  * Plugin to provide an argument handler for a vocabulary id
  */
-
 function panels_vid_panels_arguments() {
   $args['vid'] = array(
     'title' => t("Vocabulary ID"),
-    'keyword' => 'vocabulary', // keyword to use for %substitution
+    // keyword to use for %substitution
+    'keyword' => 'vocabulary',
     'description' => t('Loads a vocabulary object from the argument.'),
     'context' => 'panels_vid_context',
     'settings form' => 'panels_vid_settings_form',
@@ -118,3 +120,4 @@ function panels_vid_choose_display($conf, $context) {
   // Empty return says to use the default display.
   return;
 }
+

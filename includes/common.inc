@@ -1,16 +1,17 @@
 <?php
-// $Id: common.inc,v 1.1.2.26 2008/05/24 01:39:14 sdboyer Exp $
+// $Id: common.inc,v 1.1.2.27 2008/05/27 20:21:13 sdboyer Exp $
+
 
 /**
  * @file
  * Functions used by more than one panels client module.
-*/
+ */
 
 /**
  * Class definition for the allowed layouts governing structure.
- * 
+ *
  * @ingroup mainapi
- * 
+ *
  * This class is designed to handle panels allowed layouts data from start to finish, and sees
  * action at two times:\n
  *    - When a client module wants to generate a form allowing an admin to create or edit a set
@@ -23,50 +24,51 @@
  * Because the panels API does not impose a data structure on the allowed_layouts data, client
  * modules can create as many of these objects as they want, and organize them around any concept:
  * node types, date published, author roles...anything.
- * 
- * To call the settings form, instantiate this class - or, if your client module's needs are 
- * heavy-duty, extend this class and instantiate your subclass - assign values to any relevant 
+ *
+ * To call the settings form, instantiate this class - or, if your client module's needs are
+ * heavy-duty, extend this class and instantiate your subclass - assign values to any relevant
  * desired members, and call panels_allowed_layouts::set_allowed(). See the documentation on
- * that method for a sample implementation.  
- * 
+ * that method for a sample implementation.
+ *
  * Note that when unserializing saved tokens of this class, you must
  * run panels_load_include('common') before unserializing in order to ensure
  * that the object is properly loaded.
- * 
+ *
  * Client modules extending this class should implement a save() method and use it for
  * their custom data storage routine. You'll need to rewrite other class methods if
  * you choose to go another route.
- * 
+ *
  * @see panels_edit_layout()
  * @see _panels_edit_layout()
- * 
+ *
  */
 class panels_allowed_layouts {
-  /** 
+
+  /**
    *  Specifies whether newly-added layouts (as in, new .inc files) should be automatically
-   *  allowed (TRUE) or disallowed (FALSE) for $this. Defaults to TRUE, which is more 
+   *  allowed (TRUE) or disallowed (FALSE) for $this. Defaults to TRUE, which is more
    *  permissive but less of an administrative hassle if/when you add new layouts. Note
    *  that this parameter will be derived from $allowed_layouts if a value is passed in.
    */
   var $allow_new = TRUE;
-  
+
   /**
    *  Optional member. If provided, the Panels API will generate a drupal variable using
    *  variable_set($module_name . 'allowed_layouts', serialize($this)), thereby handling the
    *  storage of this object entirely within the Panels API. This object will be
    *  called and rebuilt by panels_edit_layout() if the same $module_name string is passed in
-   *  for the $allowed_types parameter. \n 
+   *  for the $allowed_types parameter. \n
    *  This is primarily intended for convenience - client modules doing heavy-duty implementations
    *  of the Panels API will probably want to create their own storage method.
    * @see panels_edit_layout()
    */
   var $module_name = NULL;
-  
+
   /**
    *  An associative array of all available layouts, keyed by layout name (as defined
    *  in the corresponding layout plugin definition), with value = 1 if the layout is
    *  allowed, and value = 0 if the layout is not allowed.
-   *  Calling array_filter(panels_allowed_layouts::$allowed_layout_settings) will return an associative array 
+   *  Calling array_filter(panels_allowed_layouts::$allowed_layout_settings) will return an associative array
    *  containing only the allowed layouts, and wrapping that in array_keys() will
    *  return an indexed version of that array.
    */
@@ -86,23 +88,24 @@ class panels_allowed_layouts {
    * @param bool $start_allowed
    *  $start_allowed determines whether all available layouts will be marked
    *  as allowed or not allowed on the initial call to panels_allowed_layouts::set_allowed()
-   * 
+   *
    */
   function panels_allowed_layouts($start_allowed = TRUE) {
-    foreach ($this->list_layouts() as $layout_name) { // TODO would be nice if there was a way to just fetch the names easily
+    // TODO would be nice if there was a way to just fetch the names easily
+    foreach ($this->list_layouts() as $layout_name) {
       $this->allowed_layout_settings[$layout_name] = $start_allowed ? 1 : 0;
     }
   }
-    
+
   /**
    * Manage panels_common_set_allowed_layouts(), the FAPI code for selecting allowed layouts.
-   * 
+   *
    * MAKE SURE to set panels_allowed_layouts::allow_new before calling this method. If you want the panels API
    * to handle saving these allowed layout settings, panels_allowed_layouts::module_name must also be set.
-   * 
-   * Below is a sample implementation; refer to the rest of the class documentation to understand all the 
+   *
+   * Below is a sample implementation; refer to the rest of the class documentation to understand all the
    * specific pieces. Values that are intended to be replaced are wrapped with <>.
-   *  
+   *
    * \n @code
    *  function docdemo_allowed_layouts() {
    *    panels_load_include('common');
@@ -120,33 +123,33 @@ class panels_allowed_layouts {
    *    }
    *  }
    * @endcode \n
-   * 
+   *
    * If $allowed_layouts->form_state == 'failed-validate' || 'render', then you'll need to return
    * $result as it contains the structured form HTML generated by drupal_render_form() and is ready
    * to be passed through index.php's call to theme('page', ...).
-   * 
+   *
    * However, if $allowed_layouts->form_state == 'submit', then the form has been submitted and we should
    * react. It's really up to your client module how you handle the rest; panels_allowed_layouts::save() (or
-   * panels_allowed_layouts::api_save(), if that's the route you're going) will have already been called, 
+   * panels_allowed_layouts::api_save(), if that's the route you're going) will have already been called,
    * so if those methods handle your save routine, then all there is left to do is handle redirects, if you
    * want. The current implementation of the allowed layouts form currently never redirects, so it's up to
-   * you to control where the user ends up next. 
-   * 
+   * you to control where the user ends up next.
+   *
    * @param string $title
    *  Used to set the title of the allowed layouts form. If no value is given, defaults to
    *  'Panels: Allowed Layouts'.
-   * 
+   *
    * @return mixed $result
-   *  - On the first passthrough when the form is being rendered, $result is the form's structured 
+   *  - On the first passthrough when the form is being rendered, $result is the form's structured
    *    HTML, ready to be pushed to the screen with a call to theme('page', ...).
-   *  - A successful second passthrough indicates a successful submit, and 
+   *  - A successful second passthrough indicates a successful submit, and
    *    $result === panels_allowed_layouts::allowed_layout_settings. Returning it is simply for convenience.
    */
   function set_allowed($title = 'Panels: Allowed Layouts') {
     $this->sync_with_available();
     $form_id = 'panels_common_set_allowed_layouts';
     $form = drupal_retrieve_form($form_id, $this, $title);
-  
+
     if ($result = drupal_process_form($form_id, $form)) {
       // successful submit
       $this->form_state = 'submit';
@@ -156,11 +159,11 @@ class panels_allowed_layouts {
     $result = drupal_render_form($form_id, $form);
     return $result;
   }
-  
+
   /**
    * Checks for newly-added layouts and deleted layouts. If any are found, updates panels_allowed_layouts::allowed_layout_settings;
    * new additions are made according to panels_allowed_layouts::allow_new, while deletions are unset().
-   * 
+   *
    * Note that any changes made by this function are not saved in any permanent location.
    */
   function sync_with_available() {
@@ -172,20 +175,20 @@ class panels_allowed_layouts {
       unset($this->allowed_layout_settings[$deleted_layout]);
     }
   }
-  
+
   /**
-   * Use panels_allowed_layouts::module_name to generate a variable for variable_set(), in which 
+   * Use panels_allowed_layouts::module_name to generate a variable for variable_set(), in which
    * a serialized version of $this will be stored.
-   * 
+   *
    * Does nothing if panels_allowed_layouts::module_name is not set.
-   * 
+   *
    * IMPORTANT NOTE: if you use variable_get() in a custom client module save() method, you MUST
-   * wrap $this in serialize(), then unserialize() what you get from variable_get(). Failure to 
+   * wrap $this in serialize(), then unserialize() what you get from variable_get(). Failure to
    * do so will result in an incomplete object. The following code will work:
    * @code
    *  $allowed_layouts = unserialize(variable_get('your_variable_name', serialize(''));
    * @endcode
-   * 
+   *
    * If you don't serialize the second parameter of variable_get() and the variable name you provide
    * can't be found, an E_STRICT warning will be generated for trying to unserialize an entity
    * that has not been serialized.
@@ -196,10 +199,10 @@ class panels_allowed_layouts {
       variable_set($this->module_name . "_allowed_layouts", serialize($this));
     }
   }
-  
+
   /**
    * Snag a list of the current layouts for internal use.
-   * 
+   *
    * Data is not saved in a class member in order to ensure that it's
    * fresh.
    *
@@ -321,7 +324,7 @@ function panels_common_get_allowed_types($module, $contexts = array(), $has_cont
   // Get a list of all types that are available
 
   $default_types = variable_get($module . '_defaults', $default_defaults);
-  $allowed_types = variable_get($module .'_allowed_types', $default_allowed_types);
+  $allowed_types = variable_get($module . '_allowed_types', $default_allowed_types);
 
   // By default, if they haven't gone and done the initial setup here,
   // let all 'other' types (which will be all types) be available.
@@ -337,36 +340,37 @@ function panels_common_get_allowed_types($module, $contexts = array(), $has_cont
 
 /**
  * The FAPI code for generating an 'allowed layouts' selection form.
- * 
+ *
  * NOTE: Because the Panels API does not guarantee a particular method of storing the data on allowed layouts,
  * it is not_possible for the Panels API to implement any checks that determine whether reductions in
- * the set of allowed layouts conflict with pre-existing layout selections. $displays in that category 
+ * the set of allowed layouts conflict with pre-existing layout selections. $displays in that category
  * will continue to function with their current layout as normal until the user/owner/admin attempts
- * to change layouts on that display, at which point they will have to select from the new set of 
+ * to change layouts on that display, at which point they will have to select from the new set of
  * allowed layouts. If this is not the desired behavior for your client module, it's up to you to
  * write a validation routine that determines what should be done with conflicting layouts.
- * 
+ *
  * Remember that changing layouts where panes have already been created can result in data loss;
- * consult panels_change_layout() to see how the Panels API handles that process. Running 
- * drupal_execute('panels_change_layout', ...) is one possible starting point. 
- * 
+ * consult panels_change_layout() to see how the Panels API handles that process. Running
+ * drupal_execute('panels_change_layout', ...) is one possible starting point.
+ *
  * @ingroup forms
- * 
+ *
  * @param array $allowed_layouts
  *  The set of allowed layouts that should be used as the default values
  *  for this form. If none is provided, then by default no layouts will be restricted.
  * @param string $title
  *  The title that will be used for the form. Defaults to 'Panels: Allowed Layouts' if
  *  no value was provided in panels_allowed_layouts::set_allowed.
- */ // TODO need to add something that handles $finish & $destination-type stuff. 
+ */
+// TODO need to add something that handles $finish & $destination-type stuff.
 function panels_common_set_allowed_layouts($allowed_layouts, $title) {
   $layouts = panels_get_layouts();
   foreach ($layouts as $id => $layout) {
     $options[$id] = panels_print_layout_icon($id, $layout, check_plain($layout['title']));
   }
-  
+
   drupal_set_title($title);
-  
+
   $form['variables'] = array('#type' => 'value', '#value' => array($allowed_layouts));
 
   drupal_add_js(panels_get_path('js/layout.js'));
@@ -377,7 +381,7 @@ function panels_common_set_allowed_layouts($allowed_layouts, $title) {
     '#description' => t('Check the boxes for all layouts you want to allow users choose from when picking a layout. You must allow at least one layout.'),
     '#default_value' => array_keys(array_filter($allowed_layouts->allowed_layout_settings)),
   );
-  
+
   $form['clearer'] = array(
     // TODO: FIx this to use clear-block instead
     '#value' => '<div style="clear: both;"></div>',
@@ -387,7 +391,7 @@ function panels_common_set_allowed_layouts($allowed_layouts, $title) {
     '#type' => 'submit',
     '#value' => t('Save'),
   );
-  
+
   $form['#token'] = FALSE;
   return $form;
 }
@@ -398,7 +402,7 @@ function panels_common_set_allowed_layouts_validate($form_id, $form_values, $for
     form_set_error('layouts', 'You must choose at least one layout to allow.');
   }
 }
-  
+
 function panels_common_set_allowed_layouts_submit($form_id, $form_values) {
   list($allowed_layouts) = $form_values['variables'];
   foreach ($form_values['layouts'] as $layout => $setting) {
@@ -458,7 +462,6 @@ function panels_common_get_layout_information($panel_implementation, $contexts =
 
 // ---------------------------------------------------------------------------
 // contexts -- highly resemble arguments.
-
 function panels_common_context_info($type = NULL) {
   static $info = NULL;
 
@@ -568,7 +571,7 @@ function panels_common_add_context_form($module, &$form, &$form_location, $objec
 
   // Store the order the choices are in so javascript can manipulate it.
   $form_location['markup'] = array(
-    '#value' => '&nbsp;'
+    '#value' => '&nbsp;',
   );
   $form['context_order'] = array(
     '#type' => 'hidden',
@@ -608,7 +611,7 @@ function panels_common_add_required_context_form($module, &$form, &$form_locatio
 
   // Store the order the choices are in so javascript can manipulate it.
   $form_location['markup'] = array(
-    '#value' => '&nbsp;'
+    '#value' => '&nbsp;',
   );
   $form['requiredcontext_order'] = array(
     '#type' => 'hidden',
@@ -646,7 +649,7 @@ function panels_common_add_relationship_form($module, &$form, &$form_location, $
 
   // Store the order the choices are in so javascript can manipulate it.
   $form_location['markup'] = array(
-    '#value' => '&nbsp;'
+    '#value' => '&nbsp;',
   );
   $form['relationship_order'] = array(
     '#type' => 'hidden',
@@ -838,9 +841,9 @@ function theme_panels_common_context_item_row($type, $form, $position, $count, $
  */
 function theme_panels_common_context_item_form($form) {
   $output = '';
-  $type = $form['#panels_context_type'];
+  $type   = $form['#panels_context_type'];
   $module = $form['#panels_context_module'];
-  $name = $form['#panel_name'];
+  $name   = $form['#panel_name'];
 
   $type_info = panels_common_context_info($type);
 
@@ -867,7 +870,7 @@ function theme_panels_common_context_item_form($form) {
 
   if (!empty($form['buttons'])) {
     // Display the add context item.
-    $row = array();
+    $row   = array();
     $row[] = array('data' => drupal_render($form['buttons'][$type]['item']), 'class' => 'title');
     $row[] = array('data' => drupal_render($form['buttons'][$type]['add']), 'class' => 'add', 'width' => "60%");
     $output .= '<div class="buttons">';
@@ -975,8 +978,8 @@ function panels_common_ajax_context_item_add($module, $type, $panel_name) {
       $output->relationships_table = drupal_render($rel_form);
     }
 
-    $output->type = 'add';
-    $output->output = theme('panels_common_context_item_row', $type, $arg_form[$type], $position, $position);
+    $output->type     = 'add';
+    $output->output   = theme('panels_common_context_item_row', $type, $arg_form[$type], $position, $position);
     $output->position = $position;
     panels_ajax_render($output);
   }
@@ -1042,7 +1045,7 @@ function panels_common_ajax_context_item_edit($module, $type, $panel_name) {
 
   $retval = drupal_process_form($form_id, $form);
   if ($retval) {
-  	$output = new stdClass();
+    $output = new stdClass();
     // successful submit
 
     // Save changes
@@ -1471,10 +1474,13 @@ function panels_common_ajax($module = NULL, $data = NULL, $info = NULL, $info2 =
   switch ($module) {
     case 'edit':
       return panels_common_ajax_context_item_edit($data, $info, $info2);
+
     case 'add':
       return panels_common_ajax_context_item_add($data, $info, $info2);
+
     case 'panel_settings':
       return panels_common_panel_settings_ajax($data, $info);
+
     default:
       panels_ajax_render(t('An error occurred'), t('Error'));
   }
@@ -1547,7 +1553,7 @@ function theme_panels_common_content_list($display) {
 function theme_panels_common_context_list($object) {
   $titles = array();
   $output = '';
-  $count = 1;
+  $count  = 1;
   // First, make a list of arguments. Arguments are pretty simple.
   if (!empty($object->arguments)) {
     foreach ($object->arguments as $argument) {
@@ -1586,3 +1592,4 @@ function theme_panels_common_context_list($object) {
     return "<table><tbody>$output</tbody></table>\n";
   }
 }
+

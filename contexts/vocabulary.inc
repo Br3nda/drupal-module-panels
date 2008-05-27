@@ -1,5 +1,7 @@
 <?php
-// $Id: vocabulary.inc,v 1.1.2.4 2007/12/22 19:48:52 merlinofchaos Exp $
+// $Id: vocabulary.inc,v 1.1.2.5 2008/05/27 20:21:13 sdboyer Exp $
+
+
 /**
  * @file contexts/vocabulary.inc
  *
@@ -36,8 +38,8 @@ function panels_context_create_vocabulary($empty, $data = NULL, $conf = FALSE) {
   }
 
   if (!empty($data)) {
-    $context->data = $data;
-    $context->title = $data->name;
+    $context->data     = $data;
+    $context->title    = $data->name;
     $context->argument = $data->vid;
     return $context;
   }
@@ -67,3 +69,4 @@ function panels_context_vocabulary_settings_form($conf, $external = FALSE) {
 
   return $form;
 }
+

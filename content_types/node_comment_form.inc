@@ -1,5 +1,7 @@
 <?php
-// $Id: node_comment_form.inc,v 1.1.2.7 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: node_comment_form.inc,v 1.1.2.8 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,7 +9,8 @@ function panels_node_comment_form_panels_content_types() {
   if (module_exists('comment')) {
     $items['node_comment_form'] = array(
       'title' => t('Node comment form'),
-      'single' => TRUE, // only provides a single content type
+      // only provides a single content type
+      'single' => TRUE,
       'content_types' => 'panels_admin_content_types_node_comment_form',
       'render callback' => 'panels_content_node_comment_form',
       'add callback' => 'panels_admin_edit_node_comment_form',
@@ -26,7 +29,7 @@ function panels_content_node_comment_form($conf, $panel_args, $context) {
   $node = isset($context->data) ? drupal_clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'comments';
-  $block->delta = $node->nid;
+  $block->delta  = $node->nid;
 
   $block->subject = t('Add comment');
 
@@ -35,7 +38,7 @@ function panels_content_node_comment_form($conf, $panel_args, $context) {
   }
   else {
     if (user_access('post comments') && node_comment_mode($node->nid) == COMMENT_NODE_READ_WRITE) {
-      $block->content = drupal_get_form('panels_comment_form', array('nid'  => $node->nid));
+      $block->content = drupal_get_form('panels_comment_form', array('nid' => $node->nid));
     }
   }
 
@@ -73,3 +76,4 @@ function panels_comment_form($edit) {
   $form['#submit']['comment_form_submit'] = array();
   return $form;
 }
+

@@ -1,5 +1,7 @@
 <?php
-// $Id: block.inc,v 1.1.6.22 2008/03/24 05:31:41 sdboyer Exp $
+// $Id: block.inc,v 1.1.6.23 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -61,13 +63,15 @@ function panels_content_block($conf) {
 
   if ($block_visibility && $block_visibility->pages) {
     if ($block_visibility->visibility < 2) {
-      $path = drupal_get_path_alias($_GET['q']);
-      $regexp = '/^('. preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'),  array('|', '.*', '\1'. preg_quote(variable_get('site_frontpage', 'node'), '/') .'\2'), preg_quote($block_visibility->pages, '/')) .')$/';
+      $path       = drupal_get_path_alias($_GET['q']);
+      $regexp     = '/^('. preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'), array('|', '.*', '\1'. preg_quote(variable_get('site_frontpage', 'node'), '/') .'\2'), preg_quote($block_visibility->pages, '/')) .')$/';
       $page_match = !($block_visibility->visibility xor preg_match($regexp, $path));
-    } else {
+    }
+    else {
       $page_match = drupal_eval($block_visibility->pages);
     }
-  } else {
+  }
+  else {
     $page_match = TRUE;
   }
 
@@ -218,7 +222,6 @@ function panels_default_block_info($module, $delta, &$info) {
 
 // These are all on behalf of modules that don't implement panels but we that
 // we care about.
-
 function menu_panels_block_info($module, $delta, &$info) {
   $info['icon'] = 'icon_core_block_menu.png';
   $info['category'] = array(t('Menus'), -2);
@@ -226,16 +229,18 @@ function menu_panels_block_info($module, $delta, &$info) {
 
 function forum_panels_block_info($module, $delta, &$info) {
   $info['category'] = t('Core blocks');
-  switch($delta) {
+  switch ($delta) {
     case '0':
       $info['icon'] = 'icon_core_activeforumtopics.png';
       break;
+
     case '1':
       $info['icon'] = 'icon_core_newforumtopics.png';
       break;
+
     default:
       // safety net
-    panels_default_block_info($module, $delta, $info);
+      panels_default_block_info($module, $delta, $info);
   }
 }
 
@@ -286,23 +291,27 @@ function block_panels_block_info($module, $delta, &$info) {
 
 function user_panels_block_info($module, $delta, &$info) {
   $info['category'] = t('Core blocks');
-  switch($delta) {
+  switch ($delta) {
     case '0':
       $info['icon'] = 'icon_core_userlogin.png';
       break;
+
     case '1':
       $info['icon'] = 'icon_core_navigation.png';
       $info['category'] = array(t('Menus'), -2);
       break;
+
     case '2':
       $info['icon'] = 'icon_core_whosnew.png';
       break;
+
     case '2':
       $info['icon'] = 'icon_core_whosonline.png';
       break;
+
     default:
       // safety net
-    panels_default_block_info($module, $delta, $info);
+      panels_default_block_info($module, $delta, $info);
   }
 }
 

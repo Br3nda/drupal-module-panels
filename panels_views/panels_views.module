@@ -1,12 +1,13 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.18 2008/05/24 04:59:04 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.19 2008/05/27 20:21:15 sdboyer Exp $
+
 
 /**
  * @file panels_views.module
  *
- * Provides views as panels content, configurable by the administrator. Each
- * view provided as panel content must be configured in advance, but once
- * configured, building panels with views is a little bit simpler.
+ * Provides views as panels content, configurable by the administrator.
+ * Each view provided as panel content must be configured in advance,
+ * but once configured, building panels with views is a little bit simpler.
  */
 
 /**
@@ -94,12 +95,12 @@ function panels_views_perm() {
 }
 
 /**
- * Page callback to list panel views and the initial form to add new views.
+ * Page callback to list view panes and the initial form to add new view panes.
  */
 function panels_views_list_views() {
   // Run the form first as it may redirect; no point in doing the rest of
   // the work if it does.
-  $form = drupal_get_form('panels_views_add_view_form');
+  $form  = drupal_get_form('panels_views_add_view_form');
   $items = array();
   $sorts = array();
 
@@ -130,10 +131,11 @@ function panels_views_list_views() {
       }
     }
 
-    $item = array();
+    $item   = array();
     $item[] = check_plain($panel_view->title);
     $item[] = check_plain($panel_view->name);
-    $item[] = $panel_view->type; // this is safe as it's always programmatic
+    // this is safe as it's always programmatic
+    $item[] = $panel_view->type;
     $item[] = check_plain($panel_view->view);
 
     $item[] = implode(' | ', $ops);
@@ -144,13 +146,16 @@ function panels_views_list_views() {
       case 'title':
         $sorts[] = $item[0];
         break;
+
       case 'name':
       default:
         $sorts[] = $item[1];
         break;
+
       case 'type':
         $sorts[] = $panel_view->type . $item[0];
         break;
+
       case 'view':
         $sorts[] = $item[2];
         break;
@@ -176,7 +181,7 @@ function panels_views_list_views() {
 }
 
 /**
- * Form to select a view for creating a new panel view
+ * Form to select a view for creating a new view pane.
  */
 function panels_views_add_view_form() {
   $form['view'] = array(
@@ -212,7 +217,7 @@ function panels_views_add_view($view_name) {
 }
 
 /**
- * Page callback to add a new view pane from an existing view.
+ * Page callback to edit a view pane.
  */
 function panels_views_edit_view($view_name) {
   $pv = panels_views_load($view_name);
@@ -311,7 +316,7 @@ function panels_views_edit_view_form($view, $panel_view) {
 
   foreach ($panel_view->contexts as $id => $info) {
     $name = $arginfo[$view->argument[$id]['type']]['name'];
-      $form['contexts'][$id] = array(
+    $form['contexts'][$id] = array(
       '#type' => 'fieldset',
       '#title' => t('Argument: @arg', array('@arg' => $name)),
       '#tree' => TRUE,
@@ -493,7 +498,7 @@ function panels_views_edit_view_form($view, $panel_view) {
 }
 
 /**
- * Validate the edit form
+ * Validate the edit form.
  */
 function panels_views_edit_view_form_validate($form_id, $form_values, $form) {
   // Test uniqueness of name:
@@ -515,7 +520,7 @@ function panels_views_edit_view_form_validate($form_id, $form_values, $form) {
 }
 
 /**
- * Submit the edit form and save the values
+ * Submit the edit form and save the values.
  */
 function panels_views_edit_view_form_submit($form_id, $form_values) {
   $form_values['contexts'] = isset($form_values['contexts']) ? $form_values['contexts'] : array();
@@ -525,7 +530,7 @@ function panels_views_edit_view_form_submit($form_id, $form_values) {
 }
 
 /**
- * Provide a form to confirm deletion of a panel view.
+ * Provide a form to confirm deletion of a view pane.
  */
 function panels_views_delete_confirm($panel_view) {
   if (!is_object($panel_view)) {
@@ -545,7 +550,7 @@ function panels_views_delete_confirm($panel_view) {
 }
 
 /**
- * Handle the submit button to delete a panel view.
+ * Handle the submit button to delete a view pane.
  */
 function panels_views_delete_confirm_submit($form_id, $form) {
   if ($form['confirm']) {
@@ -555,7 +560,7 @@ function panels_views_delete_confirm_submit($form_id, $form) {
 }
 
 /**
- * Page callback to edit a view pane
+ * Page callback to import a view pane.
  */
 function panels_views_import_view() {
   if ($_POST['form_id'] == 'panels_views_edit_view_form') {
@@ -569,7 +574,7 @@ function panels_views_import_view() {
 }
 
 /**
- * Form for the panel view import.
+ * Form for the view pane import.
  */
 function panels_views_import_form() {
   $form['panel_view'] = array(
@@ -590,7 +595,7 @@ function panels_views_import_form() {
 }
 
 /**
- * Handle the submit button on importing a panel view.
+ * Handle the submit button on importing a view pane.
  */
 function panels_views_import_form_submit($form_id, $form) {
   ob_start();
@@ -616,7 +621,7 @@ function panels_views_import_form_submit($form_id, $form) {
 }
 
 /**
- * Page callback to export a panel view.
+ * Page callback to export a view pane.
  */
 function panels_views_export_view($pv, $prefix = '') {
   if (!is_object($pv)) {
@@ -634,13 +639,13 @@ function panels_views_export_view($pv, $prefix = '') {
     '#type' => 'textarea',
     '#title' => $pv->title,
     '#default_value' => $code,
-    '#rows' => $lines
+    '#rows' => $lines,
   );
   return $form;
 }
 
 /**
- * Enable a default panel view.
+ * Enable a default view pane.
  */
 function panels_views_enable_page($name = NULL) {
   $defaults = panels_views_default_panels();
@@ -654,7 +659,7 @@ function panels_views_enable_page($name = NULL) {
 }
 
 /**
- * Disable a default panel.
+ * Disable a default view pane.
  */
 function panels_views_disable_page($name = NULL) {
   $defaults = panels_views_default_panels();
@@ -721,7 +726,7 @@ function panels_views_content_types() {
 }
 
 /**
- * Render a panel view as a pane.
+ * Render a view as a pane.
  */
 function panels_views_render($conf, $panel_args, &$contexts) {
   $pv = panels_views_load($conf['name']);
@@ -730,7 +735,8 @@ function panels_views_render($conf, $panel_args, &$contexts) {
   }
 
   $v = views_get_view($pv->view);
-  if (empty($v)) { // no view, we go no further
+  // no view, we go no further
+  if (empty($v)) {
     return;
   }
   // Use clone to make sure this is fresh.
@@ -749,15 +755,19 @@ function panels_views_render($conf, $panel_args, &$contexts) {
           $c = array_shift($contexts);
           $args[] = $c->argument;
           break;
+
         case 'fixed':
           $args[] = $data['fixed'];
           break;
+
         case 'panel':
           $args[] = $panel_args[$data['panel']];
           break;
+
         case 'user':
           $args[] = $conf['arguments'][$id];
           break;
+
         case 'none':
         default:
           $args[] = $view->argument[$id]['wildcard'] ? $view->argument[$id]['wildcard'] : '*';
@@ -778,7 +788,7 @@ function panels_views_render($conf, $panel_args, &$contexts) {
 
   $block = new stdClass();
   $block->module = 'views';
-  $block->delta = $view->name;
+  $block->delta  = $view->name;
 
   $view_type = $pv->view_type == 'embed' ? 'page' : $pv->view_type;
   $block->subject = views_get_title($view, $view_type, $args);
@@ -1001,8 +1011,9 @@ function panels_views_title($conf) {
 // Panels views helpers.
 
 /**
- * Get a list of all views as an option array. This really should be included
- * with views.
+ * Get a list of all views as an option array.
+ *
+ * This really should be included with views.
  */
 function panels_views_get_all_views() {
   views_load_cache();
@@ -1027,7 +1038,7 @@ function panels_views_get_all_views() {
 // Database routines
 
 /**
- * Poor man's schema API
+ * Poor man's schema API.
  */
 function panels_views_pane_fields() {
   // Schema version 0
@@ -1129,7 +1140,6 @@ function panels_views_pane_fields() {
       'serialize' => TRUE,
       'definition' => 'text',
     ),
-
     // Whether or not array these things are allowed from the pane UI.
     'allow_type' => array(
       'default' => FALSE,
@@ -1233,7 +1243,7 @@ function panels_views_pane_arguments($view, &$panel_view) {
 }
 
 /**
- * Write a panel view to the database.
+ * Write a view pane to the database.
  */
 function panels_views_save($pv) {
   $keys = $values = "";
@@ -1289,7 +1299,7 @@ function panels_views_save($pv) {
 }
 
 /**
- * Load a panel view from the database.
+ * Load a view pane from the database.
  */
 function panels_views_load($name) {
   $pv = db_fetch_object(db_query("SELECT * FROM {panels_views} WHERE name = '%s'", $name));
@@ -1318,12 +1328,12 @@ function panels_views_load($name) {
 }
 
 /**
- * Load all panel views.
+ * Load all view panes.
  */
 function panels_views_load_all() {
   $panel_views = array();
-  $names = panels_views_pane_fields();
-  $result = db_query("SELECT * FROM {panels_views}");
+  $names       = panels_views_pane_fields();
+  $result      = db_query("SELECT * FROM {panels_views}");
 
   while ($pv = db_fetch_object($result)) {
     foreach ($names as $name => $data) {
@@ -1356,7 +1366,7 @@ function panels_views_load_all() {
 }
 
 /**
- * Get all 'default' panel views.
+ * Get all 'default' view panes.
  */
 function panels_views_default_panels() {
   $panels = module_invoke_all('default_panel_views');
@@ -1368,7 +1378,7 @@ function panels_views_default_panels() {
 }
 
 /**
- * Delete a panel view.
+ * Delete a view pane.
  */
 function panels_views_delete($pv) {
   db_query("DELETE FROM {panels_views} WHERE pvid = %d", $pv->pvid);
@@ -1376,8 +1386,10 @@ function panels_views_delete($pv) {
 }
 
 /**
- * Export a panel view into PHP code; this code is suitable to run through
- * eval() and then be used in panels_views_save().
+ * Export a view pane into PHP code.
+ *
+ * This code is suitable to run through eval()
+ * and then be used in panels_views_save().
  */
 function panels_views_export($pv, $prefix = '') {
   $output = '';
@@ -1422,3 +1434,4 @@ function panels_views_panels_exportables($op = 'list', $panels = NULL, $name = '
     return $code;
   }
 }
+

@@ -1,5 +1,6 @@
 <?php
-// $Id: panels.install,v 1.1.6.47 2008/05/26 21:23:07 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.48 2008/05/27 20:21:15 sdboyer Exp $
+
 
 /**
  * Install the panels tables
@@ -90,6 +91,7 @@ EOT
       db_query("CREATE INDEX {panels_object_cache}_idx ON {panels_object_cache} (sid, obj, did);");
       db_query("CREATE INDEX {panels_object_cache}_time_idx ON {panels_object_cache} (timestamp);");
       break;
+
     case 'mysql':
     case 'mysqli':
       db_query(<<<EOT
@@ -185,6 +187,7 @@ function panels_uninstall() {
       db_query("DROP TABLE {panels_page}");
       db_query("DROP TABLE {panels_object_cache}");
       break;
+
     case 'mysql':
     case 'mysqli':
       db_query("DROP TABLE IF EXISTS {panels_display}");
@@ -202,9 +205,8 @@ function panels_update_1() {
   return _system_update_utf8(array('panels_info', 'panels_area'));
 }
 
-
 function panels_update_1000() {
-  $ret = array();
+  $ret   = array();
   $ret[] = update_sql("ALTER TABLE {panels_info} RENAME {panels_page}");
   $ret[] = update_sql("ALTER TABLE {panels_page} CHANGE COLUMN did pid int(10) NOT NULL DEFAULT 0;");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN did int(10) NOT NULL DEFAULT 0 AFTER pid");
@@ -215,9 +217,9 @@ function panels_update_1000() {
     $ret[] = update_sql("INSERT INTO {sequences} (name, id) VALUES ('{panels_page}_pid', $max_pid)");
   }
 
-  $ret[] = update_sql("ALTER TABLE {panels_area} RENAME {panels_pane}");
-  $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN pid int(10) NOT NULL DEFAULT 0 FIRST");
-  $ret[] = update_sql("ALTER TABLE {panels_pane} CHANGE area panel varchar(32)");
+  $ret[]  = update_sql("ALTER TABLE {panels_area} RENAME {panels_pane}");
+  $ret[]  = update_sql("ALTER TABLE {panels_pane} ADD COLUMN pid int(10) NOT NULL DEFAULT 0 FIRST");
+  $ret[]  = update_sql("ALTER TABLE {panels_pane} CHANGE area panel varchar(32)");
   $result = db_query("SELECT * FROM {panels_pane}");
   while ($pane = db_fetch_object($result)) {
     $count++;
@@ -233,7 +235,7 @@ function panels_update_1000() {
       layout VARCHAR(32)
     ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
-);
+  );
   $result = db_query("SELECT did, layout FROM {panels_page}");
   $max_did = 0;
   while ($display = db_fetch_object($result)) {
@@ -250,7 +252,7 @@ EOT
 }
 
 function panels_update_1001() {
-  $ret = array();
+  $ret   = array();
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN no_blocks int(1)");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN menu int(1) DEFAULT 0");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN menu_tab int(1)");
@@ -265,7 +267,7 @@ function panels_update_1001() {
 
 // Create a field for the layout settings
 function panels_update_1002() {
-  $ret = array();
+  $ret   = array();
   $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN layout_settings longtext");
   $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN access varchar(128) AFTER type");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN css longtext AFTER css_id");
@@ -282,7 +284,7 @@ function panels_update_1003() {
 // Create a field for the panel settings.
 // Renumbering to proper numbering scheme.
 function panels_update_5204() {
-  $ret = array();
+  $ret   = array();
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN name varchar(255) UNIQUE");
   $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN name varchar(255) UNIQUE");
   // Give all our panels a name.
@@ -308,7 +310,7 @@ function panels_update_5206() {
 
 // Add fields for displays and extra contexts
 function panels_update_5207() {
-  $ret = array();
+  $ret   = array();
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN displays longtext");
   $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN contexts longtext");
   return $ret;
@@ -316,7 +318,7 @@ function panels_update_5207() {
 
 // Correct the mistaken {panels_display}_id when it should be {panels_display}_did
 function panels_update_5208() {
-  $ret = array();
+  $ret   = array();
   $count = db_result(db_query("SELECT MAX(did) FROM {panels_display}"));
   $ret[] = update_sql("DELETE FROM {sequences} WHERE name = '{panels_display}_did'");
   $ret[] = update_sql("DELETE FROM {sequences} WHERE name = '{panels_display}_id'");
@@ -330,8 +332,8 @@ function panels_update_5208() {
 
 // Update argument, relationship and context code to be more correct.
 function panels_update_5209() {
-  $ret = array();
-  $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN relationships longtext");
+  $ret    = array();
+  $ret[]  = update_sql("ALTER TABLE {panels_page} ADD COLUMN relationships longtext");
   $result = db_query("SELECT * FROM {panels_page}");
   panels_load_include('plugins');
 
@@ -381,7 +383,8 @@ function panels_update_5209() {
     // Move old relationships (stored as contexts) to relationships, where
     // the belong
     $rels = unserialize($page->contexts);
-    $relationships = $ids = array(); // Not resetting $keywords!
+    // Not resetting $keywords!
+    $relationships = $ids = array();
     if (!empty($rels)) {
       foreach ($rels as $id => $relationship) {
         $name = $relationship['name'];
@@ -457,12 +460,13 @@ function panels_update_5212() {
  */
 function panels_update_5213() {
   $ret = array();
-  switch($GLOBALS['db_type']) {
+  switch ($GLOBALS['db_type']) {
     case 'mysql':
     case 'mysqli':
       $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN cache longtext AFTER configuration");
       $ret[] = update_sql("ALTER TABLE {panels_display} ADD COLUMN cache longtext AFTER panel_settings");
-       break;
+      break;
+
     case 'pgsql':
       db_add_column($ret, 'panels_pane', 'cache', 'text');
       db_add_column($ret, 'panels_display', 'cache', 'text');
@@ -476,7 +480,7 @@ function panels_update_5213() {
  */
 function panels_update_5214() {
   $ret = array();
-  switch($GLOBALS['db_type']) {
+  switch ($GLOBALS['db_type']) {
     case 'mysql':
     case 'mysqli':
       $ret[] = update_sql(<<<EOT
@@ -490,7 +494,7 @@ function panels_update_5214() {
           KEY (timestamp)
         ) /*!40100 DEFAULT CHARACTER SET utf8 */
 EOT
-    );
+      );
     case 'pgsql':
   }
   return !empty($ret) ? $ret : $ret;
@@ -505,7 +509,7 @@ EOT
  */
 function panels_update_5215() {
   $ret = array();
-  switch($GLOBALS['db_type']) {
+  switch ($GLOBALS['db_type']) {
     case 'mysql':
     case 'mysqli':
       $ret[] = update_sql("ALTER TABLE {panels_object_cache} CHANGE COLUMN data data longtext");
@@ -514,6 +518,7 @@ function panels_update_5215() {
       $ret[] = update_sql("ALTER TABLE {panels_object_cache} DROP INDEX {panels_object_cache}_idx");
       $ret[] = update_sql("ALTER TABLE {panels_pane} ADD PRIMARY KEY (pid)");
       break;
+
     case 'pgsql':
       $ret[] = update_sql("ALTER TABLE {panels_pane} ADD PRIMARY KEY (pid)");
   }
@@ -526,7 +531,7 @@ function panels_update_5215() {
  */
 function panels_update_5216() {
   $ret = array();
-  switch($GLOBALS['db_type']) {
+  switch ($GLOBALS['db_type']) {
     case 'mysql':
     case 'mysqli':
       $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN shown int(1) DEFAULT 1 AFTER subtype");
@@ -535,6 +540,7 @@ function panels_update_5216() {
       $ret[] = update_sql("ALTER TABLE {panels_display} DROP COLUMN name");
       $ret[] = update_sql("ALTER TABLE {panels_pane} ADD COLUMN visibility text AFTER access");
       break;
+
     case 'pgsql':
       db_add_column($ret, 'panels_pane', 'shown', 'tinyint', array('default' => 1));
       db_add_column($ret, 'panels_display', 'title', 'varchar(128)');
@@ -550,13 +556,14 @@ function panels_update_5216() {
  */
 function panels_update_5217() {
   $ret = array();
-  switch($GLOBALS['db_type']) {
+  switch ($GLOBALS['db_type']) {
     case 'mysql':
     case 'mysqli':
       $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN switcher_type varchar(128) AFTER no_blocks");
       $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN switcher_name varchar(128) AFTER no_blocks");
       $ret[] = update_sql("ALTER TABLE {panels_page} ADD COLUMN switcher_options longtext AFTER switcher_type");
       break;
+
     case 'pgsql':
       db_add_column($ret, 'panels_page', 'switcher_type', 'varchar(128)');
       db_add_column($ret, 'panels_page', 'switcher_name', 'varchar(128)');
@@ -564,3 +571,4 @@ function panels_update_5217() {
   }
   return $ret;
 }
+

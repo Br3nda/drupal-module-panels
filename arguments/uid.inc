@@ -1,15 +1,17 @@
 <?php
-// $Id: uid.inc,v 1.1.2.1 2007/11/05 22:14:37 merlinofchaos Exp $
+// $Id: uid.inc,v 1.1.2.2 2008/05/27 20:21:12 sdboyer Exp $
+
+
 /**
  * @file arguments/uid.inc
  *
  * Plugin to provide an argument handler for a user id
  */
-
 function panels_uid_panels_arguments() {
   $args['uid'] = array(
     'title' => t("User ID"),
-    'keyword' => 'user', // keyword to use for %substitution
+    // keyword to use for %substitution
+    'keyword' => 'user',
     'description' => t('Creates a user object from the argument.'),
     'context' => 'panels_uid_context',
     'settings form' => 'panels_uid_settings_form',

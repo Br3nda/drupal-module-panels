@@ -1,5 +1,7 @@
 <?php
-// $Id: node_content.inc,v 1.1.2.12 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: node_content.inc,v 1.1.2.13 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,7 +9,8 @@ function panels_node_content_panels_content_types() {
   $items['node_content'] = array(
     'title' => t('Node content'),
     'weight' => -10,
-    'single' => TRUE, // only provides a single content type
+    // only provides a single content type
+    'single' => TRUE,
     'content_types' => 'panels_admin_content_types_node_content',
     'render callback' => 'panels_content_node_content',
     'add callback' => 'panels_admin_edit_node_content',
@@ -45,10 +48,10 @@ function panels_content_node_content($conf, $panel_args, $context) {
   $node = isset($context->data) ? drupal_clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'node';
-  $block->delta = $node->nid;
+  $block->delta  = $node->nid;
 
   if (empty($node)) {
-    $block->delta = 'placeholder';
+    $block->delta   = 'placeholder';
     $block->subject = t('Node title.');
     $block->content = t('Node content goes here.');
   }
@@ -93,7 +96,7 @@ function panels_admin_node_content($node, $conf) {
   }
 
   if (empty($conf['no_extras'])) {
-  // Allow modules to make their own additions to the node.
+    // Allow modules to make their own additions to the node.
     node_invoke_nodeapi($node, 'view', $conf['teaser'], $conf['page']);
   }
 
@@ -170,27 +173,27 @@ function panels_admin_edit_node_content($id, $parents, $conf = array()) {
     '#type' => 'checkbox',
     '#default_value' => $conf['page'],
     '#title' => t('Node page'),
-    '#description' => t('Check here if the node is being displayed on a page by itself.')
+    '#description' => t('Check here if the node is being displayed on a page by itself.'),
   );
   $form['links'] = array(
     '#type' => 'checkbox',
     '#default_value' => $conf['links'],
     '#title' => t('Display links'),
-    '#description' => t('Check here to display the links with the post.')
+    '#description' => t('Check here to display the links with the post.'),
   );
 
   $form['no_extras'] = array(
     '#type' => 'checkbox',
     '#default_value' => $conf['no_extras'],
     '#title' => t('No extras'),
-    '#description' => t('Check here to disable additions that modules might make to the node, such as file attachments and CCK fields; this should just display the basic teaser or body.')
+    '#description' => t('Check here to disable additions that modules might make to the node, such as file attachments and CCK fields; this should just display the basic teaser or body.'),
   );
 
   $form['identifier'] = array(
     '#type' => 'textfield',
     '#default_value' => $conf['identifier'],
     '#title' => t('Identifier'),
-    '#description' => t('Whatever is placed here will appear in $node->panel_identifier to make it easier to theme a node or part of a node as necessary.')
+    '#description' => t('Whatever is placed here will appear in $node->panel_identifier to make it easier to theme a node or part of a node as necessary.'),
   );
 
   return $form;
@@ -199,3 +202,4 @@ function panels_admin_edit_node_content($id, $parents, $conf = array()) {
 function panels_admin_title_node_content($conf, $context) {
   return t('"@s" content', array('@s' => $context->identifier));
 }
+

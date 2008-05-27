@@ -1,5 +1,7 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.10 2008/03/18 02:49:12 sdboyer Exp $
+// $Id: flexible.inc,v 1.1.2.11 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * implementation of hook_panels_layouts
  */
@@ -180,7 +182,7 @@ function panels_flexible_settings_form($display, $layout, $settings) {
   $form['sidebars']['left_title_markup'] = array(
     '#prefix' => '<div class="description">',
     '#suffix' => '</div>',
-    '#value' =>  t('If a sidebar is selected, enter the width of the sidebar.'),
+    '#value' => t('If a sidebar is selected, enter the width of the sidebar.'),
   );
 
   $form['sidebars']['width_type'] = array(
@@ -360,3 +362,4 @@ function theme_panels_flexible($id, $content, $settings) {
   drupal_set_html_head("<style type=\"text/css\" media=\"all\">\n$css</style>\n");
   return $output;
 }
+

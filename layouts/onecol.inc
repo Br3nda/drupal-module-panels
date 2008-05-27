@@ -1,5 +1,7 @@
 <?php
-// $Id: onecol.inc,v 1.1.2.4 2007/12/17 22:09:19 merlinofchaos Exp $
+// $Id: onecol.inc,v 1.1.2.5 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * implementation of hook_panels_layouts
  */
@@ -34,3 +36,4 @@ function theme_panels_onecol($id, $content) {
 EOT;
   return $output;
 }
+

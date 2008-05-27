@@ -1,5 +1,6 @@
 <?php
-// $Id: panels_views.install,v 1.1.2.7 2008/05/26 21:39:39 sdboyer Exp $
+// $Id: panels_views.install,v 1.1.2.8 2008/05/27 20:21:15 sdboyer Exp $
+
 
 /**
  * Implementation of hook_install().
@@ -21,8 +22,8 @@ function panels_views_install() {
     }
     // offset is a reserved word in postgres, needs to be quoted
     if ($field == "offset" && $GLOBALS['db_type'] == 'pgsql') {
-        $field = '"offset"';
-    }    
+      $field = '"offset"';
+    }
     $sql .= $field . ' ' . $data['definition'];
   }
   db_query("CREATE TABLE {panels_views} ($sql) /*!40100 DEFAULT CHARACTER SET utf8 */");
@@ -34,3 +35,4 @@ function panels_views_install() {
 function panels_views_uninstall() {
   db_query("DROP TABLE {panels_views}");
 }
+

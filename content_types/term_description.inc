@@ -1,5 +1,7 @@
 <?php
-// $Id: term_description.inc,v 1.1.2.8 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: term_description.inc,v 1.1.2.9 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,7 +9,8 @@ function panels_term_description_panels_content_types() {
   $items['term_description'] = array(
     'title' => t('Term description'),
     'content_types' => 'panels_admin_content_types_term_description',
-    'single' => TRUE, // only provides a single content type
+    // only provides a single content type
+    'single' => TRUE,
     'render callback' => 'panels_content_term_description',
     'add callback' => 'panels_admin_edit_term_description',
     'edit callback' => 'panels_admin_edit_term_description',
@@ -66,3 +69,4 @@ function panels_admin_content_types_term_description() {
 function panels_admin_title_term_description($conf, $context) {
   return t('"@s" term description', array('@s' => $context->identifier));
 }
+

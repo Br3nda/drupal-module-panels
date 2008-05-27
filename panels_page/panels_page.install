@@ -1,5 +1,6 @@
 <?php
-// $Id: panels_page.install,v 1.1.2.1 2008/01/08 19:58:37 merlinofchaos Exp $
+// $Id: panels_page.install,v 1.1.2.2 2008/05/27 20:21:13 sdboyer Exp $
+
 
 /**
  * Implementation of hook_install()
@@ -15,3 +16,4 @@ function panels_page_update_5000() {
   $ret[] = update_sql("UPDATE {system} SET weight = 10 WHERE name = 'panels_page'");
   return $ret;
 }
+

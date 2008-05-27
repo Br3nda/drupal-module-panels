@@ -1,5 +1,7 @@
 <?php
-// $Id: profile_fields.inc,v 1.1.2.3 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: profile_fields.inc,v 1.1.2.4 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -9,55 +11,57 @@ function panels_profile_fields_panels_content_types() {
     $items['profile_fields'] = array(
       'title' => t('Profile Fields'),
       'content_types' => 'panels_profile_fields_content_type',
-      'single' => TRUE, // only provides a single content type
+      // only provides a single content type
+      'single' => TRUE,
       'render callback' => 'panels_profile_fields_content',
       'add callback' => 'panels_profile_fields_configure',
       'edit callback' => 'panels_profile_fields_configure',
       'title callback' => 'panels_profile_fields_configure_title',
     );
-  }  
+  }
   return $items;
 }
 
 /**
- * 'Render' callback for the 'profile fields' content type. 
+ * 'Render' callback for the 'profile fields' content type.
  */
 function panels_profile_fields_content($conf, $panel_args, $context) {
   $account = isset($context->data) ? drupal_clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'profile fields';
 
-  if ($account) { 
+  if ($account) {
     // Get the category from the options
     $category = str_replace("_", " ", $conf['category']);
 
     // Set the subject to the name of the category
     $block->subject = $category;
-    
+
     // Put all the fields in the category into an array
     $profile = profile_view_profile($account);
     if (is_array($profile[$category])) {
-      foreach($profile[$category] as $field) {
+      foreach ($profile[$category] as $field) {
         $vars[$field['class']]['title'] = $field['title'];
         $vars[$field['class']]['value'] = $field['value'];
       }
     }
-    
+
     if (sizeof($vars) == 0) {
       // Output the given empty text
       $output = $conf['empty'];
-    } else {
-      // Call the theme function with the field vars
-      $output = theme('profile_fields_pane',$category, $vars); 
     }
-    
+    else {
+      // Call the theme function with the field vars
+      $output = theme('profile_fields_pane', $category, $vars);
+    }
+
     $block->content = $output;
     $block->delta = $account->uid;
   }
   else {
     $block->subject = $conf['category'];
     $block->content = t('Profile content goes here.');
-    $block->delta = 'unknown';
+    $block->delta   = 'unknown';
   }
 
   return $block;
@@ -96,13 +100,13 @@ function panels_profile_fields_content_type() {
 }
 
 /**
- * Helper function : build the list of categories for the 'edit' form. 
+ * Helper function : build the list of categories for the 'edit' form.
  */
 function _panels_profile_fields_options() {
   $cat_list = array();
 
   $categories = profile_categories();
-  foreach($categories as $key => $value) {
+  foreach ($categories as $key => $value) {
     $cat_list[str_replace(" ", "_", $value['name'])] = $value['title'];
   }
 
@@ -110,7 +114,7 @@ function _panels_profile_fields_options() {
 }
 
 /**
- * 'Edit' callback for the 'profile fields' content type. 
+ * 'Edit' callback for the 'profile fields' content type.
  */
 function panels_profile_fields_configure($id, $parents, $conf = array()) {
   // Apply defaults
@@ -126,7 +130,7 @@ function panels_profile_fields_configure($id, $parents, $conf = array()) {
     '#prefix' => '<div class="clear-block no-float">',
     '#suffix' => '</div>',
   );
-  
+
   $form['empty'] = array(
     '#type' => 'textarea',
     '#title' => 'Empty text',
@@ -141,7 +145,7 @@ function panels_profile_fields_configure($id, $parents, $conf = array()) {
 }
 
 /**
- * 'Title' callback for the 'profile fields' content type. 
+ * 'Title' callback for the 'profile fields' content type.
  */
 function panels_profile_fields_configure_title($conf, $context) {
   return t('"@s" profile fields', array('@s' => $conf['category']));

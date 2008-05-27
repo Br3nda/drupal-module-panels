@@ -1,5 +1,7 @@
 <?php
-// $Id: twocol_bricks.inc,v 1.1.2.2 2007/12/17 22:09:19 merlinofchaos Exp $
+// $Id: twocol_bricks.inc,v 1.1.2.3 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * @file twocol_bricks.inc
  *
@@ -71,3 +73,4 @@ function theme_panels_twocol_bricks($id, $content) {
 EOT;
   return $output;
 }
+

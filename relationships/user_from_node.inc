@@ -1,5 +1,6 @@
 <?php
-// $Id: user_from_node.inc,v 1.1.2.2 2008/05/23 22:17:37 sdboyer Exp $
+// $Id: user_from_node.inc,v 1.1.2.3 2008/05/27 20:21:14 sdboyer Exp $
+
 
 /**
  * Plugin to provide an relationship handler for node from user
@@ -27,11 +28,12 @@ function panels_user_from_node_context($context = NULL, $conf) {
     // Load the user that is the author of the node
     $uid = $context->data->uid;
     $account = user_load(array('uid' => $uid));
-   
+
     // Send it to panels
     return panels_context_create('user', $account);
-  } else {
+  }
+  else {
     return panels_context_create_empty('user', NULL);
-  }   
+  }
 }
 

@@ -1,5 +1,7 @@
 <?php
-// $Id: form.inc,v 1.1.2.7 2008/05/24 01:39:13 sdboyer Exp $
+// $Id: form.inc,v 1.1.2.8 2008/05/27 20:21:11 sdboyer Exp $
+
+
 /**
  * Callback function to supply a list of content types.
  */
@@ -7,7 +9,8 @@ function panels_form_panels_content_types() {
   $items['form'] = array(
     'title' => t('Generic form'),
     'content_types' => 'panels_admin_content_types_form',
-    'single' => TRUE, // only provides a single content type
+    // only provides a single content type
+    'single' => TRUE,
     'render callback' => 'panels_content_form',
     'add callback' => 'panels_admin_edit_form',
     'edit callback' => 'panels_admin_edit_form',
@@ -57,7 +60,7 @@ function panels_content_form($conf, $panel_args, &$context) {
   else {
     $block->subject = t('Form');
     $block->content = t('Form goes here.');
-    $block->delta = 'unknown';
+    $block->delta   = 'unknown';
   }
 
   return $block;
@@ -66,3 +69,4 @@ function panels_content_form($conf, $panel_args, &$context) {
 function panels_admin_title_form($conf, $context) {
   return t('"@s" base form', array('@s' => $context->identifier));
 }
+
