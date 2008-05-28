@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.48 2008/05/27 20:21:13 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.49 2008/05/28 16:48:49 merlinofchaos Exp $
 
 
 /**
@@ -671,7 +671,7 @@ function panels_page_view_page($panel_page, $admin) {
   $switchers = panels_get_switchers();
   if ($switchers) {
     $list = array();
-    $result = db_query("SELECT name FROM {panels_page} WHERE switcher_name = '%s'");
+    $result = db_query("SELECT name FROM {panels_page} WHERE switcher_name = '%s'", $panel_page->name);
     // get a list of all pages that might switch for this one
     while ($candidate = db_fetch_object($result)) {
       $list[] = $candidate->name;
@@ -679,7 +679,8 @@ function panels_page_view_page($panel_page, $admin) {
     if ($list) {
       // separate them based on switcher type
       $pages = array();
-      foreach (panels_page_load_all($list) as $candidate) {
+      $candidates = (count($list) > 1) ? panels_page_load_all($list) : array(panels_page_load($list[0]));
+      foreach ($candidates as $candidate) {
         $pages[$candidate->switcher_type][$candidate->name] = $candidate;
       }
 
