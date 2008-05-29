@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.34 2008/05/27 19:25:57 sdboyer Exp $
+// $Id: display_editor.js,v 1.1.2.35 2008/05/29 23:16:33 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -128,7 +128,7 @@ Drupal.Panels.bindClickDelete = function(o) {
 };
 
 Drupal.Panels.bindPortlet = function() {
-  var handle = $(this).find('h2.title');
+  var handle = $(this).find('.panel-pane-collapsible>h2.title');
   var content = $(this).find('div.content');
   if (content.length) {
     var toggle = $('<span class="toggle toggle-collapsed"></span>');
