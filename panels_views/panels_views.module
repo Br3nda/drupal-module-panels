@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.19 2008/05/27 20:21:15 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.20 2008/05/29 23:41:04 merlinofchaos Exp $
 
 
 /**
@@ -1302,64 +1302,74 @@ function panels_views_save($pv) {
  * Load a view pane from the database.
  */
 function panels_views_load($name) {
-  $pv = db_fetch_object(db_query("SELECT * FROM {panels_views} WHERE name = '%s'", $name));
-  if (empty($pv)) {
-    $defaults = panels_views_default_panels();
-    if (isset($defaults[$name])) {
-      $pv = $defaults[$name];
-      $status = variable_get('panels_views_defaults', array());
-      // Determine if default panel is enabled or disabled.
-      if (isset($status[$pv->name])) {
-        $pv->disabled = $status[$pv->name];
+  static $panels_views = array();
+
+  if (!array_key_exists($name, $panels_views)) {
+    $pv = db_fetch_object(db_query("SELECT * FROM {panels_views} WHERE name = '%s'", $name));
+    if (empty($pv)) {
+      $defaults = panels_views_default_panels();
+      if (isset($defaults[$name])) {
+        $pv = $defaults[$name];
+        $status = variable_get('panels_views_defaults', array());
+        // Determine if default panel is enabled or disabled.
+        if (isset($status[$pv->name])) {
+          $pv->disabled = $status[$pv->name];
+        }
+        $panels_views[$name] = $pv;
+        return $pv;
       }
-      return $pv;
+      $panels_views[$name] = NULL;
+      return;
     }
-    return;
-  }
 
-  $names = panels_views_pane_fields();
-  foreach ($names as $name => $data) {
-    if (!empty($data['serialize'])) {
-      $pv->$name = unserialize($pv->$name);
+    $names = panels_views_pane_fields();
+    foreach ($names as $key => $data) {
+      if (!empty($data['serialize'])) {
+        $pv->$key = unserialize($pv->$name);
+      }
     }
+    $panels_views[$name] = $pv;
   }
-
-  return $pv;
+  return $panels_views[$name];
 }
 
 /**
  * Load all view panes.
  */
 function panels_views_load_all() {
-  $panel_views = array();
-  $names       = panels_views_pane_fields();
-  $result      = db_query("SELECT * FROM {panels_views}");
+  static $panel_views = NULL;
 
-  while ($pv = db_fetch_object($result)) {
-    foreach ($names as $name => $data) {
-      if (!empty($data['serialize'])) {
-        $pv->$name = unserialize($pv->$name);
+  if (!isset($panels_views)) {
+    $panels_views = array();
+    $names       = panels_views_pane_fields();
+    $result      = db_query("SELECT * FROM {panels_views}");
+
+    while ($pv = db_fetch_object($result)) {
+      foreach ($names as $name => $data) {
+        if (!empty($data['serialize'])) {
+          $pv->$name = unserialize($pv->$name);
+        }
       }
-    }
-    $pv->type = t('Local');
-    $panel_views[$pv->name] = $pv;
-  }
-
-  // Now load all the in-code versions
-  $status = variable_get('panels_views_defaults', array());
-
-  foreach (panels_views_default_panels() as $pv) {
-    // Determine if default panel is enabled or disabled.
-    if (isset($status[$pv->name])) {
-      $pv->disabled = $status[$pv->name];
-    }
-
-    if (!empty($panel_views[$pv->name])) {
-      $panel_views[$pv->name]->type = t('Overridden');
-    }
-    else {
-      $pv->type = t('Default');
+      $pv->type = t('Local');
       $panel_views[$pv->name] = $pv;
+    }
+
+    // Now load all the in-code versions
+    $status = variable_get('panels_views_defaults', array());
+
+    foreach (panels_views_default_panels() as $pv) {
+      // Determine if default panel is enabled or disabled.
+      if (isset($status[$pv->name])) {
+        $pv->disabled = $status[$pv->name];
+      }
+
+      if (!empty($panel_views[$pv->name])) {
+        $panel_views[$pv->name]->type = t('Overridden');
+      }
+      else {
+        $pv->type = t('Default');
+        $panel_views[$pv->name] = $pv;
+      }
     }
   }
   return $panel_views;
