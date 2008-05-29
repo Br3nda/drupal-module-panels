@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.46 2008/05/27 20:21:13 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.47 2008/05/29 23:17:57 merlinofchaos Exp $
 
 
 /**
@@ -806,7 +806,7 @@ function panels_page_edit_export($panel_page) {
  */
 function panels_page_import_page() {
   if ($_POST['form_id'] == 'panels_page_edit_form') {
-    $panel_page = $_SESSION['pp_import'];
+    $panel_page = unserialize($_SESSION['pp_import']);
     drupal_set_title(t('Import panel page "@s"', array('@s' => $panel_page->title)));
     return drupal_get_form('panels_page_edit_form', $panel_page);
   }
@@ -845,7 +845,9 @@ function panels_page_import_form_submit($form_id, $form) {
 
   if (isset($page)) {
     drupal_set_title(t('Import panel page "@s"', array('@s' => $page->title)));
-    $_SESSION['pp_import'] = $page;
+    // As $page contains non-stdClass objects,
+    // it needs to be serialized before being stored in the session variable.
+    $_SESSION['pp_import'] = serialize($page);
     $output = drupal_get_form('panels_page_edit_form', $page);
     print theme('page', $output);
     exit;
