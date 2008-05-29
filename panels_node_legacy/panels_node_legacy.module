@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node_legacy.module,v 1.1.2.8 2008/05/27 20:21:16 sdboyer Exp $
+// $Id: panels_node_legacy.module,v 1.1.2.9 2008/05/29 23:19:13 merlinofchaos Exp $
 
 
 /**
@@ -107,6 +107,9 @@ function panels_node_legacy_render($conf, $panel_args) {
   if (empty($conf['leave_node_title'])) {
     unset($node->title);
   }
+  if (!empty($conf['identifier'])) {
+    $node->panel_identifier = $conf['identifier'];
+  }
 
   $block->content = node_view($node, $conf['teaser'], FALSE, $conf['links']);
   return $block;
@@ -171,6 +174,12 @@ function panels_node_legacy_edit($id, $parents, $conf) {
     '#default_value' => $conf['leave_node_title'],
     '#title' => t('Leave node title'),
     '#description' => t('Advanced: if checked, do not touch the node title; this can cause the node title to appear twice unless your theme is aware of this.'),
+  );
+  $form['identifier'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $conf['identifier'],
+    '#title' => t('Identifier'),
+    '#description' => t('Whatever is placed here will appear in $node->panel_identifier to make it easier to theme a node or part of a node as necessary.'),
   );
 
   return $form;
