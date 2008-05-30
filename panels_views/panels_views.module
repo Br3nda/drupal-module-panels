@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.20 2008/05/29 23:41:04 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.21 2008/05/30 00:31:55 merlinofchaos Exp $
 
 
 /**
@@ -325,6 +325,7 @@ function panels_views_edit_view_form($view, $panel_view) {
     $form['contexts'][$id]['type'] = array(
       '#type' => 'select',
       '#options' => array(
+        'wildcard' => t('Argument wildcard'),
         'none' => t('No argument'),
         'context' => t('From context'),
         'panel' => t('From panel argument'),
@@ -768,11 +769,17 @@ function panels_views_render($conf, $panel_args, &$contexts) {
           $args[] = $conf['arguments'][$id];
           break;
 
-        case 'none':
-        default:
-          $args[] = $view->argument[$id]['wildcard'] ? $view->argument[$id]['wildcard'] : '*';
+       case 'wildcard':
           // Put in the wildcard.
-          break;
+         $args[] = $view->arguments[$id]['wildcard'] ? $view->arguments[$id]['wildcard'] : '*';
+         break;
+
+       case 'none':
+       default:
+         // Put in NULL.
+         // views.module knows what to do with NULL (or missing) arguments
+         $args[] = NULL;
+         break;
       }
     }
   }
