@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.105 2008/05/27 20:21:15 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.106 2008/05/30 00:23:09 merlinofchaos Exp $
 
 
 /**
@@ -679,6 +679,11 @@ function panels_load_displays($dids) {
     $display->panels = $display->content = array();
 
     $displays[$display->did] = $display;
+  }
+  
+  foreach (module_implements('panels_layout_content_alter') as $module) {
+    $function = $module . '_panels_layout_content_alter';
+    $function($content, $layout, $settings);
   }
 
   $result = db_query("SELECT * FROM {panels_pane} WHERE did IN ($subs) ORDER BY did, panel, position", $dids);
