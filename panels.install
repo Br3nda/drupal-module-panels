@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.48 2008/05/27 20:21:15 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.49 2008/05/30 19:15:24 sdboyer Exp $
 
 
 /**
@@ -51,7 +51,7 @@ EOT
           panel_settings text,
           cache text,
           title varchar(128),
-          hide_title tinyint DEFAULT 0,
+          hide_title smallint DEFAULT 0,
           PRIMARY KEY (did)
         );
 EOT
@@ -66,7 +66,7 @@ EOT
           panel varchar(32),
           type varchar(32),
           subtype varchar(64),
-          shown tinyint DEFAULT 1,
+          shown smallint DEFAULT 1,
           access varchar(128),
           visibility text,
           configuration text,
@@ -568,6 +568,26 @@ function panels_update_5217() {
       db_add_column($ret, 'panels_page', 'switcher_type', 'varchar(128)');
       db_add_column($ret, 'panels_page', 'switcher_name', 'varchar(128)');
       db_add_column($ret, 'panels_page', 'switcher_options', 'text');
+  }
+  return $ret;
+}
+
+
+/**
+ * Oversight in 5216: 'tinyint' is not a field type in pgsql; the type we wanted
+ * was 'smallint.' 
+ */
+function panels_update_5218() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      break;
+
+    case 'pgsql':
+      db_add_column($ret, 'panels_pane', 'shown', 'smallint', array('default' => 1));
+      db_add_column($ret, 'panels_display', 'hide_title', 'smallint', array('default' => 0));
+      $ret[] = array('success' => TRUE, 'You can disregard the failed attempts to add new columns in update 5216 as long as the two queries preceding this text were successful.');
   }
   return $ret;
 }
