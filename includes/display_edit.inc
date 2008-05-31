@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.48 2008/05/27 21:44:28 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.49 2008/05/31 04:45:16 sdboyer Exp $
 
 
 /*
@@ -685,7 +685,6 @@ function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
       break;
 
     default:
-      pdbg('panels_ajax', serialize(array('did' => $did, 'data' => array('op' => $op, 'pid' => $pid))));
   }
 
   panels_ajax_render($output);
