@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.49 2008/05/31 04:45:16 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.50 2008/06/02 16:39:07 merlinofchaos Exp $
 
 
 /*
@@ -87,7 +87,7 @@ function panels_edit_display($display, $destination) {
   else {
     $form['#redirect'] = FALSE;
   }
-  
+
   $explanation_text = '<p>';
   $explanation_text .= 'Grab the title bar of any pane to drag-and-drop it into another panel. Click the add pane button (!addicon) in any panel to add more content. Click the configure (!configicon) button on any pane to re-configure that pane. Click the cache (!cacheicon) button to configure caching for that pane specifically. Click the show/hide (!showicon/!hideicon) toggle button to show or hide that pane. Panes hidden in this way will be hidden from <em>everyone</em> until the hidden status is toggled off.';
   $explanation_text .= '</p>';
@@ -98,7 +98,7 @@ function panels_edit_display($display, $destination) {
     '!showicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-showpane.png', TRUE) . '" title="Show this pane" /></span>',
     '!hideicon' => '<span class="inline-icon-help"><img src="' . panels_get_path('images/icon-hidepane.png', TRUE) . '" title="Hide this pane" /></span>',
   );
-  
+
   $form['explanation'] = array(
     '#value' => t($explanation_text, $explanation_subs),
   );
@@ -488,7 +488,7 @@ function _panels_edit_layout_settings($display, $finish, $destination, $title) {
 
 /**
  * Form definition for the display layout settings editor.
- * 
+ *
  * @ingroup forms
  * @see panels_edit_layout_settings_form_validate()
  * @see panels_edit_layout_settings_form_submit()
@@ -507,7 +507,7 @@ function panels_edit_layout_settings_form($display, $finish, $destination, $titl
       '#title' => t('Panel Title'),
       '#tree' => TRUE,
     );
-      
+
     $form['display_title']['title'] = array(
       '#type' => 'textfield',
       '#size' => 35,
@@ -770,10 +770,10 @@ function panels_add_content($cache, $panel_id) {
         else {
           $category = t('Contrib modules');
         }
-        $output = '<div class="content-type-button">';
+        $output = '<div class="content-type-button clear-block">';
         $link_text = theme('image', $path . '/' . $icon, $description, $description);
         $output .= l($link_text, 'javascript: void()', array('class' => 'panels-modal-add-config', 'id' => $id . '-' . $panel_id . '-' . $content_id), NULL, NULL, NULL, TRUE);
-        $output .= "<div>$title</div>";
+        $output .= "<div>" . l($title, 'javascript: void()', array('class' => 'panels-modal-add-config', 'id' => $id . '-' . $panel_id . '-' . $content_id), NULL, NULL, NULL, TRUE) . "</div>";
         $output .= '</div>';
         if (!isset($categories[$category])) {
           $categories[$category] = array();
@@ -791,15 +791,42 @@ function panels_add_content($cache, $panel_id) {
   else {
     asort($weights);
     $output = '';
+
+    $columns = 3;
+    foreach (range(1, $columns) as $column) {
+      $col[$column] = '';
+      $size[$column] = 0;
+    }
+
     foreach ($weights as $category => $weight) {
-      $output .= '<h3 class="panels-section-title">' . $category . '</h3>';
-      $output .= '<div class="panels-section-decorator"></div>';
+      $which = 1; // default;
+      $count = count($titles[$category]) + 3;
+      // Determine which column to use by seeing which column has the most
+      // free space. This algorithm favors left.
+      foreach (range($columns, 2, -1) as $column) {
+        if ($size[$column - 1] - $size[$column] > $count / 2) {
+          $which = $column;
+          break;
+        }
+      }
+
+      $col[$which] .= '<div class="panels-section">';
+      $col[$which] .= '<h3 class="panels-section-title">' . $category . '</h3>';
+      $col[$which] .= '<div class="panels-section-decorator"></div>';
+      $col[$which] .= '<div class="panels-section-content">';
       if (is_array($titles[$category])) {
         natcasesort($titles[$category]);
         foreach ($titles[$category] as $id => $title) {
-          $output .= $categories[$category][$id];
+          $col[$which] .= $categories[$category][$id];
         }
       }
+      $col[$which] .= '</div>';
+      $col[$which] .= '</div>';
+      $size[$which] += $count; // add 3 to account for title.
+    }
+
+    foreach ($col as $column) {
+      $output .= '<div class="panels-section-column">' . $column . '</div>';
     }
   }
   return $output;
@@ -910,7 +937,7 @@ function panels_ajax_configure($did = NULL, $pid = NULL) {
   if ((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did)) {
     if (isset($cache->display->content[$pid]) && $pane = $cache->display->content[$pid]) {
       // Only perform on a form rendering passthrough and if the data hasn't already been built.
-      if (!isset($_POST['form_id']) && empty($cc['built'])) { 
+      if (!isset($_POST['form_id']) && empty($cc['built'])) {
         $cc = &$cache->content_config[$pane->pid];
         if (!isset($cc)) {
           list($cc['content_type'], $cc['content_subtype']) = array($pane->type, $pane->subtype);

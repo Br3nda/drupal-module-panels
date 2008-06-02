@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.35 2008/05/29 23:16:33 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.36 2008/06/02 16:39:07 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -338,7 +338,7 @@ Drupal.Panels.Draggable = {
       $(draggable.formId + this.id.replace(/_/g, '-')).val(val);
     });
     return false;
-  },
+  }
 };
 
 

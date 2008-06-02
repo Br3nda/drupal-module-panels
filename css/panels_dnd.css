@@ -1,4 +1,4 @@
-/* $Id: panels_dnd.css,v 1.1.2.23 2008/05/23 22:17:36 sdboyer Exp $ */
+/* $Id: panels_dnd.css,v 1.1.2.24 2008/06/02 16:39:07 merlinofchaos Exp $ */
 
 #panels-dnd-main {
   margin: 0.5em 0;
@@ -208,22 +208,49 @@ a.close img {
   top: 1px;
 }
 
-.content-type-button {
+.panels-section-title {
+  clear: left;
+  border-bottom: 1px solid #ddf;
+  margin-bottom: .5em;
+  text-align: left;
+}
+
+.panels-section-decorator {
+}
+
+.panels-section-column {
+  width: 32%;
   float: left;
-  width: 90px;
-  height: 60px;
+  margin-right: 1.25%;
+  margin-bottom: 1.5em;
+}
+
+.panels-section {
+  margin-bottom: 1em;
+}
+
+.panels-section .content-type-button {
   font-size: 8pt;
   line-height: 1em;
-  text-align: center;
   overflow: hidden;
+  text-align: left;
 }
 
 .content-type-button img {
   border: 2px solid white;
+  float: left;
 }
 
 .content-type-button img:hover {
   border: 2px solid blue;
+}
+
+.content-type-button div {
+  top: -5px;
+  left: 2px;
+  float: left;
+  padding-left: 3px;
+  padding-top: 5px;
 }
 
 .panels-modal-content .modal-content .panels-throbber-wrapper {
@@ -283,16 +310,6 @@ a.close img {
   width: 100%;
   padding: 0;
   margin: 0;
-}
-
-
-.panels-section-title {
-  clear: left;
-  border-bottom: 1px solid #ddf;
-  margin-bottom: .5em;
-}
-
-.panels-section-decorator {
 }
 
 .panels-style-settings,
