@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.51 2008/06/03 14:32:37 pancho Exp $
+// $Id: panels_page.module,v 1.1.2.52 2008/06/03 15:42:02 pancho Exp $
 
 
 /**
@@ -176,6 +176,9 @@ function panels_page_menu($may_cache) {
 
     $plugins_loaded = FALSE;
     foreach ($panels as $panel_page) {
+      if (!empty($panel_page->disabled)) {
+        continue;
+      }
       if (strpos($panel_page->path, '%') !== FALSE) {
         $path = explode('/', $panel_page->path);
         $match = TRUE;
