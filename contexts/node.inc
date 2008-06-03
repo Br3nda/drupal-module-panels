@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.1.2.11 2008/05/30 00:44:28 merlinofchaos Exp $
+// $Id: node.inc,v 1.1.2.12 2008/06/03 13:18:07 pancho Exp $
 
 
 /**
@@ -58,8 +58,8 @@ function panels_context_node_settings_form($conf, $external = FALSE) {
     $form['external'] = array(
       '#type' => 'checkbox',
       '#default_value' => $conf['external'],
-      '#title' => t('Require this context from an external source (such as containing panel page)'),
-      '#description' => t('If selected, node selection (below) will be ignored'),
+      '#title' => t('Require this context from an external source (such as a containing panel page).'),
+      '#description' => t('If selected, node selection (below) will be ignored.'),
     );
   }
 
@@ -122,7 +122,7 @@ function panels_context_node_settings_form_validate($form, $form_values) {
   }
 
   if (!$node) {
-    form_error($form['node'], t('Invalid post selected'));
+    form_error($form['node'], t('Invalid node selected.'));
   }
   else {
     form_set_value($form['nid'], $node->nid);

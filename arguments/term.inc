@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.1.2.8 2008/05/27 20:21:12 sdboyer Exp $
+// $Id: term.inc,v 1.1.2.9 2008/06/03 13:18:07 pancho Exp $
 
 
 /**
@@ -98,7 +98,7 @@ function panels_term_settings_form($conf) {
     '#title' => t('Vocabularies'),
     '#type' => 'checkboxes',
     '#options' => $options,
-    '#description' => t('You can restrict this argument to use the checked node types. Arguments from non-conforming node types will be ignored, and Panels will behave as if no argument were given. Leave all unchecked to impose no restriction.'),
+    '#description' => t('You can restrict this argument to use the checked vocabularies. Arguments from non-conforming vocabularies will be ignored, and Panels will behave as if no argument were given. Leave all unchecked to impose no restriction.'),
     '#default_value' => $conf['vids'],
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
@@ -107,7 +107,7 @@ function panels_term_settings_form($conf) {
   $form['own_default'] = array(
     '#title' => t('Use different default display'),
     '#type' => 'checkbox',
-    '#description' => t('If checked, when this argument is present it will use its own display rather than the default. Displays not selected in the "Own display" field will use this one.'),
+    '#description' => t('If checked, when this argument is present it will use its own display rather than the default. Vocabularies not selected in the "Own display" field will use this one.'),
     '#default_value' => $conf['own_default'],
   );
 
@@ -116,7 +116,7 @@ function panels_term_settings_form($conf) {
     '#type' => 'checkboxes',
     '#options' => $options,
     '#default_value' => $conf['displays'],
-    '#description' => t('Each checked type will get its own special display to layout its content. Only types set in Node types, above, should be set here. Types not set here will use the default display.'),
+    '#description' => t('Each checked vocabulary will get its own special display to layout its content. Only vocabularies set above should be set here. Vocabularies not set here will use the default display.'),
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
   );

@@ -1,5 +1,5 @@
 <?php
-// $Id: node_add_form.inc,v 1.1.2.4 2008/05/27 20:21:13 sdboyer Exp $
+// $Id: node_add_form.inc,v 1.1.2.5 2008/06/03 13:18:07 pancho Exp $
 
 
 /**
@@ -82,7 +82,7 @@ function panels_context_node_add_form_settings_form($conf, $external = FALSE) {
   );
 
   if ($external) {
-    $form['types']['#description'] .= ' ' . t('Select external to require this from an external source such as a containing panel page.');
+    $form['types']['#description'] .= ' ' . t('Select external to require this from an external source (such as a containing panel page).');
   }
 
   return $form;

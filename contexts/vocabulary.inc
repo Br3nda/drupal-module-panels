@@ -1,5 +1,5 @@
 <?php
-// $Id: vocabulary.inc,v 1.1.2.5 2008/05/27 20:21:13 sdboyer Exp $
+// $Id: vocabulary.inc,v 1.1.2.6 2008/06/03 13:18:07 pancho Exp $
 
 
 /**
@@ -62,9 +62,10 @@ function panels_context_vocabulary_settings_form($conf, $external = FALSE) {
     '#default_value' => $conf['vids'],
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
+    '#description' => t('Select the vocabulary for this form.'),
   );
   if ($external) {
-    $form['vid']['#description'] .= ' ' . t('Select external to require this from an external source such as a containing panel page.');
+    $form['vid']['#description'] .= ' ' . t('Select external to require this from an external source (such as a containing panel page).');
   }
 
   return $form;

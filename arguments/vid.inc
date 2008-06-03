@@ -1,5 +1,5 @@
 <?php
-// $Id: vid.inc,v 1.1.2.2 2008/05/27 20:21:12 sdboyer Exp $
+// $Id: vid.inc,v 1.1.2.3 2008/06/03 13:18:07 pancho Exp $
 
 
 /**
@@ -57,7 +57,7 @@ function panels_vid_settings_form($conf) {
     '#type' => 'checkboxes',
     '#options' => $options,
     '#default_value' => $conf['displays'],
-    '#description' => t('Each checked type will get its own special display to layout its content.'),
+    '#description' => t('Each checked vocabulary will get its own special display to layout its content.'),
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
   );

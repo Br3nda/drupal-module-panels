@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.1.2.6 2008/05/27 20:21:13 sdboyer Exp $
+// $Id: term.inc,v 1.1.2.7 2008/06/03 13:18:07 pancho Exp $
 
 
 /**
@@ -52,7 +52,7 @@ function panels_context_term_settings_form($conf, $external = FALSE) {
     $form['external'] = array(
       '#type' => 'checkbox',
       '#default_value' => $conf['external'],
-      '#title' => t('Require this context from an external source (such as containing panel page)'),
+      '#title' => t('Require this context from an external source (such as a containing panel page).'),
       '#description' => t('If selected, term selection (below) will be ignored'),
     );
   }

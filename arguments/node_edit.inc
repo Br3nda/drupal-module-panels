@@ -1,5 +1,5 @@
 <?php
-// $Id: node_edit.inc,v 1.1.2.6 2008/05/27 20:21:12 sdboyer Exp $
+// $Id: node_edit.inc,v 1.1.2.7 2008/06/03 13:18:07 pancho Exp $
 
 
 /**
@@ -69,7 +69,7 @@ function panels_node_edit_settings_form($conf) {
   $form['own_default'] = array(
     '#title' => t('Use different default display'),
     '#type' => 'checkbox',
-    '#description' => t('If checked, when this argument is present it will use its own display rather than the default. Displays not selected in the "Own display" field will use this one.'),
+    '#description' => t('If checked, when this argument is present it will use its own display rather than the default. Node types not selected in the "Own display" field will use this one.'),
     '#default_value' => $conf['own_default'],
   );
 
@@ -78,7 +78,7 @@ function panels_node_edit_settings_form($conf) {
     '#type' => 'checkboxes',
     '#options' => $options,
     '#default_value' => $conf['displays'],
-    '#description' => t('Each checked type will get its own special display to layout its content. Only types set in Node types, above, should be set here. Types not set here will use the default display.'),
+    '#description' => t('Each checked node type will get its own special display to layout its content. Only node types set above should be set here. Node types not set here will use the default display.'),
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
   );
