@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.22 2008/06/03 05:53:34 pancho Exp $
+// $Id: panels_views.module,v 1.1.2.23 2008/06/03 18:46:04 pancho Exp $
 
 
 /**
@@ -1309,9 +1309,9 @@ function panels_views_save($pv) {
  * Load a view pane from the database.
  */
 function panels_views_load($name) {
-  static $panels_views = array();
+  static $panel_views = array();
 
-  if (!array_key_exists($name, $panels_views)) {
+  if (!array_key_exists($name, $panel_views)) {
     $pv = db_fetch_object(db_query("SELECT * FROM {panels_views} WHERE name = '%s'", $name));
     if (empty($pv)) {
       $defaults = panels_views_default_panels();
@@ -1322,10 +1322,10 @@ function panels_views_load($name) {
         if (isset($status[$pv->name])) {
           $pv->disabled = $status[$pv->name];
         }
-        $panels_views[$name] = $pv;
+        $panel_views[$name] = $pv;
         return $pv;
       }
-      $panels_views[$name] = NULL;
+      $panel_views[$name] = NULL;
       return;
     }
 
@@ -1335,9 +1335,9 @@ function panels_views_load($name) {
         $pv->$key = unserialize($pv->$key);
       }
     }
-    $panels_views[$name] = $pv;
+    $panel_views[$name] = $pv;
   }
-  return $panels_views[$name];
+  return $panel_views[$name];
 }
 
 /**
@@ -1346,8 +1346,8 @@ function panels_views_load($name) {
 function panels_views_load_all() {
   static $panel_views = NULL;
 
-  if (!isset($panels_views)) {
-    $panels_views = array();
+  if (!isset($panel_views)) {
+    $panel_views = array();
     $names       = panels_views_pane_fields();
     $result      = db_query("SELECT * FROM {panels_views}");
 
