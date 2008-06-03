@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.6.24 2008/05/31 01:17:57 sdboyer Exp $
+// $Id: block.inc,v 1.1.6.25 2008/06/03 01:40:31 sdboyer Exp $
 
 
 /**
@@ -83,7 +83,6 @@ function panels_content_block($conf) {
 /**
  * Return all block content types available.
  * 
- * @ingroup mainapi
  * @ingroup hook_invocations
  * 
  * Modules wanting to make special adjustments the way that panels handles their blocks
