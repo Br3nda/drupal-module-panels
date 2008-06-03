@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.52 2008/06/03 15:23:11 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.53 2008/06/03 15:59:52 sdboyer Exp $
 
 
 /*
@@ -967,7 +967,7 @@ function _panels_ajax_ct_preconfigure(&$cache, &$pane) {
   $subtype = $cc['ct_data']['subtype'] = $cache->content_types[$pane->type][$pane->subtype];
   $type = $cc['ct_data']['type'] = panels_get_content_type($pane->type);
 
-  $cc['ignore_roles'] = $type['ignore roles'];
+  $cc['ignore_roles'] = !$type['role-based access'];
 
   if (panels_plugin_get_function('content_types', $type, 'visibility control')) {
     $cc['visibility_controller'] = $type['visibility control'];
@@ -1050,7 +1050,13 @@ function panels_content_config_form($cache, $pane, $add = FALSE) {
 
   // Allows content types that define this callback to have full control over the pane config form.
   if (isset($cc['form_controller'])) {
-    call_user_func_array($cc['form_controller'], array(&$form, &$cache, $add));
+    call_user_func_array($cc['form_controller'], array(&$form, &$cache->content_config[$pane->pid], &$cache->display, $add));
+    // Only set the cache with any new vars on the render passthrough; setting
+    // it again could, depending on the changes in the plugin function, cause
+    // serious data consistency problems.
+    if (!isset($_POST['form_id'])) {
+      panels_cache_set($cache->display->did, $cache);
+    }
   }
   return $form;
 }
@@ -1086,7 +1092,9 @@ function panels_content_config_form_submit($form_id, $form_values) {
 
   if (isset($form_values['visibility'])) {
     if ($visibility_submit = panels_plugin_get_function('content_types', $cache->content_config[$pane->pid]['ct_data']['type'], 'visibility submit')) {
-      $cache->display->content[$pane->pid]->visibility = $visibility_submit($form_values['visibility']);
+      // Use call_user_func_array() in order to ensure that all these values can only be passed by value.
+      $cache->display->content[$pane->pid]->visibility = call_user_func_array($visibility_submit, 
+        array($form_values['visibility'], $add, $cache->display->content[$pane->pid], $cache->display));
     }
     else {
       // If no visibility submit callback is defined, fall back to the default storage behavior. Should be

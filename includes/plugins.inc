@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.43 2008/05/30 00:00:26 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.1.2.44 2008/06/03 15:59:52 sdboyer Exp $
 
 
 /**
@@ -142,7 +142,8 @@ class panels_optional_context extends panels_required_context {
 
 /**
  * Master pane access function; combines all the relevant parameters that
- * natively used by the Panels API to determine a pane's access.
+ * natively used by the Panels API to determine a pane's access. Called from
+ * panels_render_panes().
  *
  * @param $pane
  *   The pane object to test for access.
@@ -327,7 +328,8 @@ function panels_ct_conf_form($ct_data, $contexts, $conf) {
  *  Either 'add' or 'edit' depending on the operation being performed.
  * @param mixed $content_type
  *  This variable should only be passed if the calling function already has access to the
- *  relevant content_type data and wants to save a little on performance.
+ *  relevant content_type data and wants to save a little on performance. If so, then the
+ *  fully-loaded content type plugin declaration array should be passed.
  */
 function panels_ct_pane_config_form($pane, $contexts, $parents, $op, $content_type = 'content_types') {
   if ($function = panels_plugin_get_function($content_type, $pane->type, "$op callback")) {
@@ -400,7 +402,7 @@ function panels_ct_get_types($type) {
 }
 
 /**
- * Get a list of panels available in the layout. @layout
+ * Get a list of panels available in the layout.
  */
 function panels_get_panels($layout, $display) {
   if (!empty($layout['panels function']) && function_exists($layout['panels function'])) {
@@ -1411,7 +1413,7 @@ function _panels_process_plugin($module, $identifier, $path, $hook) {
     $result[$name]['path'] = $path;
     // Add some content type-specific defaults, but allow them to be overridden by declarations in the content type.
     if (preg_match('/content_type/', $hook)) {
-      $result[$name] = array_merge(array('single' => FALSE, 'visibility serialize' => FALSE, 'ignore roles' => FALSE), $result[$name]);
+      $result[$name] = array_merge(array('single' => FALSE, 'visibility serialize' => FALSE, 'role-based access' => TRUE), $result[$name]);
     }
   }
   return $result;
