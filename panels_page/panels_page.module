@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.52 2008/06/03 15:42:02 pancho Exp $
+// $Id: panels_page.module,v 1.1.2.53 2008/06/03 19:57:55 merlinofchaos Exp $
 
 
 /**
@@ -671,15 +671,26 @@ function panels_page_view_page($panel_page, $admin) {
   $switchers = panels_get_switchers();
   if ($switchers) {
     $list = array();
+    $candidates = array();
     $result = db_query("SELECT name FROM {panels_page} WHERE switcher_name = '%s'", $panel_page->name);
     // get a list of all pages that might switch for this one
     while ($candidate = db_fetch_object($result)) {
       $list[] = $candidate->name;
     }
+    // Add default panels that apply to the list as well
+    foreach (panels_page_default_panels() as $page) {
+      if ($page->switcher_name = $panel_page->name) {
+        $candidates[$page->name] = $page;
+      }
+    }
+
     if ($list) {
+      $candidates += (count($list) > 1) ? panels_page_load_all($list) : array(panels_page_load($list[0]));
+    }
+
+    if ($candidates) {
       // separate them based on switcher type
       $pages = array();
-      $candidates = (count($list) > 1) ? panels_page_load_all($list) : array(panels_page_load($list[0]));
       foreach ($candidates as $candidate) {
         $pages[$candidate->switcher_type][$candidate->name] = $candidate;
       }
