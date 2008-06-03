@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.50 2008/06/02 15:38:46 pancho Exp $
+// $Id: panels_page.module,v 1.1.2.51 2008/06/03 14:32:37 pancho Exp $
 
 
 /**
@@ -1105,15 +1105,22 @@ function panels_page_save($panel_page) {
 }
 
 /**
- * Delete a panel page and its associated display.
+ * Delete a panel page and its associated displays.
  */
 function panels_page_delete($panel_page) {
+  // Delete the panel page.
   db_query("DELETE FROM {panels_page} WHERE pid = %d", $panel_page->pid);
   menu_rebuild();
+
+  // Delete the primary display.
   panels_delete_display($panel_page->did);
-  foreach ($panel_page->displays as $info) {
-    if ($info['did'] !== 'new') {
-      panels_delete_display($info['did']);
+
+  // Delete all secondary displays.
+  if (!empty($panel_page->displays)) {
+    foreach ($panel_page->displays as $info) {
+      if ($info['did'] !== 'new') {
+        panels_delete_display($info['did']);
+      }
     }
   }
 }
