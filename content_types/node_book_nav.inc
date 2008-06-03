@@ -1,5 +1,5 @@
 <?php
-// $Id: node_book_nav.inc,v 1.1.2.6 2008/05/27 20:21:11 sdboyer Exp $
+// $Id: node_book_nav.inc,v 1.1.2.7 2008/06/03 01:38:06 sdboyer Exp $
 
 
 /**
@@ -13,8 +13,6 @@ function panels_node_book_nav_panels_content_types() {
       'single' => TRUE,
       'content_types' => 'panels_admin_content_types_node_book_nav',
       'render callback' => 'panels_content_node_book_nav',
-//      'add callback' => 'panels_admin_edit_node_book_nav',
-//      'edit callback' => 'panels_admin_edit_node_book_nav',
       'title callback' => 'panels_admin_title_node_book_nav',
     );
     return $items;
