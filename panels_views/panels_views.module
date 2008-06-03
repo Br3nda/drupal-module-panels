@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.21 2008/05/30 00:31:55 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.22 2008/06/03 05:53:34 pancho Exp $
 
 
 /**
@@ -1332,7 +1332,7 @@ function panels_views_load($name) {
     $names = panels_views_pane_fields();
     foreach ($names as $key => $data) {
       if (!empty($data['serialize'])) {
-        $pv->$key = unserialize($pv->$name);
+        $pv->$key = unserialize($pv->$key);
       }
     }
     $panels_views[$name] = $pv;
