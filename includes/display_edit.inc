@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.50 2008/06/02 16:39:07 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.51 2008/06/03 01:21:06 pancho Exp $
 
 
 /*
@@ -197,11 +197,11 @@ function theme_panels_edit_display($form) {
     foreach ((array) $display->panels[$panel_id] as $pid) {
       $pane = $display->content[$pid];
       $left_buttons = NULL;
-      $buttons = drupal_render($form['button'][$pid]['show_hide']);
+      $buttons = drupal_render($form['button'][$pid]['configure']);
       if (!empty($form['button'][$pid]['cache'])) {
         $buttons .= drupal_render($form['button'][$pid]['cache']);
       }
-      $buttons .= drupal_render($form['button'][$pid]['configure']);
+      $buttons .= drupal_render($form['button'][$pid]['show_hide']);
       $buttons .= drupal_render($form['button'][$pid]['delete']);
       $content[$pane->panel] .= panels_show_pane($display, $pane, $left_buttons, $buttons);
     }
@@ -1132,15 +1132,16 @@ function panels_content_config_add_form_submit($form_values, $cache, $pane) {
 
   // we need to fake the buttons a little.
   // new panes are shown by default
-  $buttons['show_hide'] = panels_add_button('icon-hidepane.png', t('Show/Hide Toggle'), t('Hide this pane'), 'pane-toggle-shown');
-  $buttons['show_hide']['#parents'] = array('button', $pane->pid, 'show_hide');
+  $buttons['configure'] = panels_add_button('icon-configure.png', t('Configure'), t('Configure this pane'), 'pane-configure');
+  $buttons['configure']['#parents'] = array('button', $pane->pid, 'configure');
 
   if (panels_get_caches() && user_access('use panels caching features')) {
     $buttons['cache'] = panels_add_button('icon-cache.png', t('Caching'), t('Control caching'), 'pane-cache');
     $buttons['cache']['#parents'] = array('button', $pane->pid, 'cache');
   }
-  $buttons['configure'] = panels_add_button('icon-configure.png', t('Configure'), t('Configure this pane'), 'pane-configure');
-  $buttons['configure']['#parents'] = array('button', $pane->pid, 'configure');
+
+  $buttons['show_hide'] = panels_add_button('icon-hidepane.png', t('Show/Hide Toggle'), t('Hide this pane'), 'pane-toggle-shown');
+  $buttons['show_hide']['#parents'] = array('button', $pane->pid, 'show_hide');
 
   $buttons['delete'] = panels_add_button('icon-delete.png', t('Delete'), t('Remove this pane'), 'pane-delete');
   $buttons['delete']['#parents'] = array('button', $pane->pid, 'delete');
