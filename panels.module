@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.106 2008/05/30 00:23:09 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.107 2008/06/04 02:32:56 sdboyer Exp $
 
 
 /**
@@ -947,11 +947,13 @@ function panels_print_layout($id, $content) {
  * @render
  */
 function panels_render_layout($layout, $content, $css_id = NULL, $settings = array()) {
-  if (file_exists(path_to_theme() . '/' . $layout['css'])) {
-    drupal_add_css(path_to_theme() . '/' . $layout['css']);
-  }
-  else {
-    drupal_add_css(panels_get_path($layout['css'], false, $layout['module']));
+  if (!empty($layout['css'])) {
+    if (file_exists(path_to_theme() . '/' . $layout['css'])) {
+      drupal_add_css(path_to_theme() . '/' . $layout['css']);
+    }
+    else {
+      drupal_add_css(panels_get_path($layout['css'], false, $layout['module']));
+    }
   }
   $display = NULL;
 
