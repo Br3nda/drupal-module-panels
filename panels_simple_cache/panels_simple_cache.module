@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_simple_cache.module,v 1.1.2.6 2008/05/27 20:21:15 sdboyer Exp $
+// $Id: panels_simple_cache.module,v 1.1.2.7 2008/06/04 12:55:15 pancho Exp $
 
 
 /**
@@ -136,30 +136,7 @@ function panels_simple_cache_get_id($conf, $display, $args, $contexts, $pane) {
 }
 
 function panels_simple_cache_settings_form($conf, $display, $pid) {
-  $options = array(
-    '15' => t('15 seconds'),
-    '30' => t('30 seconds'),
-    '60' => t('1 minute'),
-    '120' => t('2 minutes'),
-    '180' => t('3 minutes'),
-    '240' => t('4 minutes'),
-    '300' => t('5 minutes'),
-    '600' => t('10 minutes'),
-    '900' => t('15 minutes'),
-    '1200' => t('20 minutes'),
-    '1800' => t('30 minutes'),
-    '3600' => t('1 hour'),
-    '7200' => t('2 hours'),
-    '14400' => t('4 hours'),
-    '28800' => t('8 hours'),
-    '43200' => t('12 hours'),
-    '86400' => t('1 day'),
-    '172800' => t('2 days'),
-    '259200' => t('3 days'),
-    '335600' => t('4 days'),
-    '594800' => t('1 week'),
-  );
-
+  $options = drupal_map_assoc(array(15, 30, 60, 120, 180, 240, 300, 600, 900, 1200, 1800, 3600, 7200, 14400, 28800, 43200, 86400, 172800, 259200, 345600, 604800), 'format_interval');
   $form['lifetime'] = array(
     '#title' => t('Lifetime'),
     '#type' => 'select',
