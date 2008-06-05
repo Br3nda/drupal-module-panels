@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.109 2008/06/05 04:22:43 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.110 2008/06/05 23:20:23 pancho Exp $
 
 
 /**
@@ -236,7 +236,7 @@ function panels_get_path($file, $base_path = false, $module = 'panels') {
  * Implementation of hook_perm
  */
 function panels_perm() {
-  return array('view all panes', 'view pane admin links', 'administer pane visibility', 'administer advanced pane settings', 'use panels caching features');
+  return array('view all panes', 'view pane admin links', 'administer pane visibility', 'administer pane access', 'administer advanced pane settings', 'use panels caching features');
 }
 
 // ---------------------------------------------------------------------------
