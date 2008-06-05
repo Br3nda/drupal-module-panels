@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.53 2008/06/03 15:59:52 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.54 2008/06/05 04:22:44 sdboyer Exp $
 
 
 /*
@@ -1128,7 +1128,7 @@ function panels_content_config_add_form_submit($form_values, $cache, $pane) {
   $ajax_vars->region = $cache->content_config[$pane->pid]['panel_id'];
 
   $cache->display->panels[$cache->content_config[$pane->pid]['panel_id']][] = $pane->pid;
-  $cache->display->content[$pane->pid]->shown = 1;
+  $cache->display->content[$pane->pid]->shown = TRUE;
 
   // we need to fake the buttons a little.
   // new panes are shown by default

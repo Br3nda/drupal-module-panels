@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.108 2008/06/05 03:59:06 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.109 2008/06/05 04:22:43 sdboyer Exp $
 
 
 /**
@@ -692,6 +692,8 @@ function panels_load_displays($dids) {
     $pane->configuration = unserialize($pane->configuration);
     $pane->cache = empty($pane->cache) ? array() : unserialize($pane->cache);
     $pane->access = ($pane->access ? explode(', ', $pane->access) : array());
+    // Old panels may not have shown property, so enable by default when loading.    
+    $pane->shown = isset($pane->shown) ? $pane->shown : TRUE;
 
     $displays[$pane->did]->panels[$pane->panel][] = $pane->pid;
     $displays[$pane->did]->content[$pane->pid] = $pane;
@@ -783,6 +785,7 @@ function panels_save_display(&$display) {
       // doin it this way for readability
       $f = 'pid, did, panel, type, subtype, configuration, cache, shown, access, visibility, position';
       $q = "%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d";
+      $pane->shown = isset($pane->shown) ? $pane->shown : TRUE;
       $v = array($pane->pid, $display->did, $pane->panel, $pane->type, $pane->subtype, serialize($pane->configuration), serialize($pane->cache), $pane->shown, $access, $visibility, $pane->position);
       db_query("INSERT INTO {panels_pane} ($f) VALUES ($q)", $v);
       // and put it back so our pids and positions can be used
@@ -859,8 +862,12 @@ function panels_export_display($display, $prefix = '') {
     $id = 'new-' . ++$counter;
     $output .= $prefix . '$pane = new stdClass()'  . ";\n";
     $output .= $prefix . '  $pane->pid = \'' . $id . '\'' . ";\n";
-    $fields = array('panel', 'type', 'subtype', 'access', 'configuration');
+    $fields = array('panel', 'type', 'subtype', 'access', 'configuration', 'shown', 'visibility');
     foreach ($fields as $field) {
+      // Old panels may not have shown property, so enable by default when re-exporting.
+      if ($field == 'shown' && !isset($pane->shown)) {
+        $pane->shown = TRUE;
+      }
       $output .= $prefix . '  $pane->' . $field . ' = ' . panels_var_export($pane->$field, "$prefix  ") . ";\n";
     }
     $output .= $prefix . '$display->content[\'' . $id . '\'] = $pane' . ";\n";
@@ -999,6 +1006,7 @@ function panels_render_panes($display) {
   $later = array();
 
   foreach ($display->content as $pid => $pane) {
+    $pane->shown = isset($pane->shown) ? $pane->shown : TRUE;
     // TODO Really ought to design a method for creating a quick-access set of content_type (and other plugin) data to help optimize render performance
     // If the user can't see this pane, do not render it.
     if (!$pane->shown || !panels_pane_access($pane, $display)) {
