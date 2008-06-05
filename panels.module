@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.107 2008/06/04 02:32:56 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.108 2008/06/05 03:59:06 sdboyer Exp $
 
 
 /**
@@ -762,6 +762,7 @@ function panels_save_display(&$display) {
   }
 
   // update all the panes
+  panels_load_include('plugins');
   foreach ((array) $display->panels as $id => $panes) {
     $position = 0;
     $new_panes = array();
@@ -792,7 +793,6 @@ function panels_save_display(&$display) {
   }
 
   // Clear any cached content for this display.
-  panels_load_include('plugins');
   panels_clear_cached_content($display);
 
   // to be nice, even tho we have a reference.
