@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.54 2008/06/03 20:46:34 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.55 2008/06/05 03:46:22 pancho Exp $
 
 
 /**
@@ -970,36 +970,40 @@ function panels_page_load_all($names = array(), $page_size = 0) {
  */
 function panels_page_load($pid, $load_display = FALSE) {
   static $cache = array();
-  if (!array_key_exists($pid, $cache)) {
-    if (!is_numeric($pid)) {
-      $where = "name = '%s'";
-    }
-    else {
-      $where = 'pid = %d';
-    }
-    $page = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE $where", $pid));
-    if (!$page) {
-      $defaults = panels_page_default_panels();
-      if (isset($defaults[$pid])) {
-        $page = $cache[$pid] = $defaults[$pid];
-        return $page;
-      }
-      return;
-    }
 
-    $page->access = ($page->access ? explode(', ', $page->access) : array());
-    $page->arguments = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
-    $page->displays = (!empty($page->displays)) ? unserialize($page->displays) : array();
-    $page->contexts = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
-    $page->relationships = (!empty($page->relationships)) ? unserialize($page->relationships) : array();
-    $page->switcher_options = (!empty($page->switcher_options)) ? unserialize($page->switcher_options) : array();
-
-    $cache[$pid] = panels_page_sanitize($page);
-
-    if ($load_display) {
-      $cache[$pid]->display = panels_load_display($cache[$pid]->did);
-    }
+  if (array_key_exists($pid, $cache)) {
+    return $cache[$pid];
   }
+
+  if (!is_numeric($pid)) {
+    $where = "name = '%s'";
+  }
+  else {
+    $where = 'pid = %d';
+  }
+  $page = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE $where", $pid));
+  if (!$page) {
+    $defaults = panels_page_default_panels();
+    if (isset($defaults[$pid])) {
+      $page = $cache[$pid] = $defaults[$pid];
+      return $page;
+    }
+    return;
+  }
+
+  $page->access = ($page->access ? explode(', ', $page->access) : array());
+  $page->arguments = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
+  $page->displays = (!empty($page->displays)) ? unserialize($page->displays) : array();
+  $page->contexts = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
+  $page->relationships = (!empty($page->relationships)) ? unserialize($page->relationships) : array();
+  $page->switcher_options = (!empty($page->switcher_options)) ? unserialize($page->switcher_options) : array();
+
+  $cache[$pid] = panels_page_sanitize($page);
+
+  if ($load_display) {
+    $cache[$pid]->display = panels_load_display($cache[$pid]->did);
+  }
+
   return $cache[$pid];
 }
 

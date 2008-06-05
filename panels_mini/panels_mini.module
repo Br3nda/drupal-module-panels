@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.28 2008/05/29 23:32:10 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.1.2.29 2008/06/05 03:46:22 pancho Exp $
 
 
 /**
@@ -966,42 +966,45 @@ function panels_mini_sanitize($mini) {
 function panels_mini_load_all($page_size = 0) {
   static $results = array();
 
-  if (!isset($results[$page_size])) {
-    $panels = $dids = array();
-    $query = "SELECT * FROM {panels_mini}";
-    if ($page_size) {
-      $result = pager_query($query, $page_size);
+  if (array_key_exists($page_size, $results)) {
+    return $results[$page_size];
+  }
+
+  $panels = $dids = array();
+  $query = "SELECT * FROM {panels_mini}";
+  if ($page_size) {
+    $result = pager_query($query, $page_size);
+  }
+  else {
+    $result = db_query($query);
+  }
+
+  while ($mini = db_fetch_object($result)) {
+    $mini->contexts = (!empty($mini->contexts)) ? unserialize($mini->contexts) : array();
+    $mini->requiredcontexts = (!empty($mini->requiredcontexts)) ? unserialize($mini->requiredcontexts) : array();
+    $mini->relationships = (!empty($mini->relationships)) ? unserialize($mini->relationships) : array();
+
+    $mini->type = t('Local');
+    $panels[$mini->name] = panels_mini_sanitize($mini);
+  }
+
+  $status = variable_get('panel_mini_defaults', array());
+  foreach (panels_mini_default_panels() as $mini) {
+    // Determine if default panel is enabled or disabled.
+    if (isset($status[$mini->name])) {
+      $mini->disabled = $status[$mini->name];
+    }
+
+    if (!empty($panels[$mini->name])) {
+      $panels[$mini->name]->type = t('Overridden');
     }
     else {
-      $result = db_query($query);
+      $mini->type = t('Default');
+      $panels[$mini->name] = $mini;
     }
-
-    while ($mini = db_fetch_object($result)) {
-      $mini->contexts = (!empty($mini->contexts)) ? unserialize($mini->contexts) : array();
-      $mini->requiredcontexts = (!empty($mini->requiredcontexts)) ? unserialize($mini->requiredcontexts) : array();
-      $mini->relationships = (!empty($mini->relationships)) ? unserialize($mini->relationships) : array();
-
-      $mini->type = t('Local');
-      $panels[$mini->name] = panels_mini_sanitize($mini);
-    }
-
-    $status = variable_get('panel_mini_defaults', array());
-    foreach (panels_mini_default_panels() as $mini) {
-      // Determine if default panel is enabled or disabled.
-      if (isset($status[$mini->name])) {
-        $mini->disabled = $status[$mini->name];
-      }
-
-      if (!empty($panels[$mini->name])) {
-        $panels[$mini->name]->type = t('Overridden');
-      }
-      else {
-        $mini->type = t('Default');
-        $panels[$mini->name] = $mini;
-      }
-    }
-    $results[$page_size] = $panels;
   }
+  $results[$page_size] = $panels;
+
   return $results[$page_size];
 }
 
@@ -1010,37 +1013,40 @@ function panels_mini_load_all($page_size = 0) {
  */
 function panels_mini_load($pid) {
   static $cache = array();
-  if (!array_key_exists($pid, $cache)) {
-    if (!is_numeric($pid)) {
-      $where = "name = '%s'";
-    }
-    else {
-      $where = 'pid = %d';
-    }
-    $mini = db_fetch_object(db_query("SELECT * FROM {panels_mini} WHERE $where", $pid));
-    if (!$mini) {
-      $defaults = panels_mini_default_panels();
-      if (isset($defaults[$pid])) {
-        $mini = $defaults[$pid];
-        $status = variable_get('panel_mini_defaults', array());
-        // Determine if default panel is enabled or disabled.
-        if (isset($status[$mini->name])) {
-          $mini->disabled = $status[$mini->name];
-        }
-        $cache[$pid] = $mini;
-        return $mini;
-      }
-      return;
-    }
 
-    $mini->contexts = (!empty($mini->contexts)) ? unserialize($mini->contexts) : array();
-    $mini->requiredcontexts = (!empty($mini->requiredcontexts)) ? unserialize($mini->requiredcontexts) : array();
-    $mini->relationships = (!empty($mini->relationships)) ? unserialize($mini->relationships) : array();
-
-    $cache[$pid] = panels_mini_sanitize($mini);
-
-    $cache[$pid]->display = panels_load_display($cache[$pid]->did);
+  if (array_key_exists($pid, $cache)) {
+    return $cache[$pid];
   }
+
+  if (!is_numeric($pid)) {
+    $where = "name = '%s'";
+  }
+  else {
+    $where = 'pid = %d';
+  }
+  $mini = db_fetch_object(db_query("SELECT * FROM {panels_mini} WHERE $where", $pid));
+  if (!$mini) {
+    $defaults = panels_mini_default_panels();
+    if (isset($defaults[$pid])) {
+      $mini = $defaults[$pid];
+      $status = variable_get('panel_mini_defaults', array());
+      // Determine if default panel is enabled or disabled.
+      if (isset($status[$mini->name])) {
+        $mini->disabled = $status[$mini->name];
+      }
+      $cache[$pid] = $mini;
+      return $mini;
+    }
+    return;
+  }
+
+  $mini->contexts = (!empty($mini->contexts)) ? unserialize($mini->contexts) : array();
+  $mini->requiredcontexts = (!empty($mini->requiredcontexts)) ? unserialize($mini->requiredcontexts) : array();
+  $mini->relationships = (!empty($mini->relationships)) ? unserialize($mini->relationships) : array();
+
+  $cache[$pid] = panels_mini_sanitize($mini);
+  $cache[$pid]->display = panels_load_display($cache[$pid]->did);
+
   return $cache[$pid];
 }
 
