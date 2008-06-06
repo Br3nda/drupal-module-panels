@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.6.25 2008/06/03 01:40:31 sdboyer Exp $
+// $Id: block.inc,v 1.1.6.26 2008/06/06 15:32:49 pancho Exp $
 
 
 /**
@@ -50,7 +50,7 @@ function panels_content_block($conf) {
   }
 
   // Test for block visibility
-  $result = db_query("SELECT title, pages, visibility FROM {blocks} WHERE module = '%s' AND delta = %d", $block->module, $block->delta);
+  $result = db_query("SELECT title, pages, visibility FROM {blocks} WHERE module = '%s' AND delta = '%s'", $block->module, $block->delta);
   $block_visibility = db_fetch_object($result);
 
   if ($block->module == 'block') {
