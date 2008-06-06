@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.55 2008/06/05 03:46:22 pancho Exp $
+// $Id: panels_page.module,v 1.1.2.56 2008/06/06 16:45:10 sdboyer Exp $
 
 
 /**
@@ -824,7 +824,7 @@ function panels_page_fetch_display(&$panel_page, $id = NULL) {
   }
   else {
     // Otherwise, fetch from our alternative displays.
-    $display = _panels_page_fetch_display($panel_page, $id);
+    $panel_page->display = $display = _panels_page_fetch_display($panel_page, $id);
   }
 
   $display->owner = $panel_page;
