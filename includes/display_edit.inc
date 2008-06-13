@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.54 2008/06/05 04:22:44 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.55 2008/06/13 22:34:00 sdboyer Exp $
 
 
 /*
@@ -639,7 +639,11 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
     $block = _panels_render_preview_pane_disabled($pane, $display->context);
   }
 
-  $output = theme('panels_pane_dnd', $block, $pane->pid, empty($content_type) ? panels_get_pane_title($pane, $display->context) : $block->title, $left_buttons, $buttons);
+  // This is just used for the title bar of the pane, not the content itself.
+  // If we know the content type, use the appropriate title for that type,
+  // otherwise, set the title using the content itself.
+  $title = !empty($content_type) ? panels_get_pane_title($pane, $display->context) : $block->title;
+  $output = theme('panels_pane_dnd', $block, $pane->pid, $title, $left_buttons, $buttons);
   if ($skin) {
     $class = 'panel-pane' . ($pane->shown ? '' : ' hidden-pane');
     $output = '<div class="' . $class . '" id="panel-pane-' . $pane->pid . '">' . $output . '</div>';
