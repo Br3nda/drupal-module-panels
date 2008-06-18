@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.55 2008/06/13 22:34:00 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.56 2008/06/18 02:25:48 pancho Exp $
 
 
 /*
@@ -799,7 +799,7 @@ function panels_add_content($cache, $panel_id) {
       $count = count($titles[$category]) + 3;
       // Determine which column to use by seeing which column has the most
       // free space. This algorithm favors left.
-      foreach (range($columns, 2, -1) as $column) {
+      foreach (range($columns, 2) as $column) {
         if ($size[$column - 1] - $size[$column] > $count / 2) {
           $which = $column;
           break;
