@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.110 2008/06/05 23:20:23 pancho Exp $
+// $Id: panels.module,v 1.10.4.111 2008/07/07 21:22:51 merlinofchaos Exp $
 
 
 /**
@@ -560,7 +560,7 @@ class panels_display {
   var $context = array();
   var $title = '';
   var $hide_title = 0;
-  
+
   function add_pane($pane, $location = FALSE) {
     $pane->pid = $this->next_new_pid();
     if (!$location || !isset($this->panels[$location])) {
@@ -680,7 +680,7 @@ function panels_load_displays($dids) {
 
     $displays[$display->did] = $display;
   }
-  
+
   foreach (module_implements('panels_layout_content_alter') as $module) {
     $function = $module . '_panels_layout_content_alter';
     $function($content, $layout, $settings);
@@ -692,7 +692,7 @@ function panels_load_displays($dids) {
     $pane->configuration = unserialize($pane->configuration);
     $pane->cache = empty($pane->cache) ? array() : unserialize($pane->cache);
     $pane->access = ($pane->access ? explode(', ', $pane->access) : array());
-    // Old panels may not have shown property, so enable by default when loading.    
+    // Old panels may not have shown property, so enable by default when loading.
     $pane->shown = isset($pane->shown) ? $pane->shown : TRUE;
 
     $displays[$pane->did]->panels[$pane->panel][] = $pane->pid;
@@ -1021,11 +1021,11 @@ function panels_render_panes($display) {
       continue;
     }
 
-    $panes[$pid] = panels_render_pane($display, $pane);
+    $panes[$pid] = panels_render_pane_content($display, $pane);
   }
 
   foreach ($later as $pid => $pane) {
-    $panes[$pid] = panels_render_pane($display, $pane);
+    $panes[$pid] = panels_render_pane_content($display, $pane);
   }
 
   // Loop through all panels, put all panes that belong to the current panel
@@ -1049,7 +1049,7 @@ function panels_render_panes($display) {
  * Render a single pane, identifying its context, and put it into
  * the $panes array.
  */
-function panels_render_pane(&$display, &$pane) {
+function panels_render_pane_content(&$display, &$pane) {
   if (empty($pane->context)) {
     $pane->context = panels_pane_select_context($pane, $display->context);
     if ($pane->context === FALSE) {
@@ -1103,6 +1103,20 @@ function panels_render_pane(&$display, &$pane) {
       $url['absolute'], TRUE);
   }
   return $content;
+}
+
+/**
+ * Render a pane using the appropriate style.
+ *
+ * $content
+ *   The already rendered content via panels_render_pane_content()
+ * $pane
+ *   The $pane information from the display
+ * $display
+ *   The display.
+ */
+function panels_render_pane($content, $pane, $display) {
+  return theme('panels_pane', $content, $pane, $display);
 }
 
 /**

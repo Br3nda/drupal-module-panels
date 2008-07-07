@@ -1,5 +1,5 @@
 <?php
-// $Id: list.inc,v 1.1.2.7 2008/05/27 20:21:13 sdboyer Exp $
+// $Id: list.inc,v 1.1.2.8 2008/07/07 21:22:51 merlinofchaos Exp $
 
 
 /**
@@ -39,7 +39,7 @@ function theme_panels_list_style_render_panel($display, $panel_id, $panes, $sett
   $items = array();
 
   foreach ($panes as $pane_id => $content) {
-    $items[] = theme('panels_pane', $content, $display->content[$pane_id], $display);
+    $items[] = panels_render_pane($content, $display->content[$pane_id], $display);
   }
   return theme('item_list', $items, NULL, $settings['list_type']);
 }

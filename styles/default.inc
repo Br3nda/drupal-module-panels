@@ -1,5 +1,5 @@
 <?php
-// $Id: default.inc,v 1.1.2.5 2008/05/27 20:21:13 sdboyer Exp $
+// $Id: default.inc,v 1.1.2.6 2008/07/07 21:22:51 merlinofchaos Exp $
 
 
 /**
@@ -42,7 +42,7 @@ function theme_panels_default_style_render_panel($display, $panel_id, $panes, $s
     if ($print_separator) {
       $output .= '<div class="panel-separator"></div>';
     }
-    $output .= $text = theme('panels_pane', $content, $display->content[$pane_id], $display);
+    $output .= $text = panels_render_pane($content, $display->content[$pane_id], $display);
 
     // If we displayed a pane, this will become true; if not, it will become
     // false.
