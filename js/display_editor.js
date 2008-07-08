@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.38 2008/07/08 01:48:19 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.39 2008/07/08 20:27:52 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -70,7 +70,7 @@ Drupal.Panels.bindClickToggleShown = function (o) {
     });
     return false;
   });
-}
+};
 
 /** Configure pane button */
 Drupal.Panels.bindClickConfigure = function (o) {
