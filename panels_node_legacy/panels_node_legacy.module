@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node_legacy.module,v 1.1.2.10 2008/06/03 01:38:06 sdboyer Exp $
+// $Id: panels_node_legacy.module,v 1.1.2.11 2008/07/08 06:35:38 sdboyer Exp $
 
 
 /**
@@ -32,7 +32,8 @@ function panels_node_legacy_menu($may_cache) {
  */
 function panels_node_legacy_admin() {
   $output = '<p>';
-  $output .= t('Panels legacy nodes does not have a normal administrative UI, such as panels pages or mini panels. With this module, users may add a node directly to a panel via the add content interface. They may then select this node using an auto-complete field. In general, this method of adding nodes to panes should be considered deprecated and is only retained to support updating sites that use this older method. Moving forward, it is recommended that the context system be used to embed nodes, as that is far more powerful and interesting.');
+  $output .= t('Panels legacy nodes does not have a normal administrative UI, such as panels pages or mini panels. With this module, users may add a node directly to a panel via the add content interface. They may then select this node using an auto-complete field. In general, this method of adding nodes to panes should be considered deprecated (especially by module developers implementing the Panels API) and is only retained to support updating sites that use this older method. Moving forward, it is recommended that the context system be used to embed nodes, as that is far more powerful and interesting.');
+  $output .= t('However, certain modules which make use of Panels are dependent on this method of getting node context (often without the developer even being aware of it), so it is important to emphasize that you CAN leave this module enabled without negatively impacting your site.');
   $output .= '</p>';
   return $output;
 }
