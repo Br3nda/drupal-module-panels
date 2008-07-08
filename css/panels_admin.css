@@ -1,4 +1,4 @@
-/* $Id: panels_admin.css,v 1.1.2.21 2008/05/25 17:10:14 sdboyer Exp $ */
+/* $Id: panels_admin.css,v 1.1.2.22 2008/07/08 18:46:17 merlinofchaos Exp $ */
 
 .layout-link {
   float: left; 
@@ -22,18 +22,19 @@
 .layout-container,
 .right-container {
   float: right;
-  padding: 0 0 0 1em;
+  padding: 0 0 0 .5em;
   margin: 0;
-  width: 49%;
+  width: 48.5%;
 }
 
 .info-container,
 .left-container {
-  padding-right: 1em;
-  width: 49%;
+  padding-right: .5em;
+  width: 48.5%;
 }
 
 .right-container fieldset,
+.left-container fieldset,
 .layout-container fieldset {
   margin-top: 0;
 }
