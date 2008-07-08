@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.24 2008/06/05 03:46:21 pancho Exp $
+// $Id: panels_views.module,v 1.1.2.25 2008/07/08 06:42:07 sdboyer Exp $
 
 
 /**
@@ -826,6 +826,10 @@ function panels_views_render($conf, $panel_args, &$contexts) {
 
   $stored_feeds = drupal_add_feed();
   $block->content = views_build_view($pv->view_type, $view, $args, $pager_id, $nodes_per_page, 0, $offset);
+
+  if ($view->num_rows < $nodes_per_page) {
+    unset($block->more);
+  }
 
   if (($pv->allow_feed_icons && !empty($conf['feed_icons'])) ||
       (!$pv->allow_feed_icons && $pv->feed_icons)) {
