@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.111 2008/07/07 21:22:51 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.112 2008/07/08 00:25:43 merlinofchaos Exp $
 
 
 /**
@@ -1116,6 +1116,20 @@ function panels_render_pane_content(&$display, &$pane) {
  *   The display.
  */
 function panels_render_pane($content, $pane, $display) {
+  if (!empty($pane->configuration['style'])) {
+    $style = panels_get_style($pane->configuration['style']);
+
+    if (isset($style)) {
+      $output = theme($style['render pane'], $content, $pane, $display);
+
+      // This could be null if no theme function existed.
+      if (isset($output)) {
+        return $output;
+      }
+    }
+  }
+
+  // fallback
   return theme('panels_pane', $content, $pane, $display);
 }
 

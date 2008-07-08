@@ -1,12 +1,10 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.6 2008/07/07 21:22:51 merlinofchaos Exp $
-
+// $Id: rounded_corners.inc,v 1.1.2.7 2008/07/08 00:25:43 merlinofchaos Exp $
 
 /**
  * @file styles/rounded_corners.inc
  * Definition of the 'rounded_corners' panel style.
  */
-
 
 // ---------------------------------------------------------------------------
 // Panels hooks.
@@ -20,11 +18,11 @@ function panels_rounded_corners_panels_styles() {
       'title' => t('Rounded corners'),
       'description' => t('Presents the panes or panels with a rounded corner box around them'),
       'render panel' => 'panels_rounded_corners_style_render_panel',
+      'render pane' => 'panels_rounded_corners_style_render_pane',
       'settings form' => 'panels_rounded_corners_style_settings_form',
     ),
   );
 }
-
 
 // ---------------------------------------------------------------------------
 // Panels style plugin callbacks.
@@ -61,12 +59,26 @@ function theme_panels_rounded_corners_style_render_panel($display, $panel_id, $p
     $output = theme('rounded_corners_box', $output);
   }
 
+  panels_add_rounded_corners_css($display, $where);
+
+  return $output;
+}
+
+function panels_add_rounded_corners_css($display, $where) {
   static $displays_used = array();
   if (empty($displays_used[$display->name])) {
     theme('rounded_corners_css', $display, $where);
     $displays_used[$display->name] = TRUE;
   }
+}
 
+/**
+ * Render callback for a single pane.
+ */
+function theme_panels_rounded_corners_style_render_pane($content, $pane, $display) {
+  // Just stick a box around the standard theme_panels_pane.
+  $output = theme('rounded_corners_box', theme('panels_pane', $content, $pane, $display));
+  panels_add_rounded_corners_css($display, 'pane');
   return $output;
 }
 

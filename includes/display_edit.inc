@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.56 2008/06/18 02:25:48 pancho Exp $
+// $Id: display_edit.inc,v 1.1.2.57 2008/07/08 00:25:43 merlinofchaos Exp $
 
 
 /*
@@ -740,7 +740,7 @@ function panels_add_content($cache, $panel_id) {
       foreach ($subtypes as $subtype_name => $subtype_info) {
         $title = filter_xss_admin($subtype_info['title']);
         $description = isset($subtype_info['description']) ? $subtype_info['description'] : $title;
-        
+
         if (isset($subtype_info['icon'])) {
           $icon = $subtype_info['icon'];
           $path = isset($subtype_info['path']) ? $subtype_info['path'] : panels_get_path("content_types/$type_name");
@@ -765,7 +765,7 @@ function panels_add_content($cache, $panel_id) {
         else {
           $category = t('Contrib modules');
         }
-        
+
         $output = '<div class="content-type-button clear-block">';
         $link_text = theme('image', $path . '/' . $icon, $description, $description);
         $output .= l($link_text, 'javascript: void()', array('class' => 'panels-modal-add-config', 'id' => $type_name . '-' . $panel_id . '-' . $subtype_name), NULL, NULL, NULL, TRUE);
@@ -1097,7 +1097,7 @@ function panels_content_config_form_submit($form_id, $form_values) {
   if (isset($form_values['visibility'])) {
     if ($visibility_submit = panels_plugin_get_function('content_types', $cache->content_config[$pane->pid]['ct_data']['type'], 'visibility submit')) {
       // Use call_user_func_array() in order to ensure that all these values can only be passed by value.
-      $cache->display->content[$pane->pid]->visibility = call_user_func_array($visibility_submit, 
+      $cache->display->content[$pane->pid]->visibility = call_user_func_array($visibility_submit,
         array($form_values['visibility'], $add, $cache->display->content[$pane->pid], $cache->display));
     }
     else {
@@ -1383,7 +1383,7 @@ function panels_panel_settings($display) {
   // panels implementation or specifically to this one.
   $options = array();
   foreach (panels_get_styles() as $name => $properties) {
-    if (empty($properties['hidden'])) {
+    if (empty($properties['hidden']) && (!empty($properties['render panel']))) {
       $options[$name] = $properties['title'];
     }
   }

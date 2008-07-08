@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.44 2008/06/03 15:59:52 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.45 2008/07/08 00:25:43 merlinofchaos Exp $
 
 
 /**
@@ -258,6 +258,28 @@ function panels_ct_conf_form($ct_data, $contexts, $conf) {
 
   if (!empty($subtype['required context']) && is_array($contexts)) {
     $form['context'] = panels_context_selector($contexts, $subtype['required context'], isset($conf['context']) ? $conf['context'] : array());
+  }
+
+  $style_options = array('default' => t('Default'));
+  foreach (panels_get_styles() as $name => $properties) {
+    if (empty($properties['hidden']) && (!empty($properties['render pane']))) {
+      $style_options[$name] = $properties['title'];
+    }
+  }
+
+  asort($style_options);
+
+  if (empty($conf['style'])) {
+    $conf['style'] = 'default';
+  }
+
+  if ($style_options) {
+    $form['style'] = array(
+      '#type' => 'select',
+      '#title' => t('Pane style'),
+      '#default_value' => $conf['style'],
+      '#options' => $style_options,
+    );
   }
 
   // Unless we're not allowed to overide the title on this content type, add this
