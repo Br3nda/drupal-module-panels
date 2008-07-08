@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.37 2008/07/08 01:27:43 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.38 2008/07/08 01:48:19 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -476,7 +476,9 @@ Drupal.Panels.DraggableHandler = function() {
       'padding-bottom': 0,
       'padding-top': 0,
       'padding-left': 0,
-      'padding-right': 0
+      'padding-right': 0,
+      'left': 0,
+      'top': 0
     })
       .insertAfter($(draggable.main));
     var newPos = $(draggable.object).offset();
