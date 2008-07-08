@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.30 2008/07/05 17:49:29 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.31 2008/07/08 06:52:05 sdboyer Exp $
 
 /**
  * @file panels_mini.module
@@ -223,7 +223,17 @@ function panels_mini_list_page() {
     t('Operations'),
   );
 
-  foreach (panels_mini_load_all() as $panel_mini) {
+  // Load all mini panels and their displays. 
+  $panel_minis = panels_mini_load_all();
+  $dids = array();
+  foreach ($panel_minis as $panel_mini) {
+    if (empty($panel_mini->display)) {
+      $dids[] = $panel_mini->did;
+    }
+  }
+  $displays = panels_load_displays($dids);
+
+  foreach ($panel_minis as $panel_mini) {
     $ops = array();
     if (empty($panel_mini->disabled)) {
       $ops[] = l(t('Edit'), "admin/panels/panel-mini/$panel_mini->name/edit/general");
@@ -249,7 +259,7 @@ function panels_mini_list_page() {
     $item[] = $panel_mini->type;
 
     if (empty($panel_mini->display)) {
-      $panel_mini->display = panels_load_display($panel_mini->did);
+      $panel_mini->display = $displays[$panel_mini->did];
     }
 
     $item[] = check_plain($layouts[$panel_mini->display->layout]['title']);

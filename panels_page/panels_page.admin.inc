@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.47 2008/05/29 23:17:57 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.48 2008/07/08 06:52:05 sdboyer Exp $
 
 
 /**
@@ -25,7 +25,17 @@ function panels_page_list_page() {
     t('Operations'),
   );
 
-  foreach (panels_page_load_all() as $panel_page) {
+  // Load all panel pages and their primary displays. 
+  $panel_pages = panels_page_load_all();
+  $dids = array();
+  foreach ($panel_pages as $panel_page) {
+    if (empty($panel_page->display)) {
+      $dids[] = $panel_page->did;
+    }
+  }
+  $displays = panels_load_displays($dids);
+
+  foreach ($panel_pages as $panel_page) {
     $ops = array();
     if (empty($panel_page->disabled)) {
       $ops[] = l(t('Edit'), "admin/panels/panel-page/$panel_page->name/edit/general");
@@ -51,9 +61,10 @@ function panels_page_list_page() {
     // this is safe as it's always programmatic
     $item[] = $panel_page->type;
 
-    $display = panels_page_fetch_display($panel_page);
-
-    $item[] = check_plain($layouts[$display->layout]['title']);
+    if (empty($panel_page->display)) {
+      $panel_page->display = $displays[$panel_page->did];
+    }
+    $item[] = check_plain($layouts[$panel_page->display->layout]['title']);
     $item[] = $path;
     $item[] = implode(' | ', $ops);
     $items[] = $item;
