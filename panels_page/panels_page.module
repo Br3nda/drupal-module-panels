@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.56 2008/06/06 16:45:10 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.57 2008/07/08 06:22:10 sdboyer Exp $
 
 
 /**
@@ -518,7 +518,7 @@ function _panels_page_get_title($panel_page, $context, $default_title) {
   if ($panel_page->did == $panel_page->display->did || $panel_page->display->did == 'new') {
     return !empty($panel_page->display->title) ? $panel_page->display->title : $panel_page->title;
   }
-  elseif (isset($panel_page->display->title)) {
+  elseif (isset($panel_page->display->title && !empty($panel_page->display->title))) {
     return $panel_page->display->title;
   }
 
