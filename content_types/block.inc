@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.6.26 2008/06/06 15:32:49 pancho Exp $
+// $Id: block.inc,v 1.1.6.27 2008/07/09 21:58:39 merlinofchaos Exp $
 
 
 /**
@@ -214,7 +214,7 @@ function panels_admin_title_block($conf) {
 }
 
 function panels_default_block_info($module, $delta, &$info) {
-  $core_modules = array('aggregator', 'book', 'CVS', 'help', 'node', 'profile', 'taxonomy', 'user', 'block', 'color', 'drupal', 'legacy', 'path', 'search', 'throttle', 'watchdog', 'blog', 'comment', 'filter', 'locale', 'ping', 'statistics', 'tracker', 'blogapi', 'contact', 'forum', 'menu', 'poll', 'system', 'upload');
+  $core_modules = array('aggregator', 'block', 'blog', 'blogapi', 'book', 'color', 'comment', 'contact', 'drupal', 'filter', 'forum', 'help', 'legacy', 'locale', 'menu', 'node', 'path', 'ping', 'poll', 'profile', 'search', 'statistics', 'taxonomy', 'throttle', 'tracker', 'upload', 'user', 'watchdog', 'system');
 
   if (in_array($module, $core_modules)) {
     $info['icon'] = 'icon_core_block.png';
@@ -222,7 +222,7 @@ function panels_default_block_info($module, $delta, &$info) {
   }
   else {
     $info['icon'] = 'icon_contrib_block.png';
-    $info['category'] = t('Contributed modules');
+    $info['category'] = t('Contributed blocks');
   }
 }
 
