@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.25 2008/07/08 06:42:07 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.26 2008/07/09 22:43:59 merlinofchaos Exp $
 
 
 /**
@@ -14,8 +14,10 @@
  * Implementation of hook_menu().
  */
 function panels_views_menu($may_cache) {
-  $access = user_access('administer panel views');
+  $items = array();
+
   if ($may_cache) {
+    $access = user_access('administer panel views');
     $items[] = array(
       'path' => 'admin/panels/views',
       'title' => t('Views panes'),
@@ -83,8 +85,9 @@ function panels_views_menu($may_cache) {
       'weight' => -1,
       'type' => MENU_CALLBACK,
     );
-    return $items;
   }
+
+  return $items;
 }
 
 /**
