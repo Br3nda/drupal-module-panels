@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.28 2008/07/09 21:33:57 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.29 2008/07/09 22:12:17 merlinofchaos Exp $
 
 
 /**
@@ -674,8 +674,6 @@ function _panels_common_context_js($name, $module, $type) {
     'order' => "input#$type-order",
     'up' => "input.$type-up",
     'down' => "input.$type-down",
-    'top' => "input.$type-top",
-    'bottom' => "input.$type-bottom",
     'configure' => "input.$type-settings",
     'configure_path' => url("panels/common/ajax/edit/$module/$type/$name", NULL, NULL, TRUE),
 
@@ -774,12 +772,6 @@ function panels_common_add_item_to_form($type, &$form, $position, $item) {
   $type_info = panels_common_context_info($type);
 
   if (!empty($type_info['sortable'])) {
-    $form['top'] = panels_add_button('go-top.png', t('Top'),
-      t('Move this item to the top of the list'),
-      $type . '-top',
-      $type . '-top-' . $position
-    );
-
     $form['up'] = panels_add_button('go-up.png', t('Up'),
       t('Move this item up'),
       $type . '-up',
@@ -791,21 +783,15 @@ function panels_common_add_item_to_form($type, &$form, $position, $item) {
       $type . '-down',
       $type . '-down-' . $position
     );
-
-    $form['bottom'] = panels_add_button('go-bottom.png', t('Bottom'),
-      t('Move this item to the bottom of the list'),
-      $type . '-bottom',
-      $type . '-bottom-' . $position
-    );
   }
 
-  $form['remove'] = panels_add_button('delete.png', t('Remove'),
+  $form['remove'] = panels_add_button('icon-delete.png', t('Remove'),
     t('Remove this item'),
     $type . '-remove',
     $type . '-remove-' . $position
   );
 
-  $form['settings'] = panels_add_button('configure.gif', t('Configure'),
+  $form['settings'] = panels_add_button('icon-configure.png', t('Configure'),
     t('Configure this item'),
     $type . '-settings',
     $type . '-settings-' . $position
@@ -817,19 +803,13 @@ function panels_common_add_item_to_form($type, &$form, $position, $item) {
  */
 function theme_panels_common_context_item_row($type, $form, $position, $count, $with_tr = TRUE) {
   $output = '<td class="title">&nbsp;' . drupal_render($form['title']) . '</td>';
-
-  $arrows = '';
+  $output .= '<td class="operation">' . drupal_render($form['settings']);
   $type_info = panels_common_context_info($type);
   if (!empty($type_info['sortable'])) {
-    $arrows = drupal_render($form['up']) .
-              drupal_render($form['down']) .
-              drupal_render($form['top']) .
-              drupal_render($form['bottom']);
+    $output .= drupal_render($form['up']) . drupal_render($form['down']);
   }
+  $output .= drupal_render($form['remove']) . '</td>';
 
-  $output .= '<td class="operation">' . drupal_render($form['settings']) .
-    $arrows . drupal_render($form['remove']) .
-  '</td>';
   if ($with_tr) {
     $output = '<tr id="' . $type . '-row-' . $position . '" class="' . $type . '-row ' . ($count % 2 ? 'even' : 'odd') . '">' . $output . '</tr>';
   }

@@ -1,4 +1,4 @@
-// $Id: list.js,v 1.1.2.13 2008/05/27 19:25:57 sdboyer Exp $
+// $Id: list.js,v 1.1.2.14 2008/07/09 22:12:18 merlinofchaos Exp $
 
 /**
  * List object
@@ -8,8 +8,6 @@
  * container
  * up
  * down
- * top
- * bottom: 
  * delete: input image
  * order: input hidden
  * add: input to add items
@@ -24,18 +22,6 @@ Drupal.list = function(base, settings) {
 
   var max = function(array) {
     return Math.max.apply(Math, array);
-  };
-
-  var array_rand = function(array) {
-    var i = array.length;
-    if (i == 0) return false;
-    while (--i) {
-       var j = Math.floor(Math.random() * ( i + 1 ));
-       var tempi = array[i];
-       var tempj = array[j];
-       array[i] = tempj;
-       array[j] = tempi;
-     }
   };
 
   this.settings = settings;
@@ -101,21 +87,11 @@ Drupal.list = function(base, settings) {
       case 'delete':
         order.splice(index, 1);
         break;
-      case 'top':
-        var temp = order[index];
-        order.splice(index, 1);
-        order.unshift(temp);
-        break;
       case 'up':
         swap(order, index, index - 1);
         break;
       case 'down':
         swap(order, index, index + 1);
-        break;
-      case 'bottom':
-        var temp = order[index];
-        order.splice(index, 1);
-        order.push(temp);
         break;
     }
     
@@ -174,28 +150,6 @@ Drupal.list = function(base, settings) {
         });
     }
 
-    if (settings.shuffle) {
-      $(settings.shuffle + ':not(.list-processed)')
-        .addClass('list-processed')
-        .click(function() { return false; })
-        .click(function(e) {
-          // randomize the order
-          var order = $(settings.order).val().split(',');
-          array_rand(order);
-          saveOrder(order);
-
-          // Go through the new order and move each item to the bottom.
-          // Then everything will be where it was meant to be.
-          var last = $(settings.row_class + ':last');
-          for (var i in order) {
-            var item = $('#' + settings.tr + order[i]);
-            last.after(item);
-            last = item;
-          }
-          restripeTable('#' + base);
-        });
-    }
-
     if (settings.up) {
       $(settings.up + ':not(.list-processed)')
         .addClass('list-processed')
@@ -210,23 +164,6 @@ Drupal.list = function(base, settings) {
             changed(item);
             changeOrder(this, 'up');
           }
-
-          return false;
-        });
-    }
-
-    if (settings.top) {
-      $(settings.top + ':not(.list-processed)')
-        .addClass('list-processed')
-        .click(function() { return false; })
-        .click(function(e) {
-          var item = $(this).parents(settings.container);
-          var first = $(item).siblings(':first');
-
-          first.before(item);
-          restripeTable('#' + base);
-          changed(item);
-          changeOrder(this, 'top');
 
           return false;
         });
@@ -247,24 +184,6 @@ Drupal.list = function(base, settings) {
             changed(item);
             changeOrder(this, 'down');
           }
-
-          return false;
-        });
-    }
-
-    if (settings.bottom) {
-      $(settings.bottom + ':not(.list-processed)')
-        .addClass('list-processed')
-        .click(function() { return false; })
-        .click(function(e) {
-          var item = $(this).parents(settings.container);
-          var last = $(item).siblings(':last');
-          
-          // move item
-          last.after(item);
-          restripeTable('#' + base);
-          changed(item);
-          changeOrder(this, 'bottom');
 
           return false;
         });
