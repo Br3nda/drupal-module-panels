@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.58 2008/07/08 07:01:04 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.59 2008/07/09 21:57:35 merlinofchaos Exp $
 
 
 /**
@@ -181,43 +181,52 @@ function panels_page_menu($may_cache) {
       }
       if (strpos($panel_page->path, '%') !== FALSE) {
         $path = explode('/', $panel_page->path);
-        $match = TRUE;
+        
+        // First pass:
+        // Check if the current path sufficiently matches $panel_page->path,
+        // which means: all fixed parts that come before the last %-wildcard
+        // need to match, while trailing fixed parts don't matter.  
+        // We start with the last part and take up checking after reaching a %.  
+        $check = FALSE;
+        foreach (array_reverse($path, TRUE) as $id => $chunk) {
+          if ($chunk == '%') {
+            $check = TRUE;
+            continue;
+          }
+          if ($check && $chunk != arg($id)) {
+            // Skip outer foreach loop to continue with the next $panel_page.
+            continue 2;
+          }
+        }
+
+        $args = array($panel_page, FALSE);
+
+        // Second pass:
+        $argument = reset($panel_page->arguments); // Get first argument.
         foreach ($path as $id => $chunk) {
-          if ($chunk != '%' && $chunk != arg($id)) {
-            $match = FALSE;
-            break;
+          if ($chunk != '%') {
+            continue;
           }
-        }
-        // It's a MATCH! Construct the URL
-        if ($match) {
-          $args = array($panel_page, FALSE);
-          reset($panel_page->arguments);
-          foreach ($path as $id => $chunk) {
-            if ($chunk != '%') {
-              continue;
+          // For arguments that are embedded in the URL, we require the
+          // argument handler to return a context, if there is an argument handler.
+          if ($argument) {
+            // Try to avoid loading the plugins code unless necessary.
+            if (!$plugins_loaded) {
+              panels_load_include('plugins');
+              $plugins_loaded = TRUE;
             }
-            // For arguments that are embedded in the URL, we require the
-            // argument handler to return a context, if there is an argument handler.
-            $argument = current($panel_page->arguments);
-            if ($argument) {
-              // Try to avoid loading the plugins code unless necessary.
-              if (!$plugins_loaded) {
-                panels_load_include('plugins');
-                $plugins_loaded = TRUE;
-              }
-              $context = panels_argument_get_context($argument, arg($id));
-              if (!$context) {
-                break;
-              }
-              $panel_page->context[panels_argument_context_id($argument)] = $context;
+            $context = panels_argument_get_context($argument, arg($id));
+            if (!$context) {
+              break;
             }
-            $path[$id] = arg($id);
-            $args[] = arg($id);
-            next($panel_page->arguments);
+            $panel_page->context[panels_argument_context_id($argument)] = $context;
           }
-          _panels_page_create_menu_item($items, $panel_page, implode('/', $path), $args);
-          // DEBUG: Above is now creating only the basic menu item, not the admin items.
+          $path[$id] = arg($id);
+          $args[] = arg($id);
+          $argument = next($panel_page->arguments); // Get next argument.
         }
+        _panels_page_create_menu_item($items, $panel_page, implode('/', $path), $args);
+        // DEBUG: Above is now creating only the basic menu item, not the admin items.
       }
     }
   }
