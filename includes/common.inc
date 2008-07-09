@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.27 2008/05/27 20:21:13 sdboyer Exp $
+// $Id: common.inc,v 1.1.2.28 2008/07/09 21:33:57 merlinofchaos Exp $
 
 
 /**
@@ -1109,7 +1109,7 @@ function panels_common_edit_context_form($object, $context, $position, $contexts
   $form['context']['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
-    '#description' => t('Enter a title to identify this context on administrative screens.'),
+    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' =>t('context'))),
     '#default_value' => $ctext['identifier'],
   );
 
@@ -1204,7 +1204,7 @@ function panels_common_edit_requiredcontext_form($object, $context, $position, $
   $form['requiredcontext']['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
-    '#description' => t('Enter a title to identify this context on administrative screens.'),
+    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' =>t('required context'))),
     '#default_value' => $ctext['identifier'],
   );
 
@@ -1273,7 +1273,7 @@ function panels_common_edit_relationship_form($panel_page, $relationship, $posit
   $form['relationship']['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
-    '#description' => t('Enter a title to identify this relationship on administrative screens.'),
+    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' =>t('relationship'))),
     '#default_value' => $rel['identifier'],
   );
 
@@ -1386,7 +1386,7 @@ function panels_common_edit_argument_form($panel_page, $argument, $position) {
   $form['argument']['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
-    '#description' => t('Enter a title to identify this relationship on administrative screens.'),
+    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' =>t('argument'))),
     '#default_value' => $arg['identifier'],
   );
 
