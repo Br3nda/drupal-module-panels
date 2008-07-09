@@ -1,5 +1,5 @@
 <?php
-// $Id: term_description.inc,v 1.1.2.9 2008/05/27 20:21:11 sdboyer Exp $
+// $Id: term_description.inc,v 1.1.2.10 2008/07/09 21:00:10 merlinofchaos Exp $
 
 
 /**
@@ -30,7 +30,7 @@ function panels_content_term_description($conf, $panel_args, $context) {
 
   $block->subject = $term->name;
   if ($term) {
-    $block->content = filter_xss_admin($term->description);
+    $block->content = _filter_autop(filter_xss_admin($term->description));
     $block->delta = $term->tid;
 
     if (user_access('administer taxonomy')) {
