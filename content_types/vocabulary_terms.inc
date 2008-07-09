@@ -1,5 +1,5 @@
 <?php
-// $Id: vocabulary_terms.inc,v 1.1.2.4 2008/05/27 20:21:11 sdboyer Exp $
+// $Id: vocabulary_terms.inc,v 1.1.2.5 2008/07/09 22:56:21 merlinofchaos Exp $
 
 
 /**
@@ -21,8 +21,8 @@ function panels_vocabulary_terms_panels_content_types() {
 }
 
 /**
- * Output function for the 'node' content type. Outputs a node
- * based on the module and delta supplied in the configuration.
+ * Output function for the 'vocabulary terms' content type. Outputs a
+ * list of terms for the input vocabulary.
  */
 function panels_content_vocabulary_terms($conf, $panel_args, $context) {
   $vocab = isset($context->data) ? drupal_clone($context->data) : NULL;
@@ -36,7 +36,7 @@ function panels_content_vocabulary_terms($conf, $panel_args, $context) {
     $output = theme('item_list', $items);
   }
   else {
-    $output = theme('item_list', _panels_content_vocabulary_terms(0, $max_depth));
+    $output = theme('item_list', _panels_content_vocabulary_terms($vocab->vid, $max_depth));
   }
 
   $block = new stdClass();
@@ -48,17 +48,17 @@ function panels_content_vocabulary_terms($conf, $panel_args, $context) {
   return $block;
 }
 
-function _panels_content_vocabulary_terms($tid, $max_depth, $depth = -1) {
+function _panels_content_vocabulary_terms($vid, $max_depth, $depth = -1, $tid = 0) {
   $depth++;
   if ($max_depth != NULL && $depth == $max_depth) {
     return array();
   }
   $return = array();
-  $query = db_query('SELECT t.name, t.tid FROM {term_data} t INNER JOIN {term_hierarchy} h ON t.tid = h.tid WHERE h.parent = %d', $tid);
+  $query = db_query('SELECT t.name, t.tid FROM {term_data} t INNER JOIN {term_hierarchy} h ON t.tid = h.tid WHERE t.vid = %d AND h.parent = %d ORDER BY t.weight ASC, t.name ASC', $vid, $tid);
   while ($result = db_fetch_object($query)) {
     $return[] = array(
       'data' => l($result->name, 'taxonomy/term/'. $result->tid),
-      'children' => _panels_content_vocabulary_terms($result->tid, $max_depth + 1, $depth),
+      'children' => _panels_content_vocabulary_terms($vid, $max_depth, $depth, $result->tid),
     );
   }
   return $return;
@@ -87,21 +87,22 @@ function panels_admin_title_vocabulary_terms($conf, $context) {
 function panels_admin_edit_vocabulary_terms($id, $parents, $conf = array()) {
   // Apply defaults
   if (empty($conf)) {
-    $conf = array('max_depth' => '', 'tree' => 1);
+    $conf = array('max_depth' => 0, 'tree' => 1);
   }
 
-  $form['list_type'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Max depth'),
+  $form['max_depth'] = array(
+    '#type' => 'select',
+    '#title' => t('Maximum depth'),
+    '#options' => array_merge(array(t('unlimited')), range(1, 9)),
     '#default_value' => $conf['max_depth'],
-    '#description' => t('Leave blank for unlimited.'),
+    '#description' => t('Define the maximum depth of terms being displayed.'),
   );
 
   $form['tree'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Tree'),
+    '#title' => t('Display as tree'),
     '#default_value' => $conf['tree'],
-    '#description' => t('Whether to display the terms in a tree.'),
+    '#description' => t('If checked, the terms are displayed in a tree, otherwise in a flat list.'),
   );
 
   return $form;
