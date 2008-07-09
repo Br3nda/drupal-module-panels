@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.16 2008/07/09 21:31:39 merlinofchaos Exp $
+// $Id: modal_forms.js,v 1.1.2.17 2008/07/09 22:24:24 merlinofchaos Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -121,9 +121,14 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
     $('#panels-modal').unmodalContent();
   }
   else if (data.type == 'replace') {
+    // Replace the HTML in the pane
     $('#panel-pane-' + data.id + ' .panel-pane-collapsible')
-      .html(data.output)
-      .each(Drupal.Panels.bindPortlet);
+      .html(data.output);
+
+    // Re-attach the collapse/expand behavior to the pane.
+    $('#panel-pane-' + data.id).addClass('panel-portlet').each(Drupal.Panels.bindPortlet);
+
+    // Mark that this pane has been changed.
     Drupal.Panels.changed($('#panel-pane-' + data.id));
 
     // dismiss the dialog
