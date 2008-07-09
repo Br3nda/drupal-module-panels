@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.26 2008/07/09 22:43:59 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.27 2008/07/09 22:48:38 merlinofchaos Exp $
 
 
 /**
@@ -470,7 +470,7 @@ function panels_views_edit_view_form($view, $panel_view) {
   $form['deco']['url'] = array(
     '#type' => 'textfield',
     '#title' => t('Override view URL'),
-    '#description' => t('If override URL is set, the URL the view thinks it is using; all "more", "exposed filters", "summary" and "feed" type links will use this URL.'),
+    '#description' => t('If override URL is set, the URL the view thinks it is using; all "more", "exposed filters", "summary" and "feed" type links will use this URL.') .' '. t('You may use $arg to pass panel arguments to the view.'),
     '#default_value' => $panel_view->url,
   );
 
@@ -1000,7 +1000,7 @@ function panels_views_edit($id, $parents, $conf = array()) {
       '#default_value' => $conf['url'],
       '#title' => t('Override URL'),
       '#size' => 30,
-      '#description' => t('If this is set, override the View URL; this can sometimes be useful to set to the panel URL'),
+      '#description' => t('If this is set, override the View URL; this can sometimes be useful to set to the panel URL.') .' '. t('You may use $arg to pass panel arguments to the view.'),
     );
   }
   if ($pv->allow_url_from_panel) {
