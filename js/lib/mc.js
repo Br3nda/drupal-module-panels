@@ -103,7 +103,7 @@ jQuery.modalContent = function(content, css, animation, speed) {
     var mdcLeft = ( winWidth / 2 ) - ( modalContent.outerWidth() / 2);
 
     // Apply the changes
-    $('#modalBackdrop').height(winHeight + 'px').width(winWidth + 'px').show();
+    $('#modalBackdrop').css('height', winHeight + 'px').css('width', winWidth + 'px').show();
     modalContent.css('top', mdcTop + 'px').css('left', mdcLeft + 'px').show();
   });
 };
