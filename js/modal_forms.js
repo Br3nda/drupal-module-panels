@@ -1,4 +1,4 @@
-// $Id: modal_forms.js,v 1.1.2.15 2008/05/27 19:25:57 sdboyer Exp $
+// $Id: modal_forms.js,v 1.1.2.16 2008/07/09 21:31:39 merlinofchaos Exp $
 
 Drupal.Panels.Subform = {};
 
@@ -139,6 +139,12 @@ Drupal.Panels.Subform.bindAjaxResponse = function(data) {
     $('#panel-pane-' + data.id).toggleClass('hidden-pane');
     Drupal.Panels.changed($('#panel-pane-' + data.id));
   }
+  else if (data.type == 'dismiss-changed') {
+    // Just mark the pane as changed.   
+    Drupal.Panels.changed($('#panel-pane-' + data.id));
+    // Dismiss the dialog.
+    $('#panels-modal').unmodalContent();
+	  }
   else {
     // just dismiss the dialog.
     $('#panels-modal').unmodalContent();
