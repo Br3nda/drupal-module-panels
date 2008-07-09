@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.48 2008/07/08 06:52:05 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.49 2008/07/09 21:23:55 merlinofchaos Exp $
 
 
 /**
@@ -877,19 +877,39 @@ function panels_page_admin_view($panel_page, $args) {
     '#collapsible' => TRUE,
   );
 
+  $required_args = strpos($panel_page->path, '%') === false ? 0 : count(split($panel_page->path, '%'));
+
   $url = panels_page_get_url($panel_page, $args);
+  if ($args_missing = max($required_args - count($args), 0)) {
+    $value = $url;
+    $description = format_plural($args_missing,
+      t('1 argument is missing to generate a valid URL.'),
+      t('%count arguments are missing to generate a valid URL.', array('%count' => $args_missing))
+    ); 
+  }
+  else {
+    $value = l($url, $url);
+    $description = t('Click to see the real panel page.'); 
+  }
   $form['fieldset']['url'] = array(
-    '#value' => t('<strong>Url of real panel: </strong> !url', array('!url' => l($url, $url))),
+    '#type' => 'item',
+    '#title' => t('Real panel URL'),
+    '#value' => $value,
+    '#description' => $description,
   );
 
   $contexts = panels_context_load_contexts($panel_page);
   $count = 0;
   foreach ($contexts as $id => $context) {
     if (substr($id, 0, 8) == 'argument') {
+      $required = ($count + 1 <= $required_args) ? TRUE : FALSE;
+      $description = $required ? t('Required argument (occupies %-placeholder number !position)', array('!position' => $count + 1)) : t('Optional argument'); 
       $form['fieldset']["arg$count"] = array(
         '#type' => 'textfield',
         '#title' => check_plain($context->identifier),
         '#default_value' => isset($args[$count]) ? $args[$count] : '',
+        '#required' => $required,
+        '#description' => $description,
       );
     }
     if (isset($args[$count])) {
