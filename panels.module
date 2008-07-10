@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.112 2008/07/08 00:25:43 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.113 2008/07/10 20:22:50 merlinofchaos Exp $
 
 
 /**
@@ -11,12 +11,15 @@ function panels_help($section = NULL) {
   switch ($section) {
     case 'admin/help#panels':
     case 'admin/panels':
-      $output = '<p>'. t('Panels is the core engine for a number of submodules, including panels-pages, panels-nodes, and mini-panels.  Panels allows the website adminstrator (or sometimes the end-user) to manipulate the layout of individual pages, sidebars, and content pieces, as well as easily dictate what content is displayed in the layout.') .'</p>';
+      $output = '<p>'. t(' Panels module is the core engine for a number of sub-modules, including Panels pages, Panels nodes, Mini panels, and Views panes. Panels module allows the website adminstrator (or sometimes the end-user) to manipulate the layout of individual pages, sidebars, and content pieces, as well as easily dictate what content is displayed in the layout.') .'</p>';
       $output .= '<p>'. t('Most Drupal users are familiar with the block to region layout mechanism in which you can assign a block to any region defined in your theme.  Panels takes this concept a massive step forward.  Through the panels interface you can start by creating a layout with any number of columns, headers, and footer, and control the width of those areas.') .'</p>';
-      $output .= '<p>'. t('After creating your layout, you can assign pieces of content to those areas in an easy drag and drop interface.  Content is not limited to blocks, but can be nodes, views, blocks, or other types of content that extend themselves to panels.') .'</p>';
-      $output .= '<p><b>'. t('Panels-pages') .'</b>'. t(', is the the primary panels module, you can use this for creating single full page layouts.  This replaces the standard panel that existed in the earlier versions of panels. If you are upgrading your site from Panels 1, and you cannot find where your panels went, be sure to enable the panel pages module!') .'</p>';
-      $output .= '<p><b>'. t('Panels-nodes') .'</b>'. t(', is useful for creating layouts that only occupy the content area of your pages.  Frequently, it is desirable to add an area to a node layout, such as a pull quote for a newspaper or a photo block, that you don\'t necessarily want on every node.  Panels Nodes lets you control the layout of a single node at a time and place content such as blog posts, images, blogs in and around the post.') .'</p>';
-      $output .= '<p><b>'. t('Mini-panels') .'</b>'. t(', is a layout mechanism for blocks.  It won\'t take long using panels before you get to a point when you want a panel inside of a panel.  Or a panel that can be used as a block.  That is exactly what mini-panels does. You can create a small panel here with various pieces of content and then put it inside of a panels-page or panels-node.') .'</p>';
+      $output .= '<p>'. t('After creating your layout, you can assign pieces of content to those areas in an easy drag and drop interface.  Content is not limited to blocks, but can be nodes, views, or other types of content that expose themselves to panels.') .'</p>';
+      $output .= '<p><b>'. t('Panel pages') .'</b>'. t(' are the the primary panels module, you can use this for creating single full page layouts.  This replaces the standard panel that existed in the earlier versions of panels. If you are upgrading your site from Panels 1, and you cannot find where your panels went, be sure to enable the panel pages module!') .'</p>';
+      $output .= '<p><b>'. t('Panel nodes') .'</b>'. t(' are useful for creating layouts that only occupy the content area of your pages.  Frequently, it is desirable to add an area to a node layout, such as a pull quote for a newspaper or a photo block, that you don\'t necessarily want on every node.  Panels Nodes lets you control the layout of a single node at a time and place content such as blog posts, images, blogs in and around the post.') .'</p>';
+      $output .= '<p><b>'. t('Mini panels') .'</b>'. t(' are a layout mechanism for blocks.  It won\'t take long using panels before you get to a point when you want a panel inside of a panel.  Or a panel that can be used as a block.  That is exactly what mini-panels does. You can create a small panel here with various pieces of content and then put it inside of a panels-page or panels-node.') .'</p>';
+      $output .= '<p><b>'. t('Views panes') .'</b>'. t(" expose views so they may be added to panels. Panels will automatically detect block views without this module; however, page and embedded views will <strong>not be</strong> selectable from Panels by default. If you enable the <strong>Views panes</strong> module, you may expose individual views to Panels. The <strong>Legacy views panes</strong> module will simply expose all views, so that you may add them in any panel. Both modules provide options for customization of the views' settings on a per-Panel basis. This is useful if you have multiple administrators or want to use panels for something other than just panel pages.") .'</p>';
+      $output .= '<p>' . t('If you do not see the above items in the list below, you may need to activate them on the <a href="!url">module administration</a> page.', array('!url' => url('admin/build/modules'))) . '</p>';
+
       return $output;
   }
 }
