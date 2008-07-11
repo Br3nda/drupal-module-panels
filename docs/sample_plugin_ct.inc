@@ -1,5 +1,5 @@
 <?php
-// $Id: sample_plugin_ct.inc,v 1.1.2.1 2008/06/03 01:48:03 sdboyer Exp $
+// $Id: sample_plugin_ct.inc,v 1.1.2.2 2008/07/11 05:06:06 sdboyer Exp $
 
 /**
 @file
@@ -35,6 +35,7 @@ function panels_SAMPLE_CT_panels_content_types() {
     'add submit callback' => 'panels_admin_submit_SAMPLE_CT',
     'edit submit callback' => 'panels_admin_submit_SAMPLE_CT',
     'title callback' => 'panels_admin_title_SAMPLE_CT',
+    'editor render callback' => 'panels_admin_pane_render_SAMPLE_CT',
     'render last' => TRUE,
     'visibility control' => 'panels_admin_visibility_control_SAMPLE_CT',
     'visibility submit' => 'panels_admin_visibility_submit_SAMPLE_CT',
@@ -199,6 +200,14 @@ form control is the most subject to change.
     <td>Yes</td>
     <td>None</td>
     <td><var>$pane->configuration</var>, <var>$context</var></td>
+    <td>This function determines the title that the pane will use in the display content editor, and ONLY that title.</td>
+  </tr>
+  <tr>
+    <td>@LAP{content_types,callbacks_editor-render-callback,editor render callback}@AAP{content_types,t-editor-render-callback, }</td>
+    <td>String</td>
+    <td>No</td>
+    <td>None</td>
+    <td><var>$display</var>, <var>$pane</var></td>
     <td>This function determines the title that the pane will use in the display content editor, and ONLY that title.</td>
   </tr>
   <tr>
@@ -616,6 +625,32 @@ function panels_admin_title_SAMPLE_CT($conf, $context) {
 }
 @endcode
 
+@SSECplug{content_types,callbacks,editor-render-callback,Callback Property: 'editor render callback'}
+Callback function set by the @LAP{content_types,t-editor-render-callback,editor render callback} property in the plugin definition array.
+
+Returns object used to populate the content area of the pane in the display
+editor ONLY. 
+
+@param object $display
+ The full display object being edited.
+@param object $pane
+ The pane object being rendered for display editing.
+
+@return object
+ The object containing the data to use when rendering the pane. The two fields in the object that are used for rendering are @code $obj->title @endcode, which is used as the title on the collapsible fieldset, and @code $obj->content @endcode, which is the contents of fieldset (if any).
+
+@code
+function panels_admin_pane_render_SAMPLE_CT($display, $pane) {
+  // Pretend your content type stores a node id in the $configuration array
+  // and that you want the title of that node as the fieldset title, and the
+  // teaser for that node as the content.
+  $node = node_load($pane->configuration['nid']);
+  $block = new stdClass();
+  $block->title = check_plain($node->title);
+  $block->content = node_view($node, TRUE);
+  return $block;
+}
+@endcode
 
 <hr>
 

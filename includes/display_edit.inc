@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.58 2008/07/09 21:31:39 merlinofchaos Exp $
+// $Id: display_edit.inc,v 1.1.2.59 2008/07/11 05:06:06 sdboyer Exp $
 
 
 /*
@@ -635,6 +635,9 @@ function panels_show_pane($display, $pane, $left_buttons, $buttons, $skin = TRUE
     $block->title = '<em>' . t('Missing content type') . '</em>';
     $block->content = t('This pane\'s content type is either missing or has been deleted. This pane will not render.');
   }
+  elseif (function_exists($content_type['editor render callback'])) {
+    $block = $content_type['editor render callback']($display, $pane);
+  }
   else {
     $block = _panels_render_preview_pane_disabled($pane, $display->context);
   }
@@ -1158,8 +1161,15 @@ function panels_content_config_add_form_submit($form_values, $cache, $pane) {
 }
 
 function panels_content_config_edit_form_submit($form_values, $cache, $pane) {
-  $block = _panels_render_preview_pane_disabled($pane, $cache->display->context);
-
+  // If this content type defines its own 'editor render callback', we need to
+  // invoke that again, since we're not doing a full panels_show_pane().
+  $content_type = $cache->content_config[$pane->pid]['ct_data']['type'];
+  if (function_exists($content_type['editor render callback'])) {
+    $block = $content_type['editor render callback']($cache->display, $pane);
+  }
+  else {
+    $block = _panels_render_preview_pane_disabled($pane, $cache->display->context);
+  }
   $ajax_vars = new stdClass();
   $ajax_vars->type   = 'replace';
   $ajax_vars->output = theme('panels_pane_collapsible', $block, $cache->display);
