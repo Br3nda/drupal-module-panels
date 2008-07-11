@@ -1,4 +1,4 @@
-/* $Id: panels_dnd.css,v 1.1.2.26 2008/06/02 16:57:10 merlinofchaos Exp $ */
+/* $Id: panels_dnd.css,v 1.1.2.27 2008/07/11 03:53:20 sdboyer Exp $ */
 
 #panels-dnd-main {
   margin: 0.5em 0;
@@ -37,7 +37,7 @@ div.panels-display .pane-add {
 }
 
 .panel-pane.hidden-pane {
-  background: #ececec;
+  background: #ccc;
 }
 
 .panel-pane .content {
@@ -57,7 +57,7 @@ div.panels-display .pane-add {
 }
 
 .panel-pane.hidden-pane .grabber {
-  background-color: #87B8D6;
+  background-color: #888;
 }
 
 .changed div.grabber {
@@ -67,7 +67,7 @@ div.panels-display .pane-add {
 }
 
 .changed.hidden-pane div.grabber {
-  background-color: #E5E5C8 !important;
+  background-color: #B4B488 !important;
   border-bottom: 1px solid #3D9CD7 !important;
 }
 
@@ -81,8 +81,8 @@ div.panels-display .pane-add {
   background-color: #2F78A5;
 }
 
-panel-pane.hidden-pane .grabber:hover {
-  background-color: #506D7F;
+.panel-pane.hidden-pane .grabber:hover {
+  background-color: #666;
 }
 
 .panel-pane .grabber:active {
