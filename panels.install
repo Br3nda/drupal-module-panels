@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.49 2008/05/30 19:15:24 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.50 2008/07/11 04:21:40 sdboyer Exp $
 
 
 /**
@@ -513,7 +513,6 @@ function panels_update_5215() {
     case 'mysql':
     case 'mysqli':
       $ret[] = update_sql("ALTER TABLE {panels_object_cache} CHANGE COLUMN data data longtext");
-      $ret[] = update_sql("ALTER TABLE {panels_mini} DROP INDEX name_2");
       $ret[] = update_sql("ALTER TABLE {panels_page} DROP INDEX name_2");
       $ret[] = update_sql("ALTER TABLE {panels_object_cache} DROP INDEX {panels_object_cache}_idx");
       $ret[] = update_sql("ALTER TABLE {panels_pane} ADD PRIMARY KEY (pid)");
@@ -582,12 +581,13 @@ function panels_update_5218() {
   switch ($GLOBALS['db_type']) {
     case 'mysql':
     case 'mysqli':
+      $ret[] = array('success' => TRUE, 'query' => t('Update #5218 only has changes for PostgreSQL. There are no updates for MySQL databases - since you\'re running MySQL, you should consider this update successful).'));
       break;
 
     case 'pgsql':
       db_add_column($ret, 'panels_pane', 'shown', 'smallint', array('default' => 1));
       db_add_column($ret, 'panels_display', 'hide_title', 'smallint', array('default' => 0));
-      $ret[] = array('success' => TRUE, 'You can disregard the failed attempts to add new columns in update 5216 as long as the two queries preceding this text were successful.');
+      $ret[] = array('success' => TRUE, 'query' => t('You can disregard failed attempts to add new columns in update #5216 as long as the two queries preceding this text were successful.'));
   }
   return $ret;
 }
