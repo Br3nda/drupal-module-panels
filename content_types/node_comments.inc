@@ -1,16 +1,16 @@
 <?php
-// $Id: node_comments.inc,v 1.1.2.10 2008/05/27 20:21:11 sdboyer Exp $
+// $Id: node_comments.inc,v 1.1.2.11 2008/07/11 04:49:06 sdboyer Exp $
 
 
 /**
- * Callback function to supply a list of content types.
+ * Plugin declaration function - returns a plugin definition array that
+ * describes the content type.
  */
 function panels_node_comments_panels_content_types() {
   if (module_exists('comment')) {
     $items['node_comments'] = array(
       'title' => t('Node comments'),
       'content_types' => 'panels_admin_content_types_node_comments',
-      // only provides a single content type
       'single' => TRUE,
       'render callback' => 'panels_content_node_comments',
       'add callback' => 'panels_admin_edit_node_comments',
@@ -22,8 +22,8 @@ function panels_node_comments_panels_content_types() {
 }
 
 /**
- * Output function for the 'node' content type. Outputs a node
- * based on the module and delta supplied in the configuration.
+ * Output function for the 'node comments' content type. Outputs the comments
+ * that have been made on a given nid, as provided by the $context.
  */
 function panels_content_node_comments($conf, $panel_args, $context) {
   $node = isset($context->data) ? drupal_clone($context->data) : NULL;
@@ -60,9 +60,6 @@ function panels_admin_content_types_node_comments() {
   );
 }
 
-/**
- * Returns an edit form for the custom type.
- */
 function panels_admin_edit_node_comments($id, $parents, $conf = array()) {
   if (empty($conf)) {
     $conf = array(
