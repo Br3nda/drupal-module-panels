@@ -1,5 +1,5 @@
 <?php
-// $Id: custom.inc,v 1.2.6.18 2008/05/27 20:21:11 sdboyer Exp $
+// $Id: custom.inc,v 1.2.6.19 2008/07/12 16:45:47 sdboyer Exp $
 
 
 /**
@@ -9,10 +9,10 @@ function panels_custom_panels_content_types() {
   $items['custom'] = array(
     'title' => t('Custom'),
     'weight' => -10,
-    // only provides a single content type
     'single' => TRUE,
     'content_types' => 'panels_admin_content_types_custom',
     'render callback' => 'panels_content_custom',
+    'editor render callback' => 'panels_admin_content_custom',
     'add callback' => 'panels_admin_edit_custom',
     'edit callback' => 'panels_admin_edit_custom',
     'title callback' => 'panels_admin_title_custom',
@@ -34,6 +34,32 @@ function panels_content_custom($conf) {
   $block->subject = filter_xss_admin($conf['title']);
   $block->content = check_markup($conf['body'], $conf['format'], FALSE);
 
+  return $block;
+}
+
+/**
+ * Render callback for when the custom content is in the editor so that people
+ * can have a preview on the spot.
+ *
+ * @param panels_display $display
+ * @param stdClass $pane
+ * @return stdClass $block
+ */
+function panels_admin_content_custom($display, $pane) {
+  $block = new stdClass();
+  $block->title = filter_xss_admin($pane->configuration['title']);
+  // We don't want to render php output on preview here, because if something is
+  // wrong the whole display will be borked. So we check to see if the php
+  // evaluator filter is being used, and make a temporary change to the filter
+  // so that we get the printed php, not the eval'ed php.
+  $php_filter = FALSE;
+  foreach (filter_list_format($pane->configuration['format']) as $filter) {
+    if ($filter->name == 'PHP evaluator') { // TODO stupid way to check
+      $php_filter = TRUE;
+    }
+  }
+  // If a php filter is active, pass NULL and use the default filter.
+  $block->content = check_markup($pane->configuration['body'], $php_filter ? NULL : $pane->configuration['format'], FALSE);
   return $block;
 }
 
