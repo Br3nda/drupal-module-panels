@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.29 2008/07/13 22:42:31 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.30 2008/07/13 23:43:21 sdboyer Exp $
 
 
 /**
@@ -1512,3 +1512,36 @@ function panels_views_panels_exportables($op = 'list', $panels = NULL, $name = '
   }
 }
 
+/**
+ * Implementation of hook_form_alter().
+ *
+ * Ugly, hacky fix to compensate for the fact that panels_views isn't aware when
+ * views changes the system name of a view. With the system name wrong,
+ * panels_views breaks.
+ */
+function panels_views_form_alter($form_id, &$form) {
+  if ($form_id == 'views_edit_view' && !empty($form['basic-info']['name']['#default_value'])) {
+    $pvids = array();
+    $result = db_query("SELECT pvid FROM {panels_views} WHERE view = '%s'", $form['basic-info']['name']['#default_value']);
+    while ($row = db_fetch_object($result)) {
+      $pvids[] = $row->pvid;
+    }
+    if (!empty($pvids)) {
+      $form['dependent_pvids'] = array(
+        '#type' => 'value',
+        '#value' => $pvids,
+      );
+      $form['#submit'] += array('panels_views_update_pvids_submit' => array());
+    }
+  }
+}
+
+/**
+ * If we've gotten this far, then we know we've got pvids that could need
+ * updating. Don't bother with fancy footwork to see if the view name was
+ * actually changed - just update em to be safe.
+ *
+ */
+function panels_views_update_pvids_submit($form_id, $form_values) {
+  db_query("UPDATE {panels_views} SET view = '%s' WHERE pvid IN (" . implode(', ', $form_values['dependent_pvids']) . ")", $form_values['name']);
+}
