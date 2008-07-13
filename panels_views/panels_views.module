@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.28 2008/07/09 23:48:29 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.1.2.29 2008/07/13 22:42:31 sdboyer Exp $
 
 
 /**
@@ -448,6 +448,19 @@ function panels_views_edit_view_form($view, $panel_view) {
     '#default_value' => $panel_view->allow_more_link,
   );
 
+  $form['deco']['more_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('More link text'),
+    '#description' => t('If you checked the above box allowing Panels to provide its own "more" link, Panels will render that link using the text you enter here. If left blank, defaults to "more".'),
+    '#default_value' => $panel_view->more_text,
+  );
+
+  $form['deco']['allow_more_text'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow the pane configuration to modify the "more" link text.'),
+    '#default_value' => $panel_view->allow_more_text,
+  );
+
   $form['deco']['feed_icons'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show feed icons'),
@@ -814,6 +827,14 @@ function panels_views_render($conf, $panel_args, &$contexts) {
       (!$pv->allow_more_link && $pv->more_link)) {
     $block->more = array('href' => views_get_url($view, $args));
     $view->block_more = FALSE;
+
+    // Alternative "more" link text
+    if ($pv->allow_more_text && $conf['more_text']) {
+      $block->more['title'] = $conf['more_text'];
+    }
+    else if ($pv->more_text) {
+      $block->more['title'] = $pv->more_text;
+    }
   }
 
   // Turn on pager?
@@ -886,6 +907,9 @@ function panels_views_edit($id, $parents, $conf = array()) {
     if ($pv->allow_more_link) {
       $conf['more_link'] = $pv->more_link;
     }
+    if ($pv->allow_more_text) {
+      $conf['more_text'] = $pv->more_text;
+    }
     if ($pv->allow_feed_icons) {
       $conf['feed_icons'] = $pv->feed_icons;
     }
@@ -950,6 +974,14 @@ function panels_views_edit($id, $parents, $conf = array()) {
       '#title' => t('Provide a "more" link that links to the view'),
       '#description' => t('This is independent of any more link that may be provided by the view itself; if you see two more links, turn this one off. Views will only provide a more link if using the "block" type, however, so if using embed, use this one.'),
     );
+    if ($pv->allow_more_text) {
+      $form['more_text'] = array(
+        '#type' => 'textfield',
+        '#default_value' => $conf['more_text'],
+        '#title' => t('"More" link text'),
+        '#description' => t('If you activated panels own "more" link above, this allows you to customize the text to display.'),
+      );
+    }
   }
   if ($pv->allow_feed_icons) {
     $form['feed_icons'] = array(
@@ -1134,6 +1166,11 @@ function panels_views_pane_fields() {
       'arg' => '%d',
       'definition' => 'integer',
     ),
+    'more_text' => array(
+      'default' => '',
+      'arg' => "'%s'",
+      'definition' => 'varchar(255)',
+    ),
     'feed_icons' => array(
       'default' => FALSE,
       'arg' => '%d',
@@ -1187,6 +1224,11 @@ function panels_views_pane_fields() {
       'definition' => 'integer',
     ),
     'allow_more_link' => array(
+      'default' => FALSE,
+      'arg' => '%d',
+      'definition' => 'integer',
+    ),
+    'allow_more_text' => array(
       'default' => FALSE,
       'arg' => '%d',
       'definition' => 'integer',

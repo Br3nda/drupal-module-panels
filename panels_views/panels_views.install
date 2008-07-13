@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.install,v 1.1.2.8 2008/05/27 20:21:15 sdboyer Exp $
+// $Id: panels_views.install,v 1.1.2.9 2008/07/13 22:42:31 sdboyer Exp $
 
 
 /**
@@ -30,9 +30,28 @@ function panels_views_install() {
 }
 
 /**
+ * Add columns for custom "more" text.
+ */
+function panels_views_update_5100() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {panels_views} ADD more_text varchar(255) AFTER more_link");
+      $ret[] = update_sql("ALTER TABLE {panels_views} ADD allow_more_text integer AFTER allow_more_link");
+      break;
+    case 'pgsql':
+      db_add_column($ret, 'panels_views', 'more_text', 'varchar(255)', array());
+      db_add_column($ret, 'panels_views', 'allow_more_text', 'integer', array());
+      break;
+  }
+  return $ret;
+}
+
+/**
  * Implementation of hook_uninstall().
  */
 function panels_views_uninstall() {
-  db_query("DROP TABLE {panels_views}");
+  db_query("DROP TABLE IF EXISTS {panels_views}");
 }
 
