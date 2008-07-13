@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views_legacy.module,v 1.1.2.8 2008/05/27 20:21:13 sdboyer Exp $
+// $Id: panels_views_legacy.module,v 1.1.2.9 2008/07/13 19:26:50 sdboyer Exp $
 
 
 /**
@@ -160,7 +160,7 @@ function panels_views_legacy_content_types() {
     $view->argument = $args[$view->vid];
 
     $title = views_get_title($view, 'admin');
-    $icon = !empty($view->block) ? 'icon_views_block.png' : 'icon_views_page.png';
+    $icon = !empty($view->block) ? 'icon_views_block_legacy.png' : 'icon_views_page_legacy.png';
 
     $contexts = array();
     if (!empty($view->argument)) {
@@ -185,7 +185,7 @@ function panels_views_legacy_content_types() {
     if (!$views[$view->name] &&
       ($views_status[$view->name] == 'enabled' || (!$views_status[$view->name] && !$view->disabled))) {
       $title    = views_get_title($view, 'admin');
-      $icon     = !empty($view->block) ? 'icon_views_block.png' : 'icon_views_page.png';
+      $icon     = !empty($view->block) ? 'icon_views_block_legacy.png' : 'icon_views_page_legacy.png';
       $contexts = array();
       if (!empty($view->argument)) {
         foreach ($view->argument as $arg) {
