@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.31 2008/07/08 06:52:05 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.32 2008/07/13 21:23:45 sdboyer Exp $
 
 /**
  * @file panels_mini.module
@@ -223,7 +223,7 @@ function panels_mini_list_page() {
     t('Operations'),
   );
 
-  // Load all mini panels and their displays. 
+  // Load all mini panels and their displays.
   $panel_minis = panels_mini_load_all();
   $dids = array();
   foreach ($panel_minis as $panel_mini) {
@@ -499,6 +499,14 @@ function panels_mini_edit_form($panel_mini) {
     '#description' => t('A unique name used to identify this panel page internally. It must be only be alpha characters and underscores. No spaces, numbers or uppercase characters.'),
   );
 
+  $form['left']['settings']['category'] = array(
+    '#type' => 'textfield',
+    '#size' => 24,
+    '#default_value' => $panel_mini->category,
+    '#title' => t('Mini panel category'),
+    '#description' => t("The category that this mini-panel will be grouped into on the Add Content form. Only upper and lower-case alphanumeric characters are allowed. If left blank, defaults to 'Mini panels'."),
+  );
+
   panels_load_include('plugins');
   $panel_mini->context = $panel_mini->display->context = panels_context_load_contexts($panel_mini);
 
@@ -552,6 +560,9 @@ function panels_mini_edit_form_validate($form_id, $form_values, $form) {
   else if (preg_match("/[^A-Za-z0-9_]/", $form_values['name'])) {
     form_error($form['left']['settings']['name'], t('Name must be alphanumeric or underscores only.'));
   }
+  else if (preg_match("/[^A-Za-z0-9 ]/", $form_values['category'])) {
+    form_error($form['left']['settings']['category'], t('Categories may contain only alphanumerics or spaces.'));
+  }
   else {
     $query = "SELECT pid FROM {panels_mini} WHERE name = '%s'";
     if (!empty($form_values['pid']) && is_numeric($form_values['pid'])) {
@@ -583,6 +594,7 @@ function panels_mini_edit_form_submit($form_id, $form_values) {
 
   $panel_mini->title = $form_values['title'];
   $panel_mini->name = $form_values['name'];
+  $panel_mini->category = empty($form_values['category']) ? '' : $form_values['category'];
 
   if ($panel_mini->pid == 'new') {
     unset($_SESSION['pm_import']);
@@ -853,8 +865,7 @@ function panels_mini_content_types() {
       'icon' => 'icon_contrib_block.png',
       'path' => panels_get_path("content_types/block"),
       'description' => filter_xss_admin($mini->title),
-//      'required context' => $contexts,
-      'category' => array(t('Mini panels'), -8),
+      'category' => array(t(!empty($mini->category) ? $mini->category : 'Mini panel'), -8),
     );
     if (!empty($mini->requiredcontexts)) {
       $types[$mini->name]['required context'] = array();
@@ -994,6 +1005,7 @@ function panels_mini_load_all($page_size = 0) {
     $mini->contexts = (!empty($mini->contexts)) ? unserialize($mini->contexts) : array();
     $mini->requiredcontexts = (!empty($mini->requiredcontexts)) ? unserialize($mini->requiredcontexts) : array();
     $mini->relationships = (!empty($mini->relationships)) ? unserialize($mini->relationships) : array();
+    $mini->category = (!empty($mini->category)) ? $mini->category : 'Mini panels';
 
     $mini->type = t('Local');
     $panels[$mini->name] = panels_mini_sanitize($mini);
@@ -1072,6 +1084,7 @@ function panels_mini_save(&$panel_mini) {
       "UPDATE {panels_mini} SET " .
       "did = %d, " .
       "name = '%s', " .
+      "category = '%s', " .
       "title = '%s', " .
       "relationships = '%s', " .
       "contexts = '%s', " .
@@ -1079,6 +1092,7 @@ function panels_mini_save(&$panel_mini) {
       "WHERE pid = %d",
         $panel_mini->did,
         $panel_mini->name,
+        $panel_mini->category,
         $panel_mini->title,
         serialize($panel_mini->relationships),
         serialize($panel_mini->contexts),
@@ -1092,6 +1106,7 @@ function panels_mini_save(&$panel_mini) {
       "INSERT INTO {panels_mini} ( " .
         "pid, " .
         "name, " .
+        "category, " .
         "did, " .
         "title, " .
         "relationships, " .
@@ -1101,6 +1116,7 @@ function panels_mini_save(&$panel_mini) {
       "VALUES (" .
         "%d, " .
         "'%s', " .
+        "'%s', " .
         "%d, " .
         "'%s', " .
         "'%s', " .
@@ -1109,6 +1125,7 @@ function panels_mini_save(&$panel_mini) {
       ")",
         $panel_mini->pid,
         $panel_mini->name,
+        $panel_mini->category,
         $display->did,
         $panel_mini->title,
         serialize($panel_mini->relationships),

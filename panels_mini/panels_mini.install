@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.install,v 1.1.2.9 2008/07/13 21:10:23 sdboyer Exp $
+// $Id: panels_mini.install,v 1.1.2.10 2008/07/13 21:23:45 sdboyer Exp $
 
 
 /**
@@ -12,6 +12,7 @@ function panels_mini_install() {
         CREATE TABLE {panels_mini} (
           pid integer NOT NULL DEFAULT 0,
           name varchar(255) UNIQUE,
+          category varchar(64),
           did integer,
           title varchar(128),
           requiredcontexts text,
@@ -31,6 +32,7 @@ EOT
         CREATE TABLE {panels_mini} (
           pid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
           name varchar(255) UNIQUE,
+          category varchar(64),
           did int(10),
           title varchar(128),
           contexts longtext,
@@ -153,6 +155,25 @@ function panels_mini_update_5002() {
     case 'mysqli':
       $ret[] = array('success' => TRUE, 'query' => t('It does NOT matter if the following query fails. If it fails, it means you did not have a duplicate \'name_2\' index, and trying to remove a non-existent index does not alter your database in any way. If it succeeds, then the duplicate index is gone, and your table is as it should be.'));
       $ret[] = update_sql("ALTER TABLE {panels_mini} DROP INDEX name_2");
+  }
+  return $ret;
+}
+
+/**
+ * Add the 'category' field, which allows panels administrators to assign mini
+ * panels to custom categories.
+ *
+ */
+function panels_mini_update_5003() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+      db_add_column($ret, 'panels_mini', 'category', 'varchar(64)', array());
+      break;
+
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {panels_mini} ADD COLUMN category varchar(64) AFTER name");
   }
   return $ret;
 }
