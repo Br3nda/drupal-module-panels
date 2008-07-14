@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.30 2008/07/13 23:43:21 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.31 2008/07/14 05:10:16 sdboyer Exp $
 
 
 /**
@@ -541,7 +541,11 @@ function panels_views_edit_view_form_validate($form_id, $form_values, $form) {
  */
 function panels_views_edit_view_form_submit($form_id, $form_values) {
   $form_values['contexts'] = isset($form_values['contexts']) ? $form_values['contexts'] : array();
-  panels_views_save((object) $form_values);
+  $pv = new stdClass();
+  foreach (array_keys(panels_views_pane_fields()) as $field) {
+    $pv->$field = $form_values[$field];
+  }
+  panels_views_save($pv);
   drupal_set_message(t("The panel view has been saved."));
   return 'admin/panels/views';
 }
@@ -1307,57 +1311,42 @@ function panels_views_pane_arguments($view, &$panel_view) {
 /**
  * Write a view pane to the database.
  */
-function panels_views_save($pv) {
-  $keys = $values = "";
-  $args = array();
+function panels_views_save($panel_view) {
+  $fields = $types = $values = $pairs = array();
+  // If pvid is empty, this is an insert, otherwise an update.
+  $insert = empty($panel_view->pvid);
 
-  // If we were truly generic, this whole 'pvid' thing would be pulled
-  // from field data. But we're not because it's unnecessary extra
-  // work.
-  $insert = empty($pv->pvid);
-
-  $names = panels_views_pane_fields();
-  // Build SQL for the keys.
-  foreach ($names as $name => $data) {
-    // skip the primary key here.
-    if (!empty($data['primary'])) {
-      if (!$insert) {
-        continue;
+  // Build arrays of fields and types (resp. pairs of both) and of values.
+  foreach (panels_views_pane_fields() as $field => $data) {
+    $primary = !empty($data['primary']);
+    // Skip primary key and empty values.
+    if (!$primary && isset($panel_view->$field)) {
+      if ($insert) {
+        $fields[] = $field;
+        $types[] = $data['arg'];
       }
       else {
-        $pv->pvid = db_next_id('{panels_views}_pvid');
+        $pairs[] = "$field = $data[arg]";
       }
-    }
 
-    if ($keys) {
-      $keys .= ', ';
-    }
-    if ($insert) {
-      // $values only used when inserting.
-      if ($values) {
-        $values .= ', ';
-      }
-      $keys .= $name;
-      $values .= $data['arg'];
-    }
-    else {
-      $keys .= "$name = $data[arg]";
-    }
-    if (!empty($data['serialize'])) {
-      $args[] = serialize($pv->$name);
-    }
-    else {
-      $args[] = $pv->$name;
+      // Build the $values array, serializing some fields.
+      $serialize = !empty($data['serialize']);
+      $values[] = $serialize ? serialize($panel_view->$field) : $panel_view->$field;
     }
   }
+
   if ($insert) {
-    $sql = "INSERT INTO {panels_views} ($keys) VALUES ($values)";
+    // Determine the new primary key.
+    $panel_view->pvid = db_next_id('{panels_views}_pvid');
+    // Build the query adding the new primary key.
+    $sql = 'INSERT INTO {panels_views} (' . implode(', ', $fields) . ', pvid) VALUES (' . implode(', ', $types) . ', %d)';
   }
   else {
-    $sql = "UPDATE {panels_views} SET $keys WHERE pvid = %d";
-    $args[] = $pv->pvid;
+    // Build the query filtering by the primary key.
+    $sql = 'UPDATE {panels_views} SET ' . implode(', ', $pairs) . ' WHERE pvid = %d';
   }
-  db_query($sql, $args);
+  $values[] = $panel_view->pvid;
+  db_query($sql, $values);
 }
 
 /**
@@ -1539,7 +1528,8 @@ function panels_views_form_alter($form_id, &$form) {
 /**
  * If we've gotten this far, then we know we've got pvids that could need
  * updating. Don't bother with fancy footwork to see if the view name was
- * actually changed - just update em to be safe.
+ * actually changed - just update em to be safe. Also no need to update
+ * the whole view pane, so we just batch update using IN ().
  *
  */
 function panels_views_update_pvids_submit($form_id, $form_values) {

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.61 2008/07/10 17:14:42 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.1.2.62 2008/07/14 05:10:16 sdboyer Exp $
 
 
 /**
@@ -1063,72 +1063,63 @@ function panels_page_sanitize($page) {
  * Save a panel page.
  */
 function panels_page_save($panel_page) {
+  $fields = $types = $values = $pairs = array();
   // Save the display if one was given to us.
   if (!empty($panel_page->display)) {
     $display = panels_save_display($panel_page->display);
   }
   // Ensure empty values get translated correctly. Also make sure we don't
   // mess up the original.
-  $page = drupal_clone(panels_page_sanitize($panel_page));
+  $page_clone = drupal_clone(panels_page_sanitize($panel_page));
 
   // Check to see if we need to save any imported displays.
-  foreach ($page->displays as $did => $info) {
+  foreach ($page_clone->displays as $did => $info) {
     if (isset($info['display'])) {
       $d = panels_save_display($info['display']);
-      $page->displays[$did]['did'] = $d->did;
-      unset($page->displays[$did]['display']);
-    }
-  }
-  // serialize the access string.
-  $page->access = $page->access ? implode(', ', $page->access) : '';
-
-  $page->arguments = serialize($page->arguments);
-  $page->displays = serialize($page->displays);
-  $page->contexts = serialize($page->contexts);
-  $page->relationships = serialize($page->relationships);
-  $page->switcher_options = serialize($page->switcher_options);
-
-  // Create strings for our query from the list of fields.
-  $fields = panels_page_fields();
-  foreach ($fields as $field => $value) {
-    if (isset($page->$field)) {
-      $f[] = $field;
-      $q[] = $value;
-      $v[] = $page->$field;
+      $page_clone->displays[$did]['did'] = $d->did;
+      unset($page_clone->displays[$did]['display']);
     }
   }
 
-  if ($page->pid && $page->pid != 'new') {
-    if (empty($page->name)) {
-      $page->name = 'panel_page_' . $page->pid;
-    }
-    $query = '';
-    foreach ($f as $id => $field) {
-      if ($query) {
-        $query .= ', ';
+  // If pid is set to our "magic value", this is an insert, otherwise an update.
+  $insert = $page_clone->pid && $page_clone->pid == 'new';
+
+  // Serialize the access string.
+  $page_clone->access = $page_clone->access ? implode(', ', $page_clone->access) : '';
+
+  // Build arrays of fields and types (resp. pairs of both) and of values.
+  foreach (panels_page_fields() as $field => $type) {
+    // Skip empty values.
+    if (isset($page_clone->$field)) {
+      if ($insert) {
+        $fields[] = $field;
+        $types[] = $type;
       }
-      $query .= "$f[$id] = " . $q[$id];
+      else {
+        $pairs[] = "$field = $type";
+      }
+      // Build the $values array, serializing some fields.
+      $serialize = in_array($field, array('arguments', 'displays', 'contexts', 'relationships', 'switcher_options'));
+      $values[] = $serialize ? serialize($page_clone->$field) : $page_clone->$field;
     }
+  }
 
-    $v[] = $page->pid;
-    db_query("UPDATE {panels_page} SET $query WHERE pid = %d", $v);
+  if ($insert) {
+    // Determine the new primary key.
+    $page_clone->pid = db_next_id('{panels_page}_pid');
+    // Build the query adding the new primary key and the did.
+    $sql = 'INSERT INTO {panels_page} (' . implode(', ', $fields) . ', did, pid) VALUES (' . implode(', ', $types) . ', %d, %d)';
+    $values[] = $display->did;
   }
   else {
-    $page->pid = db_next_id("{panels_page}_pid");
-    // Tack our pid and did onto the query. These aren't listed as 'fields' because
-    // they can't be updated; once set they are permanent.
-    $v[] = $page->pid;
-    $v[] = $display->did;
-
-    if (empty($page->name)) {
-      $page->name = 'panel_page_' . $page->pid;
-    }
-    // Yes, this is kind of long but it's a lot easier to match up values.
-    db_query("INSERT INTO {panels_page} ( " . implode(', ', $f) . ", pid, did) VALUES (" . implode(', ', $q) . ", %d, %d)", $v);
+    // Build the query filtering by the primary key.
+    $sql = 'UPDATE {panels_page} SET ' . implode(', ', $pairs) . ' WHERE pid = %d';
   }
+  $values[] = $page_clone->pid;
 
+  db_query($sql, $values);
   menu_rebuild();
-  return $page->pid;
+  return $page_clone->pid;
 }
 
 /**

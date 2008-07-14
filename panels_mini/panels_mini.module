@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.32 2008/07/13 21:23:45 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.33 2008/07/14 05:10:17 sdboyer Exp $
 
 /**
  * @file panels_mini.module
@@ -968,6 +968,21 @@ function panels_mini_title_mini_panel($conf) {
 // Database functions.
 
 /**
+ * A list of the fields used in the panel_mini table.
+ */
+function panels_mini_fields() {
+  return array(
+    'name' => "'%s'",
+    'category' => "'%s'",
+    'title' => "'%s'",
+    'contexts' => "'%s'",
+    'requiredcontexts' => "'%s'",
+    'relationships' => "'%s'",
+  );
+}
+
+
+/**
  * Sanitize a mini panel, to guarantee certain data is as we believe it will be.
  */
 function panels_mini_sanitize($mini) {
@@ -1047,27 +1062,27 @@ function panels_mini_load($pid) {
   else {
     $where = 'pid = %d';
   }
-  $mini = db_fetch_object(db_query("SELECT * FROM {panels_mini} WHERE $where", $pid));
-  if (!$mini) {
+  $panel_mini = db_fetch_object(db_query("SELECT * FROM {panels_mini} WHERE $where", $pid));
+  if (!$panel_mini) {
     $defaults = panels_mini_default_panels();
     if (isset($defaults[$pid])) {
-      $mini = $defaults[$pid];
+      $panel_mini = $defaults[$pid];
       $status = variable_get('panel_mini_defaults', array());
       // Determine if default panel is enabled or disabled.
-      if (isset($status[$mini->name])) {
-        $mini->disabled = $status[$mini->name];
+      if (isset($status[$panel_mini->name])) {
+        $panel_mini->disabled = $status[$panel_mini->name];
       }
-      $cache[$pid] = $mini;
-      return $mini;
+      $cache[$pid] = $panel_mini;
+      return $panel_mini;
     }
     return;
   }
 
-  $mini->contexts = (!empty($mini->contexts)) ? unserialize($mini->contexts) : array();
-  $mini->requiredcontexts = (!empty($mini->requiredcontexts)) ? unserialize($mini->requiredcontexts) : array();
-  $mini->relationships = (!empty($mini->relationships)) ? unserialize($mini->relationships) : array();
+  $panel_mini->contexts = (!empty($panel_mini->contexts)) ? unserialize($panel_mini->contexts) : array();
+  $panel_mini->requiredcontexts = (!empty($panel_mini->requiredcontexts)) ? unserialize($panel_mini->requiredcontexts) : array();
+  $panel_mini->relationships = (!empty($panel_mini->relationships)) ? unserialize($panel_mini->relationships) : array();
 
-  $cache[$pid] = panels_mini_sanitize($mini);
+  $cache[$pid] = panels_mini_sanitize($panel_mini);
   $cache[$pid]->display = panels_load_display($cache[$pid]->did);
 
   return $cache[$pid];
@@ -1077,64 +1092,51 @@ function panels_mini_load($pid) {
  * Save a mini panel.
  */
 function panels_mini_save(&$panel_mini) {
-  $display = panels_save_display($panel_mini->display);
+  $fields = $types = $values = $pairs = array();
+  // Save the display if one was given to us.
+  if (!empty($panel_mini->display)) {
+    $display = panels_save_display($panel_mini->display);
+  }
 
-  if ($panel_mini->pid && $panel_mini->pid != 'new') {
-    db_query(
-      "UPDATE {panels_mini} SET " .
-      "did = %d, " .
-      "name = '%s', " .
-      "category = '%s', " .
-      "title = '%s', " .
-      "relationships = '%s', " .
-      "contexts = '%s', " .
-      "requiredcontexts = '%s' " .
-      "WHERE pid = %d",
-        $panel_mini->did,
-        $panel_mini->name,
-        $panel_mini->category,
-        $panel_mini->title,
-        serialize($panel_mini->relationships),
-        serialize($panel_mini->contexts),
-        serialize($panel_mini->requiredcontexts),
-      $panel_mini->pid
-    );
+  // Ensure empty values get translated correctly.
+  // Also make sure we don't mess up the original.
+  $mini_clone = drupal_clone(panels_mini_sanitize($panel_mini));
+
+  // If pid is set to our "magic value", this is an insert, otherwise an update.
+  $insert = $mini_clone->pid && $mini_clone->pid == 'new';
+
+  // Build arrays of fields and types (resp. pairs of both) and of values.
+  foreach (panels_mini_fields() as $field => $type) {
+    // Skip empty values.
+    if (isset($mini_clone->$field)) {
+      if ($insert) {
+        $fields[] = $field;
+        $types[] = $type;
+      }
+      else {
+        $pairs[] = "$field = $type";
+      }
+      // Build the $values array, serializing some fields.
+      $serialize = in_array($field, array('contexts', 'requiredcontexts', 'relationships'));
+      $values[] = $serialize ? serialize($mini_clone->$field) : $mini_clone->$field;
+    }
+  }
+
+  if ($insert) {
+    // Determine the new primary key.
+    $mini_clone->pid = db_next_id('{panels_mini}_pid');
+    // Build the query adding the new primary key and the did.
+    $sql = 'INSERT INTO {panels_mini} (' . implode(', ', $fields) . ', did, pid) VALUES (' . implode(', ', $types) . ', %d, %d)';
+    $values[] = $display->did;
   }
   else {
-    $panel_mini->pid = db_next_id("{panels_mini}_pid");
-    db_query(
-      "INSERT INTO {panels_mini} ( " .
-        "pid, " .
-        "name, " .
-        "category, " .
-        "did, " .
-        "title, " .
-        "relationships, " .
-        "contexts, " .
-        "requiredcontexts " .
-      ") " .
-      "VALUES (" .
-        "%d, " .
-        "'%s', " .
-        "'%s', " .
-        "%d, " .
-        "'%s', " .
-        "'%s', " .
-        "'%s', " .
-        "'%s'" .
-      ")",
-        $panel_mini->pid,
-        $panel_mini->name,
-        $panel_mini->category,
-        $display->did,
-        $panel_mini->title,
-        serialize($panel_mini->relationships),
-        serialize($panel_mini->contexts),
-        serialize($panel_mini->requiredcontexts)
-    );
+    // Build the query filtering by the primary key.
+    $sql = 'UPDATE {panels_mini} SET ' . implode(', ', $pairs) . ' WHERE pid = %d';
   }
+  $values[] = $mini_clone->pid;
 
-  return $panel_mini->pid;
+  db_query($sql, $values);
+  return $mini_clone->pid;
 }
 
 /**
@@ -1153,10 +1155,10 @@ function panels_mini_delete($panel_mini) {
  */
 function panels_mini_export($panel_mini, $prefix = '') {
   $output = '';
-  $fields = array('name', 'title', 'requiredcontexts', 'contexts', 'relationships');
+  $fields = panels_mini_fields();
   $output .= $prefix . '$mini = new stdClass()' . ";\n";
   $output .= $prefix . '$mini->pid = \'new\'' . ";\n";
-  foreach ($fields as $field) {
+  foreach ($fields as $field => $sub) {
     $output .= $prefix . '  $mini->' . $field . ' = ' . panels_var_export($panel_mini->$field, '  ') . ";\n";
   }
   // Export the primary display
@@ -1180,10 +1182,9 @@ function panels_mini_default_panels() {
 }
 
 /**
- * Provide mini panels with its own category.
+ * Remove the block version of mini panels from being available content types.
  */
 function panels_mini_panels_block_info($module, $delta, &$info) {
-  // Remove the block version of mini panels from being available content types.
   $info = NULL;
 }
 
@@ -1217,4 +1218,3 @@ function panels_mini_panels_exportables($op = 'list', $panels = NULL, $name = 'f
     return $code;
   }
 }
-
