@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.1.2.39 2008/07/08 20:27:52 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.1.2.40 2008/07/14 19:44:04 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -344,6 +344,9 @@ Drupal.Panels.Draggable = {
 
 Drupal.Panels.DraggableHandler = function() {
   var draggable = Drupal.Panels.Draggable;
+  var scrollBuffer = 10;
+  var scrollDistance = 10;
+  var scrollTimer = 30;
 
   getMouseOffset = function(docPos, mousePos, windowPos) {
     return { x: mousePos.x - docPos.x + windowPos.x, y: mousePos.y - docPos.y + windowPos.y};
@@ -387,6 +390,7 @@ Drupal.Panels.DraggableHandler = function() {
   };
 
   mouseUp = function(e) {
+    clearTimeout(draggable.timeoutId);
     draggable.dropzones = [];
 
     if (draggable.current_pad) {
@@ -413,6 +417,8 @@ Drupal.Panels.DraggableHandler = function() {
 
   mouseMove = function(e) {
     var mousePos = getMousePos(e);
+    draggable.mousePos = mousePos;
+
     draggable.findDropZone(mousePos.x, mousePos.y);
 
     var windowMoved = parseInt(draggable.offsetDivHeight - $(draggable.main).innerHeight());
@@ -451,6 +457,8 @@ Drupal.Panels.DraggableHandler = function() {
     };
 
     var mousePos = getMousePos(e);
+    draggable.mousePos = mousePos;
+
     var originalPos = $(draggable.object).offset();
     var width = Math.min($(draggable.object).innerWidth(), draggable.maxWidth);
 
@@ -503,8 +511,43 @@ Drupal.Panels.DraggableHandler = function() {
     $(document).unbind('mouseup').unbind('mousemove').mouseup(mouseUp).mousemove(mouseMove);
 
     draggable.calculateDropZones(mousePos, e);
+    draggable.timeoutId = setTimeout('timer()', scrollTimer);
     return false;
   };
+
+  timer = function() {
+    if (!draggable.timeCount) {
+      draggable.timeCount = 0;
+    }
+    draggable.timeCount = draggable.timeCount + 1;
+    var left = $(window).scrollLeft();
+    var right = left + $(window).innerWidth();
+    var top = $(window).scrollTop();
+    var bottom = top + $(window).innerHeight();
+
+    if (draggable.mousePos.x < left + scrollBuffer && left > 0) {
+      window.scrollTo(left - scrollDistance, top);
+      draggable.mousePos.x -= scrollDistance;
+      draggable.object.style.top = draggable.mousePos.y - draggable.mouseOffset.y + 'px';
+    }
+    else if (draggable.mousePos.x > right - scrollBuffer) {
+      window.scrollTo(left + scrollDistance, top);
+      draggable.mousePos.x += scrollDistance;
+      draggable.object.style.top = draggable.mousePos.y - draggable.mouseOffset.y + 'px';
+    }
+    else if (draggable.mousePos.y < top + scrollBuffer && top > 0) {
+      window.scrollTo(left, top - scrollDistance);
+      draggable.mousePos.y -= scrollDistance;
+      draggable.object.style.top = draggable.mousePos.y - draggable.mouseOffset.y + 'px';
+    }
+    else if (draggable.mousePos.y > bottom - scrollBuffer) {
+      window.scrollTo(left, top + scrollDistance);
+      draggable.mousePos.y += scrollDistance;
+      draggable.object.style.top = draggable.mousePos.y - draggable.mouseOffset.y + 'px';
+    }
+
+    draggable.timeoutId = setTimeout('timer()', scrollTimer);
+  }
 
   $(this).mousedown(mouseDown);
 };
