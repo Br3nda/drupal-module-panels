@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.113 2008/07/10 20:22:50 merlinofchaos Exp $
+// $Id: panels.module,v 1.10.4.114 2008/07/14 06:04:25 sdboyer Exp $
 
 
 /**
@@ -859,25 +859,28 @@ function panels_export_display($display, $prefix = '') {
   $output .= $prefix . '$display->panels = array()' . ";\n";
   $panels = array();
 
-  $counter = 0;
-  $counters = array();
-  foreach ($display->content as $pane) {
-    $id = 'new-' . ++$counter;
-    $output .= $prefix . '$pane = new stdClass()'  . ";\n";
-    $output .= $prefix . '  $pane->pid = \'' . $id . '\'' . ";\n";
-    $fields = array('panel', 'type', 'subtype', 'access', 'configuration', 'shown', 'visibility');
-    foreach ($fields as $field) {
-      // Old panels may not have shown property, so enable by default when re-exporting.
-      if ($field == 'shown' && !isset($pane->shown)) {
-        $pane->shown = TRUE;
+  if (!empty($display->content)) {
+    $pid_counter = 0;
+    $region_counters = array();
+    foreach ($display->content as $pane) {
+      $pane->pid = 'new-' . ++$pid_counter;
+      $output .= panels_export_pane($pane, $prefix . '  ');
+      $output .= "$prefix  " . '$display->content[\'' . $pane->pid . '\'] = $pane' . ";\n";
+      if (!isset($region_counters[$pane->panel])) {
+        $region_counters[$pane->panel] = 0;
       }
-      $output .= $prefix . '  $pane->' . $field . ' = ' . panels_var_export($pane->$field, "$prefix  ") . ";\n";
+      $output .= "$prefix  " . '$display->panels[\'' . $pane->panel . '\'][' . $region_counters[$pane->panel]++ .'] = \'' . $pane->pid . "';\n";
     }
-    $output .= $prefix . '$display->content[\'' . $id . '\'] = $pane' . ";\n";
-    if (!isset($counters[$pane->panel])) {
-      $counters[$pane->panel] = 0;
-    }
-    $output .= $prefix . '$display->panels[\'' . $pane->panel . '\'][' . $counters[$pane->panel]++ .'] = \'' . $id . "';\n";
+  }
+  return $output;
+}
+
+function panels_export_pane($pane, $prefix = '') {
+  $output = '';
+  $output = $prefix . '$pane = new stdClass()'  . ";\n";
+  $fields = array('pid', 'panel', 'type', 'subtype', 'access', 'configuration');
+  foreach ($fields as $field) {
+    $output .= "$prefix  " . '$pane->' . $field . ' = ' . panels_var_export($pane->$field, "$prefix  ") . ";\n";
   }
   return $output;
 }
