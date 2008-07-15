@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.62 2008/07/14 05:10:16 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.63 2008/07/15 02:34:37 sdboyer Exp $
 
 
 /**
@@ -790,8 +790,11 @@ function panels_page_view_page($panel_page, $admin) {
     return drupal_not_found();
   }
 
-  if (!$display->hide_title) {
-    drupal_set_title(filter_xss_admin(panels_page_get_title($panel_page, 'page', '')));
+  if (!$display->hide_title && $title = filter_xss_admin(panels_page_get_title($panel_page, 'page', ''))) {
+    drupal_set_title($title);
+  }
+  else {
+    drupal_set_title('');
   }
 
   if ($panel_page->css) {
