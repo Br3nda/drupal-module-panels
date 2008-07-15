@@ -1,4 +1,6 @@
-; $Id: panels.info,v 1.3 2007/06/18 22:53:53 dww Exp $
+; $Id: panels.info,v 1.4 2008/07/15 23:59:36 merlinofchaos Exp $
 name = Panels
-description = Create pages that are divided into areas of the page.
+description = Core Panels display functions; provides no external UI, at least one other module (such as Panel pages) should be enabled.
+core = 6.x
+package = "Panels"
 
