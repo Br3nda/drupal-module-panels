@@ -1,5 +1,5 @@
 <?php
-// $Id: custom.inc,v 1.2.6.21 2008/07/15 03:18:54 sdboyer Exp $
+// $Id: custom.inc,v 1.2.6.22 2008/07/15 04:14:30 sdboyer Exp $
 
 
 /**
@@ -59,7 +59,7 @@ function panels_admin_content_custom($display, $pane) {
     }
   }
   // If a php filter is active, pass 1 to use core's most restrictive filter.
-  $block->content = check_markup($pane->configuration['body'], $php_filter ? 1 : $pane->configuration['format'], FALSE);
+  $block->content = check_markup($pane->configuration['body'], $php_filter ? 1 : $pane->configuration['format']);
   return $block;
 }
 
