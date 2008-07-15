@@ -1,5 +1,5 @@
 <?php
-// $Id: custom.inc,v 1.2.6.20 2008/07/15 02:55:49 sdboyer Exp $
+// $Id: custom.inc,v 1.2.6.21 2008/07/15 03:18:54 sdboyer Exp $
 
 
 /**
@@ -71,6 +71,7 @@ function panels_admin_content_types_custom() {
     'custom' => array(
       'title' => t('New custom content'),
       'icon' => 'icon_block_custom.png',
+      'path' => panels_get_path('content_types/custom'),
       'description' => t('Create a completely custom piece of HTML content.'),
       'category' => array(t('Custom'), -10),
     ),
