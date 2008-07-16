@@ -1,4 +1,4 @@
-# $Id: KNOWN_ISSUES.txt,v 1.1.2.7 2008/01/10 17:03:06 merlinofchaos Exp $
+# $Id: KNOWN_ISSUES.txt,v 1.1.2.8 2008/07/16 15:25:11 sdboyer Exp $
 
 Known Issue http://drupal.org/node/191771
   'Node' panes can have two titles or have two title areas.
@@ -90,3 +90,14 @@ Known Issue http://drupal.org/node/207859
     from a secure page, the browser denies the call.
   Solution:
     The solution is to simply add panels/* to your Secure Pages configuration.
+
+Known Issue http://drupal.org/node/274806
+	When using the Live Search module, various javascript-driven aspects of the
+	Panels UI stop functioning correctly, and may begin generating error messages.
+
+	Cause:
+		There is a known bug with the Live Search module. There is nothing Panels
+		can do about it. See http://drupal.org/node/152125
+	Solution:
+		Disable the Live Search module.
+

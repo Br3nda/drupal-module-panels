@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.11 2008/05/27 20:21:11 sdboyer Exp $
+// $Id: flexible.inc,v 1.1.2.12 2008/07/16 15:25:11 sdboyer Exp $
 
 
 /**
@@ -275,10 +275,6 @@ function panels_flexible_panels($display, $settings) {
   return $panels;
 }
 
-/**
- * This function uses heredoc notation to make it easier to convert
- * to a template.
- */
 function theme_panels_flexible($id, $content, $settings) {
   if (empty($settings)) {
     $settings = panels_flexible_default_panels();
