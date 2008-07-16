@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.1 2008/07/16 00:09:03 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.2 2008/07/16 20:29:54 merlinofchaos Exp $
 
 /*
  * @file display-edit.inc
@@ -193,6 +193,7 @@ function theme_panels_edit_display_form($form) {
    }
 
   $output .= drupal_render($form);
+  panels_load_include('display-render');
   $output .= theme('panels_dnd', panels_render_layout($layout, $content, '', $display->layout_settings));
   $output .= $save_buttons;
    return $output;

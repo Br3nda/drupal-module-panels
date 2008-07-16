@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.11 2008/07/15 23:59:36 merlinofchaos Exp $
+// $Id: panels.module,v 1.12 2008/07/16 20:29:54 merlinofchaos Exp $
 
 /**
  * Returns the API version of Panels. This didn't exist in 1.
@@ -35,7 +35,7 @@ function panels_theme() {
   );*/
   $theme['panels_pane'] = array(
     'arguments' => array('content', 'pane', 'display'),
-    'file' => 'includes/render.inc',
+    'file' => 'includes/display-render.inc',
   );
   $theme['panels_common_content_list'] = array(
     'arguments' => array('display'),
