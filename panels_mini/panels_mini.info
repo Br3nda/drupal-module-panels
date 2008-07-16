@@ -1,0 +1,5 @@
+; $Id: panels_mini.info,v 1.2 2008/07/16 00:09:04 merlinofchaos Exp $
+name = Mini panels
+description = Create mini panels that can be used as blocks.
+package = "Panels"
+dependencies = panels
