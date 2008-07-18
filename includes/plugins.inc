@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.46 2008/07/08 07:55:13 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.47 2008/07/18 22:40:00 sdboyer Exp $
 
 
 /**
@@ -1329,7 +1329,7 @@ function panels_plugin_get_function($plugin, $which, $function_name) {
 function panels_load_includes($plugin_type, $hook, $file = NULL) {
   // Load all our plugins.
   $directories = panels_get_directories($plugin_type);
-  $directories['panels_'] = panels_get_path($plugin_type);
+  // $directories['panels'] = panels_get_path($plugin_type);
   $file_list = array();
   foreach ($directories as $module => $path) {
     $file_list[$module] = drupal_system_listing("$file" . '.inc$', $path, 'name', 0);
@@ -1338,7 +1338,7 @@ function panels_load_includes($plugin_type, $hook, $file = NULL) {
   foreach (array_filter($file_list) as $module => $files) {
     foreach ($files as $file) {
       require_once ('./' . $file->filename);
-      $result = _panels_process_plugin('panels', $module . $file->name, dirname($file->filename), $hook);
+      $result = _panels_process_plugin($module, $module . '_' . $file->name, dirname($file->filename), $hook);
       if (is_array($result)) {
         $info = array_merge($info, $result);
       }
@@ -1375,15 +1375,26 @@ function panels_load_includes($plugin_type, $hook, $file = NULL) {
  *   Subdirectories should be ONLY the subdirectory of your module where the appropriate
  *   types of .inc files reside.
  */
-function panels_get_directories($plugintype) {
+function panels_get_directories($plugin_type) {
   $directories = array();
   foreach (module_implements('panels_include_directory') as $module) {
-    $result = module_invoke($module, 'panels_include_directory', $plugintype);
+    $result = module_invoke($module, 'panels_include_directory', $plugin_type);
     if (isset($result) && is_string($result)) {
-      $directories[$module .'_'] = drupal_get_path('module', $module) .'/'. $result;
+      $directories[$module] = drupal_get_path('module', $module) .'/'. $result;
     }
   }
   return $directories;
+}
+
+/**
+ * Implementation of hook_panels_include_directory().
+ */
+function panels_panels_include_directory($plugin_type) {
+  return $plugin_type;
+  // This is an abbreviated form that works because the panels directory
+  // is set up with a one-to-one relationship between include directory names
+  // and plugin types. If we were to express this verbosely, it would look like
+  // this:
 }
 
 /**
