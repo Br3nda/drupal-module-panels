@@ -1,5 +1,5 @@
 <?php
-// $Id: twocol_bricks.inc,v 1.1.2.3 2008/05/27 20:21:11 sdboyer Exp $
+// $Id: twocol_bricks.inc,v 1.1.2.4 2008/07/18 22:53:51 sdboyer Exp $
 
 
 /**
@@ -13,7 +13,6 @@
  */
 function panels_twocol_bricks_panels_layouts() {
   $items['twocol_bricks'] = array(
-    'module' => 'panels',
     'title' => t('Two column bricks'),
     'icon' => 'layouts/twocol_bricks.png',
     'theme' => 'panels_twocol_bricks',

@@ -1,5 +1,5 @@
 <?php
-// $Id: onecol.inc,v 1.1.2.5 2008/05/27 20:21:11 sdboyer Exp $
+// $Id: onecol.inc,v 1.1.2.6 2008/07/18 22:53:51 sdboyer Exp $
 
 
 /**
@@ -7,12 +7,13 @@
  */
 function panels_onecol_panels_layouts() {
   $items['onecol'] = array(
-    'module' => 'panels',
     'title' => t('Single column'),
     'icon' => 'layouts/onecol.png',
     'theme' => 'panels_onecol',
     'css' => 'layouts/onecol.css',
-    'panels' => array('middle' => t('Middle column')),
+    'panels' => array(
+      'middle' => t('Middle column')
+    ),
   );
 
   return $items;
