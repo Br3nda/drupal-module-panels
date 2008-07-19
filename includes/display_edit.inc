@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.60 2008/07/14 06:11:56 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.61 2008/07/19 01:01:18 sdboyer Exp $
 
 
 /*
@@ -514,7 +514,7 @@ function panels_edit_layout_settings_form($display, $finish, $destination, $titl
       '#size' => 35,
       '#default_value' => $display->title,
       '#title' => t('Title'),
-      '#description' => t('The title of this panel. Your theme will render this text as the main page title users view this display, unless this text is overridden elsewhere.'),
+      '#description' => t('The title of this panel. Your theme will render this text as the main page title when a user views this panel. Note that there are some circumstances in which this title can be overridden elsewhere.'),
     );
 
     $form['display_title']['hide_title'] = array(
