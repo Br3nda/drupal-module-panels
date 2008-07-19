@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.33 2008/07/14 05:10:17 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.34 2008/07/19 03:55:29 sdboyer Exp $
 
 /**
  * @file panels_mini.module
@@ -785,7 +785,7 @@ function panels_mini_edit_layout_settings($panel_mini, $next = NULL) {
     $dest = "admin/panels/panel-mini/$panel_mini->name/edit/context/next";
   }
 
-  $output = panels_edit_layout_settings($panel_mini->display, $button);
+  $output = panels_edit_layout_settings($panel_mini->display, $button, NULL, $panel_mini->title);
   if (is_object($output)) {
     $panel_mini->display = $output;
     $panel_mini->did = $output->did;
@@ -811,9 +811,10 @@ function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
 
     $minis = panels_mini_load_all();
     foreach ($minis as $panel_mini) {
-      if (empty($mini->disabled) && empty($mini->requiredcontext)) {
+      if (empty($panel_mini->disabled) && empty($panel_mini->requiredcontext)) {
+        $hidden = $panel_mini->hide_title ? ' (' . t('Title will be hidden') . ')' : '';
         $blocks[$panel_mini->pid] = array(
-          'info' => t('Mini panel: "@title"', array('@title' => $panel_mini->title)),
+          'info' => t('Mini panel: "@title"' . $hidden, array('@title' => $panel_mini->title)),
         );
       }
     }
@@ -827,7 +828,7 @@ function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
     $panel_mini->display->css_id = panels_mini_get_id($panel_mini->name);
 
     $block = array(
-      'subject' => $panel_mini->title,
+      'subject' => $panel_mini->hide_title ? '' : check_plain($panel_mini->title),
       'content' => panels_render_display($panel_mini->display),
     );
     return $block;
@@ -915,17 +916,19 @@ function panels_mini_content($conf, $panel_args, &$contexts) {
     return;
   }
 
-  $mini->display->args = $panel_args;
-  $mini->display->css_id = panels_mini_get_id($conf['name']);
-  $mini->display->owner = $mini;
+  $mini->display->args      = $panel_args;
+  $mini->display->css_id    = panels_mini_get_id($conf['name']);
+  $mini->display->owner     = $mini;
   // unique ID of this mini.
   $mini->display->owner->id = $mini->name;
 
-  $block = new stdClass();
-  $block->module  = 'panels_mini';
-  $block->delta   = $conf['name'];
-  $block->subject = filter_xss_admin($mini->title);
-  $block->content = panels_render_display($mini->display);
+  $block          = new stdClass();
+  $block->module    = 'panels_mini';
+  $block->delta     = $conf['name'];
+  $block->content   = panels_render_display($mini->display);
+  if (!$mini->hide_title) {
+    $block->subject = filter_xss_admin($mini->title);
+  }
   return $block;
 }
 
@@ -985,14 +988,14 @@ function panels_mini_fields() {
 /**
  * Sanitize a mini panel, to guarantee certain data is as we believe it will be.
  */
-function panels_mini_sanitize($mini) {
+function panels_mini_sanitize($panel_mini) {
   foreach (array('contexts', 'relationships', 'requiredcontexts') as $id) {
-    if (!is_array($mini->$id)) {
-      $mini->$id = array();
+    if (!is_array($panel_mini->$id)) {
+      $panel_mini->$id = array();
     }
   }
 
-  return $mini;
+  return $panel_mini;
 }
 
 /**
@@ -1016,29 +1019,30 @@ function panels_mini_load_all($page_size = 0) {
     $result = db_query($query);
   }
 
-  while ($mini = db_fetch_object($result)) {
-    $mini->contexts = (!empty($mini->contexts)) ? unserialize($mini->contexts) : array();
-    $mini->requiredcontexts = (!empty($mini->requiredcontexts)) ? unserialize($mini->requiredcontexts) : array();
-    $mini->relationships = (!empty($mini->relationships)) ? unserialize($mini->relationships) : array();
-    $mini->category = (!empty($mini->category)) ? $mini->category : 'Mini panels';
+  while ($panel_mini = db_fetch_object($result)) {
+    $panel_mini->contexts = (!empty($panel_mini->contexts)) ? unserialize($panel_mini->contexts) : array();
+    $panel_mini->requiredcontexts = (!empty($panel_mini->requiredcontexts)) ? unserialize($panel_mini->requiredcontexts) : array();
+    $panel_mini->relationships = (!empty($panel_mini->relationships)) ? unserialize($panel_mini->relationships) : array();
+    $panel_mini->category = (!empty($panel_mini->category)) ? $panel_mini->category : 'Mini panels';
+    $panel_mini->hide_title = ((bool) db_result(db_query('SELECT hide_title FROM {panels_display} WHERE did = %d', $panel_mini->did)));
 
-    $mini->type = t('Local');
-    $panels[$mini->name] = panels_mini_sanitize($mini);
+    $panel_mini->type = t('Local');
+    $panels[$panel_mini->name] = panels_mini_sanitize($panel_mini);
   }
 
   $status = variable_get('panel_mini_defaults', array());
-  foreach (panels_mini_default_panels() as $mini) {
+  foreach (panels_mini_default_panels() as $panel_mini) {
     // Determine if default panel is enabled or disabled.
-    if (isset($status[$mini->name])) {
-      $mini->disabled = $status[$mini->name];
+    if (isset($status[$panel_mini->name])) {
+      $panel_mini->disabled = $status[$panel_mini->name];
     }
 
-    if (!empty($panels[$mini->name])) {
-      $panels[$mini->name]->type = t('Overridden');
+    if (!empty($panels[$panel_mini->name])) {
+      $panels[$panel_mini->name]->type = t('Overridden');
     }
     else {
-      $mini->type = t('Default');
-      $panels[$mini->name] = $mini;
+      $panel_mini->type = t('Default');
+      $panels[$panel_mini->name] = $panel_mini;
     }
   }
   $results[$page_size] = $panels;
@@ -1062,7 +1066,7 @@ function panels_mini_load($pid) {
   else {
     $where = 'pid = %d';
   }
-  $panel_mini = db_fetch_object(db_query("SELECT * FROM {panels_mini} WHERE $where", $pid));
+  $panel_mini = db_fetch_object(db_query("SELECT m.*, d.hide_title FROM {panels_mini} AS m INNER JOIN {panels_display} AS d ON m.did = d.did WHERE $where", $pid));
   if (!$panel_mini) {
     $defaults = panels_mini_default_panels();
     if (isset($defaults[$pid])) {
@@ -1081,6 +1085,7 @@ function panels_mini_load($pid) {
   $panel_mini->contexts = (!empty($panel_mini->contexts)) ? unserialize($panel_mini->contexts) : array();
   $panel_mini->requiredcontexts = (!empty($panel_mini->requiredcontexts)) ? unserialize($panel_mini->requiredcontexts) : array();
   $panel_mini->relationships = (!empty($panel_mini->relationships)) ? unserialize($panel_mini->relationships) : array();
+  // $panel_mini->hide_title = ((bool) db_result(db_query('SELECT hide_title FROM {panels_display} WHERE did = %d', $panel_mini->did)));
 
   $cache[$pid] = panels_mini_sanitize($panel_mini);
   $cache[$pid]->display = panels_load_display($cache[$pid]->did);
