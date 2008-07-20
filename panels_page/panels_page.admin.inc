@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.2 2008/07/16 00:09:04 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.3 2008/07/20 08:19:00 sdboyer Exp $
 
 
 /**
@@ -7,6 +7,20 @@
  *
  * Administrative screens and functions for panel pages.
  */
+
+/**
+ * Menu loader for the panels admin screens. Loads the panels_page specified by
+ * the name arg, or 404s out if a bad value has been provided.
+ */
+function panels_page_admin_load($name) {
+  panels_load_include('plugins');
+  $panel_page = panels_page_load($name);
+  // rudimentary check to make sure we got
+  if ($panel_page->pid) {
+    return $panel_page;
+  }
+  else return FALSE;
+}
 
 /**
  * Provide a list of panels, with links to edit or delete them.
@@ -866,6 +880,11 @@ function panels_page_import_form_submit($form_id, $form) {
   else {
     drupal_set_message(t('Unable to get a panel page out of that.'));
   }
+}
+
+function panels_page_preview_page() {
+  $args = func_get_args();
+  $panel_page = array_shift($args);
 }
 
 function panels_page_admin_view($panel_page, $args) {
