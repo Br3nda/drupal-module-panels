@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.2 2008/07/16 20:29:54 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.3 2008/07/23 21:14:27 merlinofchaos Exp $
 
 /*
  * @file display-edit.inc
@@ -22,7 +22,7 @@ function _panels_edit($display, $destination, $content_types) {
   }
 
   // Load the display being edited from cache, if possible.
-  if (/* !empty($_POST) && */ is_object($cache = panels_cache_get('display', $did))) {
+  if (!empty($_POST) && is_object($cache = panels_cache_get('display', $did))) {
     $display = $cache->display;
   }
   else {
