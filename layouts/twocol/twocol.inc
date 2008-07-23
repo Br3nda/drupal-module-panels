@@ -1,5 +1,5 @@
 <?php
-// $Id: twocol.inc,v 1.1 2008/07/23 21:14:29 merlinofchaos Exp $
+// $Id: twocol.inc,v 1.2 2008/07/23 22:05:25 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts().
@@ -18,4 +18,3 @@ function panels_twocol_panels_layouts() {
 
   return $items;
 }
-
