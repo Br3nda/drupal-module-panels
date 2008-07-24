@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.install,v 1.4 2008/07/20 08:19:00 sdboyer Exp $
+// $Id: panels_page.install,v 1.5 2008/07/24 00:55:35 merlinofchaos Exp $
 
 /**
  * Install the panels tables
@@ -110,7 +110,7 @@ function panels_page_schema_1() {
       'path_idx' => array('path'),
     ),
   );
-  
+
   $schema['panels_page_menu_router'] = array(
     'fields' => array(
       'pid' => array(
@@ -161,7 +161,6 @@ function panels_page_schema_1() {
   );
   return $schema;
 }
-
 
 function panels_page_install() {
   db_query("UPDATE {system} SET weight = 10 WHERE name = 'panels_page'");

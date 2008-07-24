@@ -1,5 +1,5 @@
 <?php
-// $Id: panels-threecol-33-34-33-stacked.tpl.php,v 1.1 2008/07/23 21:14:28 merlinofchaos Exp $
+// $Id: panels-threecol-33-34-33-stacked.tpl.php,v 1.2 2008/07/24 00:55:34 merlinofchaos Exp $
 /**
  * @file
  * Template for a 3 column panel layout.
@@ -18,7 +18,7 @@
  *   - $content['bottom']: Content in the bottom row.
  */
 ?>
-<div class="panel-display panel-3col-33-stacked  clear-block" <?php if (!empty($id)) { print "id=\"$id\""; } ?>>
+<div class="panel-display panel-3col-33-stacked  clear-block" <?php if (!empty($css_id)) { print "id=\"$css_id\""; } ?>>
   <div class="panel-panel panel-col-top">
     <div class="inside"><?php print $content['top']; ?></div>
   </div>

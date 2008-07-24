@@ -1,5 +1,5 @@
 <?php
-// $Id: panels-threecol-25-50-25.tpl.php,v 1.1 2008/07/23 21:14:28 merlinofchaos Exp $
+// $Id: panels-threecol-25-50-25.tpl.php,v 1.1 2008/07/24 00:55:34 merlinofchaos Exp $
 /**
  * @file
  * Template for the 1 column panel layout.
@@ -15,7 +15,7 @@
  *   - $content['right']: Content in the right column.
  */
 ?>
-<div class="panel-display panel-3col clear-block" <?php if (!empty($id)) { print "id=\"$id\""; } ?>>
+<div class="panel-display panel-3col clear-block" <?php if (!empty($css_id)) { print "id=\"$css_id\""; } ?>>
   <div class="panel-panel panel-col-first">
     <div class="inside"><?php print $content['left']; ?></div>
   </div>

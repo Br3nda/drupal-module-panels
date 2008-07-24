@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.2 2008/07/23 21:14:27 merlinofchaos Exp $
+// $Id: display-render.inc,v 1.3 2008/07/24 00:55:33 merlinofchaos Exp $
 
 /**
  * @file
@@ -295,18 +295,6 @@ function panels_render_panel($display, $panel, $panes) {
   }
 
   return theme($style['render panel'], $display, $owner_id, $panes, $style_settings, $panel);
-}
-
-/**
- * Print the layout link. Sends out to a theme function.
- * @layout
- */
-function panels_print_layout_link($id, $layout, $link) {
-  drupal_add_css(panels_get_path('css/panels_admin.css'));
-  $file = $layout['path'] . '/' . $layout['icon'];
-  $image = l(theme('image', $file), $link, array('html' => true));
-  $title = l($layout['title'], $link);
-  return theme('panels_layout_link', $title, $id, $image, $link);
 }
 
 /**

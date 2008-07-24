@@ -1,5 +1,5 @@
 <?php
-// $Id: rounded_corners.inc,v 1.3 2008/07/23 22:21:41 merlinofchaos Exp $
+// $Id: rounded_corners.inc,v 1.4 2008/07/24 00:55:35 merlinofchaos Exp $
 
 /**
  * @file styles/rounded_corners.inc
@@ -115,7 +115,7 @@ function panels_rounded_corners_css($display, $where = 'pane') {
 
   $css = <<<EOF
 
-$idstr .t-edge, .b-edge, .l-edge, .r-edge, .wrap-corner {
+.t-edge, .b-edge, .l-edge, .r-edge, .wrap-corner {
   position: relative;
   /* hasLayout -1 ? For IE only */
   zoom: 1;
@@ -137,10 +137,10 @@ $idstr .r-edge {
 $idstr .wrap-corner {
   background: #fff !important;
 }
-$idstr .wrap-corner .t-edge, .wrap-corner .b-edge {
+$idstr .wrap-corner .t-edge, $idstr .wrap-corner .b-edge {
   height: 11px;
 }
-$idstr .wrap-corner .l, .wrap-corner .r {
+$idstr .wrap-corner .l, $idstr .wrap-corner .r {
   position: absolute;
   top: 0;
   height: 11px;

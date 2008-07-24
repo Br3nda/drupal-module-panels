@@ -1,5 +1,5 @@
 <?php
-// $Id: panels-twocol-bricks.tpl.php,v 1.1 2008/07/23 21:14:29 merlinofchaos Exp $
+// $Id: panels-twocol-bricks.tpl.php,v 1.2 2008/07/24 00:55:34 merlinofchaos Exp $
 /**
  * @file
  * Template for a 2 column panel layout.
@@ -23,7 +23,7 @@
  *   - $content['bottom']: Content in the bottom row.
  */
 ?>
-<div class="panel-display panel-2col-bricks clear-block" <?php if (!empty($id)) { print "id=\"$id\""; } ?>>
+<div class="panel-display panel-2col-bricks clear-block" <?php if (!empty($css_id)) { print "id=\"$css_id\""; } ?>>
   <div class="panel-panel panel-col-top">
     <div class="inside"><?php print $content['top']; ?></div>
   </div>
