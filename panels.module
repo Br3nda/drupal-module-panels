@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.14 2008/07/24 00:55:33 merlinofchaos Exp $
+// $Id: panels.module,v 1.15 2008/07/25 16:10:15 merlinofchaos Exp $
 
 /**
  * Returns the API version of Panels. This didn't exist in 1.
@@ -158,10 +158,10 @@ function panels_menu() {
     'file' => 'includes/callbacks.inc',
   ) + $base;
 
-  // On behalf of the 'common' api in common.inc
-  $items['panels/common/ajax'] = array(
-    'page callback' => 'panels_common_ajax',
-    'file' => 'includes/common.inc',
+  // For context add/configure calls in common-context.inc
+  $items['panels/ajax/context-add'] = array(
+    'page callback' => 'panels_ajax_context_item_add',
+    'file' => 'includes/common-context.inc',
   ) + $base;
 
   // Provide a nice location for a panels admin panel.

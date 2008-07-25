@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.2 2008/07/16 00:09:03 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.3 2008/07/25 16:10:15 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -459,7 +459,6 @@ Drupal.Panels.DraggableHandler = function() {
     draggable.timeoutId = setTimeout('timer()', scrollTimer);
   }
 
-  console.log(this);
   $(this).mousedown(mouseDown);
 };
 
@@ -493,10 +492,6 @@ Drupal.behaviors.PanelsDisplayEditor = function(context) {
   $('input#panels-hide-all', context).click(Drupal.Panels.clickHideAll);
   $('input#panels-show-all', context).click(Drupal.Panels.clickShowAll);
 
-  // Bind links
-  $('a.panels-ajax-link:not(.display-processed)', context)
-    .addClass('display-processed')
-    .click(Drupal.Panels.clickAjaxLink);
   Drupal.Panels.bindClickDelete(context);
 };
 
