@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.29 2008/07/09 22:12:17 merlinofchaos Exp $
+// $Id: common.inc,v 1.1.2.30 2008/07/28 21:59:55 sdboyer Exp $
 
 
 /**
@@ -278,7 +278,7 @@ function panels_common_settings($module_name = 'panels_common') {
     foreach ($content_types as $id => $info) {
       if (isset($allowed[$id])) {
         $form['content_types'][$id] = array(
-          '#prefix' => '<div class="panels-page-type-container">',
+          '#prefix' => '<div class="panels-page-type-container clear-block">',
           '#suffix' => '</div>',
           '#type' => 'checkboxes',
           '#title' => t('Allowed @s content', array('@s' => $info['title'])),
