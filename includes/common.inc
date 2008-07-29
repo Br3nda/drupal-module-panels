@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.30 2008/07/28 21:59:55 sdboyer Exp $
+// $Id: common.inc,v 1.1.2.31 2008/07/29 07:32:11 sdboyer Exp $
 
 
 /**
@@ -10,7 +10,7 @@
 /**
  * Class definition for the allowed layouts governing structure.
  *
- * @ingroup mainapi
+ * @ingroup MainAPI
  *
  * This class is designed to handle panels allowed layouts data from start to finish, and sees
  * action at two times:\n
