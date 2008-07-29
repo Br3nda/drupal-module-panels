@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.115 2008/07/29 03:57:31 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.116 2008/07/29 07:42:27 sdboyer Exp $
 
 
 /**
@@ -380,18 +380,13 @@ function panels_get($var) {
 // panels display editing
 
 /**
- * @defgroup mainapi Functions comprising the main panels API
- * @{
- */
-
-/**
  * Main API entry point to edit a panel display.
+ *
+ * @ingroup MainAPI
  *
  * Sample implementations utiltizing the the complex $destination behavior can be found
  * in panels_page_edit_content() and, in a separate contrib module, OG Blueprints
  * (http://drupal.org/project/og_blueprints), og_blueprints_blueprint_edit().
- *
- * @ingroup mainapi
  *
  * @param object $display instanceof panels_display \n
  *  A fully loaded panels $display object, as returned from panels_load_display().
@@ -451,6 +446,8 @@ function panels_edit($display, $destination = NULL, $content_types = NULL) {
 /**
  * API entry point for selecting a layout for a given display.
  *
+ * @ingroup MainAPI
+ *
  * Layout selection is nothing more than a list of radio items encompassing the available
  * layouts for this display, as defined by .inc files in the panels/layouts subdirectory.
  * The only real complexity occurs when a user attempts to change the layout of a display
@@ -494,6 +491,8 @@ function panels_edit_layout($display, $finish, $destination = NULL, $allowed_lay
 
 /**
  * API entry point for configuring the layout settings for a given display.
+ *
+ * @ingroup MainAPI
  *
  * For all layouts except Flexible, the layout settings form allows the user to select styles,
  * as defined by .inc files in the panels/styles subdirectory, for the panels in their display.
@@ -553,6 +552,8 @@ function panels_edit_layout_settings($display, $finish, $destination = NULL, $ti
 /**
  * Forms the basis of a panel display
  *
+ * @ingroup MainAPI
+ *
  */
 class panels_display {
   var $args = array();
@@ -593,8 +594,8 @@ class panels_display {
   }
 
   function next_new_pid() {
-    // necessary if/until we use this method and ONLY this method for adding temporary pids.
-    // then we can do it with a nice static var.
+    // necessary if/until we use this method and ONLY this method for adding
+    // temporary pids. then we can do it with a nice static var.
     $id = array(0);
     foreach (array_keys($this->content) as $pid) {
       if (!is_numeric($pid)) {
@@ -605,10 +606,6 @@ class panels_display {
     return ++$next_id;
   }
 }
-
-/**
- * }@ End of 'defgroup mainapi', although other functions are specifically added later
- */
 
 function panels_export_pane_across_displays($source_display, &$target_display, $pid, $location = FALSE) {
   $pane = $source_display->clone_pane($pid);
@@ -640,6 +637,8 @@ function panels_sanitize_display(&$display) {
 
 /**
  * Creates a new display, setting the ID to our magic new id.
+ *
+ * @ingroup MainAPI
  */
 function panels_new_display() {
   $display = new panels_display();
@@ -649,6 +648,8 @@ function panels_new_display() {
 
 /**
  * Load and fill the requested $display object(s).
+ *
+ * @ingroup HookInvokers
  *
  * Helper function primarily for for panels_load_display().
  *
@@ -707,7 +708,7 @@ function panels_load_displays($dids) {
 /**
  * Load a single display.
  *
- * @ingroup mainapi
+ * @ingroup MainAPI
  *
  * @param int $did
  *  The display id (did) of the display to be loaded.
@@ -740,7 +741,7 @@ function panels_load_display($did) {
 /**
  * Save a display object.
  *
- * @ingroup mainapi
+ * @ingroup MainAPI
  *
  * Note a new $display only receives a real did once it is run through this function.
  * Until then, it uses a string placeholder, 'new', in place of a real did. The same
@@ -807,6 +808,7 @@ function panels_save_display(&$display) {
 
 /**
  * Delete a display.
+ * @ingroup MainAPI
  */
 function panels_delete_display($display) {
   if (is_object($display)) {
@@ -822,6 +824,8 @@ function panels_delete_display($display) {
 /**
  * Exports the provided display into portable code.
  *
+ * @ingroup MainAPI
+ *
  * This function is primarily intended as a mechanism for cloning displays.
  * It generates an exact replica (in code) of the provided $display, with
  * the exception that it replaces all ids (dids and pids) with 'new-*' values.
@@ -829,8 +833,6 @@ function panels_delete_display($display) {
  * the exported display written to the database and permanently saved.
  *
  * @see panels_page_export() or _panels_page_fetch_display() for sample implementations.
- *
- * @ingroup mainapi
  *
  * @param object $display instanceof panels_display \n
  *  This export function does no loading of additional data about the provided
@@ -905,10 +907,12 @@ function panels_var_export($object, $prefix = '') {
  * Render a display by loading the content into an appropriate
  * array and then passing through to panels_render_layout.
  *
+ * @ingroup MainAPI
+ * @ingroup HookInvokers
+ *
  * if $incoming_content is NULL, default content will be applied. Use
  * an empty string to indicate no content.
  * @render
- * @ingroup hook_invocations
  */
 function panels_render_display(&$display) {
   panels_load_include('plugins');
