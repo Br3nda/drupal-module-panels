@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.31 2008/07/14 05:10:16 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.32 2008/07/29 07:37:37 sdboyer Exp $
 
 
 /**
@@ -1433,6 +1433,8 @@ function panels_views_load_all() {
 
 /**
  * Get all 'default' view panes.
+ *
+ * @ingroup HookInvokers
  */
 function panels_views_default_panels() {
   $panels = module_invoke_all('default_panel_views');

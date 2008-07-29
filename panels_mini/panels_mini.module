@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.34 2008/07/19 03:55:29 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.35 2008/07/29 07:37:38 sdboyer Exp $
 
 /**
  * @file panels_mini.module
@@ -1176,6 +1176,8 @@ function panels_mini_export($panel_mini, $prefix = '') {
 
 /**
  * Get all 'default' mini panels.
+ *
+ * @ingroup HookInvokers
  */
 function panels_mini_default_panels() {
   $panels = module_invoke_all('default_panel_minis');

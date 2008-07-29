@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.64 2008/07/29 03:56:21 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.65 2008/07/29 07:37:38 sdboyer Exp $
 
 
 /**
@@ -1186,6 +1186,8 @@ function panels_page_export($panel_page, $prefix = '') {
 
 /**
  * Get all 'default' panels.
+ *
+ * @ingroup HookInvokers
  */
 function panels_page_default_panels() {
   $panels = module_invoke_all('default_panel_pages');

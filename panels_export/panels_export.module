@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_export.module,v 1.1.2.3 2008/05/27 20:21:14 sdboyer Exp $
+// $Id: panels_export.module,v 1.1.2.4 2008/07/29 07:37:38 sdboyer Exp $
 
 
 /**
@@ -41,6 +41,8 @@ function panels_export_perm() {
 
 /**
  * Page callback to export panels in bulk.
+ *
+ * @ingroup HookInvokers
  */
 function panels_export_export() {
   $exportables = array();
@@ -114,6 +116,9 @@ function theme_panels_export_export_form($form) {
   return $output;
 }
 
+/**
+ * @ingroup HookInvokers
+ */
 function panels_export_export_form_submit($form_id, $form_values) {
   $code = '';
   if (empty($form_values['name'])) {
