@@ -1,5 +1,5 @@
 <?php
-// $Id: docs.inc,v 1.1.2.3 2008/06/03 01:48:03 sdboyer Exp $
+// $Id: docs.inc,v 1.1.2.4 2008/07/29 07:31:14 sdboyer Exp $
 
 /**
 @file
@@ -9,9 +9,21 @@ the standard Drupal manner.
  */
 
 /**
+@addtogroup MainAPI Panels Main API Functions
+
+These functions comprise the main Panels API. Module developers interested in providing data to Panels, or using Panels as the organization/presentation layer for their module, should familiarize themselves with these functions first and foremost.
+ */
+
+/**
+@addtogroup HookInvokers Hook Invokers
+
+Functions in this list invoke one of Panels' numerous hooks. This includes hooks provided by the Panels API itself, as well the client modules that are packaged with Panels.
+ */
+
+/**
 @mainpage Panels 2 Documentation
 
-The Panels 2 API Documentation is intended as a guide to the innerworkings of Panels, and will primarily be of interest to Drupal themers and developers. \n\n Panels is a complex and abstract system, which necessitates the use of a lot of specialized terms. If you are new to Panels, we strongly recommend you consult the @ref panels_glossary "Panels Glossary" to familiarize yourself with the jargon.\n\n 
+The Panels 2 API Documentation is intended as a guide to the innerworkings of Panels, and will primarily be of interest to Drupal themers and developers. \n\n Panels is a complex and abstract system, which necessitates the use of a lot of specialized terms. If you are new to Panels, we strongly recommend you consult the @ref panels_glossary "Panels Glossary" to familiarize yourself with the jargon.\n\n
 
 @section panels_api_top Developer API Reference
 \li @subpage panels_api_plugins "Plugins API"
@@ -22,7 +34,7 @@ Please note that this documentation is generated directly from the Panels projec
 /**
 @page panels_glossary Panels Glossary
 
-\par 
+\par
 <em>"Hey - you know that box thing in Panels? It's that...ugh, y'know, it's that rectangular, light-colored box. And it's in the Panels editor. It's right there on the editing form, with its name at the top. No, no! Not the name I gave it on the other form, I CAN read - I mean the name of the boxy THING! What in tarnation do I call the thing itself!?!"<sup>*</sup></em>\n
 
 If you've ever tried to talk or write about - or, let's be honest, even <em>use</em> - Panels, then you probably know right where that sentence is coming from. Panels has all kinds of 'things' in it - things you click on, things you look at, things that contain other things, things that pop up, things that slide away, things that...well, the list goes on. It's enough of a challenge knowing what they are when we see them, but trying to communicate about Panels with real people, and not Panels itself? Fuhgettaboutit. So we're working on a little glossary that we're hoping might make that just a little better.
