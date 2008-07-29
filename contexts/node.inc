@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.1.2.13 2008/07/29 09:37:22 sdboyer Exp $
+// $Id: node.inc,v 1.1.2.14 2008/07/29 10:34:25 sdboyer Exp $
 
 
 /**
@@ -112,28 +112,11 @@ function panels_context_node_settings_form_validate($form, $form_values) {
     return;
   }
 
-  $nid = $form_values['node'];
-  $preg_matches = array();
-  $match = preg_match('/\[nid: (\d+)\]/', $nid, $preg_matches);
-  if (!$match) {
-    $match = preg_match('/^nid: (\d+)/', $nid, $preg_matches);
-  }
-
-  if ($match) {
-    $nid = $preg_matches[1];
-  }
-  if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
+  if ($nid = panels_nid_autocomplete($form_values['node'])) {
+    form_set_value($form['nid'], $nid);
   }
   else {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
-  }
-
-  if (!$node) {
     form_error($form['node'], t('Invalid node selected.'));
-  }
-  else {
-    form_set_value($form['nid'], $node->nid);
   }
 }
 
