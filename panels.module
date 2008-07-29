@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.114 2008/07/14 06:04:25 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.115 2008/07/29 03:57:31 sdboyer Exp $
 
 
 /**
@@ -852,7 +852,9 @@ function panels_export_display($display, $prefix = '') {
   $output .= $prefix . '$display->did = \'new\'' . ";\n";
   $fields = array('name', 'layout', 'layout_settings', 'panel_settings');
   foreach ($fields as $field) {
-    $output .= $prefix . '$display->' . $field . ' = ' . panels_var_export($display->$field, $prefix) . ";\n";
+    if (!empty($display->$field)) {
+      $output .= $prefix . '$display->' . $field . ' = ' . panels_var_export($display->$field, $prefix) . ";\n";
+    }
   }
 
   $output .= $prefix . '$display->content = array()' . ";\n";
@@ -878,7 +880,7 @@ function panels_export_display($display, $prefix = '') {
 function panels_export_pane($pane, $prefix = '') {
   $output = '';
   $output = $prefix . '$pane = new stdClass()'  . ";\n";
-  $fields = array('pid', 'panel', 'type', 'subtype', 'access', 'configuration');
+  $fields = array('pid', 'panel', 'type', 'subtype', 'access', 'configuration', 'shown');
   foreach ($fields as $field) {
     $output .= "$prefix  " . '$pane->' . $field . ' = ' . panels_var_export($pane->$field, "$prefix  ") . ";\n";
   }
