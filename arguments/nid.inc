@@ -1,5 +1,5 @@
 <?php
-// $Id: nid.inc,v 1.1.2.8 2008/06/03 13:18:07 pancho Exp $
+// $Id: nid.inc,v 1.1.2.9 2008/07/29 09:37:24 sdboyer Exp $
 
 
 /**
@@ -28,7 +28,7 @@ function panels_nid_panels_arguments() {
 function panels_nid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   // If unset it wants a generic, unfilled context.
   if ($empty) {
-    return panels_context_create_empty('node');
+    return panels_context_create_empty('node', $conf);
   }
 
   if (!is_numeric($arg)) {
@@ -44,7 +44,7 @@ function panels_nid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
     return FALSE;
   }
 
-  return panels_context_create('node', $node);
+  return panels_context_create('node', $node, $conf);
 }
 
 /**

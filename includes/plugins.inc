@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.49 2008/07/29 07:36:21 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.50 2008/07/29 09:37:23 sdboyer Exp $
 
 
 /**
@@ -1092,9 +1092,9 @@ function panels_context_create($type, $data = NULL, $conf = FALSE) {
   }
 }
 
-function panels_context_create_empty($type) {
+function panels_context_create_empty($type, $conf = FALSE) {
   if ($function = panels_plugin_get_function('contexts', $type, 'context')) {
-    return $function(TRUE);
+    return $function(TRUE, NULL, $conf);
   }
 }
 
@@ -1387,8 +1387,7 @@ function panels_panels_include_directory($plugin_type) {
 
 /**
  * Load plugin info for all hooks; this is handled separately from plugins
- * from files. This is cached so we don't find ourselves building htis
- * repeatedly.
+ * from files. This caches so we don't find ourselves building it repeatedly.
  *
  * NOTE: This hook does work, but if you are implementing Panels in a client,
  * @see panels_get_include_directories() as it is the preferred method.
