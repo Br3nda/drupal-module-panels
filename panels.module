@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.117 2008/07/29 07:43:45 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.118 2008/07/29 10:24:00 sdboyer Exp $
 
 
 /**
@@ -904,10 +904,10 @@ function panels_var_export($object, $prefix = '') {
  *
  * @ingroup MainAPI
  * @ingroup HookInvokers
+ * @ingroup render
  *
  * if $incoming_content is NULL, default content will be applied. Use
  * an empty string to indicate no content.
- * @render
  */
 function panels_render_display(&$display) {
   panels_load_include('plugins');
@@ -944,7 +944,7 @@ function panels_render_display(&$display) {
  * array defined like array('left' => t('Left side'), 'right' =>
  * t('Right side')), then the $content array should be array('left' =>
  * $output_left, 'right' => $output_right)
- * @render
+ * @ingroup render
  */
 function panels_print_layout($id, $content) {
   panels_load_include('plugins');
@@ -958,7 +958,7 @@ function panels_print_layout($id, $content) {
 
 /**
  * Given a full layout structure and a content array, render a panel display.
- * @render
+ * @ingroup render
  */
 function panels_render_layout($layout, $content, $css_id = NULL, $settings = array()) {
   if (!empty($layout['css'])) {
@@ -1175,7 +1175,7 @@ function panels_get_panel_style_and_settings($panel_settings, $panel) {
  *
  * @return
  *   The rendered HTML for a panel.
- * @render
+ * @ingroup render
  */
 function panels_render_panel($display, $panel, $panes) {
   list($style, $style_settings) = panels_get_panel_style_and_settings($display->panel_settings, $panel);
