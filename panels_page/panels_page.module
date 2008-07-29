@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.65 2008/07/29 07:37:38 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.66 2008/07/29 10:07:30 sdboyer Exp $
 
 
 /**
@@ -1160,11 +1160,10 @@ function panels_page_export($panel_page, $prefix = '') {
   $fields = panels_page_fields();
   $output .= $prefix . '$page = new stdClass()' . ";\n";
   $output .= $prefix . '$page->pid = \'new\'' . ";\n";
-  foreach ($fields as $field => $q) {
-    if ($field == 'displays') {
+  foreach (array_keys($fields) as $field) {
+    if (!isset($panel_page->$field) || in_array($field, array('displays', 'contexts', 'display'))) {
       continue;
     }
-
     $output .= $prefix . '  $page->' . $field . ' = ' . panels_var_export($panel_page->$field, '  ') . ";\n";
   }
   // Export the primary display
