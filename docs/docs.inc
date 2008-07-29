@@ -1,5 +1,5 @@
 <?php
-// $Id: docs.inc,v 1.1.2.4 2008/07/29 07:31:14 sdboyer Exp $
+// $Id: docs.inc,v 1.1.2.5 2008/07/29 08:57:22 sdboyer Exp $
 
 /**
 @file
@@ -18,6 +18,12 @@ These functions comprise the main Panels API. Module developers interested in pr
 @addtogroup HookInvokers Hook Invokers
 
 Functions in this list invoke one of Panels' numerous hooks. This includes hooks provided by the Panels API itself, as well the client modules that are packaged with Panels.
+ */
+
+/**
+@addtogroup PanelsAjax Panels Ajax Handlers
+
+These functions comprise Panels' ajax handling on the php end. They're pretty much only used for admin/editing at the moment.
  */
 
 /**
