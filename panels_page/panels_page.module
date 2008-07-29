@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.63 2008/07/15 02:34:37 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.64 2008/07/29 03:56:21 sdboyer Exp $
 
 
 /**
@@ -836,11 +836,12 @@ function panels_page_fetch_display(&$panel_page, $id = NULL) {
   }
   else {
     // Otherwise, fetch from our alternative displays.
-    $panel_page->display = $display = _panels_page_fetch_display($panel_page, $id);
+    $panel_page->display = _panels_page_fetch_display($panel_page, $id);
+    $display =& $panel_page->display;
   }
 
   $display->owner = $panel_page;
-  $display->owner->id = $name;
+  $display->owner->id = $panel_page->name;
   return $display;
 }
 
@@ -856,23 +857,23 @@ function _panels_page_fetch_display(&$panel_page, $id) {
   // At this point the display does not yet exist, which means we need to
   // create one and save the panel page to reflect this.
   if (!empty($info['default'])) {
-    $display = _panels_fetch_display_from_info($panel_page->displays[$info['default']]);
-    if (empty($display)) {
-      // Use the default display.
-      if (empty($panel_page->display)) {
-        // Load it if not already loaded
-        $panel_page->display = $display = panels_load_display($panel_page->did);
-      }
-      else {
-        // Otherwise, use the loaded display
-        $display = $panel_page->display;
-      }
+    // If there's a default for the context we're switching on, use that.
+    if (!empty($panel_page->displays[$info['default']])) {
+      $for_export = _panels_fetch_display_from_info($info);
+    }
+    // Otherwise, use the default display. Load it if it's not already loaded.
+    else if (empty($panel_page->display)) {
+      $panel_page->display = $for_export = panels_load_display($panel_page->did);
+    }
+    // If the default display isn't already loaded, then load it.
+    else {
+      $for_export = $panel_page->display;
     }
   }
 
   // Make a copy of the display; using the export forces all the IDs properly,
   // since we don't want this to actually *be* the original display.
-  $code = panels_export_display($display);
+  $code = panels_export_display($for_export);
   eval($code);
 
   return $display;
@@ -984,6 +985,9 @@ function panels_page_load($pid, $load_display = FALSE) {
   static $cache = array();
 
   if (array_key_exists($pid, $cache)) {
+    if ($load_display && empty($cache[$pid]->display)) {
+      $cache[$pid]->display = panels_load_display($cache[$pid]->did);
+    }
     return $cache[$pid];
   }
 
