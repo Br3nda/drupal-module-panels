@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.12 2008/07/16 15:25:11 sdboyer Exp $
+// $Id: flexible.inc,v 1.1.2.13 2008/07/29 05:55:43 sdboyer Exp $
 
 
 /**
@@ -354,7 +354,8 @@ function theme_panels_flexible($id, $content, $settings) {
   }
 
   // Wrap the whole thing up nice and snug
-  $output = "<div class=\"panel-flexible clear-block\" $idstr>\n<div class=\"panel-flexible-sidebars\">\n" . $output . "</div>\n</div>\n";
+  $sidebar_class = (!empty($settings['sidebars']['left']) || !empty($settings['sidebars']['right'])) ? ' class="panel-flexible-sidebars"' : '';
+  $output = "<div class=\"panel-flexible clear-block\" $idstr>\n<div". $sidebar_class .">\n" . $output . "</div>\n</div>\n";
   drupal_set_html_head("<style type=\"text/css\" media=\"all\">\n$css</style>\n");
   return $output;
 }
