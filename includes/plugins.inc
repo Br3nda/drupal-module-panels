@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.47 2008/07/18 22:40:00 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.48 2008/07/29 07:35:11 sdboyer Exp $
 
 
 /**
@@ -134,11 +134,6 @@ class panels_optional_context extends panels_required_context {
     return $result;
   }
 }
-
-/**
- * @defgroup panels_content Panels content and pane helper/info functions
- * @{
- */
 
 /**
  * Master pane access function; combines all the relevant parameters that
@@ -511,6 +506,8 @@ function panels_get_all_content_types() {
 /**
  * Get the content from a given pane.
  *
+ * @ingroup HookInvokers
+ *
  * @param $pane
  *   The pane to retrieve content from.
  * @param $args
@@ -746,10 +743,6 @@ function panels_get_pane_title(&$pane, $context = array(), $incoming_content = N
   }
   return panels_ct_get_title($pane->type, $pane->configuration, $pane->context, $incoming_content);
 }
-
-/**
- * @} End of "defgroup panels_content".
- */
 
 // ---------------------------------------------------------------------------
 // panels argument helpers
@@ -1087,8 +1080,6 @@ function _panels_context_select($contexts, $required, $context) {
  *   The type of context to create; this loads a plugin.
  * @param $data
  *   The data to put into the context.
- * @param $empty
- *   Whether or not this context is specifically empty.
  * @param $conf
  *   A configuration structure if this context was created via UI.
  *
@@ -1114,7 +1105,7 @@ function panels_context_create_empty($type) {
  *   An array of contexts.
  *
  * @return
- *   An array of keyword substitutions suitable for @code{strtr()}
+ *   An array of keyword substitutions suitable for strtr()
  */
 function panels_context_get_keywords($contexts) {
   $keywords = array();
@@ -1348,7 +1339,10 @@ function panels_load_includes($plugin_type, $hook, $file = NULL) {
 }
 
 /**
- * Invocation of panels_include_directory(), part of the main panels API.
+ * Invokes hook_panels_include_directory(), which is part of the main panels API.
+ *
+ * @ingroup MainAPI
+ * @ingroup HookInvokers
  *
  * This hook allows other modules to create their own panels .inc files according to the
  * same filename and directory schema utilized by Panels itself, or some other arbitrary
@@ -1363,8 +1357,6 @@ function panels_load_includes($plugin_type, $hook, $file = NULL) {
  * follow the conventions will likely cause your plugins not to work. Possibly even worse,
  * failure to follow the conventions can result in namespace collisions between your
  * module and other modules invoking the panels API.
- *
- * @ingroup mainapi
  *
  * @param string $plugintype
  *   The type of Panels plugin being requested. Can be any of the following seven:
@@ -1391,16 +1383,17 @@ function panels_get_directories($plugin_type) {
  */
 function panels_panels_include_directory($plugin_type) {
   return $plugin_type;
-  // This is an abbreviated form that works because the panels directory
-  // is set up with a one-to-one relationship between include directory names
-  // and plugin types. If we were to express this verbosely, it would look like
-  // this:
 }
 
 /**
  * Load plugin info for all hooks; this is handled separately from plugins
  * from files. This is cached so we don't find ourselves building htis
  * repeatedly.
+ *
+ * NOTE: This hook does work, but if you are implementing Panels in a client,
+ * @see panels_get_include_directories() as it is the preferred method.
+ *
+ * @ingroup HookInvokers
  *
  * @param $hook
  *   The hook being invoked.
