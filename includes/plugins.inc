@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.48 2008/07/29 07:35:11 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.49 2008/07/29 07:36:21 sdboyer Exp $
 
 
 /**
@@ -1319,7 +1319,7 @@ function panels_plugin_get_function($plugin, $which, $function_name) {
  */
 function panels_load_includes($plugin_type, $hook, $file = NULL) {
   // Load all our plugins.
-  $directories = panels_get_directories($plugin_type);
+  $directories = panels_get_include_directories($plugin_type);
   // $directories['panels'] = panels_get_path($plugin_type);
   $file_list = array();
   foreach ($directories as $module => $path) {
@@ -1367,7 +1367,7 @@ function panels_load_includes($plugin_type, $hook, $file = NULL) {
  *   Subdirectories should be ONLY the subdirectory of your module where the appropriate
  *   types of .inc files reside.
  */
-function panels_get_directories($plugin_type) {
+function panels_get_include_directories($plugin_type) {
   $directories = array();
   foreach (module_implements('panels_include_directory') as $module) {
     $result = module_invoke($module, 'panels_include_directory', $plugin_type);
