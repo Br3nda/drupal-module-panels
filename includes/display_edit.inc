@@ -1,5 +1,5 @@
 <?php
-// $Id: display_edit.inc,v 1.1.2.61 2008/07/19 01:01:18 sdboyer Exp $
+// $Id: display_edit.inc,v 1.1.2.62 2008/07/29 07:59:00 sdboyer Exp $
 
 
 /*
@@ -669,11 +669,6 @@ function _panels_render_preview_pane_disabled($pane, $context) {
 }
 
 /**
- * @defgroup panels_ajax Functions for panels ajax features
- * @{
- */
-
-/**
  * Entry point into all ajax operations.
  *
  * @param string $op
@@ -702,6 +697,8 @@ function panels_ajax($op = NULL, $did = NULL, $pid = NULL) {
  * Entry point for AJAX: 'Add Content' modal form, from which the user selects the
  * type of pane to add.
  *
+ * @ingroup PanelsAjax
+ *
  * @param int $did
  *  The display id of the $display object currently being edited.
  * @param string $panel_id
@@ -724,6 +721,9 @@ function panels_ajax_add_content($did = NULL, $panel_id = NULL) {
   panels_ajax_render($output);
 }
 
+/**
+ * @ingroup PanelsAjax
+ */
 function panels_add_content($cache, $panel_id) {
   $return = new stdClass();
   $return->type  = 'display';
@@ -835,6 +835,8 @@ function panels_add_content($cache, $panel_id) {
 /**
  * Entry point for AJAX: toggle pane show/hide status.
  *
+ * @ingroup PanelsAjax
+ *
  * @param int $did
  *  The display id for the display object currently being edited. Errors out silently if absent.
  * @param int $pid
@@ -874,6 +876,8 @@ function panels_ajax_toggle_shown($did = NULL, $pid = NULL, $op = NULL) {
  * configuration form to the screen.
  *
  * Once form submission is completed, data is pushed back into js by panels_ajax_render().
+ *
+ * @ingroup PanelsAjax
  *
  * @param int $did
  *  The display id for the display object currently being edited. Errors out silently if absent.
@@ -921,6 +925,8 @@ function panels_ajax_add_config($did = NULL, $pane_info = NULL) {
 /**
  * Entry point for AJAX: Edit pane configuration.
  *
+ * @ingroup PanelsAjax
+ *
  * Prepares the display $cache and a pre-existing $pane so that the pane configuration
  * form for the $pane can be rendered.
  *
@@ -960,6 +966,8 @@ function panels_ajax_configure($did = NULL, $pid = NULL) {
  * Helper function for ajax pane type editing callbacks. When needed, preps
  * the cached $display object with relevant data from the content type.
  *
+ * @ingroup PanelsAjax
+ *
  * @param array $cache
  *  The loaded $cache object containing all the current $display editing data.
  * @param object $pane
@@ -993,6 +1001,8 @@ function _panels_ajax_ct_preconfigure(&$cache, &$pane) {
 
 /**
  * Master FAPI definition for all pane add/edit configuration forms.
+ *
+ * @ingroup PanelsAjax
  *
  * @param object $cache
  *  The $cache object for the panels $display currently being edited.
@@ -1083,6 +1093,8 @@ function panels_content_config_form_validate($form_id, $form_values, $form) {
 /**
  * FAPI submit handler for panels_content_config_form().
  *
+ * @ingroup PanelsAjax
+ *
  * Call any submit handlers defined by the content type, update
  * the $cache object with the relevant data, save $cache to the
  * object_cache table, and return data for ajax updates.
@@ -1161,6 +1173,9 @@ function panels_content_config_add_form_submit($form_values, $cache, $pane) {
   return $ajax_vars;
 }
 
+/**
+ * @ingroup PanelsAjax
+ */
 function panels_content_config_edit_form_submit($form_values, $cache, $pane) {
   // If this content type defines its own 'editor render callback', we need to
   // invoke that again, since we're not doing a full panels_show_pane().
@@ -1179,6 +1194,7 @@ function panels_content_config_edit_form_submit($form_values, $cache, $pane) {
 
 /**
  * Entry point for AJAX modal: configure pane
+ * @ingroup PanelsAjax
  */
 function panels_ajax_cache($did = NULL, $pid = NULL) {
   if (!((is_numeric($did) || $did == 'new') && $cache = panels_cache_get($did))) {
@@ -1200,6 +1216,7 @@ function panels_ajax_cache($did = NULL, $pid = NULL) {
 
 /**
  * Choose cache method form
+ * @ingroup PanelsAjax
  */
 function panels_edit_cache_method_form($display, $pid) {
   $conf = $pid ? $display->content[$pid]->cache : $display->cache;
@@ -1240,6 +1257,7 @@ function panels_edit_cache_method_form($display, $pid) {
  * Submit callback for panels_edit_cache_method_form.
  *
  * All this needs to do is return the method.
+ * @ingroup PanelsAjax
  */
 function panels_edit_cache_method_form_submit($form_id, $form_values) {
   return $form_values['method'];
@@ -1247,6 +1265,7 @@ function panels_edit_cache_method_form_submit($form_id, $form_values) {
 
 /**
  * Handle the cache settings form
+ * @ingroup PanelsAjax
  */
 function panels_ajax_cache_settings($cache, $pid, $method = NULL) {
   if (empty($method) && isset($_POST['method'])) {
@@ -1278,6 +1297,7 @@ function panels_ajax_cache_settings($cache, $pid, $method = NULL) {
 
 /**
  * Set the cache method and associated settings on the display.
+ * @ingroup PanelsAjax
  */
 function panels_ajax_set_cache_data(&$display, $pid, $method, $settings = array()) {
   if ($pid) {
@@ -1293,6 +1313,7 @@ function panels_ajax_set_cache_data(&$display, $pid, $method, $settings = array(
 
 /**
  * Cache settings form
+ * @ingroup PanelsAjax
  */
 function panels_edit_cache_settings_form($display, $pid, $method, $settings_function) {
   $conf = $pid ? $display->content[$pid]->cache : $display->cache;
@@ -1339,6 +1360,7 @@ function panels_edit_cache_settings_form_validate($form_id, $form_values, $form)
 
 /**
  * Allows panel styles to validate their style settings.
+ * @ingroup PanelsAjax
  */
 function panels_edit_cache_settings_form_submit($form_id, $form_values) {
   if ($function = panels_plugin_get_function('cache', $form_values['method'], 'settings form submit')) {
@@ -1353,6 +1375,9 @@ function panels_edit_cache_settings_form_submit($form_id, $form_values) {
   return $display;
 }
 
+/**
+ * @ingroup PanelsAjax
+ */
 function panels_edit_submit_subform($display) {
   // Check forms to make sure only valid forms can be rendered this way.
   $valid_forms = array('panels_add_content_config_form', 'panels_edit_pane_config_form');
@@ -1393,6 +1418,7 @@ function panels_edit_submit_subform($display) {
 
 /**
  * Form to edit panel style settings.
+ * @ingroup PanelsAjax
  */
 function panels_panel_settings($display) {
   $panel_settings = $display->panel_settings;
@@ -1529,7 +1555,7 @@ function panels_panel_settings($display) {
 }
 
 /**
- * }@ End of 'defgroup panels_ajax'
+ * @} ends PanelsAjax group
  */
 
 function panels_panel_settings_validate($form_id, $form_values, $form) {
@@ -1544,7 +1570,7 @@ function panels_panel_settings_submit($form_id, $form_values) {
 /**
  * AJAX incoming to deal with the style settings modal
  *
- * @ingroup panels_ajax
+ * @ingroup PanelsAjax
  */
 function panels_panel_settings_ajax($did, $panel, $name) {
   if ($name == '0') {
@@ -1572,7 +1598,7 @@ function panels_panel_settings_ajax($did, $panel, $name) {
 /**
  * Form for the style settings modal.
  *
- * @ingroup panels_ajax
+ * @ingroup PanelsAjax
  */
 function panels_common_style_settings_form($did, $style, $style_settings) {
   $form['start_form'] = array('#value' => '<div class="modal-form">');
