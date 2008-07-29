@@ -1,5 +1,5 @@
 <?php
-// $Id: node_add_form.inc,v 1.1.2.5 2008/06/03 13:18:07 pancho Exp $
+// $Id: node_add_form.inc,v 1.1.2.6 2008/07/29 10:08:14 sdboyer Exp $
 
 
 /**
@@ -73,16 +73,16 @@ function panels_context_node_add_form_settings_form($conf, $external = FALSE) {
     $options[$type] = $info->name;
   }
 
-  $form['types'] = array(
+  $form['type'] = array(
     '#title' => t('Node type'),
     '#type' => 'select',
     '#options' => $options,
-    '#default_value' => $conf['types'],
+    '#default_value' => $conf['type'],
     '#description' => t('Select the node type for this form.'),
   );
 
   if ($external) {
-    $form['types']['#description'] .= ' ' . t('Select external to require this from an external source (such as a containing panel page).');
+    $form['type']['#description'] .= ' ' . t('Select external to require this from an external source (such as a containing panel page).');
   }
 
   return $form;
