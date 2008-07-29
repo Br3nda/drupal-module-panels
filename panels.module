@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.116 2008/07/29 07:42:27 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.117 2008/07/29 07:43:45 sdboyer Exp $
 
 
 /**
@@ -605,11 +605,6 @@ class panels_display {
     $next_id = end($id);
     return ++$next_id;
   }
-}
-
-function panels_export_pane_across_displays($source_display, &$target_display, $pid, $location = FALSE) {
-  $pane = $source_display->clone_pane($pid);
-  $target_display->add_pane($pane, $location);
 }
 
 /**
