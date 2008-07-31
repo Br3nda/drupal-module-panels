@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.5 2008/07/25 16:10:15 merlinofchaos Exp $
+// $Id: common.inc,v 1.6 2008/07/31 00:05:45 merlinofchaos Exp $
 
 
 /**
@@ -479,39 +479,6 @@ function panels_common_ajax($module = NULL, $data = NULL, $info = NULL, $info2 =
     default:
       panels_ajax_render(t('An error occurred'), t('Error'));
   }
-}
-
-// TODO: Move this somewhere more appropriate
-function panels_common_get_arg_id($arguments, $name) {
-  // Figure out which instance of this argument we're creating
-  $id = 0;
-  foreach ($arguments as $arg) {
-    if ($arg['name'] == $name) {
-      if ($arg['id'] > $id) {
-        $id = $arg['id'];
-      }
-    }
-  }
-  return $id;
-}
-
-function panels_common_get_keyword($page, $word) {
-  // Create a complete set of keywords
-  $keywords = array();
-  foreach (array('arguments', 'relationships', 'contexts', 'requiredcontexts') as $type) {
-    if (!empty($page->$type) && is_array($page->$type)) {
-      foreach ($page->$type as $info) {
-        $keywords[$info['keyword']] = TRUE;
-      }
-    }
-  }
-
-  $keyword = $word;
-  $count = 0;
-  while ($keywords[$keyword]) {
-    $keyword = $word . '_' . ++$count;
-  }
-  return $keyword;
 }
 
 /**

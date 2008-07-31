@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.3 2008/07/25 16:10:15 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.4 2008/07/31 00:05:45 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -48,13 +48,6 @@ Drupal.Panels.bindPortlet = function() {
       toggle.toggleClass('toggle-collapsed');
     });
     content.hide();
-  }
-};
-
-Drupal.Panels.changed = function(item) {
-  if (!item.is('.changed')) {
-    item.addClass('changed');
-    item.find('div.grabber span.text').append(' <span class="star">*</span> ');
   }
 };
 

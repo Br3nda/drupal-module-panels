@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.16 2008/07/25 21:09:05 sdboyer Exp $
+// $Id: panels.module,v 1.17 2008/07/31 00:05:44 merlinofchaos Exp $
 
 /**
  * Returns the API version of Panels. This didn't exist in 1.
@@ -45,7 +45,7 @@ function panels_theme() {
     'arguments' => array('form'),
     'file' => 'includes/common.inc',
   );
-  $theme['panels_common_content_item_row'] = array(
+  $theme['panels_common_context_item_row'] = array(
     'arguments' => array('type', 'form', 'position', 'count', 'with_tr' => TRUE),
     'file' => 'includes/common.inc',
   );
@@ -161,6 +161,10 @@ function panels_menu() {
   // For context add/configure calls in common-context.inc
   $items['panels/ajax/context-add'] = array(
     'page callback' => 'panels_ajax_context_item_add',
+    'file' => 'includes/common-context.inc',
+  ) + $base;
+  $items['panels/ajax/context-configure'] = array(
+    'page callback' => 'panels_ajax_context_item_edit',
     'file' => 'includes/common-context.inc',
   ) + $base;
 

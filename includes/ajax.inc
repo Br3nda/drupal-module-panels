@@ -1,5 +1,5 @@
 <?php
-// $Id: ajax.inc,v 1.2 2008/07/23 22:05:25 merlinofchaos Exp $
+// $Id: ajax.inc,v 1.3 2008/07/31 00:05:45 merlinofchaos Exp $
 
 /**
  * @file
@@ -21,6 +21,7 @@ function panels_modal_js_includes($modals = array()) {
     $ajax['panels']['modals'] = $modals;
   }
 
+  drupal_add_js(panels_get_path('js/panels-base.js'));
   drupal_add_js($ajax, 'setting');
   drupal_add_js(panels_get_path('js/lib/dimensions.js'));
   drupal_add_js(panels_get_path('js/lib/mc.js'));

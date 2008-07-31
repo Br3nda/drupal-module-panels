@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.admin.inc,v 1.1 2008/07/25 16:10:16 merlinofchaos Exp $
+// $Id: panels_mini.admin.inc,v 1.2 2008/07/31 00:05:45 merlinofchaos Exp $
 
 /**
  * @file
@@ -590,6 +590,7 @@ function panels_mini_context_form(&$form_state, $panel_mini, $next = NULL) {
   );
 
   panels_load_include('common-context');
+  panels_load_include('ajax');
 
   $settings = panels_common_add_context_form('panel_mini', $form, $form_state, $form['right']['contexts_table'], $panel_mini);
   $settings += panels_common_add_required_context_form('panel_mini', $form, $form_state, $form['left']['required_contexts_table'], $panel_mini);
@@ -614,9 +615,10 @@ function panels_mini_context_form_submit($form, &$form_state) {
   $panel_mini = $form_values['panel_mini'];
 
   // Organize these from the common form.
-  panels_common_save_context('context', $panel_mini->contexts, $form_values);
+
+//  panels_common_save_context('context', $panel_mini->contexts, $form_values);
   panels_common_save_context('requiredcontext', $panel_mini->requiredcontexts, $form_values);
-  panels_common_save_context('relationship', $panel_mini->relationships, $form_values);
+//  panels_common_save_context('relationship', $panel_mini->relationships, $form_values);
 
   drupal_set_message(t('Your changes have been saved.'));
   panels_mini_save($panel_mini);
