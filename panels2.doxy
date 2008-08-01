@@ -1,4 +1,4 @@
-# $Id: panels2.doxy,v 1.1.2.7 2008/06/03 01:42:36 sdboyer Exp $
+# $Id: panels2.doxy,v 1.1.2.8 2008/08/01 03:56:51 sdboyer Exp $
 # Doxyfile 1.5.6
 
 # MAKE SURE to replace the ${variable} values with settings appropriate
@@ -103,7 +103,7 @@ GENERATE_TESTLIST      = YES
 GENERATE_BUGLIST       = YES
 GENERATE_DEPRECATEDLIST= YES
 ENABLED_SECTIONS       = YES
-MAX_INITIALIZER_LINES  = 30
+MAX_INITIALIZER_LINES  = 60
 SHOW_USED_FILES        = YES
 SHOW_DIRECTORIES       = YES
 SHOW_FILES             = YES
@@ -118,7 +118,7 @@ WARN_IF_UNDOCUMENTED   = NO
 WARN_IF_DOC_ERROR      = YES
 WARN_NO_PARAMDOC       = YES
 WARN_FORMAT            = "$line: $text"
-WARN_LOGFILE           = /var/log/doxy/drupal-doxy.log
+WARN_LOGFILE           = 
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
@@ -128,7 +128,8 @@ FILE_PATTERNS          = *.module \
                          *.theme \
                          *.engine \
                          *.install \
-                         *.inc
+                         *.inc \
+                         *.test
 RECURSIVE              = YES
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = YES
