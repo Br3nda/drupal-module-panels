@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node_legacy.module,v 1.1.2.11 2008/07/08 06:35:38 sdboyer Exp $
+// $Id: panels_node_legacy.module,v 1.1.2.12 2008/08/03 04:42:25 sdboyer Exp $
 
 
 /**
@@ -193,28 +193,12 @@ function panels_node_legacy_edit_validate($form, $form_values) {
     return;
   }
 
-  $nid = $form_values['nid'];
-  $preg_matches = array();
-  $match = preg_match('/\[nid: (\d+)\]/', $nid, $preg_matches);
-  if (!$match) {
-    $match = preg_match('/^nid: (\d+)/', $nid, $preg_matches);
-  }
-
-  if ($match) {
-    $nid = $preg_matches[1];
-  }
-  if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
-  }
-  else {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
-  }
-  if ($node) {
-    form_set_value($form['nid'], $node->nid);
-  }
-
-  if (!($node || preg_match('/^[@%]\d+$/', $nid))) {
-    form_error($form['nid'], t('Invalid node'));
+  if ($nid = panels_nid_autocomplete($form_values['nid'])) {
+    form_set_value($form['nid'], $nid);
+  } else {
+    if (!preg_match('/^[@%]\d+$/', $form_values['nid'])) {
+      form_error($form['nid'], t('Invalid node'));
+    }
   }
 }
 
