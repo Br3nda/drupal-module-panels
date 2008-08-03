@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.1.2.15 2008/08/03 04:15:44 sdboyer Exp $
+// $Id: node.inc,v 1.1.2.16 2008/08/03 04:23:11 sdboyer Exp $
 
 
 /**
@@ -30,7 +30,7 @@ function panels_context_create_node($empty, $data = NULL, $conf = FALSE) {
   if (!empty($conf['types'])) {
     foreach ($conf['types'] as $type) {
       if ($type) {
-        $types[] = 'node-'. $type;
+        $types[] = 'node-' . $type;
       }
     }
   }
@@ -60,6 +60,12 @@ function panels_context_create_node($empty, $data = NULL, $conf = FALSE) {
     $context->data     = $data;
     $context->title    = $data->title;
     $context->argument = $data->nid;
+    if (is_array($context->type)) {
+      $context->type[] = 'node-' . $data->type;
+    }
+    else {
+      $context->type = array($context->type, 'node-' . $data->type);
+    }
     return $context;
   }
 }
