@@ -1,13 +1,13 @@
 <?php
-// $Id: panels_node_legacy.module,v 1.1.2.12 2008/08/03 04:42:25 sdboyer Exp $
+// $Id: panels_node_legacy.module,v 1.1.2.13 2008/08/03 04:43:03 sdboyer Exp $
 
 
 /**
  * @file panels_node_legacy.module
  *
  * This module exposes nodes directly to the add content interface.
- * The context system provided by the main panel module is a much more powerful
- * replacement for this simple, yet deprecated method.
+ * The context system provides the same functionality with considerably more
+ * power, but this module is sufficient for some targeted use cases.
  */
 
 /**
