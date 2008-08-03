@@ -1,5 +1,5 @@
 <?php
-// $Id: node_comment_form.inc,v 1.1.2.8 2008/05/27 20:21:11 sdboyer Exp $
+// $Id: node_comment_form.inc,v 1.1.2.9 2008/08/03 03:12:07 sdboyer Exp $
 
 
 /**
@@ -38,7 +38,12 @@ function panels_content_node_comment_form($conf, $panel_args, $context) {
   }
   else {
     if (user_access('post comments') && node_comment_mode($node->nid) == COMMENT_NODE_READ_WRITE) {
-      $block->content = drupal_get_form('panels_comment_form', array('nid' => $node->nid));
+      $form = drupal_retrieve_form('comment_form', array('nid' => $node->nid));
+      $form['#action'] = url($_GET['q'], NULL, 'new');
+      $form['#redirect'] = array($_GET['q'], NULL, 'new');
+      drupal_process_form('comment_form', $form);
+      drupal_prepare_form('comment_form', $form);
+      $block->content = drupal_render_form('comment_form', $form);
     }
   }
 
@@ -63,17 +68,5 @@ function panels_admin_content_types_node_comment_form() {
 
 function panels_admin_title_node_comment_form($conf, $context) {
   return t('"@s" comment form', array('@s' => $context->identifier));
-}
-
-function panels_comment_form($edit) {
-  $form = comment_form($edit);
-  // force the form to come back to here.
-  $url = parse_url($_GET['q']);
-  $path = $url['path'];
-  $form['#action'] = url($path, NULL, 'new');
-  $form['#redirect'] = array($path, NULL, 'new');
-  $form['#validate']['comment_form_validate'] = array();
-  $form['#submit']['comment_form_submit'] = array();
-  return $form;
 }
 
