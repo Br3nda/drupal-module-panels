@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.49 2008/07/09 21:23:55 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.50 2008/08/03 06:46:51 sdboyer Exp $
 
 
 /**
@@ -25,7 +25,7 @@ function panels_page_list_page() {
     t('Operations'),
   );
 
-  // Load all panel pages and their primary displays. 
+  // Load all panel pages and their primary displays.
   $panel_pages = panels_page_load_all();
   $dids = array();
   foreach ($panel_pages as $panel_page) {
@@ -551,6 +551,11 @@ function panels_page_advanced_form($panel_page, $next = NULL) {
   return $form;
 }
 
+function panels_page_advanced_form_validate($form_id, $form_values, $form) {
+  panels_load_include('panels_page.css_filter', 'panels_page/');
+  $disassembled_css = panels_page_disassemble_css($form_values['css']);
+}
+
 /**
  * Process submission of the panel page edit form.
  */
@@ -885,11 +890,11 @@ function panels_page_admin_view($panel_page, $args) {
     $description = format_plural($args_missing,
       t('1 argument is missing to generate a valid URL.'),
       t('%count arguments are missing to generate a valid URL.', array('%count' => $args_missing))
-    ); 
+    );
   }
   else {
     $value = l($url, $url);
-    $description = t('Click to see the real panel page.'); 
+    $description = t('Click to see the real panel page.');
   }
   $form['fieldset']['url'] = array(
     '#type' => 'item',
@@ -903,7 +908,7 @@ function panels_page_admin_view($panel_page, $args) {
   foreach ($contexts as $id => $context) {
     if (substr($id, 0, 8) == 'argument') {
       $required = ($count + 1 <= $required_args) ? TRUE : FALSE;
-      $description = $required ? t('Required argument (occupies %-placeholder number !position)', array('!position' => $count + 1)) : t('Optional argument'); 
+      $description = $required ? t('Required argument (occupies %-placeholder number !position)', array('!position' => $count + 1)) : t('Optional argument');
       $form['fieldset']["arg$count"] = array(
         '#type' => 'textfield',
         '#title' => check_plain($context->identifier),
