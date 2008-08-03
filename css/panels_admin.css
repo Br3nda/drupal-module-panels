@@ -1,4 +1,4 @@
-/* $Id: panels_admin.css,v 1.1.2.22 2008/07/08 18:46:17 merlinofchaos Exp $ */
+/* $Id: panels_admin.css,v 1.1.2.23 2008/08/03 04:34:01 sdboyer Exp $ */
 
 .layout-link {
   float: left; 
@@ -13,6 +13,14 @@
 }
 
 /* general style for the layout-icon */
+.layout-icon {
+  display: block;
+  text-align: center;
+}
+.layout-icon img {
+  display: block;
+  margin: 0 auto;
+}
 .layout-icon .caption {
   width: 90px;
   margin-bottom: 1em;
@@ -81,9 +89,12 @@
 }
 #panels-common-set-allowed-layouts .form-checkboxes .option,
 #panels-choose-layout .form-radios .form-item .option {
-  width: 50px;
+  text-align: center;
+}
+#panels-common-set-allowed-layouts .form-checkboxes .option input,
+#panels-choose-layout .form-radios .form-item .option input {
   display: block;
-  text-align: center; 
+  margin: 0 auto;
 }
 
 #panels-common-set-allowed-layouts .form-submit,

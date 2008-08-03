@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.119 2008/07/29 10:34:25 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.120 2008/08/03 04:34:01 sdboyer Exp $
 
 
 /**
@@ -1228,12 +1228,12 @@ function theme_panels_layout_link($title, $id, $image, $link) {
  * @layout
  */
 function theme_panels_layout_icon($id, $image, $title = NULL) {
-  $output .= '<div class="layout-icon">';
+  $output .= '<span class="layout-icon">';
   $output .= $image;
   if ($title) {
-    $output .= '<div class="caption">' . $title . '</div>';
+    $output .= '<span class="caption">' . $title . '</span>';
   }
-  $output .= '</div>';
+  $output .= '</span>';
   return $output;
 }
 
