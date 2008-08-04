@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.50 2008/08/03 06:46:51 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.51 2008/08/04 21:40:35 sdboyer Exp $
 
 
 /**
@@ -551,27 +551,22 @@ function panels_page_advanced_form($panel_page, $next = NULL) {
   return $form;
 }
 
-function panels_page_advanced_form_validate($form_id, $form_values, $form) {
-  panels_load_include('panels_page.css_filter', 'panels_page/');
-  $disassembled_css = panels_page_disassemble_css($form_values['css']);
-}
-
 /**
  * Process submission of the panel page edit form.
  */
 function panels_page_advanced_form_submit($form_id, $form_values) {
   $panel_page = $form_values['panel_page'];
 
-  $panel_page->css = $form_values['css'];
-  $panel_page->no_blocks = $form_values['no_blocks'];
-  $panel_page->menu = $form_values['menu'];
-  $panel_page->menu_tab = $form_values['menu_tab'];
-  $panel_page->menu_tab_weight = $form_values['menu_tab_weight'];
-  $panel_page->menu_title = $form_values['menu_title'];
-  $panel_page->menu_tab_default = $form_values['menu_tab_default'];
+  $panel_page->css                          = $form_values['css'];
+  $panel_page->no_blocks                    = $form_values['no_blocks'];
+  $panel_page->menu                         = $form_values['menu'];
+  $panel_page->menu_tab                     = $form_values['menu_tab'];
+  $panel_page->menu_tab_weight              = $form_values['menu_tab_weight'];
+  $panel_page->menu_title                   = $form_values['menu_title'];
+  $panel_page->menu_tab_default             = $form_values['menu_tab_default'];
   $panel_page->menu_tab_default_parent_type = $form_values['menu_tab_default_parent_type'];
-  $panel_page->menu_parent_title = $form_values['menu_parent_title'];
-  $panel_page->menu_parent_tab_weight = $form_values['menu_parent_tab_weight'];
+  $panel_page->menu_parent_title            = $form_values['menu_parent_title'];
+  $panel_page->menu_parent_tab_weight       = $form_values['menu_parent_tab_weight'];
 
   $panel_page->access = array_keys(array_filter($form_values['access']));
 

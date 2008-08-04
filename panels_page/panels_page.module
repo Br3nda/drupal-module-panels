@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.66 2008/07/29 10:07:30 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.67 2008/08/04 21:40:35 sdboyer Exp $
 
 
 /**
@@ -798,7 +798,12 @@ function panels_page_view_page($panel_page, $admin) {
   }
 
   if ($panel_page->css) {
-    drupal_set_html_head("<style type=\"text/css\" media=\"all\">" . filter_xss_admin($panel_page->css) . "</style>\n");
+    panels_load_include('panels_page.css_filter', 'panels_page/');
+    $css = panels_page_filter_css(panels_page_disassemble_css($panel_page->css));
+    // If the custom css didn't survive filtering, don't bother adding it.
+    if (!empty($css)) {
+      drupal_set_html_head("<style type=\"text/css\" media=\"all\">" . panels_page_compress_css($css) . "</style>\n");
+    }
   }
   if ($panel_page->no_blocks) {
     print theme('page', $output, FALSE);

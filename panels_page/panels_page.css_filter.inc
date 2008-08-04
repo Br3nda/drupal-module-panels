@@ -1,5 +1,5 @@
 <?php
-/* $Id: panels_page.css_filter.inc,v 1.1.2.3 2008/08/04 04:53:24 sdboyer Exp $ */
+/* $Id: panels_page.css_filter.inc,v 1.1.2.4 2008/08/04 21:40:35 sdboyer Exp $ */
 
 /*
  * @file panels_page/panels_page.css_filter.inc
@@ -159,9 +159,11 @@ function panels_page_disassemble_css_declaration($declaration) {
   return $formatted_statement;
 }
 
-
-function panels_page_filter_css($css, $allowed_values_regex = '', $disallowed_url_regex = '', $allowed_properties = array(), $allowed_values = array()) {
-// function panels_page_filter_css($css, $allowed_values_regex = '', $disallowed_url_regex = '', $allowed_properties = array(), $allowed_values = array(), &$filtered = NULL) {
+/**
+ *
+ */
+// function panels_page_filter_css($css, $allowed_properties = array(), $allowed_values = array(), $allowed_values_regex = '', $disallowed_values_regex = '') {
+  function panels_page_filter_css($css, &$filtered = NULL, $allowed_properties = array(), $allowed_values = array(), $allowed_values_regex = '', $disallowed_values_regex = '') {
   // Retrieve the default list of allowed properties if none is provided.
   $allowed_properties = !empty($allowed_properties) ? $allowed_properties : panels_page_css_filter_default_allowed_properties();
   // Retrieve the default list of allowed values if none is provided.
@@ -169,18 +171,19 @@ function panels_page_filter_css($css, $allowed_values_regex = '', $disallowed_ur
   // Define allowed values regex if none is provided.
   $allowed_values_regex = !empty($allowed_values_regex) ? $allowed_values_regex : '/(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)/';
   // Define disallowed url() value contents, if none is provided.
-  $disallowed_url_regex = !empty($disallowed_url_regex) ? $disallowed_url_regex : '/url\s*\(\s*[^\s)]+?\s*\)\s*/';
+  // $disallowed_values_regex = !empty($disallowed_values_regex) ? $disallowed_values_regex : '/[url|expression]\s*\(\s*[^\s)]+?\s*\)\s*/';
+  $disallowed_values_regex = !empty($disallowed_values_regex) ? $disallowed_values_regex : '/(url|expression)/';
   
   foreach ($css as $selector_str => $declaration) {
     foreach ($declaration as $property => $value) {
       if (!in_array($property, $allowed_properties)) {
-        // $filtered['properties'][$selector_str][] = $property;
+        $filtered['properties'][$selector_str][$property] = $value;
         unset($css[$selector_str][$property]);
         continue;
       }
       $value = str_replace('!important', '', $value);
-      if (!in_array($value, $allowed_values) || !preg_match($allowed_values_regex, $value) || preg_match($disallowed_url_regex, $value)) {
-        // $filtered['values'][$selector_str][] = $value;
+      if (preg_match($disallowed_values_regex, $value) || !(in_array($value, $allowed_values) || preg_match($allowed_values_regex, $value))) {
+        $filtered['values'][$selector_str][$property] = $value;
         unset($css[$selector_str][$property]);
         continue;
       }
@@ -301,7 +304,6 @@ function panels_page_css_filter_default_allowed_values() {
     'lime',
     'maroon',
     'medium',
-    'none',
     'navy',
     'normal',
     'nowrap',
