@@ -2,54 +2,78 @@
 
 /*
  * @file panels_page/panels_page.css_filter.inc
- * CSS filtering functions. Contains a disassembler, filter, assembler, and
- * compressor. Separated out into this file for cleanliness, as it's likely
+ * CSS filtering functions. Contains a disassembler, filter, compressor, and
+ * decompressor. Separated out into this file for cleanliness, as it's likely
  * that these won't live in panels_page for long.
  */
 
-function panels_page_assemble_css($css) {
+/**
+ * Re-assemble a css string and format it nicely.
+ *
+ * @param array $css_data
+ *   An array of css data, as produced by @see panels_page_disassemble_css()
+ *   disassembler and the @see panels_page_filter_css() filter.
+ * @return string $css
+ *   css optimized for human viewing.
+ */
+function panels_page_assemble_css($css_data) {
   // Initialize the output.
-  $output = '';
-  // Iterate through all the statements
-  foreach ($css as $statement) {
-    // Add the keys.
-    $output .= implode(",\n", $statement['keys']);
-    // And, the opening curly brace.
-    $output .= " {\n";
-    // Iterate through all the statements.
-    foreach ($statements as $key => $value) {
-      $output .= "  " . $key . ": " . $value . "\n";
+  $css = '';
+  // Iterate through all the statements.
+  foreach ($css_data as $selector_str => $declaration) {
+    // Add the selectors, separating them with commas and line feeds.
+    $css .= strpos($selector_str, ',') === FALSE ? $selector_str : preg_replace(", ", ",\n", $selector_str);
+    // Add the opening curly brace.
+    $css .= " {\n";
+    // Iterate through all the declarations.
+    foreach ($declaration as $property => $value) {
+      $css .= "  " . $property . ": " . $value . ";\n";
     }
     // Add the closing curly brace.
-    $output .= "}\n";
+    $css .= "}\n\n";
   }
   // Return the output.
-  return $output;
-}
-
-function panels_page_compress_css($css) {
-  // Initialize the output.
-  $output = '';
-  // Iterate through all the statements
-  foreach ($css as $statement) {
-    // Add the keys.
-    $output .= implode(",", $statement['keys']);
-    // And, the opening curly brace.
-    $output .= "{";
-    // Iterate through all the statements.
-    foreach ($statements as $key => $value) {
-      $output .= $key . ":" . $value;
-    }
-    // Add the closing curly brace.
-    $output .= "}";
-  }
-  // Return the output.
-  return $output;
+  return $css;
 }
 
 /**
- * Disassemble the css string, strip it of irrelevant characters, and prepare
- * it for processing.
+ * Compress css data (filter it first!) to optimize for use on view.
+ *
+ * @param array $css_data
+ *   An array of css data, as produced by @see panels_page_disassemble_css()
+ *   disassembler and the @see panels_page_filter_css() filter.
+ * @return string $css
+ *   css optimized for use.
+ */
+function panels_page_compress_css($css_data) {
+  // Initialize the output.
+  $css = '';
+  // Iterate through all the statements.
+  foreach ($css_data as $selector_str => $declaration) {
+    if (empty($declaration)) {
+      // Skip this statement if filtering removed all parts of the declaration.
+      continue;
+    }
+    // Add the selectors, separating them with commas.
+    $css .= $selector_str;
+    // And, the opening curly brace.
+    $css .= "{";
+    // Iterate through all the statement properties.
+    foreach ($declaration as $property => $value) {
+      $css .= $property . ':' . $value . ';';
+    }
+    // Add the closing curly brace.
+    $css .= "}";
+  }
+  // Return the output.
+  return $css;
+}
+
+/**
+ * Disassemble the css string.
+ *
+ * Strip the css of irrelevant characters, invalid/malformed selectors and
+ * declarations, and otherwise prepare it for processing.
  *
  * @param string $css
  *   A string containing the css to be disassembled.
@@ -63,65 +87,100 @@ function panels_page_disassemble_css($css) {
   // Split out each statement
   $statements = explode("}", $css);
   // If we have any statements, parse them.
-  if (count($statements) > 0) {
+  if (!empty($statements)) {
     // Iterate through all of the statements.
     foreach ($statements as $statement) {
-      $formatted_statement = array('keys' => array(), 'value' => array());
-      // Get the key and the code for the key.
-      list($key, $code) = explode("{", $statement);
-      // Get all keys individually.
-      $keys = explode(",", trim($keystr));
-      // If we have more than one key, handle them.
-      if (count($keys) > 0) {
-        // Iterate through all the keys and add them to the array.
-        foreach ($keys as $key) {
-          // Replace un-needed characters and do a little cleanup.
-          $key = preg_replace("/[\n|\t|\\|\s]+/", ' ', strtolower(trim($key)));
-          // Make sure this is a real key.
-          if (strlen($key) > 0) {
-            // Add the key to the array.
-            $disassembled_css['keys'][] = $key;
-          }
-        }
+      // Get the selector(s) and declaration.
+      list($selector_str, $declaration) = explode('{', $statement);
+      
+      // If the selector exists, then disassemble it, check it, and regenerate
+      // the selector string.
+      $selector_str = empty($selector_str) ? FALSE : panels_page_disassemble_css_selector($selector_str);
+      if (empty($selector_str)) {
+        // No valid selectors. Bomb out and start the next item.
+        continue;
       }
-      // It's easier to handle and looks nicer if it's lower case.
-      $code = strtolower($code);
-      // Make sure the explosion is big!
-      $code_fragements = explode(";", $code);
-      // Make sure there actually are any remains from the explosion.
-      if (count($code_fragements) > 0) {
-        // Iterate through the remains and parse them.
-        foreach ($codes as $code) {
-          // Explode the remaining fragements some more, but clean them up first.
-          $code_remains = explode(':', preg_replace("/[\n|\t|\\|\s]+/", ' ', strtolower(trim($code))));
-          // If the key (the first part) actually exists, then add it.
-          if(strlen($code_remains[0]) > 0) {
-            // Add it to the array
-            $disassembled_css['value'][trim(array_shift($code_remains))] = trim(implode(':', $code_remains));
-          }
-        }
-      }
+      
+      // Disassemble the declaration, check it and tuck it into an array.
+      $disassembled_css[$selector_str] = panels_page_disassemble_css_declaration(strtolower($declaration));
     }
   }
-  // Return the statements.
   return $disassembled_css;
 }
 
-function panels_page_filter_css($css, $allowed_values_regex = '', $disallowed_url_regex = '', $allowed_properties = array(), $allowed_values = array()) {
-  $allowed_properties = !empty($allowed_properties) ? $allowed_properties : panels_page_css_filter_default_allowed_properties();
-  $allowed_values = !empty($allowed_values) ? $allowed_values : panels_page_css_filter_default_allowed_values();
-  $allowed_values_regex = !empty($allowed_values_regex) ? $allowed_values_regex : '/(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)/';
-  $disallowed_url_regex = !empty($disallowed_url_regex) ? $disallowed_url_regex : '/url\s*\(\s*[^\s)]+?\s*\)\s*/';
-  
-  foreach ($css as $statement_key => $statement) {
-    foreach ($statement['values'] as $key => $value) {
-      if (!in_array($key, $allowed_keys)) {
-        unset($css[$statement_key]);
+
+function panels_page_disassemble_css_selector($selector_str) {
+  // Get all selectors individually.
+  $selectors = explode(",", trim($selector_str));
+  // Iterate through all the selectors, sanity check them and return if they
+  // pass. Note that this handles 0, 1, or more valid selectors gracefully.
+  foreach ($selectors as $key => $selector) {
+    // Replace un-needed characters and do a little cleanup.
+    $selector = preg_replace("/[\n|\t|\\|\s]+/", ' ', strtolower(trim($selector)));
+    // Make sure this is still a real selector after cleanup.
+    if (!empty($selector)) {
+      $selectors[$key] = $selector;
+    }
+    else {
+      // Selector is no good, so we scrap it.
+      unset ($selectors[$key]);
+    }
+  }
+    // Check for malformed selectors; if found, we skip this declaration.
+  if (empty($selectors)) {
+    return FALSE;
+  }
+  return implode(', ', $selectors);
+}
+
+
+function panels_page_disassemble_css_declaration($declaration) {
+  $formatted_statement = array();
+  $propval_pairs = explode(";", $declaration);
+  // Make sure we actually have some properties to work with.
+  if (!empty($propval_pairs)) {
+    // Iterate through the remains and parse them.
+    foreach ($propval_pairs as $key => $propval_pair) {
+      // Check that we have a ':', otherwise it's an invalid pair.
+      if (strpos($propval_pair, ':') === FALSE) {
         continue;
       }
-      $value = str_replace('!important', $value);
+      // Clean up the current property-value pair.
+      $propval_pair =  preg_replace("/[\n|\t|\\|\s]+/", ' ', strtolower(trim($propval_pair)));
+      // Explode the remaining fragements some more, but clean them up first.
+      list($property, $value) = explode(':', $propval_pair);
+      // If the property survived, toss it onto the stack.
+      if(!empty($property)) {
+        $formatted_statement[trim($property)] = trim($value);
+      }
+    }
+  }
+  return $formatted_statement;
+}
+
+
+function panels_page_filter_css($css, $allowed_values_regex = '', $disallowed_url_regex = '', $allowed_properties = array(), $allowed_values = array()) {
+// function panels_page_filter_css($css, $allowed_values_regex = '', $disallowed_url_regex = '', $allowed_properties = array(), $allowed_values = array(), &$filtered = NULL) {
+  // Retrieve the default list of allowed properties if none is provided.
+  $allowed_properties = !empty($allowed_properties) ? $allowed_properties : panels_page_css_filter_default_allowed_properties();
+  // Retrieve the default list of allowed values if none is provided.
+  $allowed_values = !empty($allowed_values) ? $allowed_values : panels_page_css_filter_default_allowed_values();
+  // Define allowed values regex if none is provided.
+  $allowed_values_regex = !empty($allowed_values_regex) ? $allowed_values_regex : '/(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)/';
+  // Define disallowed url() value contents, if none is provided.
+  $disallowed_url_regex = !empty($disallowed_url_regex) ? $disallowed_url_regex : '/url\s*\(\s*[^\s)]+?\s*\)\s*/';
+  
+  foreach ($css as $selector_str => $declaration) {
+    foreach ($declaration as $property => $value) {
+      if (!in_array($property, $allowed_properties)) {
+        // $filtered['properties'][$selector_str][] = $property;
+        unset($css[$selector_str][$property]);
+        continue;
+      }
+      $value = str_replace('!important', '', $value);
       if (!in_array($value, $allowed_values) || !preg_match($allowed_values_regex, $value) || preg_match($disallowed_url_regex, $value)) {
-        unset($css[$statement_key]);
+        // $filtered['values'][$selector_str][] = $value;
+        unset($css[$selector_str][$property]);
         continue;
       }
     }
