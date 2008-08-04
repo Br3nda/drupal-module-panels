@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.17 2008/07/31 00:05:44 merlinofchaos Exp $
+// $Id: panels.module,v 1.18 2008/08/04 20:04:10 merlinofchaos Exp $
 
 /**
  * Returns the API version of Panels. This didn't exist in 1.
@@ -165,6 +165,10 @@ function panels_menu() {
   ) + $base;
   $items['panels/ajax/context-configure'] = array(
     'page callback' => 'panels_ajax_context_item_edit',
+    'file' => 'includes/common-context.inc',
+  ) + $base;
+  $items['panels/ajax/context-delete'] = array(
+    'page callback' => 'panels_ajax_context_item_delete',
     'file' => 'includes/common-context.inc',
   ) + $base;
 
