@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.51 2008/07/13 20:58:29 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.52 2008/08/05 09:45:43 sdboyer Exp $
 
 
 /**
@@ -582,7 +582,7 @@ function panels_update_5218() {
   switch ($GLOBALS['db_type']) {
     case 'mysql':
     case 'mysqli':
-      $ret[] = array('success' => TRUE, 'query' => t('Update #5218 only has changes for PostgreSQL. There are no updates for MySQL databases - since you\'re running MySQL, you should consider this update successful).'));
+      $ret[] = array('success' => TRUE, 'query' => t('Update #5218 only has changes for PostgreSQL. There are no updates for MySQL databases - since you\'re running MySQL, you should consider this update successful.'));
       break;
 
     case 'pgsql':

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.install,v 1.1.2.10 2008/07/13 21:23:45 sdboyer Exp $
+// $Id: panels_mini.install,v 1.1.2.11 2008/08/05 09:45:43 sdboyer Exp $
 
 
 /**
@@ -153,7 +153,7 @@ function panels_mini_update_5002() {
   switch ($GLOBALS['db_type']) {
     case 'mysql':
     case 'mysqli':
-      $ret[] = array('success' => TRUE, 'query' => t('It does NOT matter if the following query fails. If it fails, it means you did not have a duplicate \'name_2\' index, and trying to remove a non-existent index does not alter your database in any way. If it succeeds, then the duplicate index is gone, and your table is as it should be.'));
+      $ret[] = array('success' => TRUE, 'query' => t('It does NOT matter if the following query fails. If it fails, it means you did not have a duplicate \'name_2\' index, and trying to remove a non-existent index does not harm, alter, or otherwise affect your database in any way. If it succeeds, then the duplicate index is gone, and your table is as it should be.'));
       $ret[] = update_sql("ALTER TABLE {panels_mini} DROP INDEX name_2");
   }
   return $ret;
