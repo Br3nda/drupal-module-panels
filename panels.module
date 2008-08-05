@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.122 2008/08/05 07:57:21 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.123 2008/08/05 11:01:24 sdboyer Exp $
 
 
 /**
@@ -1377,7 +1377,7 @@ function panels_node_type($op, $info) {
   if ($op == 'update') {
     if (!empty($info->old_type) && $info->old_type != $info->type) {
       // Exclude a few common pane types that we know don't use context.
-      $result = db_query("SELECT * FROM {panels_pane} WHERE type NOT IN ('block', 'custom'");
+      $result = db_query("SELECT * FROM {panels_pane} WHERE type NOT IN ('block', 'custom')");
       while ($pane = db_fetch_object($result)) {
         // Check the serialized data for the presence of context data.
         if (!preg_match('/s:7:\"context/', $pane->configuration) || stripos($pane->configuration, 'node-' . $info->old_type) === FALSE) {
