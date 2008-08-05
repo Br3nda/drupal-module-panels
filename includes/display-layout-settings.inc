@@ -1,5 +1,5 @@
 <?php
-// $Id: display-layout-settings.inc,v 1.2 2008/07/25 16:10:15 merlinofchaos Exp $
+// $Id: display-layout-settings.inc,v 1.3 2008/08/05 00:25:47 merlinofchaos Exp $
 
 /**
  * @file
@@ -252,6 +252,23 @@ function panels_edit_layout_settings_form_submit($form, &$form_state) {
   if (isset($form_state['values']['display_title']['title'])) {
     $display->title = $form_state['values']['display_title']['title'];
     $display->hide_title = $form_state['values']['display_title']['hide_title'];
+  }
+
+  // Remove buttons so they don't get written into the database:
+  if (isset($form_state['values']['panel_settings']['edit_style'])) {
+    unset($form_state['values']['panel_settings']['edit_style']);
+  }
+  if (isset($form_state['values']['panel_settings']['edit_style_destination'])) {
+    unset($form_state['values']['panel_settings']['edit_style_destination']);
+  }
+
+  foreach ($form_state['values']['panel_settings']['panel'] as $id => $info) {
+    if (isset($form_state['values']['panel_settings']['panel'][$id]['edit_style'])) {
+      unset($form_state['values']['panel_settings']['panel'][$id]['edit_style']);
+    }
+    if (isset($form_state['values']['panel_settings']['panel'][$id]['edit_style_destination'])) {
+      unset($form_state['values']['panel_settings']['panel'][$id]['edit_style_destination']);
+    }
   }
 
   $display->layout_settings = $form_state['values']['layout_settings'];
