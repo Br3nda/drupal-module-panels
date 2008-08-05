@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.121 2008/08/05 07:55:52 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.122 2008/08/05 07:57:21 sdboyer Exp $
 
 
 /**
@@ -1392,8 +1392,8 @@ function panels_node_type($op, $info) {
           }
           db_query("UPDATE {panels_pane} SET configuration = '%s' WHERE pid = %d", serialize($conf), $pane->pid);
         }
-        // Manage single-pane contexts.
-        if ($conf['context'] == 'node-' . $info->old_type) {
+        // Manage single-context panes.
+        else if ($conf['context'] == 'node-' . $info->old_type) {
           $conf['context'] = 'node-' . $info->type;
           db_query("UPDATE {panels_pane} SET configuration = '%s' WHERE pid = %d", serialize($conf), $pane->pid);
         }
