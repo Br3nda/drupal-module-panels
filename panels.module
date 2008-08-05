@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.120 2008/08/03 04:34:01 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.121 2008/08/05 07:55:52 sdboyer Exp $
 
 
 /**
@@ -1367,3 +1367,37 @@ function panels_node_autocomplete($string) {
   }
 }
 
+/**
+ * Implementation of hook_node_type().
+ *
+ * We implement this hook to update any pane contexts that are reliant on a
+ * specific node type with the new type name.
+ */
+function panels_node_type($op, $info) {
+  if ($op == 'update') {
+    if (!empty($info->old_type) && $info->old_type != $info->type) {
+      // Exclude a few common pane types that we know don't use context.
+      $result = db_query("SELECT * FROM {panels_pane} WHERE type NOT IN ('block', 'custom'");
+      while ($pane = db_fetch_object($result)) {
+        // Check the serialized data for the presence of context data.
+        if (!preg_match('/s:7:\"context/', $pane->configuration) || stripos($pane->configuration, 'node-' . $info->old_type) === FALSE) {
+          // There's no context/no mention of our node type - next!
+          continue;
+        }
+        $conf = unserialize($pane->configuration);
+        // Manage panes with multiple contexts stored in an array.
+        if (is_array($conf['context'] && ($keys = array_keys($conf['context'], 'node-' . $info->old_type)))) {
+          foreach ($keys as $key) {
+            $conf['context'][$key] = 'node-' . $info->type;
+          }
+          db_query("UPDATE {panels_pane} SET configuration = '%s' WHERE pid = %d", serialize($conf), $pane->pid);
+        }
+        // Manage single-pane contexts.
+        if ($conf['context'] == 'node-' . $info->old_type) {
+          $conf['context'] = 'node-' . $info->type;
+          db_query("UPDATE {panels_pane} SET configuration = '%s' WHERE pid = %d", serialize($conf), $pane->pid);
+        }
+      }
+    }
+  }
+}
