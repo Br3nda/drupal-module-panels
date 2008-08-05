@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.50 2008/07/29 09:37:23 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.51 2008/08/05 08:10:59 sdboyer Exp $
 
 
 /**
@@ -253,6 +253,9 @@ function panels_ct_conf_form($ct_data, $contexts, $conf) {
 
   if (!empty($subtype['required context']) && is_array($contexts)) {
     $form['context'] = panels_context_selector($contexts, $subtype['required context'], isset($conf['context']) ? $conf['context'] : array());
+  }
+  elseif (!empty($subtype['optional context']) && is_array($contexts)) {
+    $form['context'] = panels_context_selector($contexts, $subtype['optional context'], isset($conf['context']) ? $conf['context'] : array());
   }
 
   $style_options = array('default' => t('Default'));
@@ -1217,16 +1220,18 @@ function panels_context_get_form($contexts) {
 /**
  * Select a context for a pane.
  *
- * @param $pane
+ * @param object $pane
  *   A fully populated pane.
- * @param $contexts
+ * @param array $contexts
  *   A keyed array of available contexts.
+ * @param string $context_type
+ *   Indicates whether a required or optional context is being sought.
  *
  * @return
  *   The matching contexts or NULL if none or necessary, or FALSE if
  *   requirements can't be met.
  */
-function panels_pane_select_context($pane, $contexts) {
+function panels_pane_select_context($pane, $contexts, $context_type = 'required context') {
   // Identify which of our possible contexts apply.
   if (empty($pane->subtype)) {
     return;
@@ -1235,11 +1240,11 @@ function panels_pane_select_context($pane, $contexts) {
   $content_type = panels_ct_get_types($pane->type);
   // If the pane requires a context, fetch it; if no context is returned,
   // do not display the pane.
-  if (empty($content_type[$pane->subtype]['required context'])) {
-    return;
+  if (empty($content_type[$pane->subtype][$context_type])) {
+    return $context_type == 'required context' ? panels_pane_select_context($pane, $contexts, 'optional context') : NULL;
   }
 
-  $context = panels_context_select($contexts, $content_type[$pane->subtype]['required context'], $pane->configuration['context']);
+  $context = panels_context_select($contexts, $content_type[$pane->subtype][$context_type], $pane->configuration['context']);
 
   return $context;
 }

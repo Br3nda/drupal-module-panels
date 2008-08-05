@@ -1,5 +1,5 @@
 <?php
-// $Id: custom_php.inc,v 1.1.2.1 2008/07/15 04:13:00 sdboyer Exp $
+// $Id: custom_php.inc,v 1.1.2.2 2008/08/05 08:10:59 sdboyer Exp $
 
 
 /**
@@ -80,6 +80,7 @@ function panels_admin_content_types_custom_php() {
         'path' => panels_get_path('content_types/custom'),
         'description' => t('Custom PHP block with access to Panels context data. Use sparingly, and with caution!'),
         'category' => array(t('Custom'), -10),
+        'optional context' => new panels_optional_context(t('Context'), 'any'),
       ),
     );
   }
@@ -116,7 +117,7 @@ function panels_admin_edit_custom_php($id, $parents, $conf = NULL) {
  * Returns the administrative title for a type.
  */
 function panels_admin_title_custom_php($conf) {
-  $output = t('Custom');
+  $output = t('Custom PHP with context');
   if ($conf['title']) {
     $output .= " (" . filter_xss_admin($conf['title']) . ")";
   }
