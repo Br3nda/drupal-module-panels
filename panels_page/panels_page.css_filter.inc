@@ -1,5 +1,5 @@
 <?php
-/* $Id: panels_page.css_filter.inc,v 1.1.2.4 2008/08/04 21:40:35 sdboyer Exp $ */
+/* $Id: panels_page.css_filter.inc,v 1.1.2.5 2008/08/05 09:35:17 sdboyer Exp $ */
 
 /*
  * @file panels_page/panels_page.css_filter.inc
@@ -162,8 +162,8 @@ function panels_page_disassemble_css_declaration($declaration) {
 /**
  *
  */
-// function panels_page_filter_css($css, $allowed_properties = array(), $allowed_values = array(), $allowed_values_regex = '', $disallowed_values_regex = '') {
-  function panels_page_filter_css($css, &$filtered = NULL, $allowed_properties = array(), $allowed_values = array(), $allowed_values_regex = '', $disallowed_values_regex = '') {
+function panels_page_filter_css($css, $allowed_properties = array(), $allowed_values = array(), $allowed_values_regex = '', $disallowed_values_regex = '') {
+//  function panels_page_filter_css($css, &$filtered = NULL, $allowed_properties = array(), $allowed_values = array(), $allowed_values_regex = '', $disallowed_values_regex = '') {
   // Retrieve the default list of allowed properties if none is provided.
   $allowed_properties = !empty($allowed_properties) ? $allowed_properties : panels_page_css_filter_default_allowed_properties();
   // Retrieve the default list of allowed values if none is provided.
@@ -177,13 +177,13 @@ function panels_page_disassemble_css_declaration($declaration) {
   foreach ($css as $selector_str => $declaration) {
     foreach ($declaration as $property => $value) {
       if (!in_array($property, $allowed_properties)) {
-        $filtered['properties'][$selector_str][$property] = $value;
+        // $filtered['properties'][$selector_str][$property] = $value;
         unset($css[$selector_str][$property]);
         continue;
       }
       $value = str_replace('!important', '', $value);
       if (preg_match($disallowed_values_regex, $value) || !(in_array($value, $allowed_values) || preg_match($allowed_values_regex, $value))) {
-        $filtered['values'][$selector_str][$property] = $value;
+        // $filtered['values'][$selector_str][$property] = $value;
         unset($css[$selector_str][$property]);
         continue;
       }
