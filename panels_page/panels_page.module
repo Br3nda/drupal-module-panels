@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.67 2008/08/04 21:40:35 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.68 2008/08/05 11:42:03 sdboyer Exp $
 
 
 /**
@@ -1171,6 +1171,16 @@ function panels_page_export($panel_page, $prefix = '') {
     }
     $output .= $prefix . '  $page->' . $field . ' = ' . panels_var_export($panel_page->$field, '  ') . ";\n";
   }
+  // Export the contexts.
+  $output .= $prefix . '$page->contexts = array()' . ";\n";
+  foreach ($panel_page->contexts as $id => $info) {
+    $output .= $prefix . '  $page->contexts[\'' . $id . "'] = array(\n";
+    foreach ($info as $key => $value) {
+      $output .= $prefix . "    '$key' => " . panels_var_export($value, '    ') . ";\n";
+    }
+    $output .= $prefix . "  );\n";
+  }
+  
   // Export the primary display
   $display = !empty($panel_page->display) ? $panel_page->display : panels_load_display($panel_page->did);
   $output .= panels_export_display($display, $prefix);
