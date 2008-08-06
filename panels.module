@@ -1,5 +1,8 @@
 <?php
-// $Id: panels.module,v 1.19 2008/08/06 00:24:46 merlinofchaos Exp $
+// $Id: panels.module,v 1.20 2008/08/06 19:01:17 sdboyer Exp $
+
+define('PANELS_BAD_ARG', 1);
+define('PANELS_USE_FALLBACK_ROUTER', 1 << 1);
 
 /**
  * Returns the API version of Panels. This didn't exist in 1.
