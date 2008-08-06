@@ -1,5 +1,5 @@
 <?php
-// $Id: node_add.inc,v 1.2 2008/07/16 00:00:48 merlinofchaos Exp $
+// $Id: node_add.inc,v 1.3 2008/08/06 19:02:00 sdboyer Exp $
 
 
 /**
@@ -32,7 +32,7 @@ function panels_node_add_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   }
 
   if (array_filter($conf['types']) && empty($conf['types'][$arg])) {
-    return FALSE;
+    return PANELS_USE_FALLBACK_ROUTER;
   }
 
   return panels_context_create('node_add_form', $arg);

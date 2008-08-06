@@ -1,5 +1,5 @@
 <?php
-// $Id: uid.inc,v 1.2 2008/07/16 00:00:48 merlinofchaos Exp $
+// $Id: uid.inc,v 1.3 2008/08/06 19:02:00 sdboyer Exp $
 
 
 /**
@@ -32,12 +32,12 @@ function panels_uid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   }
 
   if (!is_numeric($arg)) {
-    return FALSE;
+    return PANELS_BAD_ARG;
   }
 
   $user = user_load(array('uid' => $arg));
   if (!$user) {
-    return FALSE;
+    return PANELS_BAD_ARG;
   }
 
   return panels_context_create('user', $user);

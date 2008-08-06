@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.2 2008/07/16 00:00:48 merlinofchaos Exp $
+// $Id: term.inc,v 1.3 2008/08/06 19:02:00 sdboyer Exp $
 
 
 /**
@@ -59,11 +59,11 @@ function panels_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   }
 
   if (empty($term)) {
-    return FALSE;
+    return PANELS_BAD_ARG;
   }
 
   if (!empty($conf['vids']) && array_filter($conf['vids']) && empty($conf['vids'][$term->vid])) {
-    return FALSE;
+    return PANELS_USE_FALLBACK_ROUTER;
   }
 
   return panels_context_create('term', $term);
