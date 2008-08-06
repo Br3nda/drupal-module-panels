@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.install,v 1.9 2008/08/06 09:19:47 sdboyer Exp $
+// $Id: panels_page.install,v 1.10 2008/08/06 18:57:41 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -291,11 +291,11 @@ function panels_page_schema_1() {
         'not null' => TRUE,
         'default' => ''
       ),
-      'static' => array(
-        'type' => 'int',
-        'size' => 'tiny',
+      'wildcards' => array(
+        'type' => 'varchar',
+        'length' => 32,
         'not null' => TRUE,
-        'default' => 0,
+        'default' => '',
       ),
       'meta' => array(
         'type' => 'int',
