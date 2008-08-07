@@ -1,8 +1,8 @@
 <?php
-// $Id: common-context.inc,v 1.3 2008/08/04 20:04:11 merlinofchaos Exp $
+// $Id: common-context.inc,v 1.4 2008/08/07 01:22:07 sdboyer Exp $
 
 /**
- * @file
+ * @file includes/common-context.inc
  * Provide API for adding contexts for modules that embed displays.
  */
 
