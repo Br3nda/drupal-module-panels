@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.68 2008/08/05 11:42:03 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.69 2008/08/16 23:44:46 sdboyer Exp $
 
 
 /**
@@ -509,7 +509,7 @@ function panels_page_access($panel_page, $account = NULL) {
  */
 function panels_page_get_title($panel_page, $context = 'page', $default_title = NULL) {
   $title = _panels_page_get_title($panel_page, $context, $default_title);
-  if ($panel_page->keywords) {
+  if (!empty($panel_page->keywords)) {
     $title = strtr($title, $panel_page->keywords);
   }
   return $title;
@@ -525,7 +525,7 @@ function _panels_page_get_title($panel_page, $op, $default_title) {
   }
 
   // Context has the highest priority
-  if ($panel_page->context) {
+  if (!empty($panel_page->context)) {
     $title = NULL;
     foreach ($panel_page->context as $context) {
       if (empty($context->data)) {
@@ -543,7 +543,7 @@ function _panels_page_get_title($panel_page, $op, $default_title) {
 
   // If no context returned a title use the display title configured in layout
   // settings
-  if ($panel_page->display->title) {
+  if (!empty($panel_page->display->title)) {
     return $panel_page->display->title;
   }
 
@@ -1180,7 +1180,7 @@ function panels_page_export($panel_page, $prefix = '') {
     }
     $output .= $prefix . "  );\n";
   }
-  
+
   // Export the primary display
   $display = !empty($panel_page->display) ? $panel_page->display : panels_load_display($panel_page->did);
   $output .= panels_export_display($display, $prefix);
