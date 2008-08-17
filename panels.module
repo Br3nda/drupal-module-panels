@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.123 2008/08/05 11:01:24 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.124 2008/08/17 07:50:08 sdboyer Exp $
 
 
 /**
@@ -847,9 +847,12 @@ function panels_export_display($display, $prefix = '') {
   $output = '';
   $output .= $prefix . '$display = new panels_display()' . ";\n";
   $output .= $prefix . '$display->did = \'new\'' . ";\n";
-  $fields = array('name', 'layout', 'layout_settings', 'panel_settings');
+  // $fields = array('name', 'layout', 'layout_settings', 'panel_settings');
+  // TODO 'name' field was removed several months ago, so temporarily removing
+  // it from here whil investigations into exactly why it was removed continue
+  $fields = array('layout', 'layout_settings', 'panel_settings');
   foreach ($fields as $field) {
-    if (!empty($display->$field)) {
+    if (isset($display->$field)) {
       $output .= $prefix . '$display->' . $field . ' = ' . panels_var_export($display->$field, $prefix) . ";\n";
     }
   }
