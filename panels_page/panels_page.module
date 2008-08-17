@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.70 2008/08/17 02:15:32 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.71 2008/08/17 02:32:19 sdboyer Exp $
 
 
 /**
@@ -500,7 +500,7 @@ function _panels_page_get_title($panel_page, $op, $default_title) {
   }
 
   // Fall back on the panel default title
-  if ($panel_page->title) {
+  if (!empty($panel_page->title)) {
     return $panel_page->title;
   }
 
