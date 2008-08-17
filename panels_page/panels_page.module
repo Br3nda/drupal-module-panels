@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.69 2008/08/16 23:44:46 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.70 2008/08/17 02:15:32 sdboyer Exp $
 
 
 /**
@@ -102,54 +102,6 @@ function panels_page_menu($may_cache) {
       'callback' => 'panels_page_passthru',
       'callback arguments' => array('panels_page_enable_page'),
       'weight' => -1,
-      'type' => MENU_CALLBACK,
-    );
-
-    // Ajax responder
-    $items[] = array(
-      'path' => 'panels/argument/ajax/add',
-      'access' => $access,
-      'callback' => 'panels_page_passthru',
-      'callback arguments' => array('panels_page_ajax_argument_add'),
-      'type' => MENU_CALLBACK,
-    );
-    $items[] = array(
-      'path' => 'panels/argument/ajax/edit',
-      'access' => $access,
-      'callback' => 'panels_page_passthru',
-      'callback arguments' => array('panels_page_ajax_argument_edit'),
-      'type' => MENU_CALLBACK,
-    );
-
-    // Ajax responder
-    $items[] = array(
-      'path' => 'panels/relationship/ajax/add',
-      'access' => $access,
-      'callback' => 'panels_page_passthru',
-      'callback arguments' => array('panels_page_ajax_relationship_add'),
-      'type' => MENU_CALLBACK,
-    );
-    $items[] = array(
-      'path' => 'panels/relationship/ajax/edit',
-      'access' => $access,
-      'callback' => 'panels_page_passthru',
-      'callback arguments' => array('panels_page_ajax_relationship_edit'),
-      'type' => MENU_CALLBACK,
-    );
-
-    // Ajax responder
-    $items[] = array(
-      'path' => 'panels/context/ajax/add',
-      'access' => $access,
-      'callback' => 'panels_page_passthru',
-      'callback arguments' => array('panels_page_ajax_context_add'),
-      'type' => MENU_CALLBACK,
-    );
-    $items[] = array(
-      'path' => 'panels/context/ajax/edit',
-      'access' => $access,
-      'callback' => 'panels_page_passthru',
-      'callback arguments' => array('panels_page_ajax_context_edit'),
       'type' => MENU_CALLBACK,
     );
 
