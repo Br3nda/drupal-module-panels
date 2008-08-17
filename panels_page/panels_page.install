@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.install,v 1.10 2008/08/06 18:57:41 sdboyer Exp $
+// $Id: panels_page.install,v 1.11 2008/08/17 02:04:57 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -271,7 +271,7 @@ function panels_page_schema_1() {
       ),
     'primary key' => array('path'),
     );
-  
+
   $schema['panels_page_router_quickref'] = array(
     'fields' => array(
       'pid' => array(
@@ -291,21 +291,15 @@ function panels_page_schema_1() {
         'not null' => TRUE,
         'default' => ''
       ),
-      'wildcards' => array(
+/*      'wildcards' => array(
         'type' => 'varchar',
         'length' => 32,
         'not null' => TRUE,
         'default' => '',
-      ),
-      'meta' => array(
+      ),*/
+      'flags' => array(
         'type' => 'int',
         'size' => 'normal',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'stored_router' => array(
-        'type' => 'int',
-        'size' => 'tiny',
         'not null' => TRUE,
         'default' => 0,
       ),
