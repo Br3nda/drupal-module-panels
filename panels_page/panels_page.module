@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.71 2008/08/17 02:32:19 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.72 2008/08/17 02:46:17 sdboyer Exp $
 
 
 /**
@@ -964,18 +964,23 @@ function panels_page_load($pid, $load_display = FALSE) {
     return;
   }
 
-  $page->access = ($page->access ? explode(', ', $page->access) : array());
-  $page->arguments = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
-  $page->displays = (!empty($page->displays)) ? unserialize($page->displays) : array();
-  $page->contexts = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
-  $page->relationships = (!empty($page->relationships)) ? unserialize($page->relationships) : array();
+  $page->access           = ($page->access ? explode(', ', $page->access) : array());
+  $page->arguments        = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
+  $page->displays         = (!empty($page->displays)) ? unserialize($page->displays) : array();
+  $page->contexts         = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
+  $page->relationships    = (!empty($page->relationships)) ? unserialize($page->relationships) : array();
   $page->switcher_options = (!empty($page->switcher_options)) ? unserialize($page->switcher_options) : array();
 
-  $cache[$pid] = panels_page_sanitize($page);
-
   if ($load_display) {
-    $cache[$pid]->display = panels_load_display($cache[$pid]->did);
+    $page->display = panels_load_display($page->did);
   }
+
+  $cache[$pid] = panels_page_sanitize($page);
+  // Make sure that we've statically cached the loaded page for both possible
+  // unique identifiers - $page->pid AND $page->name.
+  $other_id = is_numeric($pid) || $pid == 'new' ? $page->name : $page->pid;
+  $cache[$other_id] =& $cache[$pid];
+
 
   return $cache[$pid];
 }
