@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.51 2008/08/04 21:40:35 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.52 2008/08/17 22:32:13 sdboyer Exp $
 
 
 /**
@@ -331,7 +331,8 @@ function panels_page_edit_form($panel_page, $next = NULL) {
  * Validate a panel page edit form.
  */
 function panels_page_edit_form_validate($form_id, $form_values, $form) {
-  // Test uniqueness of name:
+  // Validate the system name; check for its presence, pass it through a preg
+  // filter for allowed characters, and test for uniqueness.
   if (!$form_values['name']) {
     form_error($form['left']['info']['name'], t('Panel name is required.'));
   }
@@ -339,27 +340,21 @@ function panels_page_edit_form_validate($form_id, $form_values, $form) {
     form_error($form['left']['info']['name'], t('Name must be alphanumeric or underscores only.'));
   }
   else {
-    $query = "SELECT pid FROM {panels_page} WHERE name = '%s'";
-    if (!empty($form_values['pid']) && is_numeric($form_values['pid'])) {
-      $query .= " AND pid != $form_values[pid]";
-    }
-    if (db_result(db_query($query, $form_values['name']))) {
+    if (db_result(db_query("SELECT pid FROM {panels_page} WHERE name = '%s' AND pid <> %d", $form_values['name'], $form_values['pid']))) {
       form_error($form['left']['info']['name'], t('Panel name must be unique.'));
     }
   }
 
+  // Validate the path; check for its presence, uniqueness within panels_page,
+  // and uniqueness with respect to path aliases.
   if (!$form_values['path']) {
     form_error($form['left']['info']['path'], t('Path is required.'));
   }
   else {
-    $result = db_result(db_query("SELECT pid FROM {panels_page} WHERE path = '%s' AND pid <> %d", $form_values['path'], $form_values['pid']));
-    if ($result) {
+    if ($result = db_result(db_query("SELECT pid FROM {panels_page} WHERE path = '%s' AND pid <> %d", $form_values['path'], $form_values['pid']))) {
       form_error($form['left']['info']['path'], t('Path may not be the same as another panel page path.'));
     }
-
-    // validate against aliases
-    $result = db_result(db_query("SELECT src FROM {url_alias} WHERE dst = '%s'", $form_values['path']));
-    if ($result) {
+    if (db_result(db_query("SELECT src FROM {url_alias} WHERE dst = '%s'", $form_values['path']))) {
       form_error($form['left']['info']['path'], t('The path you have chosen is already aliased to @src.', array('@src' => $result)));
     }
   }
