@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.7 2008/08/04 23:13:47 merlinofchaos Exp $
+// $Id: common.inc,v 1.8 2008/08/18 10:33:41 sdboyer Exp $
 
 
 /**
@@ -470,7 +470,7 @@ function theme_panels_common_content_list($display) {
   $content = '<dl class="content-list">';
   foreach (panels_get_panels($layout, $display) as $panel_id => $title) {
     $content .= "<dt>$title</dt><dd>";
-    if ($display->panels[$panel_id]) {
+    if (!empty($display->panels[$panel_id])) {
       $content .= '<ol>';
       foreach ($display->panels[$panel_id] as $pid) {
         $content .= '<li>' . panels_get_pane_title($display->content[$pid], $display->context) . '</li>';
