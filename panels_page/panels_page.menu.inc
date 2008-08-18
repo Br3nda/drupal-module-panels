@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.menu.inc,v 1.12 2008/08/17 21:31:12 sdboyer Exp $
+// $Id: panels_page.menu.inc,v 1.13 2008/08/18 10:51:21 sdboyer Exp $
 
 /**
  * @file panels_page.menu.inc
@@ -143,7 +143,7 @@ function panels_page_create_menu_structure($new_items = NULL) {
 function _panels_page_menu_alter(&$callbacks) {
   $panels_items = panels_page_create_menu_structure();
   $matches = array();
-  foreach ($callbacks as $path => $item) {
+  while (list($path, $item) = each($callbacks)) {
     if (strpos($path, '%') === FALSE) {
       continue;
     }
