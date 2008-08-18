@@ -1,5 +1,5 @@
 <?php
-// $Id: profile_fields.inc,v 1.2 2008/07/15 23:59:36 merlinofchaos Exp $
+// $Id: profile_fields.inc,v 1.3 2008/08/18 02:04:42 sdboyer Exp $
 
 
 /**
@@ -46,7 +46,7 @@ function panels_profile_fields_content($conf, $panel_args, $context) {
       }
     }
 
-    if (sizeof($vars) == 0) {
+    if (count($vars) == 0) {
       // Output the given empty text
       $output = $conf['empty'];
     }
