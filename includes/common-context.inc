@@ -1,5 +1,5 @@
 <?php
-// $Id: common-context.inc,v 1.4 2008/08/07 01:22:07 sdboyer Exp $
+// $Id: common-context.inc,v 1.5 2008/08/18 19:14:16 sdboyer Exp $
 
 /**
  * @file includes/common-context.inc
@@ -252,6 +252,7 @@ function panels_common_add_item_table_buttons($type, $module, &$form, $available
  * the ajax to add an item.
  */
 function panels_common_add_item_to_form($module, $type, $name, &$form, $position, $item) {
+  panels_load_include('ajax');
   // This is the single function way to load any plugin by variable type.
   $info = panels_common_context_data($type, $item['name']);
   $form['title'] = array(
