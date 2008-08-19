@@ -1,5 +1,5 @@
 <?php
-// $Id: vid.inc,v 1.3 2008/08/06 19:02:00 sdboyer Exp $
+// $Id: vid.inc,v 1.4 2008/08/19 14:57:58 sdboyer Exp $
 
 
 /**
@@ -32,12 +32,12 @@ function panels_vid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   }
 
   if (!is_numeric($arg)) {
-    return PANELS_BAD_ARG;
+    return PANELS_ARG_IS_BAD;
   }
 
   $vocabulary = taxonomy_get_vocabulary($arg);
   if (!$vocabulary) {
-    return PANELS_BAD_ARG;
+    return PANELS_ARG_IS_BAD;
   }
 
   return panels_context_create('vocabulary', $vocabulary);

@@ -1,5 +1,5 @@
 <?php
-// $Id: nid.inc,v 1.3 2008/08/06 17:27:08 sdboyer Exp $
+// $Id: nid.inc,v 1.4 2008/08/19 14:57:58 sdboyer Exp $
 
 
 /**
@@ -32,11 +32,11 @@ function panels_nid_context($node = NULL, $conf = NULL, $empty = FALSE) {
   }
 
   if (!is_object($node)) {
-    return PANELS_BAD_ARG;
+    return PANELS_ARG_IS_BAD;
   }
 
   if (array_filter($conf['types']) && empty($conf['types'][$node->type])) {
-    return PANELS_USE_FALLBACK_ROUTER;
+    return PANELS_ARG_USE_FALLBACK;
   }
 
   return panels_context_create('node', $node);

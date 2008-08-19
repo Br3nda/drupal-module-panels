@@ -1,5 +1,5 @@
 <?php
-// $Id: node_edit.inc,v 1.3 2008/08/06 19:02:00 sdboyer Exp $
+// $Id: node_edit.inc,v 1.4 2008/08/19 14:57:58 sdboyer Exp $
 
 
 /**
@@ -32,16 +32,16 @@ function panels_node_edit_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   }
 
   if (!is_numeric($arg)) {
-    return PANELS_BAD_ARG;
+    return PANELS_ARG_IS_BAD;
   }
 
   $node = node_load($arg);
   if (!$node) {
-    return PANELS_BAD_ARG;
+    return PANELS_ARG_IS_BAD;
   }
 
   if (array_filter($conf['types']) && empty($conf['types'][$node->type])) {
-    return PANELS_USE_FALLBACK_ROUTER;
+    return PANELS_ARG_USE_FALLBACK;
   }
 
   // This will perform a node_access check, so we don't have to.
