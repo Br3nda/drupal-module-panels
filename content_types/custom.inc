@@ -1,5 +1,5 @@
 <?php
-// $Id: custom.inc,v 1.3 2008/07/15 23:59:36 merlinofchaos Exp $
+// $Id: custom.inc,v 1.4 2008/08/19 07:04:10 sdboyer Exp $
 
 
 /**
@@ -25,7 +25,7 @@ function panels_custom_panels_content_types() {
  * Output function for the 'custom' content type. Outputs a custom
  * based on the module and delta supplied in the configuration.
  */
-function panels_content_custom($conf) {
+function panels_content_custom($subtype, $conf) {
   static $delta = 0;
 
   $block          = new stdClass();

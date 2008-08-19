@@ -1,5 +1,5 @@
 <?php
-// $Id: node_type_desc.inc,v 1.2 2008/07/15 23:59:36 merlinofchaos Exp $
+// $Id: node_type_desc.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
 
 
 /**
@@ -23,7 +23,7 @@ function panels_node_type_desc_panels_content_types() {
  * Output function for the 'node' content type. Outputs a node
  * based on the module and delta supplied in the configuration.
  */
-function panels_content_node_type_desc($conf, $panel_args, $context) {
+function panels_content_node_type_desc($subtype, $conf, $panel_args, $context) {
   $node = isset($context->data) ? drupal_clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'node_type';

@@ -1,5 +1,5 @@
 <?php
-// $Id: user_profile.inc,v 1.2 2008/07/15 23:59:36 merlinofchaos Exp $
+// $Id: user_profile.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
 
 
 /**
@@ -16,11 +16,7 @@ function panels_user_profile_panels_content_types() {
   return $items;
 }
 
-/**
- * Output function for the 'node' content type. Outputs a node
- * based on the module and delta supplied in the configuration.
- */
-function panels_content_user_profile($conf, $panel_args, $context) {
+function panels_content_user_profile($subtype, $conf, $panel_args, $context) {
   $account = isset($context->data) ? drupal_clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'term-list';
