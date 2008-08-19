@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.write.inc,v 1.1 2008/08/19 02:46:08 sdboyer Exp $
+// $Id: panels_page.write.inc,v 1.2 2008/08/19 15:15:20 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -49,7 +49,7 @@ function panels_page_import_form(&$form_state) {
  */
 function panels_page_import_form_submit($form, &$form_state) {
   ob_start();
-  eval($form['panel_page']);
+  eval($form_state['values']['panel_page']);
   ob_end_clean();
 
   if (isset($page)) {
@@ -155,7 +155,6 @@ function panels_page_save($panel_page) {
   $values[] = $page_clone->pid;
 
   db_query($sql, $values);
-  menu_rebuild();
   return $page_clone->pid;
 }
 
