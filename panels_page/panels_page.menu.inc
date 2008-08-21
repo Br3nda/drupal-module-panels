@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.menu.inc,v 1.17 2008/08/19 15:15:20 sdboyer Exp $
+// $Id: panels_page.menu.inc,v 1.18 2008/08/21 05:19:43 sdboyer Exp $
 
 /**
  * @file panels_page.menu.inc
@@ -42,7 +42,6 @@ function panels_page_admin_static_menu_items() {
     'title' => 'Import',
     'page callback' => 'panels_page_import_page',
     'weight' => 5,
-    'file' => 'panels_page.write.inc',
   ) + $admin;
   return $items;
 }
