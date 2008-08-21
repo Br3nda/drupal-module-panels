@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.72 2008/08/17 02:46:17 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.73 2008/08/21 05:13:56 sdboyer Exp $
 
 
 /**
@@ -1133,7 +1133,7 @@ function panels_page_export($panel_page, $prefix = '') {
   foreach ($panel_page->contexts as $id => $info) {
     $output .= $prefix . '  $page->contexts[\'' . $id . "'] = array(\n";
     foreach ($info as $key => $value) {
-      $output .= $prefix . "    '$key' => " . panels_var_export($value, '    ') . ";\n";
+      $output .= $prefix . "    '$key' => " . panels_var_export($value, '    ') . ",\n";
     }
     $output .= $prefix . "  );\n";
   }
