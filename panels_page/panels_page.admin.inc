@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.12 2008/08/21 05:19:43 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.13 2008/08/21 05:21:50 sdboyer Exp $
 
 
 /**
@@ -904,6 +904,19 @@ function panels_page_admin_view_submit($form, &$form_state) {
   return $url;
 }
 
+
+/**
+ * Page callback to import a panel page from PHP code.
+ */
+function panels_page_import_page() {
+  if (!empty($_POST['form_id']) && $_POST['form_id'] == 'panels_page_edit_form') {
+    $panel_page = unserialize($_SESSION['pp_import']);
+    drupal_set_title(t('Import panel page "@s"', array('@s' => $panel_page->title)));
+    return drupal_get_form('panels_page_edit_form', $panel_page);
+  }
+
+  return drupal_get_form('panels_page_import_form');
+}
 
 /**
  * Form to for the panel page import
