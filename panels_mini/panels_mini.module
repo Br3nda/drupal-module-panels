@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.3 2008/07/24 00:55:34 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.4 2008/08/22 22:37:18 merlinofchaos Exp $
 
 /**
  * @file panels_mini.module
@@ -213,7 +213,7 @@ function panels_mini_fields() {
  */
 function panels_mini_sanitize($mini) {
   foreach (array('contexts', 'relationships', 'requiredcontexts') as $id) {
-    if (!is_array($mini->$id)) {
+    if (!isset($mini->$id) || !is_array($mini->$id)) {
       $mini->$id = array();
     }
   }

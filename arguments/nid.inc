@@ -1,5 +1,5 @@
 <?php
-// $Id: nid.inc,v 1.4 2008/08/19 14:57:58 sdboyer Exp $
+// $Id: nid.inc,v 1.5 2008/08/22 22:37:18 merlinofchaos Exp $
 
 
 /**
@@ -46,6 +46,14 @@ function panels_nid_context($node = NULL, $conf = NULL, $empty = FALSE) {
  * Settings form for the argument
  */
 function panels_nid_settings_form($conf) {
+  if (empty($conf)) {
+    $conf = array(
+      'types' => array(),
+      'own_default' => FALSE,
+      'displays' => array(),
+    );
+  }
+
   $options = array();
   foreach (node_get_types() as $type => $info) {
     $options[$type] = $info->name;

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.read.inc,v 1.7 2008/08/21 21:25:54 sdboyer Exp $
+// $Id: panels_page.read.inc,v 1.8 2008/08/22 22:37:18 merlinofchaos Exp $
 
 /**
  * @file panels_page.write.inc
@@ -99,7 +99,7 @@ function panels_page_load($id, $load_display = FALSE) {
   $page->contexts         = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
   $page->relationships    = (!empty($page->relationships)) ? unserialize($page->relationships) : array();
   $page->switcher_options = (!empty($page->switcher_options)) ? unserialize($page->switcher_options) : array();
-  $page->loader_flags     = (int) $page->loader_flags;
+//  $page->loader_flags     = (int) $page->loader_flags;
 
   if ($load_display) {
     $page->primary = panels_load_display($page->did);

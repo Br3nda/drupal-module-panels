@@ -1,5 +1,5 @@
 <?php
-// $Id: display-layout.inc,v 1.2 2008/07/23 21:14:27 merlinofchaos Exp $
+// $Id: display-layout.inc,v 1.3 2008/08/22 22:37:18 merlinofchaos Exp $
 
 /**
  * @file
@@ -165,7 +165,7 @@ function panels_change_layout(&$form_state) {
 
   $options = $new_layout_panels;
   $keys = array_keys($options);
-  $default = $options[0];
+  $default = current($options);
 
   $old_layout = panels_get_layout($display->layout);
 
