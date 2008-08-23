@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.7 2008/08/22 22:37:18 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.8 2008/08/23 00:57:55 sdboyer Exp $
 
 
 /**
@@ -1134,11 +1134,6 @@ function panels_context_get_keywords($contexts) {
  * @todo can probably combine the various versions of this.
  */
 function panels_context_context_id($context, $type = 'context') {
-  if (empty($context['id'])) {
-    dsm($context);
-    vsm_trace();
-  }
-
   return $type . "_$context[name]_$context[id]";
 }
 
