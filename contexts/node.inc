@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.5 2008/08/19 15:17:34 sdboyer Exp $
+// $Id: node.inc,v 1.6 2008/08/25 04:13:16 sdboyer Exp $
 
 
 /**
@@ -28,6 +28,7 @@ function panels_node_panels_contexts() {
  */
 function panels_context_create_node($empty, $data = NULL, $conf = FALSE) {
   $types = array('node');
+  // FIXME this is broken when called from panels_page's render process, through panels_context_load_contexts(); it passes in $conf as TRUE.
   if (!empty($conf['types'])) {
     foreach ($conf['types'] as $type) {
       if ($type) {
