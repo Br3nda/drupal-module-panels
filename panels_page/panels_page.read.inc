@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.read.inc,v 1.8 2008/08/22 22:37:18 merlinofchaos Exp $
+// $Id: panels_page.read.inc,v 1.9 2008/08/25 04:12:28 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -178,7 +178,9 @@ function panels_page_set_current(&$panel_page) {
  */
 function panels_page_fetch_display(&$panel_page, $id = NULL) {
 	// Redirect to the appropriate fetcher depending on whether $id is provided
-	empty($id) ? panels_page_fetch_primary_display($panel_page) : panels_page_fetch_alternate_display($panel_page, $id);
+	return empty($id) ?
+	 panels_page_fetch_primary_display($panel_page) :
+	 panels_page_fetch_alternate_display($panel_page, $id);
 }
 
 /**

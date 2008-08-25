@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.write.inc,v 1.5 2008/08/22 22:37:18 merlinofchaos Exp $
+// $Id: panels_page.write.inc,v 1.6 2008/08/25 04:12:28 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -25,7 +25,7 @@ function panels_page_fields() {
  *
  * Wrapper for panels_page_save().
  */
-function panels_page_save_display(&$panel_page, $id) {
+function panels_page_save_display(&$panel_page) {
   if (empty($panel_page->displays[$panel_page->current]['did']) || $panel_page->displays[$panel_page->current]['did'] == 'new') {
     return panels_page_save($panel_page);
   }
