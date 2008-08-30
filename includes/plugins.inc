@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.9 2008/08/30 10:05:48 sdboyer Exp $
+// $Id: plugins.inc,v 1.10 2008/08/30 10:19:09 sdboyer Exp $
 
 
 /**
@@ -1424,9 +1424,20 @@ function panels_panels_include_directory($plugin_type) {
 }
 
 /**
- * Load plugin info for all hooks; this is handled separately from plugins
- * from files. This is cached so we don't find ourselves building this
- * repeatedly.
+ * Load plugin info for the provided hook; this is handled separately from
+ * plugins from files.
+ *
+ * IMPORTANT: The hooks invoked by this function do work, but it is _not_ the
+ * preferred method, as it is left up to the module invoking the hook to handle
+ * including separate .inc files with potentially unneeded functions - and there
+ * is no way for any entity external to the Panels engine to know if that
+ * inclusion is necessary. Consequently, hook_panels_include_directory() should
+ * be used unless some aspect of the client's implementation is incompatible
+ * with that approach.
+ *
+ * @see panels_get_include_directories()
+ *
+ * @ingroup HookInvokers
  *
  * @param $hook
  *   The hook being invoked.
