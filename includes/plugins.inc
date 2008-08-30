@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.51 2008/08/05 08:10:59 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.52 2008/08/30 10:06:22 sdboyer Exp $
 
 
 /**
@@ -1344,33 +1344,38 @@ function panels_load_includes($plugin_type, $hook, $file = NULL) {
 }
 
 /**
- * Invokes hook_panels_include_directory(), which is part of the main panels API.
+ * Invocation of panels_include_directory(), part of the main panels API.
  *
  * @ingroup MainAPI
  * @ingroup HookInvokers
+ * @see panels_panels_include_directory()
  *
- * This hook allows other modules to create their own panels .inc files according to the
- * same filename and directory schema utilized by Panels itself, or some other arbitrary
- * schema defined in implementations of the hook. Essentially, instead of having to declare all
- * all callback definitions for a given plugin in a single hook implementation specific to that plugin
- * calling this hook allows the caller to define a directory where Panels will then look for
- * .inc files with callback declarations that conform to the naming scheme. The net result is the
- * same, but implementing this hook does allow for better organization and flexibility in
- * your .inc files, which is particularly preferable if you're implementing a lot of them.
+ * This hook allows other modules to create their own panels .inc files
+ * according to the same filename and directory schema utilized by Panels
+ * itself, or some other arbitrary schema defined in implementations of the
+ * hook. Essentially, instead of having to declare all all callback definitions
+ * for a given plugin in a single hook implementation specific to that plugin
+ * calling this hook allows the caller to define a directory where Panels will
+ * then look for .inc files with callback declarations that conform to the
+ * naming scheme. The net result is the same, but implementing this hook does
+ * allow for better organization and flexibility in your .inc files, which is
+ * particularly preferable if you're implementing a lot of them.
  *
- * PLEASE NOTE: There are strict naming conventions on implementing this hook; failure to
- * follow the conventions will likely cause your plugins not to work. Possibly even worse,
- * failure to follow the conventions can result in namespace collisions between your
- * module and other modules invoking the panels API.
+ * PLEASE NOTE: There are strict naming conventions on implementing this hook;
+ * failure to follow the conventions will likely cause your plugins not to
+ * work. Possibly even worse, failure to follow the conventions can result in
+ * namespace collisions between your module and other modules invoking the
+ * panels API.
  *
  * @param string $plugintype
- *   The type of Panels plugin being requested. Can be any of the following seven:
- *  'content_types', 'contexts', 'arguments', 'layouts', 'styles', 'relationships'
+ *   The type of Panels plugin being requested. Can be any of the following
+ *   seven: 'content_types', 'contexts', 'arguments', 'layouts', 'styles',
+ *   'relationships', 'cache', 'switchers'
  *
  * @return array $directories
- *   Returns an array of include subdirectories to call for the requested plugin type.
- *   Subdirectories should be ONLY the subdirectory of your module where the appropriate
- *   types of .inc files reside.
+ *   Returns an array of include subdirectories to call for the requested
+ *   plugin type.  Subdirectories should be ONLY the subdirectory of your
+ *   module where the appropriate types of .inc files reside.
  */
 function panels_get_include_directories($plugin_type) {
   $directories = array();
@@ -1385,6 +1390,25 @@ function panels_get_include_directories($plugin_type) {
 
 /**
  * Implementation of hook_panels_include_directory().
+ *
+ * @see panels_get_include_directories()
+ *
+ * This simple implementation of hook_panels_include_directory() is sufficient
+ * to mark all seven of the Panels subdirectories corresponding to the different
+ * plugin types as plugin directories that the Panels engine will search for
+ * plugins of that type when a request for those plugins are made.
+ *
+ * It is important that separate directories be defined for each of the plugin
+ * types. While failure to separate the plugin directories should not result in
+ * an error, it will undermine the Panels engine's lazy-loading logic and
+ * negatively impact memory usage.
+ *
+ * @param string $plugin_type
+ *    The plugin type for which the Panels engine is currently requesting the
+ *    location of an include directory.
+ * @return string
+ *    The location of the include directory for plugin type being requested,
+ *    relative to the base directory of the module implementing this hook.
  */
 function panels_panels_include_directory($plugin_type) {
   return $plugin_type;
