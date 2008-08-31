@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.write.inc,v 1.6 2008/08/25 04:12:28 sdboyer Exp $
+// $Id: panels_page.write.inc,v 1.7 2008/08/31 23:59:50 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -166,7 +166,7 @@ function panels_page_delete($panel_page) {
  *
  * The code returned from can be used directly in panels_page_save().
  */
-function panels_page_export($panel_page, $prefix = '') {
+function panels_page_export_page($panel_page, $prefix = '') {
   // Make sure the primary display is the current display.
   panels_page_fetch_primary_display($panel_page);
   $output = '';
@@ -174,10 +174,9 @@ function panels_page_export($panel_page, $prefix = '') {
   $output .= $prefix . '$page = new stdClass()' . ";\n";
   $output .= $prefix . '$page->pid = \'new\'' . ";\n";
   foreach (array_keys($fields) as $field) {
-    if (!isset($panel_page->$field) || in_array($field, array('displays', 'contexts', 'display'))) {
-      continue;
+    if (isset($panel_page->$field) && !in_array($field, array('displays', 'contexts', 'display'))) {
+      $output .= $prefix . '  $page->' . $field . ' = ' . panels_var_export($panel_page->$field, '  ') . ";\n";
     }
-    $output .= $prefix . '  $page->' . $field . ' = ' . panels_var_export($panel_page->$field, '  ') . ";\n";
   }
   // Export the contexts.
   $output .= $prefix . '$page->contexts = array()' . ";\n";
