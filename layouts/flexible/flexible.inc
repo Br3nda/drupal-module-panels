@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1 2008/07/23 21:14:28 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.2 2008/08/31 15:45:45 sdboyer Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -12,6 +12,7 @@ function panels_flexible_panels_layouts() {
     'css' => 'flexible.css',
     'settings form' => 'panels_flexible_settings_form',
     'settings submit' => 'panels_flexible_settings_submit',
+    'settings validate' => 'panels_flexible_settings_validate',
     'panels function' => 'panels_flexible_panels',
   );
 
