@@ -1,10 +1,10 @@
 <?php
-// $Id: panels_page.menu.inc,v 1.20 2008/08/22 22:37:18 merlinofchaos Exp $
+// $Id: panels_page.menu.inc,v 1.21 2008/08/31 15:51:43 sdboyer Exp $
 
 /**
  * @file panels_page.menu.inc
  *
- * Functions resposnible for constructing the panels_page menu routing &
+ * Functions responsible for constructing the panels_page menu routing &
  * overriding system.
  */
 
@@ -340,6 +340,7 @@ function panels_page_get_raw_path($path) {
  */
 function _panels_page_menu_router_build($callbacks, $matches) {
   $menu = array();
+  $sort = array();
   foreach ($matches as $path => $match) {
     $item = $callbacks[$path];
     $load_functions = array();
