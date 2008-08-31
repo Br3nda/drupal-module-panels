@@ -1,5 +1,5 @@
 <?php
-// $Id: vocabulary.inc,v 1.2 2008/07/16 00:09:03 merlinofchaos Exp $
+// $Id: vocabulary.inc,v 1.3 2008/08/31 14:49:13 sdboyer Exp $
 
 
 /**
@@ -34,7 +34,7 @@ function panels_context_create_vocabulary($empty, $data = NULL, $conf = FALSE) {
   }
 
   if ($conf) {
-    $data = taxonomy_get_vocabulary($data['vid']);
+    $data = taxonomy_vocabulary_load($data['vid']);
   }
 
   if (!empty($data)) {
