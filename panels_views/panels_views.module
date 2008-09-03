@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.4 2008/08/31 23:28:35 sdboyer Exp $
+// $Id: panels_views.module,v 1.4.2.1 2008/09/03 22:31:48 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -73,7 +73,7 @@ function panels_views_all_views_content_types() {
 
       $contexts = array();
 
-      if ($arguments = $display->handler->get_handlers('argument')) {
+      if (isset($display->handler) && $arguments = $display->handler->get_handlers('argument')) {
         foreach ($arguments as $arg) {
           $contexts[] = new panels_optional_context($arg->ui_name(), 'any');
         }

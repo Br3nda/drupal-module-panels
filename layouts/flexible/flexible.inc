@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.2 2008/08/31 15:45:45 sdboyer Exp $
+// $Id: flexible.inc,v 1.2.2.1 2008/09/03 22:31:48 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -115,7 +115,7 @@ function panels_flexible_settings_form($display, $layout, $settings) {
       '#default_value' => $settings["row_$row"]["columns"],
     );
     for ($col = 1; $col <= intval($settings["row_$row"]["columns"]); $col++) {
-      $form["row_$row"]["width_$row_$col"] = array(
+      $form["row_$row"]["width_$col"] = array(
         '#prefix' => '<div style="float: left; padding-right: 2em">',
         '#suffix' => '</div>',
         '#type' => 'textfield',
@@ -197,12 +197,17 @@ function panels_flexible_settings_form($display, $layout, $settings) {
     '#sidebar-left-checkbox' => array('#sidebar-left-width'),
     '#sidebar-right-checkbox' => array('#sidebar-right-width'),
   )));
-  drupal_add_js(panels_get_path('js/checkboxes.js'));
+  // not needed, automatically happens on the layout settings page.
+//  drupal_add_js(panels_get_path('js/checkboxes.js'));
   drupal_add_js($js_settings, 'setting');
   return $form;
 }
 
 function panels_flexible_settings_validate($values, $form, $display, $layout, $settings) {
+  if (empty($settings)) {
+    $settings = panels_flexible_default_panels();
+  }
+
   if ($values['rows'] < 1) {
     form_error($form['rows'], t('Rows must be a positive integer.'));
     return;
@@ -230,6 +235,10 @@ function panels_flexible_settings_validate($values, $form, $display, $layout, $s
 }
 
 function panels_flexible_settings_submit(&$values, $display, $layout, $settings) {
+  if (empty($settings)) {
+    $settings = panels_flexible_default_panels();
+  }
+
   for ($row = 1; $row <= $values['rows']; $row++) {
     if ($row > $settings['rows'] && empty($values["row_$row"]['columns'])) {
       $values["row_$row"]['columns'] = 1;
@@ -295,6 +304,7 @@ function theme_panels_flexible($id, $content, $settings) {
     $idcss = "#$id";
   }
   else {
+    $idstr = '';
     $idcss = "div.panel-flexible";
   }
 

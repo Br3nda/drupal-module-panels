@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20 2008/09/03 02:16:46 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.1 2008/09/03 22:31:48 merlinofchaos Exp $
 
 
 /**
@@ -403,7 +403,7 @@ function panels_page_edit_form_submit($form, &$form_state) {
     $layout = panels_get_layout($panel_page->display->layout);
 
     if (!empty($layout['settings form'])) {
-      $form_state['redirect'] =  "admin/panels/panel-page/$panel_page->name/edit/settings/next";
+      $form_state['redirect'] =  "admin/panels/panel-page/$panel_page->name/edit/layout-settings/next";
     }
     else {
       $form_state['redirect'] = "admin/panels/panel-page/$panel_page->name/edit/advanced/next";
@@ -812,29 +812,34 @@ function panels_page_edit_content($panel_page) {
   print theme('page', $output, FALSE);
 }
 
-function panels_page_preview($panel_page) {
-  $form_state = array(
-    'panel_page' => $panel_page,
-    'args' => func_get_args(),
-  );
-
-}
-
-function panels_page_preview_page(&$form_state, $panel_page) {
-  panels_page_load_include('render');
-  $form = array();
-  $form['notyet'] = array(
-    '#value' => t('Dynamic previews have not yet been ported to Drupal 6. Expect them soon.'),
-  );
-
-  return $form;
+function panels_page_preview_page($panel_page) {
+  return t('Dynamic previews have not yet been ported to Drupal 6. Expect them in the next alpha release.');
 
   $args = func_get_args();
   $panel_page = array_shift($args);
+
   $load = new stdClass();
-  _panels_page_construct_argument_contexts($load, $panel_page, $args);
+  panels_page_load_include('render');
 
+  if (!($panel_page->load_flags & PANELS_IS_DYNAMIC)) {
+    if ((bool) panels_page_access($panel_page->name)) {
+      panels_page_fetch_primary_display($panel_page);
+    }
+  }
+  else {
+    $form_state = array(
+      'panel_page' => $panel_page,
+      'args' => $args,
+    );
 
+    $form_output = drupal_build_form('panels_page_admin_view_form', $form_state);
+
+    _panels_page_construct_argument_contexts($load, $panel_page, $form_state['args']);
+  }
+
+  panels_page_prepare_panels_render($load, $panel_page, $args);
+
+  // Render or provide an error based upon information in load?
 
   // FIXME copied from the master loader; this NEEDS to be retooled for previews.
 /*  foreach ($panel_page->arguments as $id => $argument) {
@@ -865,7 +870,10 @@ function panels_page_preview_page(&$form_state, $panel_page) {
   */
 }
 
-function panels_page_admin_view(&$form_state, $panel_page, $args) {
+function panels_page_admin_view(&$form_state) {
+  $panel_page = &$form_state['panel_page'];
+  $args = $form_state['args'];
+
   $form = array();
 
   $form['fieldset'] = array(
@@ -935,18 +943,16 @@ function panels_page_admin_view(&$form_state, $panel_page, $args) {
     '#type' => 'value',
     '#value' => $panel_page,
   );
-  $form['contexts'] = array(
-    '#type' => 'value',
-    '#value' => $contexts,
-  );
+
+  $form_state['contexts'] = $contexts;
 
   return $form;
 }
 
 function panels_page_admin_view_submit($form, &$form_state) {
   $count = 0;
-  $url = "admin/panels/panel-page/" . $form_state['values']['panel_page']->name . '/edit/preview';
-  foreach ($form_state['values']['contexts'] as $context) {
+  $url = "admin/panels/panel-page/" . $form_state['panel_page']->name . '/edit/preview';
+  foreach ($form_state['contexts'] as $context) {
     $url .= "/" . $form_state['values']["arg$count"];
     $count++;
   }

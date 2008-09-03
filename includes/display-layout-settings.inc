@@ -1,5 +1,5 @@
 <?php
-// $Id: display-layout-settings.inc,v 1.3 2008/08/05 00:25:47 merlinofchaos Exp $
+// $Id: display-layout-settings.inc,v 1.3.2.1 2008/09/03 22:31:48 merlinofchaos Exp $
 
 /**
  * @file
@@ -93,7 +93,7 @@ function panels_edit_layout_settings_form(&$form_state) {
       '#description' => t('Check this box to hide the main page title for this panel.'),
     );
 
-    if (is_string($title)) {
+    if (isset($title) && is_string($title)) {
       $form['display_title']['title']['#description'] .= t(" If you leave this field blank, then the default title, '@title', will be used instead.", array('@title' => $title));
     }
   }
@@ -161,7 +161,7 @@ function panels_edit_layout_settings_form(&$form_state) {
     '#title' => t('Per panel settings'),
     '#id' => 'panel-settings-individual',
     '#description' => t('If this is checked, each region in the display can have its own style.'),
-    '#default_value' => $panel_settings['individual'],
+    '#default_value' => !empty($panel_settings['individual']),
   );
 
   $layout_options = array_merge(array('-1' => t('Use the default panel style')), $options);
@@ -179,6 +179,10 @@ function panels_edit_layout_settings_form(&$form_state) {
       '#type' => 'hidden',
       '#value' => url('panels/ajax/style-settings/' . $display->did . '/' . $id,  array('absolute' => true)),
     );
+
+    if (!isset($display->panel_settings['panel'][$id]['style'])) {
+      $display->panel_settings['panel'][$id]['style'] = -1;
+    }
 
     // Component #2 of the URL -- the value will be selected by the user.
     $form['panel_settings']['panel'][$id]['style'] = array(
