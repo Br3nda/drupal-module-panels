@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.install,v 1.15 2008/08/31 23:59:50 sdboyer Exp $
+// $Id: panels_page.install,v 1.16 2008/09/03 02:14:07 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -294,11 +294,5 @@ function panels_page_install() {
 
 function panels_page_uninstall() {
   drupal_uninstall_schema('panels_page');
-}
-
-function panels_page_update_6000() {
-  $ret = array();
-  db_add_field($ret, 'panels_page', 'load_flags', array('type' => 'int', 'size' => 'tiny', 'not null' => TRUE, 'default' => 0));
-  return $ret;
 }
 
