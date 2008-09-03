@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.11 2008/08/30 10:26:27 sdboyer Exp $
+// $Id: plugins.inc,v 1.12 2008/09/03 02:13:19 sdboyer Exp $
 
 
 /**
@@ -763,12 +763,12 @@ function panels_argument_get_context($argument, $arg, $empty = FALSE) {
 
     $context = $function($arg, $argument['argument_settings'], $empty);
 
-    if ($context) {
+    if (is_object($context)) {
       $context->identifier = $argument['identifier'];
       $context->page_title = isset($argument['title']) ? $argument['title'] : '';
       $context->keyword    = $argument['keyword'];
-      return $context;
     }
+    return $context;
   }
 }
 
