@@ -1,17 +1,21 @@
 <?php
-// $Id: twocol_stacked.inc,v 1.5.6.6 2007/12/17 22:09:19 merlinofchaos Exp $
+// $Id: twocol_stacked.inc,v 1.5.6.7 2008/09/03 03:43:34 sdboyer Exp $
 
 /**
  * implementation of hook_panels_layouts
  */
 function panels_twocol_stacked_panels_layouts() {
   $items['twocol_stacked'] = array(
-    'module' => 'panels',
     'title' => t('Two column stacked'),
     'icon' => 'layouts/twocol_stacked.png',
     'theme' => 'panels_twocol_stacked',
     'css' => 'layouts/twocol_stacked.css',
-    'panels' => array('top' => t('Top'), 'left' => t('Left side'), 'right' => t('Right side'), 'bottom' => t('Bottom')),
+    'panels' => array(
+      'top' => t('Top'),
+      'left' => t('Left side'),
+      'right' => t('Right side'),
+      'bottom' => t('Bottom')
+    ),
   );
 
   return $items;

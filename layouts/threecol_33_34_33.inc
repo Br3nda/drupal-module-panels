@@ -1,16 +1,19 @@
 <?php
-// $Id: threecol_33_34_33.inc,v 1.5.6.5 2007/12/17 22:09:19 merlinofchaos Exp $
+// $Id: threecol_33_34_33.inc,v 1.5.6.6 2008/09/03 03:43:34 sdboyer Exp $
 /**
  * implementation of hook_panels_layouts
  */
 function panels_threecol_33_34_33_panels_layouts() {
   $items['threecol_33_34_33'] = array(
-    'module' => 'panels',
     'title' => t('Three column 33/34/33'),
     'icon' => 'layouts/threecol_33_34_33.png',
     'theme' => 'panels_threecol_33_34_33',
     'css' => 'layouts/threecol_33_34_33.css',
-    'panels' => array('left' => t('Left side'), 'middle' => t('Middle column'), 'right' => t('Right side')),
+    'panels' => array(
+      'left' => t('Left side'),
+      'middle' => t('Middle column'),
+      'right' => t('Right side')
+    ),
   );
 
   return $items;

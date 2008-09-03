@@ -1,17 +1,22 @@
 <?php
-// $Id: threecol_25_50_25_stacked.inc,v 1.5.6.6 2007/12/17 22:09:19 merlinofchaos Exp $
+// $Id: threecol_25_50_25_stacked.inc,v 1.5.6.7 2008/09/03 03:43:34 sdboyer Exp $
 
 /**
  * implementation of hook_panels_layouts
  */
 function panels_threecol_25_50_25_stacked_panels_layouts() {
   $items['threecol_25_50_25_stacked'] = array(
-    'module' => 'panels',
     'title' => t('Three column 25/50/25 stacked'),
     'icon' => 'layouts/threecol_25_50_25_stacked.png',
     'theme' => 'panels_threecol_25_50_25_stacked',
     'css' => 'layouts/threecol_25_50_25_stacked.css',
-    'panels' => array('top' => t('Top'), 'left' => t('Left side'), 'middle' => t('Middle column'), 'right' => t('Right side'), 'bottom' => t('Bottom')),
+    'panels' => array(
+      'top' => t('Top'),
+      'left' => t('Left side'),
+      'middle' => t('Middle column'),
+      'right' => t('Right side'),
+      'bottom' => t('Bottom')
+    ),
   );
 
   return $items;
