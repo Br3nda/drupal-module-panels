@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.4 2008/08/05 00:25:47 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.4.2.1 2008/09/04 02:45:24 sdboyer Exp $
 
 
 /**
@@ -60,6 +60,8 @@ function panels_node_menu() {
     'page arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
   );
+  // FIXME Statically setting the path in this way makes these tabs render on
+  // ALL node - appropriate or not
   $items['node/%node/panel_layout'] = array(
     'path' => $base . 'layout',
     'title' => 'Panel layout',
