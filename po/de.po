@@ -1,4 +1,4 @@
-# $Id: de.po,v 1.1.4.6 2008/09/13 17:06:31 hass Exp $
+# $Id: de.po,v 1.1.4.7 2008/09/13 17:23:43 hass Exp $
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: panels 5.x\n"
 "POT-Creation-Date: 2008-09-13 18:05+0200\n"
-"PO-Revision-Date: 2008-09-13 19:04+0100\n"
+"PO-Revision-Date: 2008-09-13 19:22+0100\n"
 "Last-Translator: Alexander Hass\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
@@ -2834,6 +2834,7 @@ msgstr "Ansichtstyp"
 
 #: panels_views/panels_views.module:300;962
 #: panels_views_legacy/panels_views_legacy.module:242
+#, fuzzy
 msgid "Select which type of the view to display."
 msgstr "Den Typ einer Ansicht auswählen, der angezeigt werden soll."
 
@@ -2993,11 +2994,11 @@ msgstr ""
 
 #: panels_views/panels_views.module:422
 msgid "Pane decorations"
-msgstr "Dekorationen des Ausschnitts"
+msgstr "Ausschnittsausstattung"
 
 #: panels_views/panels_views.module:427
 msgid "Link to view"
-msgstr "Zu Ansicht verlinken"
+msgstr "Zur Ansicht verlinken"
 
 #: panels_views/panels_views.module:428
 msgid "If checked, link the title of the pane to the view."
@@ -3021,7 +3022,7 @@ msgstr ""
 
 #: panels_views/panels_views.module:453
 msgid "More link text"
-msgstr "Text des „Mehr“-Links."
+msgstr "Text des „Mehr“-Links"
 
 #: panels_views/panels_views.module:454
 msgid "If you checked the above box allowing Panels to provide its own \"more\" link, Panels will render that link using the text you enter here. If left blank, defaults to \"more\"."
