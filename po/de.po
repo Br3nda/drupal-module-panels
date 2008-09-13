@@ -1,4 +1,4 @@
-# $Id: de.po,v 1.1.4.4 2008/06/29 19:45:09 hass Exp $
+# $Id: de.po,v 1.1.4.5 2008/09/13 09:03:04 hass Exp $
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: panels 5.x\n"
 "POT-Creation-Date: 2008-06-29 20:30+0200\n"
-"PO-Revision-Date: 2008-06-29 21:42+0100\n"
+"PO-Revision-Date: 2008-09-13 10:58+0100\n"
 "Last-Translator: Alexander Hass\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
@@ -214,7 +214,7 @@ msgstr ""
 #: arguments/node_add.inc:12
 #: contexts/node_add_form.inc:13
 msgid "Node add form"
-msgstr "Ein Formular zum Erstellen eines Beitrages."
+msgstr "Formular: Beitrag erstellen"
 
 #: arguments/node_add.inc:15
 msgid "Displays the node add form for a content type."
@@ -231,7 +231,7 @@ msgstr ""
 #: arguments/node_edit.inc:12
 #: contexts/node_edit_form.inc:13
 msgid "Node edit form"
-msgstr "Ein Formular zum Bearbeiten eines Beitrages."
+msgstr "Formular: Beitrag bearbeiten"
 
 #: arguments/node_edit.inc:15
 msgid "Displays the node edit form for a node."
@@ -3099,7 +3099,7 @@ msgstr "Hauptbuch"
 
 #: relationships/term_from_node.inc:13
 msgid "Term from node"
-msgstr "Begriff vom Beitrag"
+msgstr "Begriff des Beitrags"
 
 #: relationships/term_from_node.inc:15
 msgid "Adds a taxonomy term from a node context; if multiple terms are selected, this will get the \"first\" term only."
