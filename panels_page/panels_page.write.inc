@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.write.inc,v 1.9 2008/09/03 02:15:40 sdboyer Exp $
+// $Id: panels_page.write.inc,v 1.9.2.1 2008/09/16 22:52:14 merlinofchaos Exp $
 
 /**
  * @file panels_page.write.inc
@@ -72,7 +72,7 @@ function _panels_page_insert(&$panel_page) {
   $clone->did = $panel_page->primary->did;
 
   foreach ($schema['fields'] as $field => $info) {
-    if (isset($panel_page->$field)) {
+    if (isset($panel_page->$field) && $info['type'] != 'serial') {
       $fields[] = $field;
       $placeholders[] = db_type_placeholder($info['type']);
       $values[] = _panels_page_save_value($info, $clone->$field);
