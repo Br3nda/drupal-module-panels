@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node_content.module,v 1.4 2008/08/31 23:27:20 sdboyer Exp $
+// $Id: panels_node_content.module,v 1.4.2.1 2008/09/16 22:46:42 merlinofchaos Exp $
 
 
 /**
@@ -73,8 +73,11 @@ function panels_node_content_render($subtype, $conf, $panel_args) {
 
   // Support node translation
   if (module_exists('translation')) {
-    if ($translation = module_invoke('translation', 'node_nid', $nid, $GLOBALS['locale'])) {
-      $nid = $translation;
+    if ($translations = module_invoke('translation', 'node_get_translations', $nid )) {
+	  if( $translations[$GLOBALS['language']->language] )
+	  {
+		$nid = $translations[$GLOBALS['language']->language]->nid;
+	  }
     }
   }
 
