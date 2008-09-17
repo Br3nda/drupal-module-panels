@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20.2.2 2008/09/04 02:45:24 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.3 2008/09/17 00:28:39 merlinofchaos Exp $
 
 
 /**
@@ -254,6 +254,7 @@ function panels_page_edit($panel_page, $next = NULL) {
  */
 function panels_page_edit_form(&$form_state, &$panel_page, $next = NULL) {
   panels_load_include('common');
+  panels_load_include('plugins');
   drupal_add_css(panels_get_path('css/panels_admin.css'));
   $layout = panels_get_layout($panel_page->display->layout);
 
