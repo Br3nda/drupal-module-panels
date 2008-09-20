@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.54 2008/09/20 04:19:51 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.55 2008/09/20 04:45:20 sdboyer Exp $
 
 
 /**
@@ -373,9 +373,9 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   $panel_page->path   = $form_values['path'];
 
   if ($panel_page->pid == 'new') {
-    unset($_SESSION['pp_import']);
+    isset($_SESSION['pp_import']) ? panels_page_save_import($panel_page) : panels_page_save($panel_page);
+    unset ($_SESSION['pp_import']);
     drupal_set_message(t('Your new panel page %title has been saved.', array('%title' => $panel_page->title)));
-    panels_page_save($panel_page);
     $GLOBALS['form_values']['pid'] = $panel_page->pid;
     $layout = panels_get_layout($panel_page->display->layout);
 
@@ -857,6 +857,10 @@ function panels_page_import_form_submit($form_id, $form) {
 
   if (isset($page)) {
     drupal_set_title(t('Import panel page "@s"', array('@s' => $page->title)));
+    // Backwards-compatibility for exports that predate the new fetching system.
+    if (!is_object($page->primary)) {
+      $page->primary =& $page->display;
+    }
     // As $page contains non-stdClass objects,
     // it needs to be serialized before being stored in the session variable.
     $_SESSION['pp_import'] = serialize($page);
