@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.write.inc,v 1.9.2.1 2008/09/16 22:52:14 merlinofchaos Exp $
+// $Id: panels_page.write.inc,v 1.9.2.2 2008/09/20 04:28:30 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -27,6 +27,11 @@ function panels_page_fields() {
  */
 function panels_page_save_display(&$panel_page) {
   if (empty($panel_page->displays[$panel_page->current]['did']) || $panel_page->displays[$panel_page->current]['did'] == 'new') {
+    if (!empty($panel_page->export)) {
+      $code = panels_export_display($panel_page->display);
+      eval($code);
+      $panel_page->display =& $display;
+    }
     return panels_page_save($panel_page);
   }
 }
