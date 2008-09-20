@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.write.inc,v 1.9.2.2 2008/09/20 04:28:30 sdboyer Exp $
+// $Id: panels_page.write.inc,v 1.9.2.3 2008/09/20 04:29:37 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -104,9 +104,9 @@ function _panels_page_update(&$panel_page) {
   // Save the display if one was given to us.
   if (!empty($panel_page->display)) {
     panels_save_display($panel_page->display);
-    if ($panel_page->current != 'primary') {
-      $panel_page->displays[$panel_page->current]['did'] = $panel_page->display->did;
-      unset($panel_page->displays[$panel_page->current]['display']);
+    if (!empty($panel_page->export)) {
+      $panel_page->displays[$panel_page->export]['did'] = $panel_page->display->did;
+      unset($panel_page->displays[$panel_page->export]['display']);
     }
   }
 
