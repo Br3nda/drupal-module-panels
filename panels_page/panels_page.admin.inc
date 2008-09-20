@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.53 2008/09/19 20:50:38 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.54 2008/09/20 04:19:51 sdboyer Exp $
 
 
 /**
@@ -193,7 +193,8 @@ function panels_page_add_page($layout = NULL) {
   }
 
   $panel_page = new stdClass();
-  $panel_page->display = panels_new_display();
+  $panel_page->primary = panels_new_display();
+  $panel_page->display =& $panel_page->primary;
   $panel_page->display->layout = $layout;
   $panel_page->pid = 'new';
   $panel_page->did = 'new';
@@ -374,11 +375,11 @@ function panels_page_edit_form_submit($form_id, $form_values) {
   if ($panel_page->pid == 'new') {
     unset($_SESSION['pp_import']);
     drupal_set_message(t('Your new panel page %title has been saved.', array('%title' => $panel_page->title)));
-    $pid = panels_page_save($panel_page);
-    $GLOBALS['form_values']['pid'] = $pid;
+    panels_page_save($panel_page);
+    $GLOBALS['form_values']['pid'] = $panel_page->pid;
     $layout = panels_get_layout($panel_page->display->layout);
 
-    if ($layout['settings form']) {
+    if (!empty($layout['settings form'])) {
       return "admin/panels/panel-page/$panel_page->name/edit/settings/next";
     }
     return "admin/panels/panel-page/$panel_page->name/edit/advanced/next";
@@ -679,6 +680,7 @@ function panels_page_context_form_submit($form_id, $form_values) {
   drupal_set_message(t('Your changes have been saved.'));
   panels_page_save($panel_page);
   panels_common_cache_clear('panel_object:panel_page', $panel_page->name);
+  menu_rebuild();
   if ($form_values['submit'] == t('Save and proceed')) {
     return "admin/panels/panel-page/$panel_page->name/edit/content";
   }
@@ -692,15 +694,16 @@ function panels_page_edit_layout($panel_page, $did = NULL) {
     $panel_page = panels_page_load($panel_page);
   }
 
-  $display = panels_page_fetch_display($panel_page, $did);
+  panels_page_fetch_display($panel_page, $did);
+  $display = $panel_page->display;
 
   // The following form will return the $display upon successful submit, if
   // we didn't send the $dest. Which we don't, here. That way we can update
   // our panel_page if necessary and do our own goto.
   $output = panels_edit_layout($panel_page->display, t('Save'));
   if (is_object($output)) {
-    // If this is a default page, and was saved, we have to make it real.
-    panels_page_set_display($panel_page, $did, $output);
+    $panel_page->display = $output;
+    panels_page_save_display($panel_page);
 
     $dest = "admin/panels/panel-page/$panel_page->name/edit/layout";
     if ($did) {
@@ -721,7 +724,8 @@ function panels_page_edit_layout_settings($panel_page, $did = NULL, $next = NULL
     $panel_page = panels_page_load($panel_page);
   }
 
-  $display = panels_page_fetch_display($panel_page, $did);
+  panels_page_fetch_display($panel_page, $did);
+  $display = $panel_page->display;
 
   if (empty($next)) {
     $button = t('Save');
@@ -739,7 +743,8 @@ function panels_page_edit_layout_settings($panel_page, $did = NULL, $next = NULL
   // we didn't send the $dest. Which we don't, here.
   $output = panels_edit_layout_settings($display, $button, NULL, $panel_page->title);
   if (is_object($output)) {
-    panels_page_set_display($panel_page, $did, $output);
+    $panel_page->display = $output;
+    panels_page_save_display($panel_page);
     drupal_goto($dest);
   }
 
@@ -755,7 +760,8 @@ function panels_page_edit_content($panel_page, $did = NULL) {
     $panel_page = panels_page_load($panel_page);
   }
 
-  $display = panels_page_fetch_display($panel_page, $did);
+  panels_page_fetch_display($panel_page, $did);
+  $display = $panel_page->display;
 
   // Collect a list of contexts required by the arguments on this page.
   $contexts = panels_context_load_contexts($panel_page);
@@ -769,8 +775,8 @@ function panels_page_edit_content($panel_page, $did = NULL) {
 
   $output = panels_edit($display, NULL, $content_types);
   if (is_object($output)) {
-    // If this is a default page, and was saved, we have to make it real.
-    panels_page_set_display($panel_page, $did, $output);
+    $panel_page->display = $output;
+    panels_page_save_display($panel_page);
 
     // And do the drupal_goto that a submit function ordinarily would have.
     $dest = "admin/panels/panel-page/$panel_page->name/edit/content";
@@ -954,3 +960,130 @@ function panels_page_admin_view_submit($form_id, $form_values) {
   return $url;
 }
 
+/**
+ * Check to see if the panel page needs to be saved due to a display having
+ * been just saved.
+ *
+ * Wrapper for panels_page_save().
+ */
+function panels_page_save_display(&$panel_page) {
+  if (empty($panel_page->displays[$panel_page->current]['did']) || $panel_page->displays[$panel_page->current]['did'] == 'new') {
+    if (!empty($panel_page->export)) {
+      $code = panels_export_display($panel_page->display);
+      eval($code);
+      $panel_page->display =& $display;
+    }
+    return panels_page_save($panel_page);
+  }
+}
+
+/**
+ * Prepare an imported panel page for insertion into the database, then
+ * insert it.
+ *
+ * Wrapper for panels_page_save().
+ */
+function panels_page_save_import(&$panel_page) {
+  foreach ($panel_page->displays as $id => $info) {
+    $imported_display = panels_save_display($info['display']);
+    $panel_page->displays[$id]['did'] = $imported_display->did;
+    unset($panel_page->displays[$id]['display']);
+  }
+  return panels_page_save($panel_page);
+}
+
+/**
+ * Main entry point for panels_page save functions.
+ */
+function panels_page_save(&$panel_page) {
+  panels_page_sanitize($panel_page);
+
+  return empty($panel_page->pid) || $panel_page->pid == 'new' ?
+    _panels_page_insert($panel_page) :
+    _panels_page_update($panel_page);
+}
+
+/**
+ * Insert a new panel page into the database.
+ *
+ */
+function _panels_page_insert(&$panel_page) {
+  $fields = $types = $values = array();
+
+  // Save the primary display, thus creating a $display->did.
+  panels_save_display($panel_page->primary);
+  $panel_page->did = $panel_page->primary->did;
+  $panel_page->pid = db_next_id('{panels_page}_pid');
+
+  $clone = drupal_clone($panel_page);
+
+  // Add these manually rather than putting them in panels_page_fields() itself
+  $all_fields = array_merge(panels_page_fields(), array("pid" => "%d", "did" => "%d"));
+  foreach ($all_fields as $field => $placeholder) {
+    if (isset($panel_page->$field)) {
+      $fields[] = $field;
+      $placeholders[] = $placeholder;
+      $values[] = _panels_page_save_value($field, $clone->$field);
+    }
+  }
+
+  // Build the query adding the new pid and did.
+  $sql = 'INSERT INTO {panels_page} (' . implode(', ', $fields) . ') VALUES (' . implode(' , ', $placeholders) . ')';
+
+  db_query($sql, $values);
+
+  menu_rebuild();
+  // Return the pid for convenience.
+  return $panel_page->pid;
+}
+
+/**
+ * Save an existing panel page to the database.
+ */
+function _panels_page_update(&$panel_page) {
+  $values = $pairs = array();
+
+  // Save the display if one was given to us.
+  if (!empty($panel_page->display)) {
+    panels_save_display($panel_page->display);
+    if (!empty($panel_page->export)) {
+      $panel_page->displays[$panel_page->export]['did'] = $panel_page->display->did;
+      unset($panel_page->displays[$panel_page->export]['display']);
+    }
+  }
+
+  // Build arrays of fields and types (resp. pairs of both) and of values.
+  foreach (panels_page_fields() as $field => $placeholder) {
+    // Skip empty values.
+    if (isset($panel_page->$field)) {
+      $pairs[] = $field . " = " . $placeholder;
+      $values[] = _panels_page_save_value($field, $panel_page->$field);
+    }
+  }
+
+  // Build the query filtering by the primary key.
+  $sql = 'UPDATE {panels_page} SET ' . implode(', ', $pairs) . ' WHERE pid = %d';
+  $values[] = $panel_page->pid;
+
+  db_query($sql, $values);
+  // Return the pid for convenience.
+  return $panel_page->pid;
+}
+
+/**
+ * Process values for saving based upon data in the schema
+ */
+function _panels_page_save_value($field, $value) {
+  switch ($field) {
+    case 'arguments':
+    case 'displays':
+    case 'contexts':
+    case 'relationships':
+    case 'switcher_options':
+      return serialize($value);
+    case 'access':
+      return implode(',', (array) $value);
+    default:
+      return $value;
+  }
+}
