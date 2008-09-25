@@ -1,10 +1,10 @@
-# $Id: panels.pot,v 1.1.4.5 2008/09/13 17:06:31 hass Exp $
+# $Id: panels.pot,v 1.1.4.6 2008/09/25 22:43:03 sun Exp $
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
 #  panels.module,v 1.10.4.125 2008/08/18 04:51:52 sdboyer
-#  panels_page.module,v 1.1.2.73 2008/08/21 05:13:56 sdboyer
+#  panels_page.module,v 1.1.2.75 2008/09/20 04:19:52 sdboyer
 #  panels_page.info,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos
 #  panels_node.module,v 1.1.2.19 2008/07/09 21:14:14 merlinofchaos
 #  panels_node.info,v 1.1.2.1 2007/08/29 22:02:04 merlinofchaos
@@ -59,7 +59,7 @@
 #  term_parent.inc,v 1.1.2.6 2008/05/27 20:21:14 sdboyer
 #  list.inc,v 1.1.2.8 2008/07/07 21:22:51 merlinofchaos
 #  vocabulary.inc,v 1.1.2.6 2008/06/03 13:18:07 pancho
-#  panels_page.admin.inc,v 1.1.2.52 2008/08/17 22:32:13 sdboyer
+#  panels_page.admin.inc,v 1.1.2.55 2008/09/20 04:45:20 sdboyer
 #  default.inc,v 1.1.2.7 2008/07/08 00:25:43 merlinofchaos
 #  flexible.inc,v 1.1.2.13 2008/07/29 05:55:43 sdboyer
 #  threecol_25_50_25_stacked.inc,v 1.5.6.7 2008/09/03 03:43:34 sdboyer
@@ -67,7 +67,7 @@
 #  twocol_bricks.inc,v 1.1.2.4 2008/07/18 22:53:51 sdboyer
 #  twocol_stacked.inc,v 1.5.6.7 2008/09/03 03:43:34 sdboyer
 #  onecol.inc,v 1.1.2.7 2008/07/29 10:54:33 sdboyer
-#  layouts/threecol_25_50_25.inc: n/a
+#  n/a
 #  threecol_33_34_33.inc,v 1.5.6.6 2008/09/03 03:43:34 sdboyer
 #  twocol.inc,v 1.6.6.6 2008/09/03 03:43:34 sdboyer
 #  panels_export.module,v 1.1.2.5 2008/07/29 07:39:26 sdboyer
@@ -79,7 +79,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2008-09-13 18:05+0200\n"
+"POT-Creation-Date: 2008-09-26 00:40+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -116,7 +116,7 @@ msgstr ""
 msgid " are useful for creating layouts that only occupy the content area of your pages.  Frequently, it is desirable to add an area to a node layout, such as a pull quote for a newspaper or a photo block, that you don't necessarily want on every node.  Panels Nodes lets you control the layout of a single node at a time and place content such as blog posts, images, blogs in and around the post."
 msgstr ""
 
-#: panels.module:19 panels_mini/panels_mini.module:48;842 panels_mini/panels_mini.info:0
+#: panels.module:19 panels_mini/panels_mini.module:48;843 panels_mini/panels_mini.info:0
 msgid "Mini panels"
 msgstr ""
 
@@ -1176,7 +1176,7 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
-#: includes/common.inc:316 panels_mini/panels_mini.module:613;688 panels_page/panels_page.admin.inc:387;568;679
+#: includes/common.inc:316 panels_mini/panels_mini.module:613;688 panels_page/panels_page.admin.inc:388;569;680
 msgid "Your changes have been saved."
 msgstr ""
 
@@ -1188,11 +1188,11 @@ msgstr ""
 msgid "Check the boxes for all layouts you want to allow users choose from when picking a layout. You must allow at least one layout."
 msgstr ""
 
-#: includes/common.inc:392;1123;1207;1287;1400 includes/display_edit.inc:143;226;546;549;585;1060;1343;1631 panels_mini/panels_mini.module:543;668;760;780 panels_node/panels_node.module:331;340 panels_page/panels_page.admin.inc:321;540;620;700;727 panels_views/panels_views.module:511
+#: includes/common.inc:392;1123;1207;1287;1400 includes/display_edit.inc:143;226;546;549;585;1060;1343;1631 panels_mini/panels_mini.module:543;668;760;780 panels_node/panels_node.module:331;340 panels_page/panels_page.admin.inc:322;541;621;703;731 panels_views/panels_views.module:511
 msgid "Save"
 msgstr ""
 
-#: includes/common.inc:425 panels_mini/panels_mini.module:133;222;515 panels_page/panels_page.admin.inc:23;258 panels_page/panels_page.module:217
+#: includes/common.inc:425 panels_mini/panels_mini.module:133;222;515 panels_page/panels_page.admin.inc:23;259 panels_page/panels_page.module:217
 msgid "Layout"
 msgstr ""
 
@@ -1232,7 +1232,7 @@ msgstr ""
 msgid "Add relationship"
 msgstr ""
 
-#: includes/common.inc:488 panels_mini/panels_mini.module:535 panels_page/panels_page.admin.inc:279
+#: includes/common.inc:488 panels_mini/panels_mini.module:535 panels_page/panels_page.admin.inc:280
 msgid "Contexts"
 msgstr ""
 
@@ -1336,7 +1336,7 @@ msgstr ""
 msgid "Enter a keyword to use for substitution in titles."
 msgstr ""
 
-#: includes/common.inc:1345 includes/plugins.inc:261 panels_mini/panels_mini.module:242;1043 panels_page/panels_page.admin.inc:44 panels_page/panels_page.module:277;287;297;931 panels_views/panels_views.module:124;1427 styles/default.inc:18
+#: includes/common.inc:1345 includes/plugins.inc:261 panels_mini/panels_mini.module:242;1044 panels_page/panels_page.admin.inc:44 panels_page/panels_page.module:277;287;297;930 panels_views/panels_views.module:124;1427 styles/default.inc:18
 msgid "Default"
 msgstr ""
 
@@ -1540,7 +1540,7 @@ msgstr ""
 msgid "Configure !subtype_title"
 msgstr ""
 
-#: includes/display_edit.inc:1038 panels_page/panels_page.admin.inc:444
+#: includes/display_edit.inc:1038 panels_page/panels_page.admin.inc:445
 msgid "Access"
 msgstr ""
 
@@ -1636,7 +1636,7 @@ msgstr ""
 msgid "You may use %keywords from contexts, as well as %title to contain the original title."
 msgstr ""
 
-#: includes/plugins.inc:316 panels_node/panels_node.module:223 panels_page/panels_page.admin.inc:308
+#: includes/plugins.inc:316 panels_node/panels_node.module:223 panels_page/panels_page.admin.inc:309
 msgid "CSS ID"
 msgstr ""
 
@@ -1808,6 +1808,14 @@ msgstr ""
 msgid "Enable this option to output minimal panels display HTML markup."
 msgstr ""
 
+#: layouts/plain.inc:10
+msgid "Plain output"
+msgstr ""
+
+#: layouts/plain.inc:13 panels_mini/panels_mini.module:171 panels_page/panels_page.module:267
+msgid "Content"
+msgstr ""
+
 #: layouts/threecol_25_50_25.inc:7
 msgid "Three column 25/50/25"
 msgstr ""
@@ -1920,7 +1928,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: panels_mini/panels_mini.module:70;389 panels_page/panels_page.admin.inc:837 panels_page/panels_page.module:77 panels_views/panels_views.module:61;611
+#: panels_mini/panels_mini.module:70;389 panels_page/panels_page.admin.inc:843 panels_page/panels_page.module:77 panels_views/panels_views.module:61;611
 msgid "Import"
 msgstr ""
 
@@ -1934,10 +1942,6 @@ msgstr ""
 
 #: panels_mini/panels_mini.module:151 panels_page/panels_page.module:237
 msgid "Layout settings"
-msgstr ""
-
-#: panels_mini/panels_mini.module:171 panels_page/panels_page.module:267
-msgid "Content"
 msgstr ""
 
 #: panels_mini/panels_mini.module:189
@@ -1960,7 +1964,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: panels_mini/panels_mini.module:243;1040 panels_page/panels_page.admin.inc:45;147 panels_page/panels_page.module:928 panels_views/panels_views.module:125;1424
+#: panels_mini/panels_mini.module:243;1041 panels_page/panels_page.admin.inc:45;147 panels_page/panels_page.module:927 panels_views/panels_views.module:125;1424
 msgid "Overridden"
 msgstr ""
 
@@ -2016,7 +2020,7 @@ msgstr ""
 msgid "Mini panel name"
 msgstr ""
 
-#: panels_mini/panels_mini.module:499 panels_page/panels_page.admin.inc:292
+#: panels_mini/panels_mini.module:499 panels_page/panels_page.admin.inc:293
 msgid "A unique name used to identify this panel page internally. It must be only be alpha characters and underscores. No spaces, numbers or uppercase characters."
 msgstr ""
 
@@ -2028,7 +2032,7 @@ msgstr ""
 msgid "The category that this mini-panel will be grouped into on the Add Content form. Only upper and lower-case alphanumeric characters are allowed. If left blank, defaults to 'Mini panels'."
 msgstr ""
 
-#: panels_mini/panels_mini.module:543;668;691;784 panels_page/panels_page.admin.inc:321;540;570;620;682;734
+#: panels_mini/panels_mini.module:543;668;691;784 panels_page/panels_page.admin.inc:322;541;571;621;684;738
 msgid "Save and proceed"
 msgstr ""
 
@@ -2036,7 +2040,7 @@ msgstr ""
 msgid "Panel mini name is required."
 msgstr ""
 
-#: panels_mini/panels_mini.module:561 panels_page/panels_page.admin.inc:340 panels_views/panels_views.module:526
+#: panels_mini/panels_mini.module:561 panels_page/panels_page.admin.inc:341 panels_views/panels_views.module:526
 msgid "Name must be alphanumeric or underscores only."
 msgstr ""
 
@@ -2044,7 +2048,7 @@ msgstr ""
 msgid "Categories may contain only alphanumerics or spaces."
 msgstr ""
 
-#: panels_mini/panels_mini.module:572 panels_page/panels_page.admin.inc:344 panels_views/panels_views.module:534
+#: panels_mini/panels_mini.module:572 panels_page/panels_page.admin.inc:345 panels_views/panels_views.module:534
 msgid "Panel name must be unique."
 msgstr ""
 
@@ -2060,27 +2064,19 @@ msgstr ""
 msgid "Panel mini disabled"
 msgstr ""
 
-#: panels_mini/panels_mini.module:816
-msgid "Mini panel: %title (Title will be hidden)"
+#: panels_mini/panels_mini.module:815
+msgid "Title will be hidden"
 msgstr ""
 
-#: panels_mini/panels_mini.module:816
-msgid "Mini panel: %title"
-msgstr ""
-
-#: panels_mini/panels_mini.module:868
-msgid "Mini panel"
-msgstr ""
-
-#: panels_mini/panels_mini.module:959
+#: panels_mini/panels_mini.module:960
 msgid "Deleted/missing mini panel @name"
 msgstr ""
 
-#: panels_mini/panels_mini.module:964
+#: panels_mini/panels_mini.module:965
 msgid "Untitled mini panel"
 msgstr ""
 
-#: panels_mini/panels_mini.module:1028 panels_page/panels_page.module:916 panels_views/panels_views.module:1410
+#: panels_mini/panels_mini.module:1029 panels_page/panels_page.module:915 panels_views/panels_views.module:1410
 msgid "Local"
 msgstr ""
 
@@ -2252,7 +2248,7 @@ msgstr ""
 msgid "Allows embedding specific nodes into panes without using contexts. This module provides backwards compatibility for older Panels API implementations; you should only enable it if your Panels editor is mysteriously without node-related data."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:20;300
+#: panels_page/panels_page.admin.inc:20;301
 msgid "Page title"
 msgstr ""
 
@@ -2280,215 +2276,217 @@ msgstr ""
 msgid "The chosen layout %layout is invalid. Please select a new one."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:201
+#: panels_page/panels_page.admin.inc:202
 msgid "Add panel page"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:253
+#: panels_page/panels_page.admin.inc:254
 msgid "Page settings"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:291
+#: panels_page/panels_page.admin.inc:292
 msgid "Panel name"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:301
+#: panels_page/panels_page.admin.inc:302
 msgid "The page title for this panels layout. It will be used as the main title on this panel page, unless it is overriden later."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:309
+#: panels_page/panels_page.admin.inc:310
 msgid "The CSS ID to apply to this page"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:316
+#: panels_page/panels_page.admin.inc:317
 msgid "Path"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:317
+#: panels_page/panels_page.admin.inc:318
 msgid "The URL path to give this page, i.e, path/to/page. You may use \"%\" as an argument placeholder: i.e, node/%/panel"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:337
+#: panels_page/panels_page.admin.inc:338
 msgid "Panel name is required."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:351
+#: panels_page/panels_page.admin.inc:352
 msgid "Path is required."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:355
+#: panels_page/panels_page.admin.inc:356
 msgid "Path may not be the same as another panel page path."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:358
+#: panels_page/panels_page.admin.inc:359
 msgid "The path you have chosen is already aliased to @src."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:376
+#: panels_page/panels_page.admin.inc:378
 msgid "Your new panel page %title has been saved."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:426
+#: panels_page/panels_page.admin.inc:427
 msgid "Advanced settings"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:432
+#: panels_page/panels_page.admin.inc:433
 msgid "Disable Drupal blocks/regions"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:433
+#: panels_page/panels_page.admin.inc:434
 msgid "Check this to have the panel page disable all regions displayed in the theme."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:447
+#: panels_page/panels_page.admin.inc:448
 msgid "Only the checked roles will be able to see this panel in any form; if no roles are checked, access will not be restricted."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:452
+#: panels_page/panels_page.admin.inc:453
 msgid "CSS code"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:453
+#: panels_page/panels_page.admin.inc:454
 msgid "Enter well-formed CSS code here; this code will be embedded into the page, and should only be used for minor adjustments; it is usually better to try to put CSS for the page into the theme if possible."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:460
+#: panels_page/panels_page.admin.inc:461
 msgid "Menu"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:465
+#: panels_page/panels_page.admin.inc:466
 msgid "Provide Menu"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:468
+#: panels_page/panels_page.admin.inc:469
 msgid "If checked this panel be given a menu entry in the Drupal menu system. If not checked the data in this group will be ignored."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:473
+#: panels_page/panels_page.admin.inc:474
 msgid "Provide Menu as Tab"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:476
+#: panels_page/panels_page.admin.inc:477
 msgid "If checked this panel's menu entry will be provided as a tab rather than in the main menu system."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:481;525
+#: panels_page/panels_page.admin.inc:482;526
 msgid "Tab Weight"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:484
+#: panels_page/panels_page.admin.inc:485
 msgid "If this is a menu tab, select the weight; lower numbers will be further to the left."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:489
+#: panels_page/panels_page.admin.inc:490
 msgid "Menu Title"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:493
+#: panels_page/panels_page.admin.inc:494
 msgid "Enter the title to use for the menu entry or tab. If blank, the page title will be used."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:500
+#: panels_page/panels_page.admin.inc:501
 msgid "Default Menu Tab"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:505
+#: panels_page/panels_page.admin.inc:506
 msgid "Make Default Menu Tab"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:508
+#: panels_page/panels_page.admin.inc:509
 msgid "If checked this panel's menu entry will be provided as a tab, and will be the default tab for that URL path. For example, if the URL is 'tracker/all' and it is set as the default menu tab, it will be put into the menu as 'tracker' and 'tracker/all' will be the default tab. The following settings allow you to customize the parent item, for example 'tracker'. For tabs to work properly, one tab in the group must be set as the default."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:513;537
+#: panels_page/panels_page.admin.inc:514;538
 msgid "Parent Menu Item Type"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:516;537
+#: panels_page/panels_page.admin.inc:517;538
 msgid "Tab"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:517;537
+#: panels_page/panels_page.admin.inc:518;538
 msgid "Normal menu item"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:518
+#: panels_page/panels_page.admin.inc:519
 msgid "Already exists (don't create)"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:520
+#: panels_page/panels_page.admin.inc:521
 msgid "Select type of parent item to use for this default menu tab. You can either specify the parent should be a tab (the default), a normal menu item, or to use the menu item that already exists at the specified URL. For example, if the URL for the default tab is 'tracker/all', then 'tracker' would already have to be a valid menu item to use this final choice."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:528
+#: panels_page/panels_page.admin.inc:529
 msgid "If the parent menu item is a tab, select the weight; lower numbers will be further to the left."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:533
+#: panels_page/panels_page.admin.inc:534
 msgid "Parent Menu Item Title"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:537
+#: panels_page/panels_page.admin.inc:538
 msgid "If the Parent Menu Item is being defined by this panel (if you set the %type_field to either %tab or %menu), you can specify its title here.  If blank, the menu title will be used if that is defined, or the page title if not."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:675
+#: panels_page/panels_page.admin.inc:676
 msgid "Removed unused display @title"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:816;853
+#: panels_page/panels_page.admin.inc:822;859
 msgid "Import panel page \"@s\""
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:829
+#: panels_page/panels_page.admin.inc:835
 msgid "Panel page code"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:832
+#: panels_page/panels_page.admin.inc:838
 msgid "Cut and paste the results of an exported panel page here."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:862
+#: panels_page/panels_page.admin.inc:872
 msgid "Unable to get a panel page out of that."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:871
+#: panels_page/panels_page.admin.inc:881
 msgid "Administrative view: enter arguments"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:887
+#: panels_page/panels_page.admin.inc:891
+msgid "1 argument is missing to generate a valid URL."
+msgstr ""
+
+#: panels_page/panels_page.admin.inc:892
+msgid "%count arguments are missing to generate a valid URL."
+msgstr ""
+
+#: panels_page/panels_page.admin.inc:897
 msgid "Click to see the real panel page."
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:891
+#: panels_page/panels_page.admin.inc:901
 msgid "Real panel URL"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:901
+#: panels_page/panels_page.admin.inc:911
 msgid "Required argument (occupies %-placeholder number !position)"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:901
+#: panels_page/panels_page.admin.inc:911
 msgid "Optional argument"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:922
+#: panels_page/panels_page.admin.inc:932
 msgid "Additional arguments"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:923
+#: panels_page/panels_page.admin.inc:933
 msgid "Separated by /"
 msgstr ""
 
-#: panels_page/panels_page.admin.inc:929
+#: panels_page/panels_page.admin.inc:939
 msgid "Change arguments"
 msgstr ""
-
-#: panels_page/panels_page.admin.inc:880
-msgid "1 argument is missing to generate a valid URL."
-msgid_plural "@count arguments are missing to generate a valid URL."
-msgstr[0] ""
-msgstr[1] ""
 
 #: panels_page/panels_page.module:22
 msgid "You may peruse a list of your current panels layouts and edit them, or click add to create a new page."
