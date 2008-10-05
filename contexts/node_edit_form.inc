@@ -1,5 +1,5 @@
 <?php
-// $Id: node_edit_form.inc,v 1.2.2.1 2008/10/05 21:28:15 sdboyer Exp $
+// $Id: node_edit_form.inc,v 1.2.2.2 2008/10/05 22:14:54 sdboyer Exp $
 
 
 /**
@@ -108,24 +108,24 @@ function panels_context_node_edit_form_settings_form($conf, $external = FALSE) {
 /**
  * Validate a node.
  */
-function panels_context_node_edit_form_settings_form_validate($form, $form_values) {
-  if (empty($form_values['external']) && empty($form_values['nid']) && empty($form_values['node'])) {
+function panels_context_node_edit_form_settings_form_validate($form, &$form_state) {
+  if (empty($form_state['values']['external']) && empty($form_state['values']['nid']) && empty($form_state['values']['node'])) {
     form_error($form['node'], t('You must select a node.'));
     return;
   }
 
-  if (empty($form_values['node'])) {
+  if (empty($form_state['values']['node'])) {
     return;
   }
 
-  $nid = $form_values['node'];
+  $nid = $form_state['values']['node'];
   if (is_numeric($nid)) {
     $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
   }
   else {
     $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
     if ($node) {
-      form_set_value($form['nid'], $node->nid);
+      form_set_value($form['nid'], $node->nid, $form_state);
     }
   }
 

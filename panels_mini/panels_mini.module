@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.4.2.1 2008/10/05 21:28:16 sdboyer Exp $
+// $Id: panels_mini.module,v 1.4.2.2 2008/10/05 22:14:55 sdboyer Exp $
 
 /**
  * @file panels_mini.module
@@ -282,13 +282,9 @@ function panels_mini_load($pid) {
     return $cache[$pid];
   }
 
-  if (!is_numeric($pid)) {
-    $where = "name = '%s'";
-  }
-  else {
-    $where = 'pid = %d';
-  }
+  $where = is_numeric($pid) ? 'pid = %d' : "name = '%s'";
   $panel_mini = db_fetch_object(db_query("SELECT * FROM {panels_mini} WHERE $where", $pid));
+
   if (!$panel_mini) {
     $defaults = panels_mini_default_panels();
     if (isset($defaults[$pid])) {

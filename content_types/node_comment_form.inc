@@ -1,5 +1,5 @@
 <?php
-// $Id: node_comment_form.inc,v 1.4 2008/08/31 23:27:48 sdboyer Exp $
+// $Id: node_comment_form.inc,v 1.4.2.1 2008/10/05 22:14:54 sdboyer Exp $
 
 
 /**
@@ -65,10 +65,10 @@ function panels_comment_form($edit) {
   // force the form to come back to here.
   $url = parse_url($_GET['q']);
   $path = $url['path'];
-  $form['#action'] = url($path, NULL, array('fragment' => 'new'));
+  $form['#action'] = url($path, array('fragment' => 'new'));
   $form['#redirect'] = array($path, NULL, 'new');
-  $form['#validate']['comment_form_validate'] = array();
-  $form['#submit']['comment_form_submit'] = array();
+  $form['#validate'][] = 'comment_form_validate';
+  $form['#submit'][] = 'comment_form_submit';
   return $form;
 }
 
