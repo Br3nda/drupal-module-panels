@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.1.2.31 2008/07/29 07:32:11 sdboyer Exp $
+// $Id: common.inc,v 1.1.2.32 2008/10/05 20:25:17 sdboyer Exp $
 
 
 /**
@@ -832,7 +832,8 @@ function theme_panels_common_context_item_form($form) {
     $output .= '<thead>';
     $output .= '<tr>';
     $output .= '<th class="title">' . $type_info['title'] . '</th>';
-    $output .= '<th class="operation operation">' . t('Operation') . '</th>';
+    $output .= '<th class="operation">' . t('Operation') . '</th>';
+    $output .= '</tr>';
     $output .= '</thead>';
     $output .= '<tbody>';
 
