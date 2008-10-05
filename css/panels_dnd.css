@@ -1,4 +1,4 @@
-/* $Id: panels_dnd.css,v 1.2 2008/07/16 00:09:03 merlinofchaos Exp $ */
+/* $Id: panels_dnd.css,v 1.2.2.1 2008/10/05 23:19:40 sdboyer Exp $ */
 
 #panels-dnd-main {
   margin: 0.5em 0;
@@ -177,6 +177,7 @@ div.panels-display .pane-add-link * {
   margin: 2px;
   border: 1px solid #000;
   width: 600px;
+  text-align: left;
 } 
 
 .panels-modal-content .modal-title {
