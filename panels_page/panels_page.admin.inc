@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.55 2008/09/20 04:45:20 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.56 2008/10/05 23:28:40 sdboyer Exp $
 
 
 /**
@@ -888,8 +888,8 @@ function panels_page_admin_view($panel_page, $args) {
   if ($args_missing = max($required_args - count($args), 0)) {
     $value = $url;
     $description = format_plural($args_missing,
-      t('1 argument is missing to generate a valid URL.'),
-      t('%count arguments are missing to generate a valid URL.', array('%count' => $args_missing))
+      '1 argument is missing to generate a valid URL.',
+      '@count arguments are missing to generate a valid URL.'
     );
   }
   else {

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.36 2008/10/05 22:52:19 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.37 2008/10/05 23:28:40 sdboyer Exp $
 
 /**
  * @file panels_mini.module
@@ -812,9 +812,9 @@ function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
     $minis = panels_mini_load_all();
     foreach ($minis as $panel_mini) {
       if (empty($panel_mini->disabled) && empty($panel_mini->requiredcontext)) {
-        $hidden = $panel_mini->hide_title ? ' (' . t('Title will be hidden') . ')' : '';
+        $title = $panel_mini->hide_title ? t('Mini panel: %title (Title will be hidden)', array('%title' => $panel_mini->title)) : t('Mini panel: %title', array('%title' => $panel_mini->title));
         $blocks[$panel_mini->pid] = array(
-          'info' => t('Mini panel: "@title"' . $hidden, array('@title' => $panel_mini->title)),
+          'info' => $title,
         );
       }
     }
