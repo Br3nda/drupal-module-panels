@@ -1,5 +1,5 @@
 <?php
-// $Id: common-context.inc,v 1.6 2008/08/22 22:37:18 merlinofchaos Exp $
+// $Id: common-context.inc,v 1.6.2.1 2008/10/05 20:30:39 sdboyer Exp $
 
 /**
  * @file includes/common-context.inc
@@ -323,6 +323,7 @@ function theme_panels_common_context_item_form($form) {
       $output .= '<th class="position">' . t('Weight') . '</th>';
     }
     $output .= '<th class="operation">' . t('Operation') . '</th>';
+    $output .= '<tr>';
     $output .= '</thead>';
     $output .= '<tbody>';
 
