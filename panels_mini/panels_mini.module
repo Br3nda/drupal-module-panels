@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.1.2.35 2008/07/29 07:37:38 sdboyer Exp $
+// $Id: panels_mini.module,v 1.1.2.36 2008/10/05 22:52:19 sdboyer Exp $
 
 /**
  * @file panels_mini.module
@@ -866,7 +866,7 @@ function panels_mini_content_types() {
       'icon' => 'icon_contrib_block.png',
       'path' => panels_get_path("content_types/block"),
       'description' => filter_xss_admin($mini->title),
-      'category' => array(t(!empty($mini->category) ? $mini->category : 'Mini panel'), -8),
+      'category' => array(!empty($mini->category) ? filter_xss_admin($mini->category) : t('Mini panel'), -8),
     );
     if (!empty($mini->requiredcontexts)) {
       $types[$mini->name]['required context'] = array();
