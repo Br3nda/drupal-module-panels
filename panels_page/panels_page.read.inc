@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.read.inc,v 1.11.2.2 2008/10/05 22:14:56 sdboyer Exp $
+// $Id: panels_page.read.inc,v 1.11.2.3 2008/10/05 22:20:39 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -74,12 +74,9 @@ function panels_page_load($id, $load_display = FALSE) {
     return $cache;
   }
 
-  if (!is_numeric($id)) {
-    $page = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE name = '%s'", $id));
-  }
-  else {
-    $page = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE pid = %d", $id));
-  }
+  $where = is_numeric($id) ? 'pid = %d' : "name = '%s'";
+  $page = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE $where", $id);
+  
   if (!$page) {
     $defaults = panels_page_default_panels();
     if (isset($defaults[$id])) {
@@ -202,54 +199,39 @@ function panels_page_fetch_primary_display(&$panel_page) {
 }
 
 function panels_page_fetch_alternate_display(&$panel_page, $id) {
-  // Get the metadata abpit the requested display.
   $info = $panel_page->displays[$id];
-  // Using the metadata, determine if the desired display exists.
   $requested_display_exists = panels_page_fetch_display_from_info($panel_page, $info, $id);
-  if ($requested_display_exists) {
-    // The requested display exists. Drop the $id into $current and bug out.
-    $panel_page->current = $id;
-    return;
-  }
-
-  // The requested display does not exist - determine the fallback display. We
-  // save the $id into the object because we'll need it later for updating
-  // the metadata if we export & save the default we fetch here.
-  $panel_page->export = $id;
-  // First, check for a default display for the context we're switching on,
-  // and try to load that.
-  if (!empty($info['default']) && !empty($panel_page->displays[$info['default']])) {
-    // A default has been defined - figure out if it actually has a display
-    // associated with it.
-    if (!panels_page_fetch_display_from_info($panel_page, $panel_page->displays[$info['default']], $id)) {
-      // No display is associated with the switched default either, so double
-      // fall back to the primary display. Load it if it's not already.
+  if (!$requested_display_exists) {
+    // The requested display does not exist. First, we try to fall back to the
+    // default display for the context we're switching on.
+    if (!empty($info['default']) && !empty($panel_page->displays[$info['default']])) {
+      panels_page_fetch_display_from_info($panel_page, $panel_page->displays[$info['default']], $id);
+    }
+    // Otherwise, use the primary display. Load it if it's not already loaded.
+    else {
       panels_page_fetch_primary_display($panel_page);
     }
   }
-  // There's no default display defined for the context we're switching on, so
-  // just use the primary display as the default. Load it if it's not already.
-  else {
-    panels_page_fetch_primary_display($panel_page);
-  }
+  return TRUE;
 }
 
 /**
  * Get a display based on whether it's already in code or needs to be loaded.
  */
 function panels_page_fetch_display_from_info(&$panel_page, $info, $id) {
+  $ret = NULL;
   // If the 'display' is set it's the result of an export/default
   if (isset($info['display'])) {
     $panel_page->display = $info['display'];
+    $panel_page->current = $id;
     return TRUE;
   }
 
-  // If the $did is numeric, it corresponds to an existing display - load it.
   if (is_numeric($info['did'])) {
     $panel_page->display = panels_load_display($info['did']);
+    $panel_page->current = $id;
     return TRUE;
   }
-
   return FALSE;
 }
 
