@@ -1,5 +1,5 @@
 <?php
-// $Id: node_edit_form.inc,v 1.2 2008/07/16 00:09:03 merlinofchaos Exp $
+// $Id: node_edit_form.inc,v 1.2.2.1 2008/10/05 21:28:15 sdboyer Exp $
 
 
 /**
@@ -87,7 +87,7 @@ function panels_context_node_edit_form_settings_form($conf, $external = FALSE) {
   if (!empty($conf['nid'])) {
     $info = db_fetch_object(db_query("SELECT * FROM {node} WHERE nid = %d", $conf['nid']));
     if ($info) {
-      $link = l("'$info->title' [node id: $info->nid]", "node/$info->nid", array('target' => '_blank', 'title' => t('Open in new window')));
+      $link = l(t("'%title' [node id %nid]", array('%title' => $info->title, '%nid' => $info->nid)), "node/$info->nid", array('target' => '_blank', 'title' => t('Open in new window')));
       $form['node']['#description'] = t('Currently set to !link', array('!link' => $link));
     }
   }

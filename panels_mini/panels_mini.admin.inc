@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.admin.inc,v 1.5 2008/08/31 15:49:30 sdboyer Exp $
+// $Id: panels_mini.admin.inc,v 1.5.2.1 2008/10/05 21:28:16 sdboyer Exp $
 
 /**
  * @file
@@ -371,7 +371,7 @@ function panels_mini_add_page($layout = NULL) {
   $panel_mini->name = '';
   $panel_mini->category = '';
 
-  drupal_set_title('Add mini panel');
+  drupal_set_title(t('Add mini panel'));
   return panels_mini_edit($panel_mini);
 }
 
