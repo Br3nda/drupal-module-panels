@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.12 2008/09/03 02:13:19 sdboyer Exp $
+// $Id: plugins.inc,v 1.12.2.1 2008/10/05 20:45:30 sdboyer Exp $
 
 
 /**
@@ -1120,9 +1120,11 @@ function panels_context_create_empty($type) {
  */
 function panels_context_get_keywords($contexts) {
   $keywords = array();
-  foreach ($contexts as $id => $context) {
-    if ($keyword = $context->get_keyword()) {
-      $keywords["%$keyword"] = $context->get_title();
+  if (!empty($contexts)) {
+    foreach ($contexts as $id => $context) {
+      if ($keyword = $context->get_keyword()) {
+        $keywords["%$keyword"] = $context->get_title();
+      }
     }
   }
   return $keywords;
@@ -1222,9 +1224,11 @@ function panels_context_match_required_contexts($required, $contexts) {
  * Return the first context with a form id from a list of contexts.
  */
 function panels_context_get_form($contexts) {
-  foreach ($contexts as $context) {
-    if (!empty($context->form_id)) {
-      return $context;
+  if (!empty($contexts)) {
+    foreach ($contexts as $context) {
+      if (!empty($context->form_id)) {
+        return $context;
+      }
     }
   }
 }
