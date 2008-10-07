@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.read.inc,v 1.11.2.4 2008/10/05 22:33:01 sdboyer Exp $
+// $Id: panels_page.read.inc,v 1.11.2.5 2008/10/07 21:39:02 merlinofchaos Exp $
 
 /**
  * @file panels_page.write.inc
@@ -75,8 +75,8 @@ function panels_page_load($id, $load_display = FALSE) {
   }
 
   $where = is_numeric($id) ? 'pid = %d' : "name = '%s'";
-  $page = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE $where", $id);
-  
+  $page = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE $where", $id));
+
   if (!$page) {
     $defaults = panels_page_default_panels();
     if (isset($defaults[$id])) {
