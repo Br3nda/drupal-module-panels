@@ -1,5 +1,5 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.7 2008/07/08 00:25:43 merlinofchaos Exp $
+// $Id: rounded_corners.inc,v 1.1.2.8 2008/10/07 00:41:32 sdboyer Exp $
 
 /**
  * @file styles/rounded_corners.inc
@@ -66,7 +66,7 @@ function theme_panels_rounded_corners_style_render_panel($display, $panel_id, $p
 
 function panels_add_rounded_corners_css($display, $where) {
   static $displays_used = array();
-  if (empty($displays_used[$display->name])) {
+  if (empty($displays_used[$display->css_id])) {
     theme('rounded_corners_css', $display, $where);
     $displays_used[$display->name] = TRUE;
   }
