@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.menu.inc,v 1.24.2.1 2008/09/03 22:31:48 merlinofchaos Exp $
+// $Id: panels_page.menu.inc,v 1.24.2.2 2008/10/08 00:14:55 sdboyer Exp $
 
 /**
  * @file panels_page.menu.inc
@@ -348,10 +348,10 @@ function panels_page_get_raw_path($path) {
 /**
  * Modified version of _menu_router_build();
  */
-function _panels_page_menu_router_build($callbacks, $matches) {
+function _panels_page_menu_router_build($callbacks, $panels_matches) {
   $menu = array();
   $sort = array();
-  foreach ($matches as $path => $match) {
+  foreach ($panels_matches as $path => $match) {
     $item = $callbacks[$path];
     $load_functions = array();
     $to_arg_functions = array();
