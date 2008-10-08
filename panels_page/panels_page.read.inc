@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.read.inc,v 1.11.2.6 2008/10/08 00:17:47 sdboyer Exp $
+// $Id: panels_page.read.inc,v 1.11.2.7 2008/10/08 03:32:37 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -126,15 +126,12 @@ function panels_page_loaded_cache($id, $panel_page = NULL) {
  */
 function panels_page_default_panels() {
   $panels = module_invoke_all('default_panel_pages');
+  $return = array();
   if (is_array($panels)) {
     foreach ($panels as $panel_page) {
       $return[$panel_page->name] = $panel_page;
     }
   }
-  else {
-    $return = array();
-  }
-
   return $return;
 }
 
