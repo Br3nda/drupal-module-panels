@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.render.inc,v 1.13 2008/09/01 00:17:28 sdboyer Exp $
+// $Id: panels_page.render.inc,v 1.13.2.1 2008/10/08 20:39:30 merlinofchaos Exp $
 
 /**
  * @file panels_page.render.inc
@@ -32,8 +32,10 @@ function panels_page_prepare_panels_render(&$load, &$panel_page, $args) {
 
 function _panels_page_prepare_panels_render(&$panel_page) {
   _panels_page_check_switchers($panel_page);
-  // $panel_page->context = panels_context_load_contexts($panel_page, FALSE, $panel_page->contexts);
-  // $panel_page->context = panels_context_load_contexts($panel_page);
+  $panel_page->context = panels_context_load_contexts($panel_page, FALSE, $panel_page->context);
+
+  // The below does not make sense.
+//  $panel_page->context = panels_context_load_contexts($panel_page);
   // If we're wrapping FAPI with with panel, this function gets the data.
   $panel_page->form = panels_context_get_form($panel_page->context);
   // Get any keywords (for title substitution in panes)

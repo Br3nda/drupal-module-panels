@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.4 2008/08/18 04:50:31 sdboyer Exp $
+// $Id: display-render.inc,v 1.4.2.1 2008/10/08 20:39:30 merlinofchaos Exp $
 
 /**
  * @file
@@ -154,6 +154,15 @@ function panels_render_panes($display) {
     $content[$panel_name] = panels_render_panel($display, $panel_name, $panel);
   }
 
+  // Prevent notices by making sure that all panels at least have an entry:
+  $layout = panels_get_layout($display->layout);
+  $panels = panels_get_panels($layout, $display);
+  foreach ($panels as $id => $panel) {
+    if (!isset($content[$id])) {
+      $content[$id] = NULL;
+    }
+  }
+
   return $content;
 }
 
@@ -207,13 +216,8 @@ function panels_render_pane_content(&$display, &$pane) {
         $url = $content->title_link;
       }
       // set defaults so we don't bring up notices
-      $url += array('href' => '', 'attributes' => NULL, 'query' => NULL, 'fragment' => NULL, 'absolute' => NULL);
-      $content->title = l($content->title,
-        $url['href'],
-        $url['attributes'],
-        $url['query'],
-        $url['fragment'],
-        $url['absolute'], TRUE);
+      $url += array('href' => '', 'attributes' => NULL, 'query' => NULL, 'fragment' => NULL, 'absolute' => NULL, 'html' => TRUE);
+      $content->title = l($content->title, $url['href'], $url);
     }
   }
   return $content;
@@ -233,7 +237,7 @@ function panels_render_pane($content, $pane, $display) {
   if (!empty($pane->configuration['style'])) {
     $style = panels_get_style($pane->configuration['style']);
 
-    if (isset($style)) {
+    if (isset($style) && isset($style['render pane'])) {
       $output = theme($style['render pane'], $content, $pane, $display);
 
       // This could be null if no theme function existed.

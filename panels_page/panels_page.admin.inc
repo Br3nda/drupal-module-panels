@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20.2.4 2008/10/05 21:28:16 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.5 2008/10/08 20:39:30 merlinofchaos Exp $
 
 
 /**
@@ -66,7 +66,10 @@ function panels_page_list_page() {
     // this is safe as it's always programmatic
     $item[] = $panel_page->type;
 
-    if (empty($panel_page->display)) {
+    if ($panel_page->type == t('Default')) {
+      $panel_page->display = &$panel_page->primary;
+    }
+    else {
       $panel_page->display = $displays[$panel_page->did];
     }
     $item[] = check_plain($layouts[$panel_page->display->layout]['title']);
@@ -153,10 +156,11 @@ function panels_page_disable_page($name = NULL) {
  */
 function panels_page_delete_confirm(&$form_state, $panel_page) {
   $form_state['panel_page'] = $panel_page;
+  $form = array();
   if ($panel_page->type != t('Overridden')) {
     return confirm_form($form,
       t('Are you sure you want to delete "@title"?', array('@title' => panels_page_get_title($panel_page))),
-      $_GET['destination'] ? $_GET['destination'] : 'admin/panels/panel-page',
+      isset($_GET['destination']) ? $_GET['destination'] : 'admin/panels/panel-page',
       t('This action cannot be undone.'),
       t('Delete'), t('Cancel')
     );
@@ -164,7 +168,7 @@ function panels_page_delete_confirm(&$form_state, $panel_page) {
   else {
     return confirm_form($form,
       t('Are you sure you want to revert "@title" to its default configuration?', array('@title' => panels_page_get_title($panel_page))),
-      $_GET['destination'] ? $_GET['destination'] : 'admin/panels/panel-page',
+      isset($_GET['destination']) ? $_GET['destination'] : 'admin/panels/panel-page',
       t('This action cannot be undone.'),
       t('Revert'), t('Cancel')
     );
@@ -641,7 +645,6 @@ function panels_page_context_form(&$form_state, $panel_page, $next) {
   $form_state['next'] = $next;
 
   drupal_add_css(panels_get_path('css/panels_admin.css'));
-  $layout = panels_get_layout($panel_page->display->layout);
 
   $form['right'] = array(
     '#prefix' => '<div class="right-container">',

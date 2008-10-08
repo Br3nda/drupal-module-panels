@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.read.inc,v 1.11.2.7 2008/10/08 03:32:37 sdboyer Exp $
+// $Id: panels_page.read.inc,v 1.11.2.8 2008/10/08 20:39:30 merlinofchaos Exp $
 
 /**
  * @file panels_page.write.inc
@@ -54,6 +54,9 @@ function panels_page_load_all($names = array(), $page_size = 0) {
     }
     else {
       $page->type = t('Default');
+      // move the 'display' to the new 'primary' location.
+      $page->primary = $page->display;
+      unset($page->display);
       $pages[$page->name] = $page;
     }
   }
@@ -77,16 +80,23 @@ function panels_page_load($id, $load_display = FALSE) {
   $where = is_numeric($id) ? 'pid = %d' : "name = '%s'";
   $page = db_fetch_object(db_query("SELECT * FROM {panels_page} WHERE $where", $id));
 
+  $defaults = panels_page_default_panels();
   if (!$page) {
-    $defaults = panels_page_default_panels();
     if (isset($defaults[$id])) {
       // Default panel pages will always only be identified by name, so no need
       // for the both-ids-point-to-same-object trick.
       $page = $defaults[$id];
+      $page->type = t('Default');
+      // move the 'display' to the new 'primary' location.
+      $page->primary = $page->display;
+      unset($page->display);
       panels_page_loaded_cache($id, $page);
       return $page;
     }
     return;
+  }
+  else {
+    $page->type = isset($defaults[$id]) ? t('Overridden') : t('Local');
   }
 
   $page->access           = ($page->access ? explode(', ', $page->access) : array());
@@ -192,7 +202,9 @@ function panels_page_fetch_primary_display(&$panel_page) {
   // Commented out is a more precise way of telling, but it's probably moot.
   // if (empty($panel_page->primary) || !is_a($panel_page->primary, 'panels_display')) {
   if (empty($panel_page->primary) || !is_object($panel_page->primary)) {
-    $panel_page->primary = panels_load_display($panel_page->did);
+    if ($panel_page->type != t('Default')) {
+      $panel_page->primary = panels_load_display($panel_page->did);
+    }
   }
   $panel_page->display = &$panel_page->primary;
   $panel_page->current = 'primary';
