@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.read.inc,v 1.11.2.5 2008/10/07 21:39:02 merlinofchaos Exp $
+// $Id: panels_page.read.inc,v 1.11.2.6 2008/10/08 00:17:47 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -12,7 +12,7 @@
  *
  * For the moment, this function does not cache. It may be integrated into the
  * panels_page_loaded_cache() caching mechanism at some point, but its utility
- * in D6 is significantly lessened vs. D5, so there is much less need to do so.
+ * in D6 is significantly less vs. D5, so the need is less compelling.
  */
 function panels_page_load_all($names = array(), $page_size = 0) {
   $pages = $dids = array();
@@ -67,7 +67,7 @@ function panels_page_load($id, $load_display = FALSE) {
   $cache = panels_page_loaded_cache($id);
 
   if ($cache) {
-    // This is deprecated; ideally the fetcher should be called directly
+    // TODO This is deprecated. The fetcher should always be called directly
     if ($load_display && empty($cache->primary)) {
       panels_page_fetch_primary_display($cache);
     }
@@ -81,9 +81,9 @@ function panels_page_load($id, $load_display = FALSE) {
     $defaults = panels_page_default_panels();
     if (isset($defaults[$id])) {
       // Default panel pages will always only be identified by name, so no need
-      // for the both-ids-point-to-same-object trick. And, they're in code, so
-      // no real need to statically cache them, either.
+      // for the both-ids-point-to-same-object trick.
       $page = $defaults[$id];
+      panels_page_loaded_cache($id, $page);
       return $page;
     }
     return;
@@ -126,11 +126,16 @@ function panels_page_loaded_cache($id, $panel_page = NULL) {
  */
 function panels_page_default_panels() {
   $panels = module_invoke_all('default_panel_pages');
-  if (!is_array($panels)) {
-    $panels = array();
+  if (is_array($panels)) {
+    foreach ($panels as $panel_page) {
+      $return[$panel_page->name] = $panel_page;
+    }
+  }
+  else {
+    $return = array();
   }
 
-  return $panels;
+  return $return;
 }
 
 
