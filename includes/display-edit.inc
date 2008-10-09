@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.6.2.1 2008/10/09 21:14:12 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.6.2.2 2008/10/09 21:21:00 merlinofchaos Exp $
 
 /*
  * @file display-edit.inc
@@ -533,7 +533,7 @@ function panels_ajax_configure_pane($did = NULL, $pid = NULL) {
     'ajax' => TRUE,
     'title' => t('Configure !subtype_title', array('!subtype_title' => $subtypes[$pane->subtype]['title'])),
     'type' => panels_get_content_type($pane->type),
-    'subtype' => $subtype[$pane->subtype],
+    'subtype' => $subtypes[$pane->subtype],
     'op' => 'edit',
   );
 
