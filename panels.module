@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.27.2.1 2008/10/05 22:14:54 sdboyer Exp $
+// $Id: panels.module,v 1.27.2.2 2008/10/09 21:14:12 merlinofchaos Exp $
 
 define('PANELS_ARG_IS_BAD', 1);
 define('PANELS_ARG_USE_FALLBACK', 1 << 1);
@@ -816,7 +816,7 @@ function panels_export_display($display, $prefix = '') {
 function panels_export_pane($pane, $prefix = '') {
   $output = '';
   $output = $prefix . '$pane = new stdClass()'  . ";\n";
-  $fields = array('pid', 'panel', 'type', 'subtype', 'access', 'configuration');
+  $fields = array('pid', 'panel', 'type', 'shown', 'subtype', 'access', 'configuration', 'cache');
   foreach ($fields as $field) {
     $output .= "$prefix  " . '$pane->' . $field . ' = ' . panels_var_export($pane->$field, "$prefix  ") . ";\n";
   }

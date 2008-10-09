@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.36.2.1 2008/10/08 00:13:18 sdboyer Exp $
+// $Id: panels_page.module,v 1.36.2.2 2008/10/09 21:14:12 merlinofchaos Exp $
 
 /**
  * @file panels_page.module
@@ -245,6 +245,7 @@ function _panels_page_master_loader($name, $args) {
   panels_load_include('plugins');
   panels_page_load_include('read');
   $panel_page = panels_page_load($name);
+  $panel_page->context = array();
   // Handle static pages then duck out early.
   if (!($panel_page->load_flags & PANELS_IS_DYNAMIC)) {
     if ((bool) panels_page_access($panel_page->name)) {
