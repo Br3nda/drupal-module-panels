@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.2.2.1 2008/09/03 22:31:48 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.2.2.2 2008/10/09 21:35:47 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -214,7 +214,7 @@ function panels_flexible_settings_validate($values, $form, $display, $layout, $s
   }
 
   // Validate that percentages add up to the stated maximum.
-  if ($settings['width_type'] == '%') {
+  if ($values['width_type'] == '%') {
     for ($row = 1; $row <= intval($values['rows']); $row++) {
       // This takes into account whether or even had a previous setting here.
       if ($settings['rows'] >= $row) {
