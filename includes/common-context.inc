@@ -1,5 +1,5 @@
 <?php
-// $Id: common-context.inc,v 1.6.2.1 2008/10/05 20:30:39 sdboyer Exp $
+// $Id: common-context.inc,v 1.6.2.2 2008/10/11 01:33:50 sdboyer Exp $
 
 /**
  * @file includes/common-context.inc
@@ -513,7 +513,7 @@ function panels_ajax_context_item_edit($module = NULL, $type = NULL, $panel_name
   $contexts = panels_context_load_contexts($object);
 
   // Remove this context, because we can't really allow circular contexts.
-  unset($contexts[panels_context_context_id($ref[$position])]);
+  unset($contexts[panels_context_id($ref[$position])]);
 
   $form_state = array(
     'object' => &$object,

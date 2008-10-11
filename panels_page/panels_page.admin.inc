@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20.2.5 2008/10/08 20:39:30 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.6 2008/10/11 01:33:48 sdboyer Exp $
 
 
 /**
@@ -868,7 +868,7 @@ function panels_page_preview_page($panel_page) {
       // TODO should this 'business logic' be separated out?
       drupal_not_found();
     }
-    $panel_page->context[panels_argument_context_id($argument)] = $context;
+    $panel_page->context[panels_context_id($argument, 'argument')] = $context;
   }
   _panels_page_prepare_render($panel_page);
   */

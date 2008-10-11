@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.36.2.2 2008/10/09 21:14:12 merlinofchaos Exp $
+// $Id: panels_page.module,v 1.36.2.3 2008/10/11 01:33:48 sdboyer Exp $
 
 /**
  * @file panels_page.module
@@ -313,7 +313,7 @@ function _panels_page_construct_argument_contexts(&$load, &$panel_page, $args) {
       // Prep a 404 and bail out if we get this far.
       return _panels_page_not_found($load);
     }
-    $panel_page->context[panels_argument_context_id($argument)] = $context;
+    $panel_page->context[panels_context_id($argument, 'argument')] = $context;
   }
 }
 

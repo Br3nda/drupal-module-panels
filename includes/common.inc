@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.9 2008/08/31 15:44:36 sdboyer Exp $
+// $Id: common.inc,v 1.9.2.1 2008/10/11 01:33:50 sdboyer Exp $
 
 
 /**
@@ -505,7 +505,7 @@ function theme_panels_common_context_list($object) {
       $output .= '<td><em>' . t('Argument @count', array('@count' => $count)) . '</em></td>';
       $output .= '<td>' . check_plain($argument['identifier']) . '</td>';
       $output .= '</tr>';
-      $titles[panels_argument_context_id($argument)] = $argument['identifier'];
+      $titles[panels_context_id($argument, 'argument')] = $argument['identifier'];
       $count++;
     }
   }
@@ -517,7 +517,7 @@ function theme_panels_common_context_list($object) {
       $output .= '<td><em>' . t('Context @count', array('@count' => $count)) . '</em></td>';
       $output .= '<td>' . check_plain($context['identifier']) . '</td>';
       $output .= '</tr>';
-      $titles[panels_context_context_id($context)] = $context['identifier'];
+      $titles[panels_context_id($context)] = $context['identifier'];
       $count++;
     }
   }
@@ -528,7 +528,7 @@ function theme_panels_common_context_list($object) {
       $output .= '<td><em>' . t('From @title', array('@title' => $titles[$relationship['context']])) . '</em></td>';
       $output .= '<td>' . check_plain($relationship['identifier']) . '</td>';
       $output .= '</tr>';
-      $titles[panels_relationship_context_id($relationship)] = $relationship['identifier'];
+      $titles[panels_context_id($relationship, 'relationship')] = $relationship['identifier'];
       $count++;
     }
   }
