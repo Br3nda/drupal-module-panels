@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.12.2.3 2008/10/11 01:33:50 sdboyer Exp $
+// $Id: plugins.inc,v 1.12.2.4 2008/10/11 01:54:40 sdboyer Exp $
 
 
 /**
@@ -1547,7 +1547,7 @@ function panels_get_plugins($plugin, $hook, $id = NULL) {
 }
 
 /**
- * Fetch a layout plugin
+ * Fetch metadata on a specific layout plugin.
  *
  * @param $layout
  *   Name of a panel layout.
@@ -1560,7 +1560,7 @@ function panels_get_layout($layout) {
 }
 
 /**
- * Fetch all layout plugins
+ * Fetch metadata for all layout plugins.
  *
  * @return
  *   An array of arrays with information about all available panel layouts.
@@ -1570,7 +1570,7 @@ function panels_get_layouts() {
 }
 
 /**
- * Collate information about a specific panel style.
+ * Fetch metadata on a specific style plugin.
  *
  * @param $style
  *   Name of a panel style.
@@ -1583,7 +1583,7 @@ function panels_get_style($style) {
 }
 
 /**
- * Collate information about all available panel styles.
+ * Fetch metadata for all style plugins.
  *
  * @return
  *   An array of arrays with information about all available panel styles.
@@ -1593,7 +1593,7 @@ function panels_get_styles() {
 }
 
 /**
- * Collate information about a specific panel argument.
+ * Fetch metadata on a specific argument plugin.
  *
  * @param $argument
  *   Name of a panel argument.
@@ -1606,7 +1606,7 @@ function panels_get_argument($argument) {
 }
 
 /**
- * Collate information about all available panel arguments.
+ * Fetch metadata for all argument plugins.
  *
  * @return
  *   An array of arrays with information about all available panel arguments.
@@ -1616,7 +1616,7 @@ function panels_get_arguments() {
 }
 
 /**
- * Fetch a content_type plugin
+ * Fetch metadata on a specific content_type plugin.
  *
  * @param $content type
  *   Name of a panel content type.
@@ -1629,7 +1629,7 @@ function panels_get_content_type($content_type) {
 }
 
 /**
- * Fetch all content type plugins
+ * Fetch metadata for all content_type plugins.
  *
  * @return
  *   An array of arrays with information about all available panel content types.
@@ -1639,7 +1639,7 @@ function panels_get_content_types() {
 }
 
 /**
- * Fetch a relationship plugin
+ * Fetch metadata on a specific relationship plugin.
  *
  * @param $content type
  *   Name of a panel content type.
@@ -1652,7 +1652,7 @@ function panels_get_relationship($relationship) {
 }
 
 /**
- * Fetch all relationship plugins
+ * Fetch metadata for all relationship plugins.
  *
  * @return
  *   An array of arrays with information about all available relationships.
@@ -1662,7 +1662,7 @@ function panels_get_relationships() {
 }
 
 /**
- * Fetch a context plugin
+ * Fetch metadata on a specific context plugin.
  *
  * @param $context
  *   Name of a panel context.
@@ -1675,7 +1675,7 @@ function panels_get_context($context) {
 }
 
 /**
- * Fetch all context plugins
+ * Fetch metadata for all context plugins.
  *
  * @return
  *   An array of arrays with information about all available panel contexts.
@@ -1685,7 +1685,7 @@ function panels_get_contexts() {
 }
 
 /**
- * Fetch a cache plugin
+ * Fetch metadata on a specific caching plugin.
  *
  * @param $cache
  *   Name of a panel cache.
@@ -1698,7 +1698,7 @@ function panels_get_cache($cache) {
 }
 
 /**
- * Fetch all cache plugins
+ * Fetch metadata for all context plugins.
  *
  * @return
  *   An array of arrays with information about all available panel caches.
@@ -1708,7 +1708,7 @@ function panels_get_caches() {
 }
 
 /**
- * Fetch a switcher plugin
+ * Fetch metadata on a specific switcher plugin.
  *
  * @param $switcher
  *   Name of a panel switcher.
@@ -1721,7 +1721,7 @@ function panels_get_switcher($switcher) {
 }
 
 /**
- * Fetch all switcher plugins
+ * Fetch metadata for all switcher plugins.
  *
  * @return
  *   An array of arrays with information about all available panel switchers.
