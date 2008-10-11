@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.12.2.1 2008/10/05 20:45:30 sdboyer Exp $
+// $Id: plugins.inc,v 1.12.2.2 2008/10/11 00:58:39 sdboyer Exp $
 
 
 /**
@@ -522,7 +522,7 @@ function panels_get_pane_content($display, $pane, $args = array(), $context = NU
   if (!$context) {
     $context = new panels_context;
   }
-  // FIXME misplaced bang?
+
   if (!$incoming_content === '') {
     $incoming_content = t('Incoming content will be displayed here.');
   }
@@ -535,7 +535,6 @@ function panels_get_pane_content($display, $pane, $args = array(), $context = NU
   else {
     $content = panels_ct_get_content($pane->type, $pane->subtype, $pane->configuration, $args, $context, $incoming_content);
     foreach (module_implements('panels_pane_content_alter') as $module) {
-      // TODO This makes the third hook invocation on the render path. How badly is this hindering performance?
       $function = $module . '_panels_pane_content_alter';
       $function($content, $pane, $args, $context);
     }
