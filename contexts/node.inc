@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.7.2.2 2008/10/05 22:14:54 sdboyer Exp $
+// $Id: node.inc,v 1.7.2.3 2008/10/12 05:45:44 sdboyer Exp $
 
 
 /**
@@ -150,7 +150,8 @@ function panels_context_node_settings_form_validate($form, &$form_state) {
     form_error($form['node'], t('Invalid node selected.'));
   }
   else {
-    $form_state['values']['nid'] = $node->nid;
+    form_set_value($form['nid'], $node->nid, $form_state);
+    // $form_state['values']['nid'] = $node->nid;
   }
 }
 
