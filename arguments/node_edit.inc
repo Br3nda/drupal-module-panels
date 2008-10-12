@@ -1,5 +1,5 @@
 <?php
-// $Id: node_edit.inc,v 1.4 2008/08/19 14:57:58 sdboyer Exp $
+// $Id: node_edit.inc,v 1.4.2.1 2008/10/12 06:03:11 sdboyer Exp $
 
 
 /**
@@ -18,6 +18,8 @@ function panels_node_edit_panels_arguments() {
     'settings form submit' => 'panels_node_edit_settings_form_submit',
     'displays' => 'panels_node_edit_displays',
     'choose display' => 'panels_node_edit_choose_display',
+    'native path' => 'node/%node/edit',
+    'load function' => 'node',
   );
   return $args;
 }

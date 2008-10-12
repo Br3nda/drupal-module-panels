@@ -1,5 +1,5 @@
 <?php
-// $Id: nid.inc,v 1.5 2008/08/22 22:37:18 merlinofchaos Exp $
+// $Id: nid.inc,v 1.5.2.1 2008/10/12 06:03:11 sdboyer Exp $
 
 
 /**
@@ -18,6 +18,8 @@ function panels_nid_panels_arguments() {
     'settings form submit' => 'panels_nid_settings_form_submit',
     'displays' => 'panels_nid_displays',
     'choose display' => 'panels_nid_choose_display',
+    'native path' => 'node/%node',
+    'load function' => 'node',
   );
   return $args;
 }

@@ -1,5 +1,5 @@
 <?php
-// $Id: uid.inc,v 1.4 2008/08/19 14:57:58 sdboyer Exp $
+// $Id: uid.inc,v 1.4.2.1 2008/10/12 06:03:11 sdboyer Exp $
 
 
 /**
@@ -18,6 +18,8 @@ function panels_uid_panels_arguments() {
     'settings form submit' => 'panels_uid_settings_form_submit',
     'displays' => 'panels_uid_displays',
     'choose display' => 'panels_uid_choose_display',
+    'native path' => 'user/%user',
+    'load function' => 'user',
   );
   return $args;
 }

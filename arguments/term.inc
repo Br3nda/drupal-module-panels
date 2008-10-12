@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.4 2008/08/19 14:57:58 sdboyer Exp $
+// $Id: term.inc,v 1.4.2.1 2008/10/12 06:03:11 sdboyer Exp $
 
 
 /**
@@ -19,6 +19,7 @@ function panels_term_panels_arguments() {
     'title function' => 'panels_term_title',
     'displays' => 'panels_term_displays',
     'choose display' => 'panels_term_choose_display',
+    'native path' => 'taxonomy/term/%',
   );
   return $args;
 }
@@ -210,4 +211,3 @@ function panels_term_title($context) {
     return $context->page_title;
   }
 }
-
