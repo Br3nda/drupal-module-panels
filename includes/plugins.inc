@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.12.2.4 2008/10/11 01:54:40 sdboyer Exp $
+// $Id: plugins.inc,v 1.12.2.5 2008/10/22 18:41:28 sdboyer Exp $
 
 
 /**
@@ -1407,11 +1407,15 @@ function panels_get_directories($plugin_type) {
  * want them at the root level of your module directory, this code would work:
  * @code
  *  function MYMODULE_panels_include_directory($plugin_type) {
- *    if ($plugin_type == 'content_type' || $plugin_type == 'context') {
+ *    if ($plugin_type == 'content_types' || $plugin_type == 'contexts') {
  *      return 'panels_inc/' . $plugin_type;
  *    }
  *  }
  * @endcode
+ *
+ * Note finally that plurals matter! $plugin_type is always going to be the
+ * plural form of the plugin name - so 'contexts', 'content_types', etc. will
+ * work, but 'context', 'content_type' will have you tearing your hair out.
  *
  * @param string $plugin_type
  *    The plugin type for which the Panels engine is currently requesting the
