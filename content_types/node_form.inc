@@ -1,5 +1,5 @@
 <?php
-// $Id: node_form.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
+// $Id: node_form.inc,v 1.3.2.1 2008/10/23 22:17:44 merlinofchaos Exp $
 
 
 /**
@@ -292,7 +292,7 @@ function panels_admin_edit_node_form($id, $parents, $conf = array()) {
   return $form;
 }
 
-function panels_admin_title_node_form($conf, $context) {
+function panels_admin_title_node_form($subtype, $conf, $context) {
   $choices = panels_admin_content_types_node_form();
   return t('"@s" @type', array('@s' => $context->identifier, '@type' => drupal_strtolower($choices[$conf['id']]['title'])));
 }

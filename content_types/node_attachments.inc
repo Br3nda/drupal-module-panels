@@ -1,5 +1,5 @@
 <?php
-// $Id: node_attachments.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
+// $Id: node_attachments.inc,v 1.3.2.1 2008/10/23 22:17:44 merlinofchaos Exp $
 
 
 /**
@@ -53,7 +53,7 @@ function panels_admin_content_types_node_attachments() {
   );
 }
 
-function panels_admin_title_node_attachments($conf, $context) {
+function panels_admin_title_node_attachments($subtype, $conf, $context) {
   return t('"@s" attachments', array('@s' => $context->identifier));
 }
 

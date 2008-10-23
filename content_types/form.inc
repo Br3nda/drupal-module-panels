@@ -1,5 +1,5 @@
 <?php
-// $Id: form.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
+// $Id: form.inc,v 1.3.2.1 2008/10/23 22:17:44 merlinofchaos Exp $
 
 
 /**
@@ -66,7 +66,7 @@ function panels_content_form($subtype, $conf, $panel_args, &$context) {
   return $block;
 }
 
-function panels_admin_title_form($conf, $context) {
+function panels_admin_title_form($subtype, $conf, $context) {
   return t('"@s" base form', array('@s' => $context->identifier));
 }
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: custom_php.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
+// $Id: custom_php.inc,v 1.3.2.1 2008/10/23 22:17:44 merlinofchaos Exp $
 
 
 /**
@@ -115,7 +115,7 @@ function panels_admin_edit_custom_php($id, $parents, $conf = NULL) {
 /**
  * Returns the administrative title for a type.
  */
-function panels_admin_title_custom_php($conf) {
+function panels_admin_title_custom_php($subtype, $conf) {
   $output = t('Custom');
   if ($conf['title']) {
     $output .= " (" . filter_xss_admin($conf['title']) . ")";

@@ -1,5 +1,5 @@
 <?php
-// $Id: vocabulary_terms.inc,v 1.3.2.1 2008/10/05 22:14:54 sdboyer Exp $
+// $Id: vocabulary_terms.inc,v 1.3.2.2 2008/10/23 22:17:44 merlinofchaos Exp $
 
 
 /**
@@ -80,7 +80,7 @@ function panels_admin_content_types_vocabulary_terms() {
   );
 }
 
-function panels_admin_title_vocabulary_terms($conf, $context) {
+function panels_admin_title_vocabulary_terms($subtype, $conf, $context) {
   return t('"@s" terms', array('@s' => $context->identifier));
 }
 

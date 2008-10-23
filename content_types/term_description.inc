@@ -1,5 +1,5 @@
 <?php
-// $Id: term_description.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
+// $Id: term_description.inc,v 1.3.2.1 2008/10/23 22:17:44 merlinofchaos Exp $
 
 
 /**
@@ -61,7 +61,7 @@ function panels_admin_content_types_term_description() {
   );
 }
 
-function panels_admin_title_term_description($conf, $context) {
+function panels_admin_title_term_description($subtype, $conf, $context) {
   return t('"@s" term description', array('@s' => $context->identifier));
 }
 

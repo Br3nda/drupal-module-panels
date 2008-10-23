@@ -1,5 +1,5 @@
 <?php
-// $Id: term_list.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
+// $Id: term_list.inc,v 1.3.2.1 2008/10/23 22:17:44 merlinofchaos Exp $
 
 
 /**
@@ -122,7 +122,7 @@ function panels_admin_edit_term_list($id, $parents, $conf = array()) {
   return $form;
 }
 
-function panels_admin_title_term_list($conf, $context) {
+function panels_admin_title_term_list($subtype, $conf, $context) {
   $options = panels_admin_term_list_options();
   return t('"@s" @type', array('@s' => $context->identifier, '@type' => drupal_strtolower($options[$conf['type']])));
 }
