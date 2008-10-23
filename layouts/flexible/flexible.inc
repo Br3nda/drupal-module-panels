@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.2.2.2 2008/10/09 21:35:47 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.2.2.3 2008/10/23 18:10:20 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -226,8 +226,8 @@ function panels_flexible_settings_validate($values, $form, $display, $layout, $s
         for ($col = 1; $col <= intval($values["row_$row"]["columns"]); $col++) {
           $total += $values["row_$row"]["width_$col"];
         }
-        if ($total != $settings['percent_width']) {
-          form_error($form["row_$row"]['columns'], t('Column widths must add up to 100.'));
+        if ($total != $values['percent_width']) {
+          form_error($form["row_$row"]['columns'], t('Column widths must add up to @count.', array('@count' => $values['percent_width'])));
         }
       }
     }
