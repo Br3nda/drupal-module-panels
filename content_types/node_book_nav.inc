@@ -1,5 +1,5 @@
 <?php
-// $Id: node_book_nav.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
+// $Id: node_book_nav.inc,v 1.3.2.1 2008/10/23 22:07:52 merlinofchaos Exp $
 
 
 /**
@@ -25,7 +25,7 @@ function panels_content_node_book_nav($subtype, $conf, $panel_args, $context) {
 
   $block->subject = t('Book navigation');
   if ($node) {
-    $block->content = theme('book_navigation', $node);
+    $block->content = isset($node->book) ? theme('book_navigation', $node->book) : '';
     $block->delta = $node->nid;
   }
   else {
@@ -52,7 +52,7 @@ function panels_admin_content_types_node_book_nav() {
   );
 }
 
-function panels_admin_title_node_book_nav($conf, $context) {
+function panels_admin_title_node_book_nav($subtype, $conf, $context) {
   return t('"@s" book navigation', array('@s' => $context->identifier));
 }
 
