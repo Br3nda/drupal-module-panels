@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.install,v 1.1.2.5 2008/05/27 20:21:14 sdboyer Exp $
+// $Id: panels_node.install,v 1.1.2.6 2008/10/23 21:28:06 merlinofchaos Exp $
 
 
 /**
@@ -13,6 +13,8 @@ function panels_node_install() {
           nid integer NOT NULL DEFAULT 0,
           css_id varchar(255),
           did integer,
+          contexts text,
+          relationships text,
           PRIMARY KEY (nid)
         );
 EOT
@@ -25,7 +27,9 @@ EOT
         CREATE TABLE {panels_node} (
           nid int(10) NOT NULL DEFAULT 0 PRIMARY KEY,
           css_id varchar(255),
-          did int(10)
+          did int(10),
+          contexts text,
+          relationships text
         );
 EOT
       );
@@ -55,6 +59,17 @@ function panels_node_update_5000() {
   $ret = array();
   $ret[] = update_sql("UPDATE {system} SET weight = 11 WHERE name = 'panels_node'");
   menu_rebuild();
+  return $ret;
+}
+
+/**
+ * Add arguments, contexts, and relationships to panels_node.
+ */
+function panels_node_update_5001() {
+  $ret = array();
+  // db_add_column() is sufficient for MySQL and PostGreSQL in this case.
+  db_add_column($ret, 'panels_node', 'contexts', 'text');
+  db_add_column($ret, 'panels_node', 'relationships', 'text');
   return $ret;
 }
 

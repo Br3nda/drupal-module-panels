@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.1.2.20 2008/10/05 20:50:39 sdboyer Exp $
+// $Id: panels_node.module,v 1.1.2.21 2008/10/23 21:28:06 merlinofchaos Exp $
 
 
 /**
@@ -88,6 +88,16 @@ function panels_node_menu($may_cache) {
           'callback' => 'panels_node_edit_content',
           'callback arguments' => array($node),
           'weight' => 3,
+          'type' => MENU_LOCAL_TASK,
+        );
+
+        $items[] = array(
+          'path' => $base . 'context',
+          'title' => t('Context'),
+          'access' => TRUE,
+          'callback' => 'panels_node_context_edit',
+          'callback arguments' => array($node),
+          'weight' => 4,
           'type' => MENU_LOCAL_TASK,
         );
       }
@@ -248,6 +258,9 @@ function panels_node_load($node) {
   // We shortcut this because only in some really drastic corruption circumstance will this
   // not work.
   $additions['panels_node'] = db_fetch_array(db_query("SELECT * FROM {panels_node} WHERE nid = %d", $node->nid));
+
+  $additions['panels_node']['contexts'] = (!empty($additions['panels_node']['contexts'])) ? unserialize($additions['panels_node']['contexts']) : array();
+  $additions['panels_node']['relationships'] = (!empty($additions['panels_node']['relationships'])) ? unserialize($additions['panels_node']['relationships']) : array();
   return $additions;
 }
 
@@ -298,6 +311,10 @@ function panels_node_view($node, $teaser = FALSE, $page = FALSE) {
     // TODO: Find a way to make sure this can't node_view.
     $display->context = array('panel-node' => panels_context_create('node', $node));
 
+    // Load additional contexts.
+    $panel_node = (object)$node->panels_node;
+    $display->context += panels_context_load_contexts($panel_node);
+
     $node->content['body'] = array(
       '#value' => panels_render_display($display),
       '#weight' => 0,
@@ -305,6 +322,19 @@ function panels_node_view($node, $teaser = FALSE, $page = FALSE) {
   }
 
   return $node;
+}
+
+/**
+ * Save a panel node.
+ *
+ * While panels_node_update() is run when a panel node is edited, this function
+ * must be run to update the enhanced panel node configuration, f.e. contexts,
+ * which are not edited on the regular node edit page.
+ *
+ * @see panels_node_update(), panels_node_context_form_submit()
+ */
+function panels_node_save($panel_node) {
+  db_query("UPDATE {panels_node} SET contexts = '%s', relationships = '%s' WHERE nid = %d", serialize($panel_node->contexts), serialize($panel_node->relationships), $panel_node->nid);
 }
 
 // ---------------------------------------------------------------------------
@@ -347,6 +377,12 @@ function panels_node_edit_content($node) {
   panels_load_include('plugins');
   $display = panels_load_display($node->panels_node['did']);
   $display->context = array('panel-node' => panels_context_create('node', $node));
+  $display->context['panel-node']->identifier = $node->title;
+
+  // Load additional contexts.
+  $panel_node = (object)$node->panels_node;
+  $display->context += panels_context_load_contexts($panel_node);
+
   panels_load_include('common');
   $content_types = panels_common_get_allowed_types('panels_node', $display->context);
 
@@ -354,5 +390,81 @@ function panels_node_edit_content($node) {
   // This is important because negative margins in common block layouts (i.e, Garland)
   // messes up the drag & drop.
   print theme('page', panels_edit($display, "node/$node->nid/panel_content", $content_types), FALSE);
+}
+
+/**
+ * Edit contexts of a panel node.
+ *
+ * FIXME: panels_node_edit_context() already defined in arguments/node_edit.inc.
+ */
+function panels_node_context_edit($node) {
+  panels_load_include('plugins');
+
+  $panel_node = (object)$node->panels_node;
+  $panel_node->nid = $node->nid;
+
+  $cache = panels_common_cache_get('panel_object:panel_node', $panel_node->did);
+  if (!$cache) {
+    panels_common_cache_set('panel_object:panel_node', $panel_node->did, $panel_node);
+  }
+  else {
+    $panel_node = $cache;
+  }
+
+  drupal_set_title(check_plain($node->title));
+  return drupal_get_form('panels_node_context_form', $panel_node);
+}
+
+/**
+ * The form to edit the context settings of a panel node.
+ */
+function panels_node_context_form($panel_node) {
+  drupal_add_css(panels_get_path('css/panels_admin.css'));
+
+  $form['panel_node'] = array(
+    '#type' => 'value',
+    '#value' => $panel_node,
+  );
+
+  $form['right'] = array(
+    '#prefix' => '<div class="right-container">',
+    '#suffix' => '</div>',
+  );
+
+  $form['left'] = array(
+    '#prefix' => '<div class="left-container">',
+    '#suffix' => '</div>',
+  );
+
+  panels_load_include('common');
+  // FIXME: Common panels forms are based on $object->name instead of did.
+  $panel_node->name = $panel_node->did;
+
+  $settings = panels_common_add_context_form('panel_node', $form, $form['right']['contexts_table'], $panel_node);
+  $settings += panels_common_add_relationship_form('panel_node', $form, $form['left']['relationships_table'], $panel_node);
+  panels_common_add_context_js($settings);
+
+  $label = t('Save');
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => $label,
+  );
+
+  return $form;
+}
+
+/**
+ * Process submission of the panel node edit form.
+ */
+function panels_node_context_form_submit($form_id, $form_values) {
+  $panel_node = $form_values['panel_node'];
+
+  // Organize these from the common form.
+  panels_common_save_context('context', $panel_node->contexts, $form_values);
+  panels_common_save_context('relationship', $panel_node->relationships, $form_values);
+
+  drupal_set_message(t('Your changes have been saved.'));
+  panels_node_save($panel_node);
+  panels_common_cache_clear('panel_object:panel_node', $panel_node->did);
 }
 
