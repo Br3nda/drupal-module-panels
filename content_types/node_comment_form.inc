@@ -1,5 +1,5 @@
 <?php
-// $Id: node_comment_form.inc,v 1.4.2.1 2008/10/05 22:14:54 sdboyer Exp $
+// $Id: node_comment_form.inc,v 1.4.2.2 2008/10/23 22:04:34 merlinofchaos Exp $
 
 
 /**
@@ -56,12 +56,12 @@ function panels_admin_content_types_node_comment_form() {
   );
 }
 
-function panels_admin_title_node_comment_form($conf, $context) {
+function panels_admin_title_node_comment_form($subtype, $conf, $context) {
   return t('"@s" comment form', array('@s' => $context->identifier));
 }
 
-function panels_comment_form($edit) {
-  $form = comment_form($edit);
+function panels_comment_form(&$form_state, $edit) {
+  $form = comment_form($form_state, $edit);
   // force the form to come back to here.
   $url = parse_url($_GET['q']);
   $path = $url['path'];
