@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.10.4.125 2008/08/18 04:51:52 sdboyer Exp $
+// $Id: panels.module,v 1.10.4.126 2008/10/24 00:05:59 merlinofchaos Exp $
 
 
 /**
@@ -1141,8 +1141,10 @@ function panels_render_pane($content, $pane, $display) {
     }
   }
 
-  // fallback
-  return theme('panels_pane', $content, $pane, $display);
+  if (!empty($content)) {
+    // fallback
+    return theme('panels_pane', $content, $pane, $display);
+  }
 }
 
 /**
