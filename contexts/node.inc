@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.7.2.5 2008/10/24 01:30:21 merlinofchaos Exp $
+// $Id: node.inc,v 1.7.2.6 2008/10/24 01:36:15 merlinofchaos Exp $
 
 
 /**
@@ -124,7 +124,7 @@ function panels_context_node_settings_form($conf, $external = FALSE) {
 /**
  * Validate a node.
  */
-function panels_context_node_settings_form_validate($form, $form_values, &$form_state) {
+function panels_context_node_settings_form_validate($form, &$form_values, &$form_state) {
   // Validate the autocomplete
   if (empty($form_values['external']) && empty($form_values['nid']) && empty($form_values['node'])) {
     form_error($form['node'], t('You must select a node.'));
@@ -161,12 +161,12 @@ function panels_context_node_settings_form_validate($form, $form_values, &$form_
   }
 }
 
-function panels_context_node_settings_form_submit($form, $form_values, &$form_state) {
-  if ($form_state['values']['set_identifier']) {
-    $node = node_load($form_state['values']['nid']);
+function panels_context_node_settings_form_submit($form, &$form_values, &$form_state) {
+  if ($form_values['set_identifier']) {
+    $node = node_load($form_values['nid']);
     $form_state['values']['context']['identifier'] = $node->title;
   }
 
   // Don't let this be stored.
-  unset($form_state['values']['set_identifier']);
+  unset($form_values['set_identifier']);
 }

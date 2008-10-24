@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.2 2008/07/16 00:09:03 merlinofchaos Exp $
+// $Id: term.inc,v 1.2.2.1 2008/10/24 01:36:15 merlinofchaos Exp $
 
 
 /**
@@ -62,5 +62,5 @@ function panels_context_term_settings_form($conf, $external = FALSE) {
 /**
  * Validate a term.
  */
-function panels_context_term_settings_form_validate($form, $form_values) {
+function panels_context_term_settings_form_validate($form, &$form_values, &$form_state) {
 }
