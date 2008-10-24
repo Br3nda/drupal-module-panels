@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.4.2.2 2008/09/16 22:24:33 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.4.2.3 2008/10/24 01:45:51 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -45,7 +45,7 @@ function panels_views_panels_content_types() {
     'title callback' => 'panels_views_all_views_title',
   );
   $items['views_panes'] = array(
-    'title' => t('All views'),
+    'title' => t('Views panes'),
     'content_types' => 'panels_views_panes_content_types',
     'render callback' => 'panels_views_panes_render',
     'add callback' => 'panels_views_panes_edit',
