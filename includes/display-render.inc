@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.4.2.1 2008/10/08 20:39:30 merlinofchaos Exp $
+// $Id: display-render.inc,v 1.4.2.2 2008/10/24 00:06:10 merlinofchaos Exp $
 
 /**
  * @file
@@ -247,8 +247,10 @@ function panels_render_pane($content, $pane, $display) {
     }
   }
 
-  // fallback
-  return theme('panels_pane', $content, $pane, $display);
+  if (!empty($content)) {
+    // fallback
+    return theme('panels_pane', $content, $pane, $display);
+  }
 }
 
 /**
@@ -262,11 +264,11 @@ function panels_get_panel_style_and_settings($panel_settings, $panel) {
 
   if (empty($panel_settings['individual']) || empty($panel_settings['panel'][$panel]['style'])) {
     $style = panels_get_style($panel_settings['style']);
-    $style_settings = $panel_settings['style_settings']['default'];
+    $style_settings = isset($panel_settings['style_settings']['default']) ? $panel_settings['style_settings']['default'] : array();
   }
   else {
     $style = panels_get_style($panel_settings['panel'][$panel]['style']);
-    $style_settings = $panel_settings['style_settings'][$panel];
+    $style_settings = isset($panel_settings['style_settings'][$panel]) ? $panel_settings['style_settings'][$panel] : array();
   }
 
   return array($style, $style_settings);
