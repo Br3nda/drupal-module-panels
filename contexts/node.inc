@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.7.2.3 2008/10/12 05:45:44 sdboyer Exp $
+// $Id: node.inc,v 1.7.2.4 2008/10/24 00:52:58 merlinofchaos Exp $
 
 
 /**
@@ -73,6 +73,13 @@ function panels_context_create_node($empty, $data = NULL, $conf = FALSE) {
 }
 
 function panels_context_node_settings_form($conf, $external = FALSE) {
+  if (empty($conf)) {
+    $conf = array(
+      'nid' => '',
+      'set_identifier' => TRUE,
+    );
+  }
+
   if ($external) {
     $form['external'] = array(
       '#type' => 'checkbox',

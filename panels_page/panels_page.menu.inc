@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.menu.inc,v 1.24.2.3 2008/10/12 06:03:11 sdboyer Exp $
+// $Id: panels_page.menu.inc,v 1.24.2.4 2008/10/24 00:52:58 merlinofchaos Exp $
 
 /**
  * @file panels_page.menu.inc
@@ -301,7 +301,7 @@ function panels_page_construct_static_menu_link(&$items, $panel_page, $map) {
   panels_page_construct_menu_item_metadata($items, $panel_page);
 
   $items['menu items'][$panel_page->path] = array(
-    'title'            => filter_xss_admin(panels_page_get_title($panel_page, 'menu')),
+    'title'            => filter_xss_admin(panels_page_get_title($panel_page, 'menu', '')),
     'access callback'  => 'panels_page_access_handler',
     'access arguments' => array($panel_page->name),
     'page callback'    => 'panels_page_render_handler',

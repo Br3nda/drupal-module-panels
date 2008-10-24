@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.12.2.5 2008/10/22 18:41:28 sdboyer Exp $
+// $Id: plugins.inc,v 1.12.2.6 2008/10/24 00:52:58 merlinofchaos Exp $
 
 
 /**
@@ -1132,7 +1132,7 @@ function panels_context_get_context($context, $type = 'context') {
       $context['context_settings'] = array();
     }
 
-    $return = $function($type == 'requiredcontext', $context['context_settings'], TRUE);
+    $return = $function($type == 'requiredcontext', $context['context_settings'], FALSE);
     if ($return) {
       $return->identifier = $context['identifier'];
       $return->page_title = isset($context['title']) ? $context['title'] : '';
