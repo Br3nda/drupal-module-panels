@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.read.inc,v 1.11.2.8 2008/10/08 20:39:30 merlinofchaos Exp $
+// $Id: panels_page.read.inc,v 1.11.2.9 2008/10/29 20:23:45 merlinofchaos Exp $
 
 /**
  * @file panels_page.write.inc
@@ -150,7 +150,15 @@ function panels_page_set_current(&$panel_page) {
   static $cache = NULL;
   // Only allow it to be set once per request.
   if (!isset($cache) && isset($panel_page)) {
-    $cache = &$panel_page;
+    // In PHP5 if we actually set a reference here, the panel page will get destroyed
+    // when the original reference is destroyed, but in PHP4 we need a reference
+    // to prevent copying it.
+    if (version_compare(PHP_VERSION, '5', '>=')) {
+      $cache =  $panel_page;
+    }
+    else {
+      $cache =  &$panel_page;
+    }
   }
   return $cache;
 }
