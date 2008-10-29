@@ -1,5 +1,5 @@
 <?php
-// $Id: vocabulary_terms.inc,v 1.1.2.5 2008/07/09 22:56:21 merlinofchaos Exp $
+// $Id: vocabulary_terms.inc,v 1.1.2.6 2008/10/29 20:47:19 merlinofchaos Exp $
 
 
 /**
@@ -31,7 +31,7 @@ function panels_content_vocabulary_terms($conf, $panel_args, $context) {
     $terms = taxonomy_get_tree($vocab->vid, 0, -1, $max_depth);
     $items = array();
     foreach ($terms as $term) {
-      $items[] = l(check_plain($term->name), 'taxonomy/term/'. $term->tid);
+      $items[] = l($term->name, 'taxonomy/term/'. $term->tid);
     }
     $output = theme('item_list', $items);
   }
