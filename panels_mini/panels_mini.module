@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.4.2.2 2008/10/05 22:14:55 sdboyer Exp $
+// $Id: panels_mini.module,v 1.4.2.3 2008/10/29 21:14:15 merlinofchaos Exp $
 
 /**
  * @file panels_mini.module
@@ -125,7 +125,7 @@ function panels_mini_get_id($name) {
 /**
  * Render a mini panel called from a panels display.
  */
-function panels_mini_content($conf, $panel_args, &$contexts) {
+function panels_mini_content($subtype, $conf, $panel_args, &$contexts) {
   $mini = panels_mini_load($conf['name']);
   if (!$mini) {
     return FALSE;
@@ -177,7 +177,7 @@ function panels_mini_edit_mini_panel($id, $parents, $conf) {
   return $form;
 }
 
-function panels_mini_title_mini_panel($conf) {
+function panels_mini_title_mini_panel($subtype, $conf) {
   $mini = panels_mini_load($conf['name']);
   if (!$mini) {
     return t('Deleted/missing mini panel @name', array('@name' => $conf['name']));
