@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.6.2.2 2008/10/09 21:21:00 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.6.2.3 2008/10/29 21:02:11 merlinofchaos Exp $
 
 /*
  * @file display-edit.inc
@@ -697,6 +697,7 @@ function panels_ajax_toggle_shown($op, $did = NULL, $pid = NULL) {
   $pane = &$cache->display->content[$pid];
 
   $pane->shown = ($op == 'show');
+  panels_cache_set('display', $did, $cache);
 
   $output = new stdClass();
   $output->type = 'replace';
