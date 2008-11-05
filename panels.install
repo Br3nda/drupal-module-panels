@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.1.6.52 2008/08/05 09:45:43 sdboyer Exp $
+// $Id: panels.install,v 1.1.6.53 2008/11/05 02:24:15 sdboyer Exp $
 
 
 /**
@@ -593,3 +593,13 @@ function panels_update_5218() {
   return $ret;
 }
 
+/**
+ * Update is purely an informational message encouraging site admins to
+ * re-export any panels they have previously exported, as they will all be
+ * missing data.
+ */
+function panels_update_5219() {
+  $ret = array();
+  $ret[] = array('success' => TRUE, 'query' => t('You are strongly encouraged to re-export any panels generated with a version of Panels prior to Release Candidate 2, as several fields were (incorrectly) being ommitted from all exports, and this updater is unable to update any panels already exported with missing fields.'));
+  return $ret;
+}
