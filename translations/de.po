@@ -1,4 +1,4 @@
-# $Id: de.po,v 1.1.2.1 2008/09/13 17:27:34 hass Exp $
+# $Id: de.po,v 1.1.2.2 2008/11/11 00:35:50 hass Exp $
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
@@ -23,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: panels 5.x\n"
 "POT-Creation-Date: 2008-09-13 18:05+0200\n"
-"PO-Revision-Date: 2008-09-13 19:22+0100\n"
-"Last-Translator: Alexander Hass\n"
+"PO-Revision-Date: 2008-11-11 01:35+0100\n"
+"Last-Translator: Alexander Haß\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -183,7 +183,7 @@ msgstr ""
 
 #: arguments/nid.inc:12
 msgid "Node ID"
-msgstr "Node ID"
+msgstr "Beitrag-ID"
 
 #: arguments/nid.inc:15
 msgid "Restricts the argument to a node id."
@@ -286,7 +286,7 @@ msgstr "Argumenttyp"
 
 #: arguments/term.inc:90
 msgid "Term ID"
-msgstr "Begriff ID"
+msgstr "Begriff-ID"
 
 #: arguments/term.inc:90
 msgid "Term name"
@@ -526,7 +526,7 @@ msgstr "Beitrag"
 #: content_types/node_meta.inc:31
 #: content_types/node_type_desc.inc:57
 msgid "Node context"
-msgstr "Beitragszusammenhang"
+msgstr "Beitragskontext"
 
 #: content_types/node_attachments.inc:61
 msgid "\"@s\" attachments"
@@ -643,7 +643,7 @@ msgstr "Diesen Beitrag bearbeiten"
 #: content_types/node_meta.inc:120
 #: includes/plugins.inc:292
 msgid "Override title"
-msgstr "Titel überschreiben"
+msgstr "Titel übersteuern"
 
 #: content_types/node_content.inc:161
 msgid "Link title to node"
@@ -923,6 +923,7 @@ msgid "Profile Fields"
 msgstr "Profilfelder"
 
 #: content_types/profile_fields.inc:63
+#, fuzzy
 msgid "Profile content goes here."
 msgstr "Inhalt der Profile kommt hier rein."
 
@@ -1132,7 +1133,7 @@ msgstr ""
 #: contexts/node_edit_form.inc:80
 #: panels_node_legacy/panels_node_legacy.module:140
 msgid "Enter the title or NID of a post"
-msgstr "Den Titel oder die NID des Beitrages eingeben"
+msgstr "Den Titel oder die Beitrag-ID des Beitrages eingeben"
 
 #: contexts/node.inc:97
 #: contexts/node_edit_form.inc:90
@@ -1256,7 +1257,7 @@ msgstr "Die Änderungen wurden gespeichert."
 
 #: includes/common.inc:379
 msgid "Select allowed layouts"
-msgstr "Zulässiges Layout auswählen."
+msgstr "Zulässige Layouts auswählen."
 
 #: includes/common.inc:381
 msgid "Check the boxes for all layouts you want to allow users choose from when picking a layout. You must allow at least one layout."
@@ -1322,11 +1323,11 @@ msgstr "Beziehung hinzufügen"
 #: panels_mini/panels_mini.module:535
 #: panels_page/panels_page.admin.inc:279
 msgid "Contexts"
-msgstr "Zusammenhänge"
+msgstr "Kontexte"
 
 #: includes/common.inc:489;1092
 msgid "context"
-msgstr "Zusammenhang"
+msgstr "Kontext"
 
 #: includes/common.inc:490
 msgid "Contexts are embedded directly into the panel; you generally must select an object in the panel. For example, you could select node 5, or the term \"animals\" or the user \"administrator\""
@@ -1334,7 +1335,7 @@ msgstr ""
 
 #: includes/common.inc:491
 msgid "Add context"
-msgstr "Zusammenhang hinzufügen"
+msgstr "Kontext hinzufügen"
 
 #: includes/common.inc:496
 msgid "Required contexts"
@@ -1384,7 +1385,7 @@ msgstr "Dieses Element nach oben verschieben"
 
 #: includes/common.inc:781
 msgid "Down"
-msgstr "Herunter"
+msgstr "nach unten"
 
 #: includes/common.inc:782
 msgid "Move this item down"
@@ -1394,18 +1395,20 @@ msgstr "Dieses Element nach unten verschieben"
 msgid "Remove"
 msgstr "Entfernen"
 
+# Beitrag?
 #: includes/common.inc:789
 msgid "Remove this item"
-msgstr "Diesen Beitrag löschen"
+msgstr "Diesen Eintrag entfernen"
 
 #: includes/common.inc:794
 #: includes/display_edit.inc:122;1151
 msgid "Configure"
 msgstr "Konfigurieren"
 
+# Beitrag?
 #: includes/common.inc:795
 msgid "Configure this item"
-msgstr "Diesen Beitrag konfigurieren"
+msgstr "Diesen Eintrag konfigurieren"
 
 #: includes/common.inc:835
 msgid "Operation"
@@ -1477,37 +1480,37 @@ msgstr "von @title"
 msgid "1 year"
 msgid_plural "@count years"
 msgstr[0] "1 Jahr"
-msgstr[1] ""
+msgstr[1] "@count Jahre"
 
 #: includes/common.inc:0
 msgid "1 week"
 msgid_plural "@count weeks"
 msgstr[0] "1 Woche"
-msgstr[1] ""
+msgstr[1] "@count Wochen"
 
 #: includes/common.inc:0
 msgid "1 day"
 msgid_plural "@count days"
 msgstr[0] "1 Tag"
-msgstr[1] ""
+msgstr[1] "@count Tage"
 
 #: includes/common.inc:0
 msgid "1 hour"
 msgid_plural "@count hours"
 msgstr[0] "1 Stunde"
-msgstr[1] ""
+msgstr[1] "@count Stunden"
 
 #: includes/common.inc:0
 msgid "1 min"
 msgid_plural "@count min"
 msgstr[0] "1 Minute"
-msgstr[1] ""
+msgstr[1] "@count Minuten"
 
 #: includes/common.inc:0
 msgid "1 sec"
 msgid_plural "@count sec"
 msgstr[0] "1 Sekunde"
-msgstr[1] ""
+msgstr[1] "@count Sekunden"
 
 #: includes/display_edit.inc:92
 msgid "Grab the title bar of any pane to drag-and-drop it into another panel. Click the add pane button (!addicon) in any panel to add more content. Click the configure (!configicon) button on any pane to re-configure that pane. Click the cache (!cacheicon) button to configure caching for that pane specifically. Click the show/hide (!showicon/!hideicon) toggle button to show or hide that pane. Panes hidden in this way will be hidden from <em>everyone</em> until the hidden status is toggled off."
@@ -1577,10 +1580,12 @@ msgid "Choose layout"
 msgstr "Layout wählen"
 
 #: includes/display_edit.inc:327;335;460
+#, fuzzy
 msgid "Back"
 msgstr "Zurück"
 
 #: includes/display_edit.inc:344;1247
+#, fuzzy
 msgid "Next"
 msgstr "nächste Seite"
 
@@ -1643,7 +1648,7 @@ msgstr ""
 
 #: includes/display_edit.inc:913;952
 msgid "Configure !subtype_title"
-msgstr "!subtype_title Konfigurieren"
+msgstr "!subtype_title konfigurieren"
 
 #: includes/display_edit.inc:1038
 #: panels_page/panels_page.admin.inc:444
@@ -1747,7 +1752,7 @@ msgstr ""
 #: panels_node/panels_node.module:223
 #: panels_page/panels_page.admin.inc:308
 msgid "CSS ID"
-msgstr "CSS ID"
+msgstr "CSS-ID"
 
 #: includes/plugins.inc:317
 msgid "CSS ID to apply to this content. This may be blank."
@@ -1755,7 +1760,7 @@ msgstr "Die für diesen Inhalt zu verwendende CSS-ID. Dies kann leer gelassen we
 
 #: includes/plugins.inc:324
 msgid "CSS class"
-msgstr "CSS Klasse"
+msgstr "CSS-Klasse"
 
 #: includes/plugins.inc:325
 msgid "CSS class to apply to this content. This may be blank."
@@ -1775,7 +1780,7 @@ msgstr "Kontext %count"
 
 #: includes/plugins.inc:1041
 msgid "Multiple contexts are valid for this pane; one must be chosen."
-msgstr "Dieser Ausschnitt ist in mehreren Zusammenhängen gültig. Einer muss ausgewählt werden."
+msgstr "Dieser Ausschnitt ist in mehreren Kontexten gültig. Einer muss ausgewählt werden."
 
 #: layouts/flexible.inc:10
 msgid "Flexible"
@@ -2039,7 +2044,7 @@ msgstr ""
 
 #: panels_mini/panels_mini.module:19
 msgid "You can edit existing mini panels, or click add to create a new one."
-msgstr "Vohandene Mini-Panels können bearbeitet werden oder mit Hinzufügen ein Neues erstellt werden."
+msgstr "Vorhandene Mini-Panels können bearbeitet oder durch Hinzufügen ein Neues erstellt werden."
 
 #: panels_mini/panels_mini.module:25
 msgid "Mini panels are the small variants of panel pages. Instead of pages, they define blocks."
@@ -2123,7 +2128,7 @@ msgstr "Bearbeiten"
 #: panels_page/panels_page.module:928
 #: panels_views/panels_views.module:125;1424
 msgid "Overridden"
-msgstr "Übersschrieben"
+msgstr "Übersteuert"
 
 #: panels_mini/panels_mini.module:243
 #: panels_page/panels_page.admin.inc:45;160
@@ -2282,7 +2287,7 @@ msgstr ""
 
 #: panels_mini/panels_mini.info:0
 msgid "Create mini panels that can be used as blocks."
-msgstr "Erstelle Mini-Panels, die als Blöcke verwendet werden können."
+msgstr "Mini-Panels erstellen, die als Blöcke verwendet werden können."
 
 #: panels_node/panels_node.module:30;99;138
 msgid "Panel"
@@ -2374,7 +2379,7 @@ msgstr "panels_node"
 
 #: panels_node/panels_node.info:0
 msgid "Create nodes that are divided into areas with selectable content."
-msgstr "Erstelle Beiträge, welche in Bereiche mit auswählbarem Inhalt unterteilt sind."
+msgstr "Beiträge erstellen, welche in Bereiche mit auswählbarem Inhalt unterteilt sind."
 
 #: panels_node_legacy/panels_node_legacy.module:20
 #: panels_node_legacy/panels_node_legacy.info:0
@@ -2479,7 +2484,7 @@ msgstr ""
 
 #: panels_page/panels_page.admin.inc:309
 msgid "The CSS ID to apply to this page"
-msgstr "Die CSS ID, welche auf diese Seite angewendet werden soll"
+msgstr "Die CSS-ID, welche auf diese Seite angewendet werden soll"
 
 #: panels_page/panels_page.admin.inc:316
 msgid "Path"
@@ -2487,7 +2492,7 @@ msgstr "Pfad"
 
 #: panels_page/panels_page.admin.inc:317
 msgid "The URL path to give this page, i.e, path/to/page. You may use \"%\" as an argument placeholder: i.e, node/%/panel"
-msgstr "Der URL Pfad den diese Seite erhalten soll, z.b.: pfad/zu/seite. Als Argumentplatzhalter kann „%“ verwendet werden, z.b.: node/%/panel"
+msgstr "Der URL-Pfad den diese Seite erhalten soll, z.b.: pfad/zu/seite. Als Argumentplatzhalter kann „%“ verwendet werden, z.b.: node/%/panel"
 
 #: panels_page/panels_page.admin.inc:337
 msgid "Panel name is required."
@@ -2523,11 +2528,11 @@ msgstr ""
 
 #: panels_page/panels_page.admin.inc:447
 msgid "Only the checked roles will be able to see this panel in any form; if no roles are checked, access will not be restricted."
-msgstr "Nur die aktivierten Rollen können dieses Panel in jeglicher Art sehen; Wenn keine Rollen aktiviert sind, wird der Zugriff nicht beschränkt."
+msgstr "Nur die aktivierten Rollen können dieses Panel in jeglicher Art sehen. Sollten keine Rollen aktiviert sein, wird der Zugriff nicht beschränkt."
 
 #: panels_page/panels_page.admin.inc:452
 msgid "CSS code"
-msgstr "CSS Code"
+msgstr "CSS-Code"
 
 #: panels_page/panels_page.admin.inc:453
 msgid "Enter well-formed CSS code here; this code will be embedded into the page, and should only be used for minor adjustments; it is usually better to try to put CSS for the page into the theme if possible."
@@ -2555,7 +2560,7 @@ msgstr ""
 
 #: panels_page/panels_page.admin.inc:481;525
 msgid "Tab Weight"
-msgstr "Karteireitergewichtung"
+msgstr "Reiterreihenfolge"
 
 #: panels_page/panels_page.admin.inc:484
 msgid "If this is a menu tab, select the weight; lower numbers will be further to the left."
@@ -2575,7 +2580,7 @@ msgstr "Standardmäßiger Menüreiter"
 
 #: panels_page/panels_page.admin.inc:505
 msgid "Make Default Menu Tab"
-msgstr "Standard Menü als Karteireiter bereitstellen"
+msgstr "Standardmenü als Reiter bereitstellen"
 
 #: panels_page/panels_page.admin.inc:508
 msgid "If checked this panel's menu entry will be provided as a tab, and will be the default tab for that URL path. For example, if the URL is 'tracker/all' and it is set as the default menu tab, it will be put into the menu as 'tracker' and 'tracker/all' will be the default tab. The following settings allow you to customize the parent item, for example 'tracker'. For tabs to work properly, one tab in the group must be set as the default."
@@ -2587,7 +2592,7 @@ msgstr "Übergeordneter Menüpunkttyp"
 
 #: panels_page/panels_page.admin.inc:516;537
 msgid "Tab"
-msgstr "Tabulator"
+msgstr "Reiter"
 
 #: panels_page/panels_page.admin.inc:517;537
 msgid "Normal menu item"
@@ -2866,7 +2871,7 @@ msgstr "Kein Argument"
 
 #: panels_views/panels_views.module:333
 msgid "From context"
-msgstr "Aus dem Zusammenhang"
+msgstr "Aus dem Kontext"
 
 #: panels_views/panels_views.module:334
 msgid "From panel argument"
@@ -2886,7 +2891,7 @@ msgstr "Argumentquelle"
 
 #: panels_views/panels_views.module:343
 msgid "Required context"
-msgstr "Zusammenhang erforderlich"
+msgstr "Kontext erforderlich"
 
 #: panels_views/panels_views.module:344
 msgid "If \"From context\" is selected, which context to require."
@@ -2957,7 +2962,7 @@ msgstr "Eine Seitennavigation bei dieser Ansicht verwenden"
 #: panels_views/panels_views.module:383;1011
 #: panels_views_legacy/panels_views_legacy.module:279
 msgid "Pager ID"
-msgstr "Pager ID"
+msgstr "Seitennavigations-ID"
 
 #: panels_views/panels_views.module:384
 msgid "If using a pager, what pager ID to use; every pager on the page should be unique and you should always use the lowest pager ID available. Use 0 if at all possible."
@@ -3010,7 +3015,7 @@ msgstr ""
 
 #: panels_views/panels_views.module:440
 msgid "More link"
-msgstr "„Mehr“-Link?"
+msgstr "„Mehr“-Link"
 
 #: panels_views/panels_views.module:441
 msgid "If checked, Panels will provide a \"more\" link that links to the view URL; this is different from the view's \"more\" link which will automatically be disabled."
@@ -3186,11 +3191,11 @@ msgstr "Die Anzahl der anzuzeigenden Beiträge auswählen, oder 0 um alle Ergebn
 #: panels_views/panels_views.module:1043
 #: panels_views_legacy/panels_views_legacy.module:321
 msgid "Override URL"
-msgstr "URL überschreiben"
+msgstr "URL übersteuern"
 
 #: panels_views/panels_views.module:1045
 msgid "If this is set, override the View URL; this can sometimes be useful to set to the panel URL."
-msgstr "Sobald aktiviert, wird die Ansichten-URL überschrieben; Manchmal kann es sinnvoll sein, die Panel-URL einzusetzten."
+msgstr "Sobald aktiviert, wird die Ansichten-URL übersteuert. Manchmal kann es sinnvoll sein, die Panel-URL einzusetzten."
 
 #: panels_views/panels_views.module:97
 msgid "administer panel views"
@@ -3235,7 +3240,7 @@ msgstr ""
 
 #: panels_views_legacy/panels_views_legacy.module:323
 msgid "If this is set, override the View URL; this can sometimes be useful to set to the panel URL"
-msgstr "Sobald aktiviert, wird die Ansichten URL überschrieben; Manchmal kann es sinnvoll sein, die Panel URL einzusetzten."
+msgstr "Sobald aktiviert, wird die Ansichten-URL übersteuert. Manchmal kann es sinnvoll sein, die Panel-URL einzusetzten"
 
 #: panels_views_legacy/panels_views_legacy.module:335
 msgid "Deleted/missing view @view"
