@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.56 2008/10/05 23:28:40 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.57 2008/11/12 00:21:07 sdboyer Exp $
 
 
 /**
@@ -338,7 +338,10 @@ function panels_page_edit_form_validate($form_id, $form_values, $form) {
     form_error($form['left']['info']['name'], t('Panel name is required.'));
   }
   else if (preg_match("/[^A-Za-z0-9_]/", $form_values['name'])) {
-    form_error($form['left']['info']['name'], t('Name must be alphanumeric or underscores only.'));
+    form_error($form['left']['info']['name'], t('Panel name must be alphanumeric or underscores only.'));
+  }
+  else if (!preg_match("/[A-Za-z_]/", $form_values['name'])) {
+    form_error($form['left']['info']['name'], t('Panel name must not consist exclusively of numbers.'));
   }
   else {
     if (db_result(db_query("SELECT pid FROM {panels_page} WHERE name = '%s' AND pid <> %d", $form_values['name'], $form_values['pid']))) {
