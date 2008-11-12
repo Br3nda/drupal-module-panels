@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.1.2.54 2008/08/30 10:26:58 sdboyer Exp $
+// $Id: plugins.inc,v 1.1.2.55 2008/11/12 19:58:57 sdboyer Exp $
 
 
 /**
@@ -1410,7 +1410,7 @@ function panels_get_include_directories($plugin_type) {
  * want them at the root level of your module directory, this code would work:
  * @code
  *  function MYMODULE_panels_include_directory($plugin_type) {
- *    if ($plugin_type == 'content_type' || $plugin_type == 'context') {
+ *    if ($plugin_type == 'content_types' || $plugin_type == 'contexts') {
  *      return 'panels_inc/' . $plugin_type;
  *    }
  *  }
