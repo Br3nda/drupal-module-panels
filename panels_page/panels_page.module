@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.75 2008/09/20 04:19:52 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.76 2008/11/13 23:15:29 merlinofchaos Exp $
 
 
 /**
@@ -928,6 +928,7 @@ function panels_page_load_all($names = array(), $page_size = 0) {
     }
     else {
       $page->type = t('Default');
+      $page->primary = $page->display;
       $pages[$page->name] = $page;
     }
   }
@@ -958,6 +959,7 @@ function panels_page_load($pid, $load_display = FALSE) {
     $defaults = panels_page_default_panels();
     if (isset($defaults[$pid])) {
       $page = $cache[$pid] = $defaults[$pid];
+      $page->primary = $page->display;
       return $page;
     }
     return;
