@@ -1,4 +1,4 @@
-# $Id: de.po,v 1.1.4.9 2008/11/13 21:37:46 hass Exp $
+# $Id: de.po,v 1.1.4.10 2008/11/13 22:57:11 hass Exp $
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: panels 5.x\n"
 "POT-Creation-Date: 2008-09-26 00:40+0200\n"
-"PO-Revision-Date: 2008-11-13 22:37+0100\n"
+"PO-Revision-Date: 2008-11-13 23:55+0100\n"
 "Last-Translator: Alexander Haß\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
@@ -62,6 +62,7 @@ msgstr " sind die primäre Panels-Komponente, welche zur Erstellung von einzelne
 msgid "Panel nodes"
 msgstr "Panel-Beiträge"
 
+# TODO: English needs work (not context sensitive)
 #: panels.module:18
 msgid " are useful for creating layouts that only occupy the content area of your pages.  Frequently, it is desirable to add an area to a node layout, such as a pull quote for a newspaper or a photo block, that you don't necessarily want on every node.  Panels Nodes lets you control the layout of a single node at a time and place content such as blog posts, images, blogs in and around the post."
 msgstr " sind nützlich, um Layouts zu erstellen, die nur den Inhaltsbereich von Inhaltsseiten einnehmen sollen. Hin und wieder ist es wünschenswert, eine Region zu einem Beitragslayout hinzuzufügen, wie zum Beispiel ein Anrisstext für eine Zeitung oder ein Foto-Block, der nicht unbedingt in allen Beiträgen erscheinen soll. Panels-Beiträge erlauben das Layout von einzelnen Beiträgen anzupassen und Inhalte, wie z.B. Blog-Beiträge oder Bilder im oder um den Beitrag herum zu platzieren."
@@ -182,17 +183,17 @@ msgstr "Panels-Kern Darstellungsfunktionen."
 
 #: arguments/nid.inc:12
 msgid "Node ID"
-msgstr "Beitrags-ID"
+msgstr "Beitrag-ID"
 
 #: arguments/nid.inc:15
 msgid "Restricts the argument to a node id."
-msgstr "Beschränkt das Argument auf eine Beitrags-ID."
+msgstr "Beschränkt das Argument auf eine Beitrag-ID."
 
 #: arguments/nid.inc:60
 #: arguments/node_add.inc:50
 #: arguments/node_edit.inc:60
 msgid "Node types"
-msgstr "Inhaltstypen"
+msgstr "Beitragstypen"
 
 #: arguments/nid.inc:63
 #: arguments/node_add.inc:53
@@ -211,7 +212,7 @@ msgstr "Separate Standard-Anzeige verwenden."
 #: arguments/node_add.inc:62
 #: arguments/node_edit.inc:72
 msgid "If checked, when this argument is present it will use its own display rather than the default. Node types not selected in the \"Own display\" field will use this one."
-msgstr "Falls aktiviert, und das Argument vorhanden ist, verwendet es eine eigene Ansicht anstatt der Standard-Ansicht. Inhaltstypen, für die keine \"Eigene Ansicht\" aktiviert wurde, verwenden diese Ansicht."
+msgstr "Falls aktiviert, und das Argument vorhanden ist, verwendet es eine eigene Ansicht anstatt der standardmäßigen Ansicht. Inhaltstypen, für die keine „Eigene Ansicht“ aktiviert wurde, verwenden diese Ansicht."
 
 #: arguments/nid.inc:77
 #: arguments/node_add.inc:67
@@ -242,7 +243,7 @@ msgstr "Beitragserstellungsformular"
 
 #: arguments/node_add.inc:15
 msgid "Displays the node add form for a content type."
-msgstr "Stellt das Beitragserstellungsformular für einen Inhaltstyp dar."
+msgstr "Stellt das Beitragserstellungsformular für einen Inhaltstypen dar."
 
 #: arguments/node_add.inc:130
 msgid "Node add form @id Default"
@@ -300,7 +301,7 @@ msgstr "Das Argument kann auf die ausgewählten Vokabulare beschränkt werden. A
 
 #: arguments/term.inc:110
 msgid "If checked, when this argument is present it will use its own display rather than the default. Vocabularies not selected in the \"Own display\" field will use this one."
-msgstr "Falls aktiviert, und das Argument vorhanden ist, verwendet es eine eigene Ansicht anstatt der Standard-Ansicht. Vokabulare, für die keine \"Eigene Ansicht\" aktiviert wurde, verwenden diese Ansicht."
+msgstr "Falls aktiviert, und das Argument vorhanden ist, verwendet es eine eigene Ansicht anstatt der standardmäßigen Ansicht. Vokabulare, für die keine „Eigene Ansicht“ aktiviert wurde, verwenden diese Ansicht."
 
 #: arguments/term.inc:119
 msgid "Each checked vocabulary will get its own special display to layout its content. Only vocabularies set above should be set here. Vocabularies not set here will use the default display."
@@ -312,7 +313,7 @@ msgstr "Begriff @id Standard"
 
 #: arguments/term.inc:169
 msgid "Taxonomy term @id @vocabulary"
-msgstr "Term @id @vocabulary"
+msgstr "Taxonomie-Begriff @id @vocabulary"
 
 #: arguments/uid.inc:12
 msgid "User ID"
@@ -397,7 +398,7 @@ msgstr "Benutzerdefiniert"
 
 #: content_types/custom.inc:72
 msgid "New custom content"
-msgstr "Neuer individueller Inhalt"
+msgstr "Neuer benutzerdefinierter Inhalt"
 
 #: content_types/custom.inc:75
 msgid "Create a completely custom piece of HTML content."
@@ -418,17 +419,18 @@ msgstr "Titel"
 msgid "Body"
 msgstr "Textkörper"
 
+# TODO: English needs work
 #: content_types/custom_php.inc:10
 msgid "Custom PHP"
-msgstr "Individueller PHP-Code"
+msgstr "Benutzerdefinierter PHP-Code"
 
 #: content_types/custom_php.inc:78
 msgid "Custom PHP content"
-msgstr "Individueller PHP-Inhalt"
+msgstr "Benutzerdefinierter PHP-Inhalt"
 
 #: content_types/custom_php.inc:81
 msgid "Custom PHP block with access to Panels context data. Use sparingly, and with caution!"
-msgstr "Individueller PHP-Block mit Zugriff auf Panels Kontextinformationen. Sparsam und mit Vorsicht verwenden!"
+msgstr "Benutzerdefinierter PHP-Block mit Zugriff auf Panels Kontextinformationen. Sparsam und mit Vorsicht verwenden!"
 
 #: content_types/custom_php.inc:83
 #: includes/plugins.inc:1034
@@ -456,7 +458,7 @@ msgstr "Der eingegebene PHP-Code wird zum Zeitpunkt der Darstellung verarbeitet.
 
 #: content_types/custom_php.inc:120
 msgid "Custom PHP with context"
-msgstr "Individueller PHP-Code mit Kontext"
+msgstr "Benutzerdefinierter PHP-Code mit Kontext"
 
 #: content_types/form.inc:10
 msgid "Generic form"
@@ -481,12 +483,12 @@ msgstr "Formular erscheint hier."
 
 #: content_types/form.inc:70
 msgid "\"@s\" base form"
-msgstr "\"@s\" Grundformular"
+msgstr "„@s“ Basisformular"
 
 #: content_types/node_attachments.inc:10
 #: content_types/node_type_desc.inc:10;38;52
 msgid "Node type description"
-msgstr "Inhaltstyp-Beschreibung"
+msgstr "Beitragstyp-Beschreibung"
 
 #: content_types/node_attachments.inc:31;50
 msgid "Attached files"
@@ -499,7 +501,7 @@ msgstr "Angehängte Dateien erscheinen hier."
 #: content_types/node_attachments.inc:53
 #: content_types/node_book_nav.inc:53
 msgid "A list of files attached to the node."
-msgstr "Eine Liste der angehängten Dateien eines Beitrags."
+msgstr "Eine Liste der an einem Beitrag angehängten Dateien."
 
 #: content_types/node_attachments.inc:54
 #: content_types/node_book_nav.inc:54
@@ -528,7 +530,7 @@ msgstr "Beitragskontext"
 
 #: content_types/node_attachments.inc:61
 msgid "\"@s\" attachments"
-msgstr "\"@s\" Dateianhänge"
+msgstr "„@s“ Dateianhänge"
 
 #: content_types/node_book_nav.inc:11
 msgid "Node book navigation"
@@ -544,7 +546,7 @@ msgstr "Buch-Navigation erscheint hier."
 
 #: content_types/node_book_nav.inc:61
 msgid "\"@s\" book navigation"
-msgstr "\"@s\" Buch-Navigation"
+msgstr "„@s“ Buch-Navigation"
 
 #: content_types/node_comment_form.inc:11
 msgid "Node comment form"
@@ -568,7 +570,7 @@ msgstr "Ein Formular zum Hinzufügen eines neuen Kommentars."
 
 #: content_types/node_comment_form.inc:70
 msgid "\"@s\" comment form"
-msgstr "\"@s\" Kommentarformular"
+msgstr "„@s“ Kommentarformular"
 
 #: content_types/node_comments.inc:12;53
 msgid "Node comments"
@@ -584,7 +586,7 @@ msgstr "Beitragskommentare erscheinen hier."
 
 #: content_types/node_comments.inc:56
 msgid "The comments of the referenced node."
-msgstr "Kommentare des referenzierten Beitrags."
+msgstr "Kommentare des referenzierten Beitrages."
 
 #: content_types/node_comments.inc:74
 msgid "Mode"
@@ -604,7 +606,7 @@ msgstr "Seitennavigation"
 
 #: content_types/node_comments.inc:99
 msgid "\"@s\" comments"
-msgstr "\"@s\" Kommentare"
+msgstr "„@s“ Kommentare"
 
 #: content_types/node_content.inc:10;29
 #: panels_node_legacy/panels_node_legacy.module:124
@@ -613,12 +615,12 @@ msgstr "Beitragsinhalt"
 
 #: content_types/node_content.inc:32
 msgid "The content of the referenced node."
-msgstr "Der Inhalt des referenzierten Beitrags."
+msgstr "Der Inhalt des referenzierten Beitrages."
 
 #: content_types/node_content.inc:55
 #: content_types/node_meta.inc:48
 msgid "Node title."
-msgstr "Titel des Beitrags."
+msgstr "Titel des Beitrages."
 
 #: content_types/node_content.inc:56
 msgid "Node content goes here."
@@ -676,7 +678,7 @@ msgstr "Links anzeigen"
 #: content_types/node_content.inc:182
 #: panels_node_legacy/panels_node_legacy.module:169
 msgid "Check here to display the links with the post."
-msgstr "Aktivieren, um die Links des Beitrags anzuzeigen."
+msgstr "Aktivieren, um die Links mit dem Beitrag anzuzeigen."
 
 #: content_types/node_content.inc:188
 msgid "No extras"
@@ -699,7 +701,7 @@ msgstr "Was immer hier steht wird in $node->panel_identifier bereitgestellt, um 
 
 #: content_types/node_content.inc:203
 msgid "\"@s\" content"
-msgstr "\"@s\" Inhalt"
+msgstr "„@s“ Inhalt"
 
 #: content_types/node_form.inc:10
 msgid "Node form"
@@ -707,7 +709,7 @@ msgstr "Beitragsformular"
 
 #: content_types/node_form.inc:26
 msgid "Node form publishing options"
-msgstr "Beitragsformular Veröffentlichungsoptionen"
+msgstr "Beitragsformular-Veröffentlichungsoptionen"
 
 #: content_types/node_form.inc:29;83
 msgid "Publishing options on the Node form."
@@ -723,11 +725,11 @@ msgstr "Autor-Informationen im Beitragsformular."
 
 #: content_types/node_form.inc:42
 msgid "Node form input format"
-msgstr "Beitrags-Eingabeformat-Formular"
+msgstr "Beitrag-Eingabeformat-Formular"
 
 #: content_types/node_form.inc:45
 msgid "Input format for the body field on a node."
-msgstr "Eingabeformat für den Textkörper eines Beitrags."
+msgstr "Eingabeformat für den Textkörper eines Beitrages."
 
 #: content_types/node_form.inc:50
 msgid "Node form log message"
@@ -735,11 +737,11 @@ msgstr "Protokollnachricht im Beitragsformular"
 
 #: content_types/node_form.inc:53
 msgid "Log message for the node."
-msgstr "Beitrags-Protokollnachricht-Formular"
+msgstr "Beitrag-Protokollnachricht-Formular"
 
 #: content_types/node_form.inc:60
 msgid "Node form comment settings"
-msgstr "Beitragsformular Kommentareinstellungen"
+msgstr "Beitragsformular-Kommentareinstellungen"
 
 #: content_types/node_form.inc:63
 msgid "Comment settings on the Node form."
@@ -747,7 +749,7 @@ msgstr "Kommentareinstellungen im Beitragsformular."
 
 #: content_types/node_form.inc:70
 msgid "Node form menu settings"
-msgstr "Beitragsformular Menüeinstellungen"
+msgstr "Beitragsformular-Menüeinstellungen"
 
 #: content_types/node_form.inc:73
 msgid "menu settings on the Node form."
@@ -759,7 +761,7 @@ msgstr "URL-Alias-Einstellungen"
 
 #: content_types/node_form.inc:90
 msgid "Node form file attachments"
-msgstr "Dateianhänge im Beitragsformular"
+msgstr "Beitragsformular-Dateianhänge"
 
 #: content_types/node_form.inc:93
 msgid "File attachments on the Node form."
@@ -767,7 +769,7 @@ msgstr "Dateianhänge im Beitragsformular."
 
 #: content_types/node_form.inc:100
 msgid "Node form categories"
-msgstr "Beitragsformular Kategorien"
+msgstr "Beitragsformular-Kategorien"
 
 #: content_types/node_form.inc:103
 msgid "Taxonomy categories for the node."
@@ -775,11 +777,11 @@ msgstr "Taxonomie-Kategorien für den Beitrag."
 
 #: content_types/node_form.inc:110
 msgid "Node form book options"
-msgstr "Beitragsformular Buch-Optionen"
+msgstr "Beitragsformular-Buchoptionen"
 
 #: content_types/node_form.inc:113
 msgid "Book options for the node."
-msgstr "Buch-Optionen für den Beitrag."
+msgstr "Buchoptionen für den Beitrag."
 
 #: content_types/node_form.inc:131
 msgid "Publishing options"
@@ -856,23 +858,23 @@ msgstr "Eingabeformat."
 #: content_types/node_form.inc:301
 #: content_types/term_list.inc:132
 msgid "\"@s\" @type"
-msgstr "\"@s\" @type"
+msgstr "„@s“ @type"
 
 #: content_types/node_meta.inc:26
 msgid "Node meta data"
-msgstr "Beitrags-Meta-Daten"
+msgstr "Beitrag-Meta-Daten"
 
 #: content_types/node_meta.inc:29
 msgid "Meta data of the referenced node."
-msgstr "Meta-Daten eines referenzierten Beitrags."
+msgstr "Meta-Daten eines referenzierten Beitrages."
 
 #: content_types/node_meta.inc:49
 msgid "Node meta content goes here."
-msgstr "Meta-Daten des Beitrags erscheinen hier."
+msgstr "Meta-Daten des Beitrages erscheinen hier."
 
 #: content_types/node_meta.inc:136
 msgid "Check here to display the title of the node."
-msgstr "Aktivieren, um den Titel des Beitrags anzuzeigen."
+msgstr "Aktivieren, um den Titel des Beitrages anzuzeigen."
 
 #: content_types/node_meta.inc:139
 msgid "Author"
@@ -880,7 +882,7 @@ msgstr "Autor"
 
 #: content_types/node_meta.inc:142
 msgid "Check here to display the author of the node."
-msgstr "Aktivieren, um den Autor des Beitrags anzuzeigen."
+msgstr "Aktivieren, um den Autor des Beitrages anzuzeigen."
 
 #: content_types/node_meta.inc:145
 msgid "Created date"
@@ -888,7 +890,7 @@ msgstr "Erstellungsdatum"
 
 #: content_types/node_meta.inc:148
 msgid "Check here to display the creation date of the node."
-msgstr "Aktivieren, um das Erstellungsdatum des Beitrags anzuzeigen."
+msgstr "Aktivieren, um das Erstellungsdatum des Beitrages anzuzeigen."
 
 #: content_types/node_meta.inc:151
 msgid "Modified date"
@@ -896,11 +898,11 @@ msgstr "Änderungsdatum"
 
 #: content_types/node_meta.inc:154
 msgid "Check here to display the modification date of the node."
-msgstr "Aktivieren, um das letzte Änderungsdatum des Beitrags anzuzeigen."
+msgstr "Aktivieren, um das letzte Änderungsdatum des Beitrages anzuzeigen."
 
 #: content_types/node_meta.inc:160
 msgid "\"@s\" meta content"
-msgstr "\"@s\" Meta-Inhalt"
+msgstr "„@s“ Meta-Inhalt"
 
 #: content_types/node_type_desc.inc:39
 msgid "Node type description goes here."
@@ -912,7 +914,7 @@ msgstr "Beschreibung des Inhaltstyps."
 
 #: content_types/node_type_desc.inc:63
 msgid "\"@s\" type description"
-msgstr "\"@s\" Inhaltstyp-Beschreibung"
+msgstr "„@s“ Typ-Beschreibung"
 
 #: content_types/profile_fields.inc:12
 msgid "Profile Fields"
@@ -950,11 +952,11 @@ msgstr "Welche Kategorie"
 
 #: content_types/profile_fields.inc:137
 msgid "Text to display if category has no data. Note that title will not display unless overridden."
-msgstr "Angezeigter Text, wenn die Kategorie keine Daten enthält. Der Titel wird nicht dargestellt, sofern er nicht überschrieben wurde."
+msgstr "Angezeigter Text, wenn die Kategorie keine Daten enthält. Der Titel wird nicht dargestellt, sofern er nicht übersteuert wurde."
 
 #: content_types/profile_fields.inc:151
 msgid "\"@s\" profile fields"
-msgstr "\"@s\" Profilfelder"
+msgstr "„@s“ Profilfelder"
 
 #: content_types/term_description.inc:10;59
 #: content_types/vocabulary_terms.inc:11
@@ -991,7 +993,7 @@ msgstr "Begriffskontext"
 
 #: content_types/term_description.inc:70
 msgid "\"@s\" term description"
-msgstr "\"@s\" Begriffsbeschreibung"
+msgstr "„@s“ Begriffsbeschreibung"
 
 #: content_types/term_list.inc:10;82
 msgid "List of related terms"
@@ -1034,12 +1036,12 @@ msgstr "Listentyp"
 #: content_types/term_list.inc:123
 #: styles/list.inc:55
 msgid "Unordered"
-msgstr "Aufzählung"
+msgstr "Ungeordnet"
 
 #: content_types/term_list.inc:123
 #: styles/list.inc:56
 msgid "Ordered"
-msgstr "Nummerierung"
+msgstr "Geordnet"
 
 #: content_types/user_picture.inc:10;44
 msgid "User picture"
@@ -1051,7 +1053,7 @@ msgstr "Das Bild von einem Benutzer."
 
 #: content_types/user_picture.inc:58
 msgid "\"@s\" user picture"
-msgstr "\"@s\" Benutzerbild"
+msgstr "„@s“ Benutzerbild"
 
 #: content_types/user_profile.inc:10;64
 msgid "User profile"
@@ -1063,7 +1065,7 @@ msgstr "Das Profil eines Benutzers."
 
 #: content_types/user_profile.inc:78
 msgid "\"@s\" user profile"
-msgstr "\"@s\" Benutzerprofil"
+msgstr "„@s“ Benutzerprofil"
 
 #: content_types/vocabulary_terms.inc:73
 msgid "Vocabulary terms"
@@ -1085,7 +1087,7 @@ msgstr "Vokabular-Kontext"
 
 #: content_types/vocabulary_terms.inc:84
 msgid "\"@s\" terms"
-msgstr "\"@s\" Begriffe"
+msgstr "„@s“ Begriffe"
 
 #: content_types/vocabulary_terms.inc:95
 msgid "Maximum depth"
@@ -1105,7 +1107,7 @@ msgstr "Als Baum anzeigen"
 
 #: content_types/vocabulary_terms.inc:105
 msgid "If checked, the terms are displayed in a tree, otherwise in a flat list."
-msgstr "Falls aktiviert, werden Terme in einem Baum dargestellt, andernfalls als einfache Liste."
+msgstr "Falls aktiviert, werden Begriffe in einem Baum dargestellt, ansonsten als einfache Liste."
 
 #: contexts/node.inc:14
 msgid "A node object."
@@ -1126,7 +1128,7 @@ msgstr "Falls aktiviert, wird die Beitragsauswahl (unten) ignoriert."
 #: contexts/node_edit_form.inc:80
 #: panels_node_legacy/panels_node_legacy.module:140
 msgid "Enter the title or NID of a post"
-msgstr "Den Titel oder die NID eines Beitrags eingeben"
+msgstr "Den Titel oder die Beitrag-ID eines Beitrages eingeben"
 
 #: contexts/node.inc:97
 #: contexts/node_edit_form.inc:90
@@ -1288,7 +1290,7 @@ msgstr "Argument"
 
 #: includes/common.inc:474
 msgid "Arguments are parsed from the URL and translated into contexts that may be added to the display via the 'content' tab. These arguments are parsed in the order received, and you may use % in your URL to hold the place of an object; the rest of the arguments will come after the URL. For example, if the URL is node/%/panel and your user visits node/1/panel/foo, the first argument will be 1, and the second argument will be foo."
-msgstr "Argumente werden aus der URL verarbeitet und in Kontexte übersetzt, welche im 'Inhalt'-Tab der Ansicht hinzugefügt werden können. Diese Argumente werden in der übergebenen Reihenfolge verarbeitet, und % kann in der URL verwendet werden, um auf ein Objekt zu referenzieren; der Rest der Argumente kommt nach der URL. Beispiel: Wenn die URL node/%/panel ist und ein Benutzer besucht node/1/panel/foo, dann ist das erste Argument 1 und das zweite 'foo'."
+msgstr "Argumente werden aus der URL verarbeitet und in Kontexte übersetzt, welche im ‚Inhalt‘-Reiter der Ansicht hinzugefügt werden können. Diese Argumente werden in der übergebenen Reihenfolge verarbeitet, und % kann in der URL verwendet werden, um auf ein Objekt zu referenzieren; der Rest der Argumente kommt nach der URL. Beispiel: Wenn die URL node/%/panel ist und ein Benutzer besucht node/1/panel/foo, dann ist das erste Argument 1 und das zweite ‚foo‘."
 
 #: includes/common.inc:475
 msgid "Add argument"
@@ -1304,7 +1306,7 @@ msgstr "Beziehung"
 
 #: includes/common.inc:482
 msgid "Relationships are contexts that are created from already existing contexts; the add relationship button will only appear once there is another context available. Relationships can load objects based upon how they are related to each other; for example, the author of a node, or a taxonomy term attached to a node, or the vocabulary of a taxonomy term."
-msgstr "Beziehungen sind Kontexte, welche auf Basis bereits existierender Kontexte erstellt werden; die \"Beziehung hinzufügen\"-Schaltfläche erscheint erst, wenn Kontexte verfügbar sind. Beziehungen können Objekte basierend auf ihrer Relation laden; beispielsweise den Autor eines Beitrags, einen Taxonomie-Term eines Beitrags, oder das Vokabular eines Taxonomie-Terms."
+msgstr "Beziehungen sind Kontexte, welche auf Basis bereits existierender Kontexte erstellt werden; die „Beziehung hinzufügen“-Schaltfläche erscheint erst, wenn Kontexte verfügbar sind. Beziehungen können Objekte basierend auf ihrer Relation laden; beispielsweise den Autor eines Beitrages, einen Taxonomie-Begriff eines Beitrages, oder das Vokabular eines Taxonomie-Begriffes."
 
 #: includes/common.inc:483
 msgid "Add relationship"
@@ -1322,7 +1324,7 @@ msgstr "Kontext"
 
 #: includes/common.inc:490
 msgid "Contexts are embedded directly into the panel; you generally must select an object in the panel. For example, you could select node 5, or the term \"animals\" or the user \"administrator\""
-msgstr "Kontexte sind direkt in das Panel eingebettet; ein Objekt wird dem Panel fest zugeodnet. Beispielsweise könnte Beitrag 5, der Term \"Tiere\" oder der Benutzer \"Administrator\" zugeordnet werden."
+msgstr "Kontexte sind direkt in das Panel eingebettet; ein Objekt wird dem Panel fest zugeordnet. Beispielsweise könnte Beitrag 5, der Begriff „Tiere“ oder der Benutzer „Administrator“ zugeordnet werden."
 
 #: includes/common.inc:491
 msgid "Add context"
@@ -1585,7 +1587,7 @@ msgstr "Panel-Titel"
 
 #: includes/display_edit.inc:513
 msgid "The title of this panel. Your theme will render this text as the main page title when a user views this panel. Note that there are some circumstances in which this title can be overridden elsewhere."
-msgstr "Der Titel dieses Panels. Die Theme wird diesen Text als Seitentitel anzeigen, wenn ein Benutzer die Seite ansieht. Unter Umständen kann dieser Titel durch andere Optionen überschrieben werden."
+msgstr "Der Titel dieses Panels. Die Theme wird diesen Text als Seitentitel anzeigen, wenn ein Benutzer die Seite ansieht. Unter Umständen kann dieser Titel durch andere Optionen übersteuert werden."
 
 #: includes/display_edit.inc:518
 msgid "Hide Title?"
@@ -1597,7 +1599,7 @@ msgstr "Aktivieren, um den Seitentitel für dieses Panel nicht anzuzeigen."
 
 #: includes/display_edit.inc:524
 msgid " If you leave this field blank, then the default title, '@title', will be used instead."
-msgstr "Falls nicht gesetzt, wird der Standard-Titel, '@title', verwendet."
+msgstr "Falls nicht gesetzt, wird stattdesssen der standardmäßige Titel ‚@title‘ verwendet."
 
 #: includes/display_edit.inc:632
 msgid "Missing content type"
@@ -1674,11 +1676,11 @@ msgstr "Panel-Einstellungen"
 
 #: includes/display_edit.inc:1443
 msgid "Default panel style"
-msgstr "Standard Panel-Stil"
+msgstr "Standard Panel-Design"
 
 #: includes/display_edit.inc:1472;1513
 msgid "Edit style settings"
-msgstr "Stil-Einstellungen bearbeiten"
+msgstr "Design-Einstellungen bearbeiten"
 
 #: includes/display_edit.inc:1484
 msgid "Per panel settings"
@@ -1686,27 +1688,27 @@ msgstr "Einstellungen pro Panel"
 
 #: includes/display_edit.inc:1486
 msgid "If this is checked, each region in the display can have its own style."
-msgstr "Falls aktiviert, kann jede Region der Ansicht einen eigenen Stil verwenden."
+msgstr "Falls aktiviert, kann jede Region der Ansicht einen eigenen Design verwenden."
 
 #: includes/display_edit.inc:1490
 msgid "Use the default panel style"
-msgstr "Standard-Stil verwenden"
+msgstr "Das standardmäßige Panel-Design verwenden"
 
 #: includes/display_edit.inc:1573
 msgid "There are no style settings to edit."
-msgstr "Es stehen keine Stil-Einstellungen zur Verfügung."
+msgstr "Es stehen keine Design-Einstellungen zur Bearbeitung zu Verfügung."
 
 #: includes/display_edit.inc:1573
 msgid "Edit default style settings"
-msgstr "Standard-Stileinstellungen bearbeiten."
+msgstr "Standard Design-Einstellungen bearbeiten"
 
 #: includes/display_edit.inc:1585
 msgid "Edit style settings for @style"
-msgstr "Einstelungen für Stil @style bearbeiten"
+msgstr "Einstellungen für Design @style bearbeiten"
 
 #: includes/display_edit.inc:1613
 msgid "This style does not have any settings."
-msgstr "Dieser Stil stellt keine Einstellungen zur Verfügung."
+msgstr "Dieses Design stellt keine Einstellungen zur Verfügung."
 
 #: includes/display_edit.inc:1698
 #: panels_page/panels_page.module:508
@@ -1727,7 +1729,7 @@ msgstr "Entfernter/fehlender Inhaltstyp @type"
 
 #: includes/plugins.inc:277
 msgid "Pane style"
-msgstr "Panel-Inhalt-Stil"
+msgstr "Panel-Inhalt-Design"
 
 #: includes/plugins.inc:307
 msgid "You may use %keywords from contexts, as well as %title to contain the original title."
@@ -1816,13 +1818,15 @@ msgstr "% (Prozent)"
 msgid "px (pixels)"
 msgstr "px (Pixel)"
 
+# current = aktuell
 #: layouts/flexible.inc:79;191
+#, fuzzy
 msgid "em (current)"
 msgstr "em (Relativ)"
 
 #: layouts/flexible.inc:80
 msgid "The width unit type this layout can have: %, px or em. When using percentage, your layout will be fluid; when using px or em, your layout will be fixed."
-msgstr "Die Breite-Maßeinheiten für dieses Layout: %, px oder em. Bei Verwendung von Prozentangaben wird das Layout dynamisch; bei px oder em ist das Layout fixiert."
+msgstr "Die Breiten-Maßeinheiten für dieses Layout: %, px oder em. Bei Verwendung von Prozentangaben wird das Layout dynamisch, bei Verwendung von px oder em ist das Layout fixiert."
 
 #: layouts/flexible.inc:88
 msgid "Total width"
@@ -1878,11 +1882,11 @@ msgstr "Die Breite-Maßeinheiten für Seitenleisten: %, px oder em. Bei Verwendu
 
 #: layouts/flexible.inc:207
 msgid "Rows must be a positive integer."
-msgstr "Zeilen muss eine positive Zahl sein."
+msgstr "„Zeilen“ muss eine positive Zahl sein."
 
 #: layouts/flexible.inc:217
 msgid "Columns must be a positive integer."
-msgstr "Spalten muss eine positive Zahl sein."
+msgstr "„Spalten“ muss eine positive Zahl sein."
 
 #: layouts/flexible.inc:225
 msgid "Column widths must add up to 100."
@@ -2117,7 +2121,7 @@ msgstr "Bearbeiten"
 #: panels_page/panels_page.module:927
 #: panels_views/panels_views.module:125;1424
 msgid "Overridden"
-msgstr "Überschrieben"
+msgstr "Übersteuert"
 
 #: panels_mini/panels_mini.module:243
 #: panels_page/panels_page.admin.inc:45;160
@@ -2173,13 +2177,12 @@ msgstr "Titel des Mini-Panels"
 
 #: panels_mini/panels_mini.module:491
 msgid "The title for this mini panel. It can be overridden in the block configuration."
-msgstr "Der Titel für dieses Mini-Panel. Dieser kann in der Block-Konfiguration überschrieben werden."
+msgstr "Der Titel für dieses Mini-Panel. Dieser kann in der Block-Konfiguration übersteuert werden."
 
 #: panels_mini/panels_mini.module:498
 msgid "Mini panel name"
 msgstr "Name des Mini-Panels"
 
-# alpha?
 #: panels_mini/panels_mini.module:499
 #: panels_page/panels_page.admin.inc:293
 msgid "A unique name used to identify this panel page internally. It must be only be alpha characters and underscores. No spaces, numbers or uppercase characters."
@@ -2191,7 +2194,7 @@ msgstr "Mini-Panel-Kategorie"
 
 #: panels_mini/panels_mini.module:507
 msgid "The category that this mini-panel will be grouped into on the Add Content form. Only upper and lower-case alphanumeric characters are allowed. If left blank, defaults to 'Mini panels'."
-msgstr "Die Kategorie, welcher dieses Mini-Panel im Inhalt hinzufügen-Formular hinzugefügt wird. Nur Groß- und Kleinbuchstaben und Zahlen sind erlaubt. Falls nicht gesetzt, wird 'Mini-Panels' verwendet."
+msgstr "Die Kategorie, welcher dieses Mini-Panel im Inhalt-Hinzufügen-Formular hinzugefügt wird. Nur Groß- und Kleinbuchstaben und Zahlen sind erlaubt. Falls nicht gesetzt, wird ‚Mini-Panels‘ verwendet."
 
 #: panels_mini/panels_mini.module:543;668;691;784
 #: panels_page/panels_page.admin.inc:322;541;571;621;684;738
@@ -2262,7 +2265,7 @@ msgstr "panels_mini"
 
 #: panels_mini/panels_mini.install:156
 msgid "It does NOT matter if the following query fails. If it fails, it means you did not have a duplicate 'name_2' index, and trying to remove a non-existent index does not harm, alter, or otherwise affect your database in any way. If it succeeds, then the duplicate index is gone, and your table is as it should be."
-msgstr "Es macht nichts, wenn die folgende Abfrage fehlschlägt. Falls das passiert, existierte kein doppelter 'name_2' Index, und der Versuch, einen nicht existierenden Index zu entfernen, fügt der Datenbank keinen Schaden zu. Falls sie erfolgreich ist, dann wurde der doppelte Index entfernt und die Tabelle ist so wie sie sein sollte."
+msgstr "Es macht nichts, wenn die folgende Abfrage fehlschlägt. Falls das passiert, existierte kein doppelter ‚name_2‘-Index, und der Versuch, einen nicht existierenden Index zu entfernen, fügt der Datenbank keinen Schaden zu. Falls diese erfolgreich ist, wurde der doppelte Index entfernt und die Tabelle ist so wie sie sein sollte."
 
 #: panels_mini/panels_mini.info:0
 msgid "Create mini panels that can be used as blocks."
@@ -2274,7 +2277,7 @@ msgstr "Panel"
 
 #: panels_node/panels_node.module:40
 msgid "Information about panel nodes."
-msgstr "Informationen zu Panel-Beiträgen."
+msgstr "Informationen über Panel-Beiträge."
 
 #: panels_node/panels_node.module:45
 msgid "Information"
@@ -2282,23 +2285,23 @@ msgstr "Information"
 
 #: panels_node/panels_node.module:53
 msgid "Configure panel node content availability."
-msgstr "Panel-Beitrag Inhaltsverfügbarkeit konfigurieren."
+msgstr "Die Inhaltsverfügbarkeit des Panel-Beitrages konfigurieren."
 
 #: panels_node/panels_node.module:66
 msgid "Panel layout"
-msgstr "Layout"
+msgstr "Panel-Layout"
 
 #: panels_node/panels_node.module:76
 msgid "Panel layout settings"
-msgstr "Layout-Einstellungen"
+msgstr "Panel-Layout-Einstellungen"
 
 #: panels_node/panels_node.module:86
 msgid "Panel content"
-msgstr "Inhalt"
+msgstr "Panel-Inhalt"
 
 #: panels_node/panels_node.module:114
 msgid "Panel nodes do not have a normal administrative UI, such as panels pages or mini panels. With this module, a new node type is created: a \"panel\" node. These are nodes that have panel layouts, but do not have the breadth of features that panel pages do; these features are sacrificed so that you gain all the capabilities of nodes."
-msgstr "Panel-Beiträge haben keine normale, administrative Oberfläche wie Panel-Seiten oder Mini-Panels. Durch dieses Modul wird ein neuer Inhaltstyp erstellt: ein \"Panel\"-Beitrag. Diese sind Beiträge, welche Panel Layouts verwenden, aber nicht die umfassenden Funktionen von Panel-Seiten unterstützen; diese Funktionen wurden umgewandelt, um all Möglichkeiten von Beiträgen zu erhalten."
+msgstr "Panel-Beiträge haben keine normale, administrative Oberfläche wie Panel-Seiten oder Mini-Panels. Durch dieses Modul wird ein neuer Inhaltstyp erstellt: ein „Panel“-Beitrag. Diese sind Beiträge, welche Panel-Layouts verwenden, aber nicht die umfassenden Funktionen von Panel-Seiten unterstützen; diese Funktionen wurden umgewandelt, um all Möglichkeiten von Beiträgen zu erhalten."
 
 #: panels_node/panels_node.module:116
 msgid "You may create a !panel_node using the normal !create_content menu, and you can administer your panel nodes under the normal !administer_nodes menu (administrative permission required)."
@@ -2326,7 +2329,7 @@ msgstr "Einstellungen"
 
 #: panels_node/panels_node.module:141
 msgid "A panel a page layout broken up into rows and columns."
-msgstr "Ein Panel-Seite-Layout in Spalten und Zeilen zerlegt."
+msgstr "Ein Panel-Seiten-Layout in Spalten und Zeilen zerlegt."
 
 #: panels_node/panels_node.module:210
 msgid "The teaser is a piece of text to describe when the panel is listed (such as when promoted to front page); the actual content will only be displayed on the full node view."
@@ -2363,11 +2366,11 @@ msgstr "Erstellt Beiträge, welche in Regionen mit auswählbarem Inhalt untertei
 #: panels_node_legacy/panels_node_legacy.module:20
 #: panels_node_legacy/panels_node_legacy.info:0
 msgid "Legacy node panes"
-msgstr "Veraltete Beitrags-Panel-Inhalte"
+msgstr "Veraltete Beitrag-Panel-Inhalte"
 
 #: panels_node_legacy/panels_node_legacy.module:24
 msgid "Information about the legacy node content type."
-msgstr "Informationen über den veralteten Beitrags-Inhaltstyp."
+msgstr "Informationen über den veralteten Beitrag-Inhaltstypen."
 
 #: panels_node_legacy/panels_node_legacy.module:35
 msgid "Panels legacy nodes does not have a normal administrative UI, such as panels pages or mini panels. With this module, users may add a node directly to a panel via the add content interface. They may then select this node using an auto-complete field. In general, this method of adding nodes to panes should be considered deprecated (especially by module developers implementing the Panels API) and is only retained to support updating sites that use this older method. Moving forward, it is recommended that the context system be used to embed nodes, as that is far more powerful and interesting."
@@ -2395,7 +2398,7 @@ msgstr "Beitragstitel beibehalten"
 
 #: panels_node_legacy/panels_node_legacy.module:176
 msgid "Advanced: if checked, do not touch the node title; this can cause the node title to appear twice unless your theme is aware of this."
-msgstr "Erweitert: Falls aktiviert, bleibt der Beitragstitel unberührt; dies kann zur doppelten Darstellung in der Ausgabe führen, sofern die Theme dies nicht berücksichtigt."
+msgstr "Erweitert: Falls aktiviert, bleibt der Beitragstitel unberührt. Dies kann zur doppelten Darstellung in der Ausgabe führen, sofern die Theme dies nicht berücksichtigt."
 
 #: panels_node_legacy/panels_node_legacy.module:200
 msgid "Invalid node"
@@ -2415,7 +2418,7 @@ msgstr "panels_node_legacy"
 
 #: panels_node_legacy/panels_node_legacy.info:0
 msgid "Allows embedding specific nodes into panes without using contexts. This module provides backwards compatibility for older Panels API implementations; you should only enable it if your Panels editor is mysteriously without node-related data."
-msgstr "Erlaubt spezifische Beiträge ohne Kontext als Panel-Inhalte einzubinden. Dieses Modul stellt eine Rückwärtskompatibilität für ältere Panels API-Implementierungen bereit; es sollte nur aktiviert werden, wenn im Panels-Editor mysteriöserweise Beitragsinhalte fehlen."
+msgstr "Erlaubt spezifische Beiträge ohne Kontext als Panel-Inhalte einzubinden. Dieses Modul stellt eine Rückwärtskompatibilität für ältere Panels API-Implementierungen bereit. Es sollte nur aktiviert werden, wenn im Panels-Editor mysteriöserweise Beitragsinhalte fehlen."
 
 #: panels_page/panels_page.admin.inc:20;301
 msgid "Page title"
@@ -2531,19 +2534,19 @@ msgstr "Falls aktiviert, wird ein Eintrag im Menüsystem für dieses Panel erste
 
 #: panels_page/panels_page.admin.inc:474
 msgid "Provide Menu as Tab"
-msgstr "Menü als Tab bereitstellen"
+msgstr "Menü als Reiter bereitstellen"
 
 #: panels_page/panels_page.admin.inc:477
 msgid "If checked this panel's menu entry will be provided as a tab rather than in the main menu system."
-msgstr "Falls aktiviert, wird der Menüpunkt als Tab anstatt als regulärer Menüpunkt bereitgestellt."
+msgstr "Falls aktiviert, wird der Menüpunkt als Reiter anstatt als regulärer Menüpunkt bereitgestellt."
 
 #: panels_page/panels_page.admin.inc:482;526
 msgid "Tab Weight"
-msgstr "Tab-Reihenfolge"
+msgstr "Reiter-Reihenfolge"
 
 #: panels_page/panels_page.admin.inc:485
 msgid "If this is a menu tab, select the weight; lower numbers will be further to the left."
-msgstr "Falls dies ein Tab ist, das Gewicht eingeben; kleinere Zahlen erscheinen weiter links."
+msgstr "Falls dies ein Menüreiter ist, die Reihenfolge auswählen. Kleinere Zahlen erscheinen weiter links."
 
 #: panels_page/panels_page.admin.inc:490
 msgid "Menu Title"
@@ -2551,19 +2554,19 @@ msgstr "Menütitel"
 
 #: panels_page/panels_page.admin.inc:494
 msgid "Enter the title to use for the menu entry or tab. If blank, the page title will be used."
-msgstr "Einen Titel für den Menüpunkt oder Tab eingeben. Falls nicht gesetzt, wird der Seitentitel verwendet."
+msgstr "Einen Titel für den Menüpunkt oder Reiter eingeben. Falls nicht gesetzt, wird der Seitentitel verwendet."
 
 #: panels_page/panels_page.admin.inc:501
 msgid "Default Menu Tab"
-msgstr "Standardmäßiger Menü-Tab"
+msgstr "Standardmäßiger Menüreiter"
 
 #: panels_page/panels_page.admin.inc:506
 msgid "Make Default Menu Tab"
-msgstr "Als Standard-Tab verwenden"
+msgstr "Als standardmäßigen Menüreiter verwenden"
 
 #: panels_page/panels_page.admin.inc:509
 msgid "If checked this panel's menu entry will be provided as a tab, and will be the default tab for that URL path. For example, if the URL is 'tracker/all' and it is set as the default menu tab, it will be put into the menu as 'tracker' and 'tracker/all' will be the default tab. The following settings allow you to customize the parent item, for example 'tracker'. For tabs to work properly, one tab in the group must be set as the default."
-msgstr "Falls aktiviert, wird der Menüpunkt als Tab bereitgestellt und es wird der Standard-Tab für diesen URL-Pfad. Beispiel: Wenn die URL 'tracker/all' ist und als Standard-Tab gesetzt ist, dann wird es im Menü als 'tracker' erstellt und 'tracker/all' wird der Standard-Tab sein. Die folgenden Einstellungen erlauben, den übergeordneten Menüpunkt anzupassen, wie z.B. 'tracker'. Damit Tabs korrekt funktionieren, muss ein Tab in der Gruppe als Standard-Tab definiert sein."
+msgstr "Falls aktiviert, wird der Menüpunkt als Reiter bereitgestellt und der standardmäßige Reiter für diesen URL-Pfad. Beispiel: Wenn die URL ‚tracker/all‘ ist und als standardmäßiger Reiter eingestellt ist, dann wird dieser im Menü als ‚tracker‘ erstellt und ‚tracker/all‘ wird der standardmäßige Reiter sein. Die folgenden Einstellungen erlauben, den übergeordneten Menüpunkt anzupassen, wie z.B. ‚tracker‘. Damit Reiter korrekt funktionieren, muss ein Reiter in der Gruppe als standardmäßiger Reiter definiert sein."
 
 #: panels_page/panels_page.admin.inc:514;538
 msgid "Parent Menu Item Type"
@@ -2571,7 +2574,7 @@ msgstr "Typ des übergeordneten Menüpunkts"
 
 #: panels_page/panels_page.admin.inc:517;538
 msgid "Tab"
-msgstr "Tab"
+msgstr "Reiter"
 
 #: panels_page/panels_page.admin.inc:518;538
 msgid "Normal menu item"
@@ -2583,11 +2586,11 @@ msgstr "Bereits vorhanden (nicht erstellen)"
 
 #: panels_page/panels_page.admin.inc:521
 msgid "Select type of parent item to use for this default menu tab. You can either specify the parent should be a tab (the default), a normal menu item, or to use the menu item that already exists at the specified URL. For example, if the URL for the default tab is 'tracker/all', then 'tracker' would already have to be a valid menu item to use this final choice."
-msgstr "Definiert den Typ des übergeordneten Menüpunkts für diesen Standard-Tab. Dieser kann entweder Tab (Standard), ein normaler Menüpunkt, oder ein bereits existierender Menüpunkt unter dieser URL sein. Beispiel: Wenn die URL des Standard-Tabs 'tracker/all' ist, dann müsste 'tracker' bereits ein gültiger Menüpunkt sein, um die letzte Option zu verwenden."
+msgstr "Definiert den Typ des übergeordneten Menüpunkts für diesen standardmäßigen Reiter. Dieser kann entweder ein Reiter (Standard), ein normaler Menüpunkt, oder ein bereits existierender Menüpunkt unter dieser URL sein. Beispiel: Wenn die URL des standardmäßigen Reiters ‚tracker/all‘ ist, dann müsste ‚tracker‘ bereits ein gültiger Menüpunkt sein, um die letzte Option zu verwenden."
 
 #: panels_page/panels_page.admin.inc:529
 msgid "If the parent menu item is a tab, select the weight; lower numbers will be further to the left."
-msgstr "Falls der übergeordnete Menüpunkt ein Tab ist, dessen Gewicht eingeben; kleinere Zahlen erscheinen weiter links."
+msgstr "Falls der übergeordnete Menüpunkt ein Reiter ist, die Reihenfolge auswählen. Kleinere Zahlen erscheinen weiter links."
 
 #: panels_page/panels_page.admin.inc:534
 msgid "Parent Menu Item Title"
@@ -2619,7 +2622,7 @@ msgstr "Aus den Daten konnte keine Panel-Seite erzeugt werden."
 
 #: panels_page/panels_page.admin.inc:881
 msgid "Administrative view: enter arguments"
-msgstr "Administrative Ansicht: Argumente eingeben"
+msgstr "Verwaltungsansicht: Argumente eingeben"
 
 #: panels_page/panels_page.admin.inc:891
 msgid "1 argument is missing to generate a valid URL."
@@ -2683,7 +2686,7 @@ msgstr "Panel bearbeiten"
 
 #: panels_page/panels_page.module:696
 msgid "Page reports \"Page not found\" due to argument restrictions"
-msgstr "Seite meldet \"Seite nicht gefunden\" auf Grund von Argument-Beschränkungen."
+msgstr "Seite meldet „Seite nicht gefunden“ auf Grund von Argument-Beschränkungen."
 
 #: panels_page/panels_page.module:39
 msgid "create panel-pages"
@@ -2707,11 +2710,11 @@ msgstr "Einfacher Cache"
 
 #: panels_simple_cache/panels_simple_cache.module:22
 msgid "Information about Panels simple cache."
-msgstr "Informationen über Panels Simple Cache."
+msgstr "Informationen über Panels einfachen Cache."
 
 #: panels_simple_cache/panels_simple_cache.module:33
 msgid "Panels simple cache does not have a normal administrative UI, such as panels pages or mini panels. With this module, you are given the option to add caching features to any panel display in panel pages, mini panels, panel nodes or any other displays provided by other modules or plugins. These options are available as an icon on each pane of the edit content pane."
-msgstr "Panels Simple Cache besitzt keine normale, administrative Oberfläche, wie Panel-Seiten oder Mini-Panels. Mit diesem Modul können Caching-Funktionen zu jeglichen Panel-Anzeigen in Panel-Seiten, Mini-Panels, Panel-Beiträgen oder anderen Anzeigen von anderen Modulen und Erweiterungen hinzugefügt werden. Diese Optionen werden als Symbol für jeden Panel-Inhalt auf der Inhaltsbearbeitungsseite bereitgestellt."
+msgstr "Panels einfacher Cache besitzt keine normale Verwaltungsoberfläche, wie Panel-Seiten oder Mini-Panels. Mit diesem Modul können Caching-Funktionen zu jeglichen Panel-Anzeigen in Panel-Seiten, Mini-Panels, Panel-Beiträgen oder anderen Anzeigen von anderen Modulen und Erweiterungen hinzugefügt werden. Diese Optionen werden als Symbol für jeden Panel-Inhalt auf der Inhaltsbearbeitungsseite bereitgestellt."
 
 #: panels_simple_cache/panels_simple_cache.module:35
 msgid "This module provides only very simple, time-based caching; it is not at all suitable if your content will change at all per user (and this can mean administrative additions that are just visible to you) as all users will see the same content; it is provided mostly as a reference implementation for other, smarter caching modules."
@@ -2739,7 +2742,7 @@ msgstr "Nichts"
 
 #: panels_simple_cache/panels_simple_cache.module:155
 msgid "If \"arguments\" are selected, this content will be cached per individual argument to the entire display; if \"contexts\" are selected, this content will be cached per unique context in the pane or display; if \"neither\" there will be only one cache for this pane."
-msgstr "Wenn \"Argumente\" ausgewählt wurde, wird dieser Inhalt separat für jedes Argument zwischengespeichert; wenn \"Kontexte\" ausgewählt wurde, wird dieser Inhalt separat für jeden einzigen Kontext in diesem Panel-Inhalt oder Anzeige zwischengespeichert; wenn \"Keine\" ausgewählt wurde, wird der Inhalt nur ein Mal zwischengespeichert."
+msgstr "Wenn „Argumente“ ausgewählt wurde, wird dieser Inhalt separat für jedes Argument zwischengespeichert; wenn „Kontexte“ ausgewählt wurde, wird dieser Inhalt separat für jeden einzigen Kontext in diesem Panel-Inhalt oder Anzeige zwischengespeichert; wenn „Keine“ ausgewählt wurde, wird der Inhalt nur ein Mal zwischengespeichert."
 
 #: panels_simple_cache/panels_simple_cache.module:0
 msgid "panels_simple_cache"
@@ -2747,11 +2750,11 @@ msgstr "panels_simple_cache"
 
 #: panels_simple_cache/panels_simple_cache.info:0
 msgid "Panels simple cache"
-msgstr "Einfacher Panel-Cache"
+msgstr "Panels einfacher Cache"
 
 #: panels_simple_cache/panels_simple_cache.info:0
 msgid "Adds the simple cache as an option when configuring panel panes."
-msgstr "Fügt Simple Cache als Konfigurationsoption für Panel-Inhalte hinzu."
+msgstr "Fügt den einfachen Cache als Konfigurationsoption für Panel-Inhalte hinzu."
 
 #: panels_views/panels_views.module:27
 msgid "Configure Views to be used as panes within panel displays."
@@ -2787,7 +2790,7 @@ msgstr "Titel der Panel-Ansicht"
 
 #: panels_views/panels_views.module:270
 msgid "The title of the pane; this will appear in the add content dialog."
-msgstr "Der Titel des Panel-Inhalts, wie er im Inhalt hinzufügen-Dialog erscheint."
+msgstr "Der Titel des Panel-Inhalts, wie er im Inhalt-Hinzufügen-Dialog erscheint."
 
 #: panels_views/panels_views.module:276
 msgid "Description"
@@ -2875,7 +2878,7 @@ msgstr "Erfoderlicher Kontext"
 
 #: panels_views/panels_views.module:344
 msgid "If \"From context\" is selected, which context to require."
-msgstr "Der erforderliche Kontext, falls \"Aus Kontext\" ausgewählt wurde."
+msgstr "Der erforderliche Kontext, falls „Aus Kontext“ ausgewählt wurde."
 
 #: panels_views/panels_views.module:350
 msgid "Panel argument"
@@ -2883,7 +2886,7 @@ msgstr "Panel-Argument"
 
 #: panels_views/panels_views.module:351
 msgid "If \"From panel argument\" is selected, which panel argument to use."
-msgstr "Das zu verwendende Panel-Argument, falls \"Aus Panel-Argument\" ausgewählt wurde."
+msgstr "Das zu verwendende Panel-Argument, falls „Aus Panel-Argument“ ausgewählt wurde."
 
 #: panels_views/panels_views.module:353
 msgid "First"
@@ -2915,7 +2918,7 @@ msgstr "Statisches Argument"
 
 #: panels_views/panels_views.module:358
 msgid "If \"Fixed\" is selected, what to use as an argument."
-msgstr "Das Argument, falls \"Statisch\" ausgewählt wurde."
+msgstr "Das Argument, falls „Statisch“ ausgewählt wurde."
 
 #: panels_views/panels_views.module:363
 msgid "Label"
@@ -2936,7 +2939,7 @@ msgstr "Seitennavigation verwenden"
 
 #: panels_views/panels_views.module:377
 msgid "Use a pager with this view"
-msgstr "Eine Seitennavigation für diese Ansicht verwenden"
+msgstr "Eine Seitennavigation mit diese Ansicht verwenden"
 
 #: panels_views/panels_views.module:383;1011
 #: panels_views_legacy/panels_views_legacy.module:279
@@ -2966,15 +2969,16 @@ msgstr "Die Anzahl im Panel-Inhalt konfigurierbar machen."
 #: panels_views/panels_views.module:409;1032
 #: panels_views_legacy/panels_views_legacy.module:298
 msgid "Offset"
-msgstr "Versatz"
+msgstr "Offset"
 
 #: panels_views/panels_views.module:410;1034
+#, fuzzy
 msgid "Enter the item number to start at; this option only works if \"use pager\" is not checked. Enter 0 to start at the first item, 1 to start at the second, etc."
-msgstr "Die beginnende Position eingeben; diese Option funktioniert nur, wenn \"Pager verwenden\" nicht aktiviert ist. 0 eingeben, um bei erstem Element zu beginnen, 1 für das zweite, usw."
+msgstr "Die beginnende Position eingeben; diese Option funktioniert nur, wenn „Pager verwenden“ nicht aktiviert ist. 0 eingeben, um bei erstem Element zu beginnen, 1 für das zweite, usw."
 
 #: panels_views/panels_views.module:416
 msgid "Allow the pane configuration to modify the offset setting"
-msgstr "Den Versatz im Panel-Inhalt konfigurierbar machen."
+msgstr "Den Offset im Panel-Inhalt konfigurierbar machen."
 
 #: panels_views/panels_views.module:422
 msgid "Pane decorations"
@@ -2990,7 +2994,7 @@ msgstr "Falls aktiviert, wird der Titel des Panel-Inhalts zur Ansicht verlinken.
 
 #: panels_views/panels_views.module:434
 msgid "Allow the pane configuration to modify the link to view setting."
-msgstr "Den Ansicht-link im Panel-Inhalt konfigurierbar machen."
+msgstr "Den Ansicht-Link im Panel-Inhalt konfigurierbar machen."
 
 #: panels_views/panels_views.module:440
 msgid "More link"
@@ -2998,11 +3002,11 @@ msgstr "„Mehr“-Link"
 
 #: panels_views/panels_views.module:441
 msgid "If checked, Panels will provide a \"more\" link that links to the view URL; this is different from the view's \"more\" link which will automatically be disabled."
-msgstr "Falls aktiviert, stellt Panels einen \"Mehr\"-Link bereit, der zur Ansicht verlinkt; dieser unterscheidet sich von dem regulären \"Mehr\"-Link von Ansichten, welcher automatisch deaktiviert wird."
+msgstr "Falls aktiviert, stellt Panels einen „mehr“-Link bereit, der zur Ansicht verlinkt. Dieser unterscheidet sich von dem regulären „mehr“-Link von Ansichten, welcher automatisch deaktiviert wird."
 
 #: panels_views/panels_views.module:447
 msgid "Allow the pane configuration to modify the \"more\" link setting."
-msgstr "Die \"Mehr\"-Link-Einstellung im Panel-Inhalt konfigurierbar machen."
+msgstr "Die „mehr“-Link-Einstellung im Panel-Inhalt konfigurierbar machen."
 
 #: panels_views/panels_views.module:453
 msgid "More link text"
@@ -3010,11 +3014,11 @@ msgstr "Text des „Mehr“-Links"
 
 #: panels_views/panels_views.module:454
 msgid "If you checked the above box allowing Panels to provide its own \"more\" link, Panels will render that link using the text you enter here. If left blank, defaults to \"more\"."
-msgstr "Falls ein \"Mehr\"-Link oben aktiviert wurde, wird Panels den hier angegebenen Text für den Link verwenden. Falls nicht gesetzt, wird standardmäßig \"mehr\" verwendet."
+msgstr "Falls ein „mehr“-Link oben aktiviert wurde, wird Panels den hier angegebenen Text für den Link verwenden. Falls nicht gesetzt, wird standardmäßig „mehr“ verwendet."
 
 #: panels_views/panels_views.module:460
 msgid "Allow the pane configuration to modify the \"more\" link text."
-msgstr "Den \"Mehr\"-Linktext im Panel-Inhalt konfigurierbar machen."
+msgstr "Den „mehr“-Linktext im Panel-Inhalt konfigurierbar machen."
 
 #: panels_views/panels_views.module:466
 msgid "Show feed icons"
@@ -3038,11 +3042,11 @@ msgstr "URL der Ansicht überschreiben"
 
 #: panels_views/panels_views.module:486
 msgid "If override URL is set, the URL the view thinks it is using; all \"more\", \"exposed filters\", \"summary\" and \"feed\" type links will use this URL."
-msgstr "Wenn eine forcierte URL gesetzt ist, wird die Ansicht diese für \"mehr\"-, \"Hervorgehobene Filter\"-, \"Zusammenfassung\"- und \"Feed\"-Links verwenden."
+msgstr "Wenn eine übersteuerte URL eingestellt wurde, wird die Ansicht diese für „mehr“-, „Hervorgehobene Filter“-, „Zusammenfassung“- und „Newsfeed“-Links verwenden."
 
 #: panels_views/panels_views.module:486;1045
 msgid "You may use $arg to pass panel arguments to the view."
-msgstr "$arg kann verwendet werden, um Argumente der Ansicht zu übergeben."
+msgstr "$arg kann verwendet werden, um Argumente an die Ansicht zu übergeben."
 
 #: panels_views/panels_views.module:492
 msgid "Allow the pane configuration to modify the URL override setting."
@@ -3054,11 +3058,11 @@ msgstr "Die URL der Ansicht auf die Panel-URL setzen."
 
 #: panels_views/panels_views.module:499
 msgid "If checked, the URL of the view will be changed to the URL of the panel; this setting is ignored if the \"Override view URL\" setting, above, is set or allowed."
-msgstr "Falls aktiviert, wird die URL der Ansicht auf die URL des Panels gesetzt; diese Einstellung wird ignoriert, wenn die \"Forcierte Ansicht-URL\"-Einstellung oben aktiviert oder im Panel-Inhalt konfigurierbar ist."
+msgstr "Falls aktiviert, wird die URL der Ansicht auf die URL des Panels eingestellt. Diese Einstellung wird ignoriert, wenn die „Übersteuerte Ansicht-URL“-Einstellung oben aktiviert oder im Panel-Inhalt konfigurierbar ist."
 
 #: panels_views/panels_views.module:505
 msgid "Allow the pane configuration to modify the \"set view URL to panel URL\" setting."
-msgstr "Die \"Ansicht-URL auf Panel-URL setzen\"-Einstellung im Panel-Inhalt konfigurierbar machen."
+msgstr "Die „Ansicht-URL auf Panel-URL setzen“-Einstellung im Panel-Inhalt konfigurierbar machen."
 
 #: panels_views/panels_views.module:523
 msgid "Panel view name is required."
@@ -3145,7 +3149,7 @@ msgstr "„Mehr“-Linktext"
 
 #: panels_views/panels_views.module:986
 msgid "If you activated panels own \"more\" link above, this allows you to customize the text to display."
-msgstr "Falls ein eigener \"mehr\"-Link oben aktiviert wurde, kann hier ein individueller Text für den Link eingegeben werden."
+msgstr "Falls ein eigener „mehr“-Link oben aktiviert wurde, kann hier ein benutzerdefinierter Text für den Link eingegeben werden."
 
 #: panels_views/panels_views.module:994
 #: panels_views_legacy/panels_views_legacy.module:263
@@ -3160,12 +3164,12 @@ msgstr "Falls aktiviert, werden alle von der Ansicht bereitgestellten Feed-Symbo
 #: panels_views/panels_views.module:1023
 #: panels_views_legacy/panels_views_legacy.module:290
 msgid "Num posts"
-msgstr "Anzahl Einträge"
+msgstr "Anzahl Beiträge"
 
 #: panels_views/panels_views.module:1025
 #: panels_views_legacy/panels_views_legacy.module:292
 msgid "Select the number of posts to display, or 0 to display all results."
-msgstr "Die Anzahl der anzuzeigenden Einträge auswählen, oder 0 um alle Ergebnisse anzuzeigen."
+msgstr "Die Anzahl der anzuzeigenden Beiträge auswählen, oder 0 um alle Ergebnisse anzuzeigen."
 
 #: panels_views/panels_views.module:1043
 #: panels_views_legacy/panels_views_legacy.module:321
@@ -3198,11 +3202,11 @@ msgstr "Informationen über den veralteten Panel-Ansichten Inhaltstyp."
 
 #: panels_views_legacy/panels_views_legacy.module:35
 msgid "Panels legacy views does not have a normal administrative UI, such as panels pages or mini panels. With this module, all of your views are provided as panes that can be added to any panel display; these panes have many options; because of all of these options, these panes are generally unsuitable for non administrative users. It is recommended that you only use panels views legacy if 1) you are upgrading a site that already uses this kind of view or 2) you do not want the extra work of having to determine which views are available as content. Otherwise, it is recommended you use the normal \"Panels views content\" module."
-msgstr "Die veralteten Panel-Ansichten haben keine normale, administrative Oberfläche wie Panel-Seiten oder Mini-Panels. Mit diesem Modul werden alle Ansichten als Panel-Inhalte bereitgestellt, so dass diese zu Panels hinzugefügt werden können. Diese Panel-Inhalte haben viele Optionen; eben wegen dieser Optionen sind diese in der Regel ungeeignet für nicht-administrative Benutzer. Es wird empfohlen, die veralteten Panel-Ansichten nur dann zu verwenden, wenn 1) eine Webseite aktualisiert wird, die bereits solche Ansichten einsetzt oder 2) der zusätzliche Aufwand zur Bereitstellung von Ansichten als Panel-Inhalte überflüssig ist. Andernfalls sollte das reguläre \"Panel-Ansichten\" Modul verwendet werden."
+msgstr "Die veralteten Panel-Ansichten haben keine normale, administrative Oberfläche wie Panel-Seiten oder Mini-Panels. Mit diesem Modul werden alle Ansichten als Panel-Inhalte bereitgestellt, so dass diese zu Panels hinzugefügt werden können. Diese Panel-Inhalte haben viele Optionen; eben wegen dieser Optionen sind diese in der Regel ungeeignet für nicht-administrative Benutzer. Es wird empfohlen, die veralteten Panel-Ansichten nur dann zu verwenden, wenn 1) eine Webseite aktualisiert wird, die bereits solche Ansichten einsetzt oder 2) der zusätzliche Aufwand zur Bereitstellung von Ansichten als Panel-Inhalte überflüssig ist. Andernfalls sollte das reguläre „Panel-Ansichten“-Modul verwendet werden."
 
 #: panels_views_legacy/panels_views_legacy.module:300
 msgid "Offset in the node list or 0 to start at 1st item."
-msgstr "Versatz in der Beitragsliste oder 0, um bei erstem Eintrag zu beginnen."
+msgstr "Offset in der Beitragsliste oder 0, um beim erstem Eintrag zu beginnen."
 
 #: panels_views_legacy/panels_views_legacy.module:305
 msgid "Send arguments"
@@ -3260,11 +3264,11 @@ msgstr "Buch auf oberster Ebene"
 
 #: relationships/term_from_node.inc:13
 msgid "Term from node"
-msgstr "Begriff des Beitrags"
+msgstr "Begriff des Beitrages"
 
 #: relationships/term_from_node.inc:15
 msgid "Adds a taxonomy term from a node context; if multiple terms are selected, this will get the \"first\" term only."
-msgstr "Fügt einen Taxonomie-Begriff aus einem Beitragskontext hinzu; falls mehrere Begriffe ausgewählt werden, wird nur der \"erste\" Begriff verwendet."
+msgstr "Fügt einen Taxonomie-Begriff aus einem Beitragskontext hinzu. Sollten mehrere Begriffe ausgewählt werden, wird nur der „erste“ Begriff verwendet."
 
 #: relationships/term_parent.inc:13
 msgid "Term parent"
@@ -3280,7 +3284,7 @@ msgstr "Begriff auf oberster Ebene"
 
 #: relationships/user_from_node.inc:10
 msgid "User from node"
-msgstr "Benutzer des Beitrags"
+msgstr "Benutzer des Beitrages"
 
 #: relationships/user_from_node.inc:12
 msgid "Adds a user from node author context"
@@ -3296,7 +3300,7 @@ msgstr "Den Panel-Inhalt als Drupal Block darstellen; dies ist eingeschränkter 
 
 #: styles/default.inc:19
 msgid "The default panel rendering style; displays each pane with a separator."
-msgstr "Die Standard-Darstellung für Panel-Inhalte; stellt alle Panel-Inhalte mit einem Separator dar."
+msgstr "Die standardmäßige Darstellung für Panel-Inhalte. Zeigt alle Panel-Inhalte mit einem Separator an."
 
 #: styles/list.inc:21
 msgid "Presents the panes in the form of an HTML list."
@@ -3320,7 +3324,7 @@ msgstr "Jeder Panel-Inhalt"
 
 #: styles/rounded_corners.inc:94
 msgid "Each panel"
-msgstr "Jede Region"
+msgstr "Jedes Panel"
 
 #: styles/rounded_corners.inc:97
 msgid "Choose whether to include the box around each pane (piece of content) or panel (each column or region)"
