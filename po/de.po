@@ -1,4 +1,4 @@
-# $Id: de.po,v 1.1.4.8 2008/09/27 20:37:20 sun Exp $
+# $Id: de.po,v 1.1.4.9 2008/11/13 21:37:46 hass Exp $
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
@@ -23,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: panels 5.x\n"
 "POT-Creation-Date: 2008-09-26 00:40+0200\n"
-"PO-Revision-Date: 2008-09-26 21:19+0100\n"
-"Last-Translator: unleashed mind <dev@unleashedmind.com>\n"
+"PO-Revision-Date: 2008-11-13 22:37+0100\n"
+"Last-Translator: Alexander Haß\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -814,7 +814,6 @@ msgid "Menu options."
 msgstr "Menüeinstellungen."
 
 #: content_types/node_form.inc:199
-#, fuzzy
 msgid "URL path options"
 msgstr "URL-Alias-Einstellungen"
 
@@ -1296,12 +1295,10 @@ msgid "Add argument"
 msgstr "Argument hinzufügen"
 
 #: includes/common.inc:480
-#, fuzzy
 msgid "Relationships"
 msgstr "Beziehungen"
 
 #: includes/common.inc:481;1256
-#, fuzzy
 msgid "relationship"
 msgstr "Beziehung"
 
@@ -1468,46 +1465,40 @@ msgid "From @title"
 msgstr "von @title"
 
 #: includes/common.inc:0
-#, fuzzy
 msgid "1 year"
 msgid_plural "@count years"
 msgstr[0] "1 Jahr"
-msgstr[1] ""
+msgstr[1] "@count Jahre"
 
 #: includes/common.inc:0
-#, fuzzy
 msgid "1 week"
 msgid_plural "@count weeks"
 msgstr[0] "1 Woche"
-msgstr[1] ""
+msgstr[1] "@count Wochen"
 
 #: includes/common.inc:0
-#, fuzzy
 msgid "1 day"
 msgid_plural "@count days"
 msgstr[0] "1 Tag"
-msgstr[1] ""
+msgstr[1] "@count Tage"
 
 #: includes/common.inc:0
-#, fuzzy
 msgid "1 hour"
 msgid_plural "@count hours"
 msgstr[0] "1 Stunde"
-msgstr[1] ""
+msgstr[1] "@count Stunden"
 
 #: includes/common.inc:0
-#, fuzzy
 msgid "1 min"
 msgid_plural "@count min"
 msgstr[0] "1 Minute"
-msgstr[1] ""
+msgstr[1] "@count Minuten"
 
 #: includes/common.inc:0
-#, fuzzy
 msgid "1 sec"
 msgid_plural "@count sec"
 msgstr[0] "1 Sekunde"
-msgstr[1] ""
+msgstr[1] "@count Sekunden"
 
 #: includes/display_edit.inc:92
 msgid "Grab the title bar of any pane to drag-and-drop it into another panel. Click the add pane button (!addicon) in any panel to add more content. Click the configure (!configicon) button on any pane to re-configure that pane. Click the cache (!cacheicon) button to configure caching for that pane specifically. Click the show/hide (!showicon/!hideicon) toggle button to show or hide that pane. Panes hidden in this way will be hidden from <em>everyone</em> until the hidden status is toggled off."
@@ -1978,7 +1969,6 @@ msgid "Two column"
 msgstr "Zwei Spalten"
 
 #: layouts/twocol_bricks.inc:16
-#, fuzzy
 msgid "Two column bricks"
 msgstr "Zwei Spalten gestapelt"
 
