@@ -1,4 +1,4 @@
-# $Id: de.po,v 1.1.4.11 2008/11/13 23:00:47 hass Exp $
+# $Id: de.po,v 1.1.4.12 2008/11/16 20:09:32 hass Exp $
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
@@ -484,7 +484,7 @@ msgstr "Formular"
 
 #: content_types/form.inc:62
 msgid "Form goes here."
-msgstr "Formular erscheint hier."
+msgstr "Formular wird hier angezeigt."
 
 #: content_types/form.inc:70
 msgid "\"@s\" base form"
@@ -547,7 +547,7 @@ msgstr "Buch-Navigation"
 
 #: content_types/node_book_nav.inc:37
 msgid "Book navigation goes here."
-msgstr "Buch-Navigation erscheint hier."
+msgstr "Buch-Navigation wird hier angezeigt."
 
 #: content_types/node_book_nav.inc:61
 msgid "\"@s\" book navigation"
@@ -629,7 +629,7 @@ msgstr "Titel des Beitrages."
 
 #: content_types/node_content.inc:56
 msgid "Node content goes here."
-msgstr "Beitragsinhalt erscheint hier."
+msgstr "Beitragsinhalt wird hier angezeigt."
 
 #: content_types/node_content.inc:71
 #: content_types/node_meta.inc:60
@@ -875,7 +875,7 @@ msgstr "Meta-Daten eines referenzierten Beitrages."
 
 #: content_types/node_meta.inc:49
 msgid "Node meta content goes here."
-msgstr "Meta-Daten des Beitrages erscheinen hier."
+msgstr "Meta-Daten des Beitrages werden hier angezeigt."
 
 #: content_types/node_meta.inc:136
 msgid "Check here to display the title of the node."
@@ -911,7 +911,7 @@ msgstr "„@s“ Meta-Inhalt"
 
 #: content_types/node_type_desc.inc:39
 msgid "Node type description goes here."
-msgstr "Inhaltstyp-Beschreibung erscheint hier."
+msgstr "Inhaltstyp-Beschreibung wird hier angezeigt."
 
 #: content_types/node_type_desc.inc:55
 msgid "Node type description."
@@ -927,7 +927,7 @@ msgstr "Profilfelder"
 
 #: content_types/profile_fields.inc:63
 msgid "Profile content goes here."
-msgstr "Profilinhalt erscheint hier."
+msgstr "Profilinhalt wird hier angezeigt."
 
 #: content_types/profile_fields.inc:92
 msgid "Profile Category"
@@ -979,7 +979,7 @@ msgstr "Diesen Begriff bearbeiten"
 #: content_types/term_description.inc:46
 #: content_types/term_list.inc:69
 msgid "Term description goes here."
-msgstr "Begriffsbeschreibung erscheint hier."
+msgstr "Begriffsbeschreibung wird hier angezeigt."
 
 #: content_types/term_description.inc:62
 msgid "Term description."
