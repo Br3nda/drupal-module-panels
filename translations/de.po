@@ -1,4 +1,4 @@
-# $Id: de.po,v 1.1.2.3 2008/11/13 23:22:47 hass Exp $
+# $Id: de.po,v 1.1.2.4 2008/11/17 00:01:05 hass Exp $
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: panels 5.x\n"
 "POT-Creation-Date: 2008-11-14 00:02+0100\n"
-"PO-Revision-Date: 2008-11-14 00:20+0100\n"
+"PO-Revision-Date: 2008-11-17 01:00+0100\n"
 "Last-Translator: Alexander Haß\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
@@ -369,7 +369,7 @@ msgstr "Formular"
 
 #: content_types/form.inc:62
 msgid "Form goes here."
-msgstr "Formular erscheint hier."
+msgstr "Formular wird hier angezeigt."
 
 #: content_types/form.inc:70
 msgid "\"@s\" base form"
@@ -430,7 +430,7 @@ msgstr "Buch-Navigation"
 
 #: content_types/node_book_nav.inc:32
 msgid "Book navigation goes here."
-msgstr "Buch-Navigation erscheint hier."
+msgstr "Buch-Navigation wird hier angezeigt."
 
 #: content_types/node_book_nav.inc:56
 msgid "\"@s\" book navigation"
@@ -511,7 +511,7 @@ msgstr "Titel des Beitrages."
 
 #: content_types/node_content.inc:55
 msgid "Node content goes here."
-msgstr "Beitragsinhalt erscheint hier."
+msgstr "Beitragsinhalt wird hier angezeigt."
 
 #: content_types/node_content.inc:70
 #: panels_node_content/panels_node_content.module:95
@@ -746,7 +746,7 @@ msgstr "„@s“ @type"
 
 #: content_types/node_type_desc.inc:39
 msgid "Node type description goes here."
-msgstr "Inhaltstyp-Beschreibung erscheint hier."
+msgstr "Inhaltstyp-Beschreibung wird hier angezeigt."
 
 #: content_types/node_type_desc.inc:55
 msgid "Node type description."
@@ -762,7 +762,7 @@ msgstr "Profilfelder"
 
 #: content_types/profile_fields.inc:66
 msgid "Profile content goes here."
-msgstr "Profilinhalt erscheint hier."
+msgstr "Profilinhalt wird hier angezeigt."
 
 #: content_types/profile_fields.inc:79
 msgid "Profile Category"
@@ -814,7 +814,7 @@ msgstr "Diesen Begriff bearbeiten"
 #: content_types/term_description.inc:41
 #: content_types/term_list.inc:64
 msgid "Term description goes here."
-msgstr "Begriffsbeschreibung erscheint hier."
+msgstr "Begriffsbeschreibung wird hier angezeigt."
 
 #: content_types/term_description.inc:57
 msgid "Term description."
