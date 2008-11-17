@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.6.2.3 2008/10/29 21:02:11 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.6.2.4 2008/11/17 20:46:01 merlinofchaos Exp $
 
 /*
  * @file display-edit.inc
@@ -111,18 +111,22 @@ function panels_edit_display_form(&$form_state) {
       '#default_value' => implode(',', (array) $display->panels[$panel_id]),
     );
   }
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-    '#id' => 'panels-dnd-save',
-    '#submit' => array('panels_edit_display_form_submit'),
-    '#save-display' => TRUE,
-  );
-  $form['cancel'] = array(
-    '#type' => 'submit',
-    '#value' => t('Cancel'),
-  );
 
+  if (empty($form_state['no buttons'])) {
+    $form['buttons']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+      '#id' => 'panels-dnd-save',
+      '#submit' => array('panels_edit_display_form_submit'),
+      '#save-display' => TRUE,
+    );
+    $form['buttons']['cancel'] = array(
+      '#type' => 'submit',
+      '#value' => t('Cancel'),
+    );
+  }
+
+/* -- disabled, these buttons aren't useful right now
   $form['hide'] = array(
     '#prefix' => '<span id="panels-js-only">',
     '#suffix' => '</span>',
@@ -139,7 +143,7 @@ function panels_edit_display_form(&$form_state) {
     '#value' => t('Show all'),
     '#id' => 'panels-show-all',
   );
-
+*/
 
   if (user_access('use panels caching features')) {
     $form['hide']['cache-settings-url'] = array(
@@ -178,7 +182,7 @@ function theme_panels_edit_display_form($form) {
 
   $layout = panels_get_layout($display->layout);
   $layout_panels = panels_get_panels($layout, $display);
-  $save_buttons = drupal_render($form['submit']) . drupal_render($form['cancel']);
+  $save_buttons = drupal_render($form['buttons']);
 
   foreach ($layout_panels as $panel_id => $title) {
     if (empty($content[$panel_id])) {

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.27.2.4 2008/10/29 21:48:53 merlinofchaos Exp $
+// $Id: panels.module,v 1.27.2.5 2008/11/17 20:46:01 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -473,6 +473,7 @@ class panels_display {
   var $cache = array();
   var $title = '';
   var $hide_title = 0;
+  var $layout = '';
 
   function add_pane($pane, $location = FALSE) {
     $pane->pid = $this->next_new_pid();
@@ -926,3 +927,12 @@ function panels_print_layout_link($id, $layout, $link) {
   return theme('panels_layout_link', $title, $id, $image, $link);
 }
 
+/**
+ * Implementation of hook_ctools_plugin_directory() to let the system know
+ * we implement task and task_handler plugins.
+ */
+function panels_ctools_plugin_directory($plugin) {
+  if ($plugin == 'tasks' || $plugin == 'task_handlers') {
+    return 'plugins/' . $plugin;
+  }
+}

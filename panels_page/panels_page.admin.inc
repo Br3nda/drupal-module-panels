@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20.2.7 2008/11/12 00:21:37 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.8 2008/11/17 20:46:01 merlinofchaos Exp $
 
 
 /**
@@ -439,7 +439,6 @@ function panels_page_edit_advanced($panel_page, $next = NULL) {
  * The form to edit the advanced settings of a panel page.
  */
 function panels_page_advanced_form(&$form_state, $panel_page, $next) {
-  drupal_add_css(panels_get_path('css/panels_admin.css'));
   $form_state['panel_page'] = &$panel_page;
   $form_state['next'] = $next;
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: node.inc,v 1.7.2.6 2008/10/24 01:36:15 merlinofchaos Exp $
+// $Id: node.inc,v 1.7.2.7 2008/11/17 20:46:01 merlinofchaos Exp $
 
 
 /**
@@ -44,7 +44,7 @@ function panels_context_create_node($empty, $data = NULL, $conf = FALSE) {
   }
 
   if ($conf) {
-    $nid = is_array($data) ? $data['nid'] : $data->nid;
+    $nid = is_array($data) && isset($data['nid']) ? $data['nid'] : (is_object($data) ? $data->nid : 0);
 
     if (module_exists('translation')) {
        if ($translation = module_invoke('translation', 'node_nid', $nid, $GLOBALS['language']->language)) {

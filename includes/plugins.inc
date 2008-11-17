@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.12.2.7 2008/10/24 01:30:21 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.12.2.8 2008/11/17 20:46:01 merlinofchaos Exp $
 
 
 /**
@@ -903,6 +903,10 @@ function panels_relationship_get_contexts($relationships, &$contexts) {
   $return = array();
 
   foreach ($relationships as $rdata) {
+    if (!isset($rdata['context'])) {
+      continue;
+    }
+
     if (empty($contexts[$rdata['context']])) {
       continue;
     }
@@ -925,6 +929,10 @@ function panels_relationship_get_contexts($relationships, &$contexts) {
  */
 function panels_relationship_get_context($relationship, $arg) {
   if ($function = panels_plugin_get_function('relationships', $relationship['name'], 'context')) {
+    if (!isset($relationship['relationship_settings'])) {
+      $relationship['relationship_settings'] = array();
+    }
+
     $context = $function($arg, $relationship['relationship_settings']);
     if ($context) {
       $context->identifier = $relationship['identifier'];

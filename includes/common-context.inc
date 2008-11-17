@@ -1,5 +1,5 @@
 <?php
-// $Id: common-context.inc,v 1.6.2.3 2008/10/11 21:10:35 sdboyer Exp $
+// $Id: common-context.inc,v 1.6.2.4 2008/11/17 20:46:01 merlinofchaos Exp $
 
 /**
  * @file includes/common-context.inc
@@ -175,7 +175,8 @@ function panels_common_add_relationship_form($module, &$form, &$form_state, &$fo
     '#value' => '&nbsp;',
   );
 
-  $available_relationships = panels_get_relevant_relationships(panels_context_load_contexts($object));
+  $base_contexts = isset($object->base_contexts) ? $object->base_contexts : array();
+  $available_relationships = panels_get_relevant_relationships(panels_context_load_contexts($object, TRUE, $base_contexts));
 
   panels_common_add_item_table('relationship', $form_location, $available_relationships, $object->relationships);
 
@@ -400,7 +401,8 @@ function panels_ajax_context_item_add($module = NULL, $type = NULL, $panel_name 
     'name' => $name,
   );
 
-  $contexts = panels_context_load_contexts($object);
+  $base_contexts = isset($object->base_contexts) ? $object->base_contexts : array();
+  $contexts = panels_context_load_contexts($object, TRUE, $base_contexts);
 
   $form_state = array(
     'object' => &$object,
@@ -457,7 +459,9 @@ function panels_ajax_context_item_add($module = NULL, $type = NULL, $panel_name 
       '#tree' => TRUE,
     );
 
-    $all_contexts = panels_context_load_contexts($object);
+    // Allow an object to set some 'base' contexts that come from elsewhere.
+    $rel_contexts = isset($object->base_contexts) ? $object->base_contexts : array();
+    $all_contexts = panels_context_load_contexts($object, TRUE, $rel_contexts);
     $available_relationships = panels_get_relevant_relationships($all_contexts);
 
     $output = new stdClass();
@@ -510,7 +514,8 @@ function panels_ajax_context_item_edit($module = NULL, $type = NULL, $panel_name
     panels_ajax_render(t('Invalid context type'));
   }
 
-  $contexts = panels_context_load_contexts($object);
+  $base_contexts = isset($object->base_contexts) ? $object->base_contexts : array();
+  $contexts = panels_context_load_contexts($object, TRUE, $base_contexts);
 
   // Remove this context, because we can't really allow circular contexts.
   unset($contexts[panels_context_id($ref[$position])]);
@@ -729,7 +734,7 @@ function panels_common_edit_relationship_form(&$form_state) {
   // Basic relationship values
   $form['relationship']['#tree'] = TRUE;
 
-  $form['relationship']['context'] = panels_context_selector($contexts, $relationship['required context'], $rel['context']);
+  $form['relationship']['context'] = panels_context_selector($contexts, $relationship['required context'], isset($rel['context']) ? $rel['context'] : '');
 
   $form['relationship']['name'] = array(
     '#type' => 'hidden',

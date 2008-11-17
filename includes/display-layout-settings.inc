@@ -1,5 +1,5 @@
 <?php
-// $Id: display-layout-settings.inc,v 1.3.2.2 2008/10/05 21:28:16 sdboyer Exp $
+// $Id: display-layout-settings.inc,v 1.3.2.3 2008/11/17 20:46:01 merlinofchaos Exp $
 
 /**
  * @file
@@ -14,19 +14,6 @@
  * @see panels_edit_layout_settings() for details on the various behaviors of this function.
  */
 function _panels_edit_layout_settings($display, $finish, $destination, $title) {
-  // Style settings are edited via a modal and cached, this will retrieve
-  // them from cache if posting or insert them into cache if the form is
-  // being filled out fresh.
-  if (!empty($_POST) && is_array($cache = panels_cache_get('style_settings', $display->did))) {
-    $display->panel_settings['style_settings'] = $cache;
-  }
-  else {
-    if (!isset($display->panel_settings['style_settings'])) {
-      $display->panel_settings['style_settings'] = array();
-    }
-    panels_cache_set('style_settings', $display->did, $display->panel_settings['style_settings']);
-  }
-
   $form_state = array(
     'display' => &$display,
     'finish' => $finish,
@@ -39,10 +26,13 @@ function _panels_edit_layout_settings($display, $finish, $destination, $title) {
   $output = drupal_build_form('panels_edit_layout_settings_form', $form_state);
   // no output == submit
   if (!$output) {
+    panels_save_display($display);
+    panels_cache_clear('style_settings', $display->did);
+    drupal_set_message(t("Your layout settings have been saved."));
+
     if (!empty($form_state['clicked_button']['#return_here'])) {
       drupal_goto($_GET['q']);
     }
-    panels_cache_clear('style_settings', $display->did);
     if ($destination) {
       return drupal_goto($destination);
     }
@@ -63,13 +53,27 @@ function panels_edit_layout_settings_form(&$form_state) {
   $form = array();
   $display = &$form_state['display'];
 
+  // Style settings are edited via a modal and cached, this will retrieve
+  // them from cache if posting or insert them into cache if the form is
+  // being filled out fresh.
+  if (!empty($_POST) && is_array($cache = panels_cache_get('style_settings', $display->did))) {
+    $display->panel_settings['style_settings'] = $cache;
+  }
+  else {
+    if (!isset($display->panel_settings['style_settings'])) {
+      $display->panel_settings['style_settings'] = array();
+    }
+    panels_cache_set('style_settings', $display->did, $display->panel_settings['style_settings']);
+  }
+
+
   $layout = panels_get_layout($display->layout);
 
   // TODO doc the ability to do this as part of the API
   if (!empty($layout['settings form']) && function_exists($layout['settings form'])) {
     $form['layout_settings'] = $layout['settings form']($display, $layout, $display->layout_settings);
-    $form['layout_settings']['#tree'] = TRUE;
   }
+  $form['layout_settings']['#tree'] = TRUE;
 
   if ($form_state['display_title']) {
     $form['display_title'] = array (
@@ -221,10 +225,12 @@ function panels_edit_layout_settings_form(&$form_state) {
     );
   }
 
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => $form_state['finish'],
-  );
+  if (empty($form_state['no buttons'])) {
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => $form_state['finish'],
+    );
+  }
 
   panels_modal_js_includes();
   // @todo -- why dnd? That's wrong.
@@ -275,11 +281,12 @@ function panels_edit_layout_settings_form_submit($form, &$form_state) {
     }
   }
 
-  $display->layout_settings = $form_state['values']['layout_settings'];
+  // Since not all layouts have layout settings, check here in case of notices.
+  if (isset($form_state['values']['layout_settings'])) {
+    $display->layout_settings = $form_state['values']['layout_settings'];
+  }
   $display->panel_settings = $form_state['values']['panel_settings'];
 
-  panels_save_display($display);
-  drupal_set_message(t("Your layout settings have been saved."));
 }
 
 // ------------------------------------------------------------------
