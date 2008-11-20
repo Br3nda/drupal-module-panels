@@ -1,5 +1,5 @@
 <?php
-// $Id: delegator.inc,v 1.1.2.1 2008/11/17 20:46:01 merlinofchaos Exp $
+// $Id: delegator.inc,v 1.1.2.2 2008/11/20 22:15:02 merlinofchaos Exp $
 
 /**
  * @file
@@ -8,6 +8,30 @@
  * API that is used regardless of what the actual content of the page
  * is meant to be.
  */
+
+/**
+ * Callback to allow the handler to react to being saved.
+ */
+function panels_delegator_save(&$handler, $update) {
+  // @todo Save the display
+
+  // Re-cache the CSS.
+  // Delete any previous cache file.
+  if (!empty($handler->conf['css_cache'])) {
+    file_delete($handler->conf['css_cache']);
+  }
+
+  if (!empty($handler->conf['css'])) {
+    // And generate a new one.
+    ctools_include('css');
+    $handler->conf['css_cache'] = ctools_css_cache($handler->conf['css']);
+  }
+  else {
+    $handler->conf['css_cache'] = '';
+  }
+}
+
+
 
 /**
  * Choose a layout for this panel.
@@ -159,7 +183,7 @@ function panels_delegator_edit_layout_settings(&$form, &$form_state) {
  *
  * @todo -- this probably needs more information to be truly flexible.
  */
-function panels_delegator_get_context($plugin, $handler) {
+function panels_delegator_get_context($plugin, $handler, $base_only = FALSE) {
   if ($function = ctools_plugin_get_function($plugin, 'get context')) {
     $contexts = $function();
   }
@@ -167,10 +191,12 @@ function panels_delegator_get_context($plugin, $handler) {
     $contexts = array();
   }
 
+  $object = $base_only ? new stdClass : (object) $handler->conf;
+
   // This function expects the contexts to be on an object, but our conf
   // is an array, so we have to convert.
 
-  return panels_context_load_contexts((object) $handler->conf, TRUE, $contexts);
+  return panels_context_load_contexts($object, TRUE, $contexts);
 }
 
 /**
@@ -253,7 +279,7 @@ function panels_delegator_edit_context(&$form, &$form_state) {
   else {
     $cache = new stdClass;
     $cache->name = $handler->name;
-    $cache->base_contexts = panels_delegator_get_context($form_state['plugin'], $form_state['handler']);
+    $cache->base_contexts = panels_delegator_get_context($form_state['plugin'], $form_state['handler'], TRUE);
     $cache->contexts = isset($handler->conf['contexts']) ? $handler->conf['contexts'] : array();
     $cache->relationships = isset($handler->conf['relationships']) ? $handler->conf['relationships'] : array();
     panels_cache_set('panel_object:delegator', $handler->name, $cache);
@@ -277,11 +303,12 @@ function panels_delegator_edit_context(&$form, &$form_state) {
   panels_common_add_context_js($settings);
 
   $form['left']['summary'] = array(
-    '#prefix' => '<div class="description">',
+    '#prefix' => '<div class="delegator-contexts">',
     '#suffix' => '</div>',
-    '#value' => t('This should be a summary of the contexts provided by the task, so for node_view here it will tell you about the node context it provides.'),
+    '#value' => theme('panels_common_context_list', $cache, t('Summary of contexts')),
   );
 
+  drupal_add_css(panels_get_path('css/panels_admin.css'));
   $form_state['cache'] = &$cache;
 }
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_node_view.inc,v 1.1.2.1 2008/11/17 20:46:01 merlinofchaos Exp $
+// $Id: panel_node_view.inc,v 1.1.2.2 2008/11/20 22:15:02 merlinofchaos Exp $
 
 function panels_panel_node_view_delegator_task_handlers() {
   return array(
@@ -25,6 +25,7 @@ function panels_panel_node_view_delegator_task_handlers() {
         'layout-settings' => t('Layout settings'),
         'node_type' => t('Node type'),
       ),
+      'save' => 'panels_panel_node_view_save',
       'forms' => array(
         'node_type' => array(
           'form' => 'panels_panel_node_view_edit_node_type',
@@ -71,6 +72,7 @@ function panels_panel_node_view_delegator_task_handlers() {
           ),
           'form' => 'panels_delegator_edit_content',
           'submit' => 'panels_edit_display_form_submit',
+          'no blocks' => TRUE,
         ),
         'context' => array(
           'include' => drupal_get_path('module', 'panels') . '/includes/delegator.inc',
@@ -83,6 +85,7 @@ function panels_panel_node_view_delegator_task_handlers() {
         'no_blocks' => FALSE,
         'css_id' => '',
         'css' => '',
+        'css_cache_file' => '',
         'contexts' => array(),
         'relationships' => array(),
       ),
@@ -115,12 +118,38 @@ function panels_panel_node_view_render($handler, $node) {
   $display->context = array(
     'panel-node' => $context,
   );
+  $display->css_id = $handler->conf['css_id'];
+
+  // Check to see if there is any CSS.
+  if ($handler->conf['css_cache']) {
+    if (!file_exists($handler->conf['css_cache'])) {
+      // This will force the task handler to re-cache the CSS and save the filename:
+      delegator_save_task_handler($handler);
+    }
+    dsm("Addning: " . $handler->conf['css_cache']);
+    drupal_add_css($handler->conf['css_cache']);
+  }
 
   // Since we're not using node_show() we need to emulate what it used to do.
   // Update the history table, stating that this user viewed this node.
   node_tag_new($node->nid);
 
-  return panels_render_display($display);
+  $output = panels_render_display($display);
+  if (!empty($handler->conf['no_blocks'])) {
+    print theme('page', $output, FALSE);
+    // We return TRUE to let it know we handled this but have already
+    // handled the output rendering ourselves.
+    return TRUE;
+  }
+  return $output;
+}
+
+/**
+ * Call through to the delegator function for this.
+ */
+function panels_panel_node_view_save(&$handler, $update) {
+  panels_load_include('delegator');
+  return panels_delegator_save($handler, $update);
 }
 
 /**
