@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.render.inc,v 1.13.2.1 2008/10/08 20:39:30 merlinofchaos Exp $
+// $Id: panels_page.render.inc,v 1.13.2.2 2008/11/20 23:18:53 sdboyer Exp $
 
 /**
  * @file panels_page.render.inc
@@ -17,7 +17,7 @@
  * @param $panel_page
  * @param $args
  */
-function panels_page_prepare_panels_render(&$load, &$panel_page, $args) {
+function panels_page_prepare_panels_render(&$load, &$panel_page) {
   _panels_page_prepare_panels_render($panel_page);
 
   // TODO the original logic is commented out, but retained; switch back to it if anything quirky happens
@@ -26,7 +26,7 @@ function panels_page_prepare_panels_render(&$load, &$panel_page, $args) {
   $load->page_callback  = 'panels_page_render_page_' . ($panel_page->form ? 'form' : 'normal');
   // Pass by ref to ENSURE php4/5 consistency and minimize static cache size.
   $load->panel_page     = &$panel_page;
-  $load->page_arguments = array(&$load->panel_page, $args, FALSE);
+  $load->page_arguments = array(&$load->panel_page, $load->panel_args, FALSE);
   return $load;
 }
 

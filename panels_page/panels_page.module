@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.36.2.3 2008/10/11 01:33:48 sdboyer Exp $
+// $Id: panels_page.module,v 1.36.2.4 2008/11/20 23:18:53 sdboyer Exp $
 
 /**
  * @file panels_page.module
@@ -241,6 +241,7 @@ function _panels_page_master_loader($name, $args) {
   }
   $load = new stdClass();
   $loader_data[$name] = &$load;
+  $load->panel_args = array();
 
   panels_load_include('plugins');
   panels_page_load_include('read');
@@ -251,7 +252,7 @@ function _panels_page_master_loader($name, $args) {
     if ((bool) panels_page_access($panel_page->name)) {
       panels_page_load_include('render');
       panels_page_fetch_primary_display($panel_page);
-      panels_page_prepare_panels_render($load, $panel_page, $args);
+      panels_page_prepare_panels_render($load, $panel_page);
     }
     return $load;
   }
@@ -274,7 +275,7 @@ function _panels_page_master_loader($name, $args) {
     return drupal_access_denied();
   }
   panels_page_load_include('render');
-  return panels_page_prepare_panels_render($load, $panel_page, $args);
+  return panels_page_prepare_panels_render($load, $panel_page);
 }
 
 /**
@@ -314,6 +315,7 @@ function _panels_page_construct_argument_contexts(&$load, &$panel_page, $args) {
       return _panels_page_not_found($load);
     }
     $panel_page->context[panels_context_id($argument, 'argument')] = $context;
+    $load->panel_args[] = $context->get_original_argument();
   }
 }
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.12.2.8 2008/11/17 20:46:01 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.12.2.9 2008/11/20 23:18:53 sdboyer Exp $
 
 
 /**
@@ -23,6 +23,7 @@ class panels_context {
   var $identifier = '';
   var $argument = NULL;
   var $keyword = '';
+  var $original_argument = NULL;
 
   function panels_context($type = 'none', $data = NULL) {
     $this->type  = $type;
@@ -41,6 +42,13 @@ class panels_context {
   }
 
   function get_argument() {
+    return $this->argument;
+  }
+
+  function get_original_argument() {
+    if (!is_null($this->original_argument)) {
+      return $this->original_argument;
+    }
     return $this->argument;
   }
 

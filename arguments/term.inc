@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.4.2.1 2008/10/12 06:03:11 sdboyer Exp $
+// $Id: term.inc,v 1.4.2.2 2008/11/20 23:18:53 sdboyer Exp $
 
 
 /**
@@ -67,7 +67,9 @@ function panels_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
     return PANELS_ARG_USE_FALLBACK;
   }
 
-  return panels_context_create('term', $term);
+  $context = panels_context_create('term', $term);
+  $context->original_argument = $arg;
+  return $context;
 }
 
 /**
