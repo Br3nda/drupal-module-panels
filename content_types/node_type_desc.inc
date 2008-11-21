@@ -1,5 +1,5 @@
 <?php
-// $Id: node_type_desc.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
+// $Id: node_type_desc.inc,v 1.4 2008/11/21 00:05:46 sdboyer Exp $
 
 
 /**
@@ -59,7 +59,7 @@ function panels_admin_content_types_node_type_desc() {
   );
 }
 
-function panels_admin_title_node_type_desc($conf, $context) {
+function panels_admin_title_node_type_desc($subtype, $conf, $context) {
   return t('"@s" type description', array('@s' => $context->identifier));
 }
 

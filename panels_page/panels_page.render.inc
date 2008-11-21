@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.render.inc,v 1.13 2008/09/01 00:17:28 sdboyer Exp $
+// $Id: panels_page.render.inc,v 1.14 2008/11/21 00:05:48 sdboyer Exp $
 
 /**
  * @file panels_page.render.inc
@@ -17,7 +17,7 @@
  * @param $panel_page
  * @param $args
  */
-function panels_page_prepare_panels_render(&$load, &$panel_page, $args) {
+function panels_page_prepare_panels_render(&$load, &$panel_page) {
   _panels_page_prepare_panels_render($panel_page);
 
   // TODO the original logic is commented out, but retained; switch back to it if anything quirky happens
@@ -26,14 +26,16 @@ function panels_page_prepare_panels_render(&$load, &$panel_page, $args) {
   $load->page_callback  = 'panels_page_render_page_' . ($panel_page->form ? 'form' : 'normal');
   // Pass by ref to ENSURE php4/5 consistency and minimize static cache size.
   $load->panel_page     = &$panel_page;
-  $load->page_arguments = array(&$load->panel_page, $args, FALSE);
+  $load->page_arguments = array(&$load->panel_page, $load->panel_args, FALSE);
   return $load;
 }
 
 function _panels_page_prepare_panels_render(&$panel_page) {
   _panels_page_check_switchers($panel_page);
-  // $panel_page->context = panels_context_load_contexts($panel_page, FALSE, $panel_page->contexts);
-  // $panel_page->context = panels_context_load_contexts($panel_page);
+  $panel_page->context = panels_context_load_contexts($panel_page, FALSE, $panel_page->context);
+
+  // The below does not make sense.
+//  $panel_page->context = panels_context_load_contexts($panel_page);
   // If we're wrapping FAPI with with panel, this function gets the data.
   $panel_page->form = panels_context_get_form($panel_page->context);
   // Get any keywords (for title substitution in panes)

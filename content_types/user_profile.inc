@@ -1,5 +1,5 @@
 <?php
-// $Id: user_profile.inc,v 1.3 2008/08/19 07:04:10 sdboyer Exp $
+// $Id: user_profile.inc,v 1.4 2008/11/21 00:05:46 sdboyer Exp $
 
 
 /**
@@ -70,7 +70,7 @@ function panels_admin_content_types_user_profile() {
 /**
  * Display the administrative title for a panel pane in the drag & drop UI
  */
-function panels_admin_title_user_profile($conf, $context) {
+function panels_admin_title_user_profile($subtype, $conf, $context) {
   return t('"@s" user profile', array('@s' => $context->identifier));
 }
 

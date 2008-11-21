@@ -1,5 +1,5 @@
 <?php
-// $Id: term.inc,v 1.4 2008/08/19 14:57:58 sdboyer Exp $
+// $Id: term.inc,v 1.5 2008/11/21 00:05:46 sdboyer Exp $
 
 
 /**
@@ -19,6 +19,7 @@ function panels_term_panels_arguments() {
     'title function' => 'panels_term_title',
     'displays' => 'panels_term_displays',
     'choose display' => 'panels_term_choose_display',
+    'native path' => 'taxonomy/term/%',
   );
   return $args;
 }
@@ -66,7 +67,9 @@ function panels_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
     return PANELS_ARG_USE_FALLBACK;
   }
 
-  return panels_context_create('term', $term);
+  $context = panels_context_create('term', $term);
+  $context->original_argument = $arg;
+  return $context;
 }
 
 /**
@@ -210,4 +213,3 @@ function panels_term_title($context) {
     return $context->page_title;
   }
 }
-

@@ -1,5 +1,5 @@
 <?php
-// $Id: uid.inc,v 1.4 2008/08/19 14:57:58 sdboyer Exp $
+// $Id: uid.inc,v 1.5 2008/11/21 00:05:46 sdboyer Exp $
 
 
 /**
@@ -18,6 +18,8 @@ function panels_uid_panels_arguments() {
     'settings form submit' => 'panels_uid_settings_form_submit',
     'displays' => 'panels_uid_displays',
     'choose display' => 'panels_uid_choose_display',
+    'native path' => 'user/%user_uid_optional',
+    'load function' => 'user_uid_optional',
   );
   return $args;
 }
@@ -31,10 +33,18 @@ function panels_uid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
     return panels_context_create_empty('user');
   }
 
+  // FIXME: The code designed to handle a numeric id for loading is probably
+  // pretty much cruft by now, and SHOULD be removed pending some more thorough
+  // testing & thinking.
   if (!is_numeric($arg)) {
-    return PANELS_ARG_IS_BAD;
+    if (is_object($arg) && !empty($arg->uid)) {
+      return panels_context_create('user', $arg);
+    }
+    else return PANELS_ARG_IS_BAD;
   }
 
+  // FIXME: Pertaining to the above note; we should never make it this far
+  // anymore in D6.
   $user = user_load(array('uid' => $arg));
   if (!$user) {
     return PANELS_ARG_IS_BAD;
