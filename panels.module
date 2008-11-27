@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.1 2008/11/25 03:48:13 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.2 2008/11/27 17:49:08 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -50,6 +50,10 @@ function panels_theme() {
     'file' => 'includes/common.inc',
   );
   $theme['panels_common_context_list'] = array(
+    'arguments' => array('object'),
+    'file' => 'includes/common.inc',
+  );
+  $theme['panels_common_context_list_no_table'] = array(
     'arguments' => array('object'),
     'file' => 'includes/common.inc',
   );
