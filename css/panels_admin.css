@@ -1,4 +1,4 @@
-/* $Id: panels_admin.css,v 1.3.4.1 2008/11/27 17:49:09 merlinofchaos Exp $ */
+/* $Id: panels_admin.css,v 1.3.4.2 2008/12/01 19:25:15 merlinofchaos Exp $ */
 
 .layout-link {
   float: left; 
@@ -140,4 +140,15 @@ tr.changed td span.star {
 td select {
   margin: 0;
   padding: 0;
+}
+
+.panels-context-holder .panels-context-title {
+  float: left;
+  width: 49%;
+  font-style: italic;
+}
+
+.panels-context-holder .panels-context-content {
+  float: right;
+  width: 49%;
 }
