@@ -1,4 +1,4 @@
-# $Id: de.po,v 1.1.2.4 2008/11/17 00:01:05 hass Exp $
+# $Id: de.po,v 1.1.2.5 2008/12/13 23:18:42 hass Exp $
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: panels 5.x\n"
 "POT-Creation-Date: 2008-11-14 00:02+0100\n"
-"PO-Revision-Date: 2008-11-17 01:00+0100\n"
+"PO-Revision-Date: 2008-12-14 00:17+0100\n"
 "Last-Translator: Alexander Haß\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
@@ -36,23 +36,23 @@ msgstr ""
 
 #: panels.module:235
 msgid "view all panes"
-msgstr "Zugriff auf alle Panel-Inhalte"
+msgstr "Alle Ausschnitte anzeigen"
 
 #: panels.module:236
 msgid "view pane admin links"
-msgstr "Zugriff auf administrative Panel-Inhalt-Links"
+msgstr "Administrative Ausschnittslinks anzeigen"
 
 #: panels.module:237
 msgid "administer pane visibility"
-msgstr "Sichtbarkeit von Panel-Inhalten verwalten"
+msgstr "Sichtbarkeit von Ausschnitten verwalten"
 
 #: panels.module:238
 msgid "administer pane access"
-msgstr "Zugriff auf Panel-Inhalte verwalten"
+msgstr "Zugriff auf Ausschnitte verwalten"
 
 #: panels.module:239
 msgid "administer advanced pane settings"
-msgstr "Erweiterte Einstellungen von Panel-Inhalten verwalten"
+msgstr "Erweiterte Einstellungen von Ausschnitten verwalten"
 
 #: panels.module:240
 msgid "use panels caching features"
@@ -202,7 +202,7 @@ msgstr "Vokabulare"
 
 #: arguments/term.inc:102
 msgid "You can restrict this argument to use the checked vocabularies. Arguments from non-conforming vocabularies will be ignored, and Panels will behave as if no argument were given. Leave all unchecked to impose no restriction."
-msgstr "Das Argument kann auf die ausgewählten Vokabulare beschränkt werden. Argumente, die nicht den ausgewählten entsprechen, werden ignoriert und Panels wird sich so verhalten, als ob kein Argument vorhanden wäre. Alle Optionen deselektiert lassen, um das Argument nicht zu beschränken."
+msgstr "Das Argument kann auf die ausgewählten Vokabulare beschränkt werden. Argumente, die nicht den ausgewählten entsprechen, werden ignoriert und Panels wird sich so verhalten, als ob kein Argument vorhanden wäre. Alle Optionen deaktiviert lassen, um das Argument nicht zu beschränken."
 
 #: arguments/term.inc:111
 msgid "If checked, when this argument is present it will use its own display rather than the default. Vocabularies not selected in the \"Own display\" field will use this one."
@@ -254,7 +254,7 @@ msgstr "Block konfigurieren"
 
 #: content_types/block.inc:40
 msgid "Configure this pane's 'block settings' in administer >> site building >> blocks"
-msgstr "Die Einstellungen des Panel-Inhalt-Blocks unter Verwalten >> Strukturierung >> Blöcke konfigurieren"
+msgstr "Die ‚Block-Einstellungen‘ dieses Ausschnittes unter Verwalten >> Strukturierung >> Blöcke konfigurieren"
 
 #: content_types/block.inc:146
 msgid "Use block visibility settings (see block config)"
@@ -957,7 +957,7 @@ msgstr "Ein Beitragsobjekt."
 #: contexts/node_edit_form.inc:72
 #: contexts/term.inc:55
 msgid "Require this context from an external source (such as a containing panel page)."
-msgstr "Diesen Kontext von einer externen Quelle erfordern (wie z.B. einer übergeordneten Panel-Seite)."
+msgstr "Diesen Kontext von einer externen Quelle anfordern (wie z.B. einer übergeordneten Panel-Seite)."
 
 #: contexts/node.inc:87
 #: contexts/node_edit_form.inc:73
@@ -1028,7 +1028,7 @@ msgstr "Bestimmt den Inhaltstyp für dieses Formular."
 #: contexts/node_add_form.inc:85
 #: contexts/vocabulary.inc:68
 msgid "Select external to require this from an external source (such as a containing panel page)."
-msgstr "Extern auswählen, um dies von einer externen Quelle zu erfordern (wie z.B. einer übergeordneten Panel-Seite)."
+msgstr "Extern auswählen, um dies von einer externen Quelle anzufordern (wie z.B. einer übergeordneten Panel-Seite)."
 
 #: contexts/node_edit_form.inc:14
 msgid "A node edit form."
@@ -1097,18 +1097,16 @@ msgid "by @user"
 msgstr "von @user"
 
 #: includes/callbacks.inc:49
-#, fuzzy
 msgid "Panels is the core engine for a number of submodules, including panels-pages, panels-nodes, and mini-panels.  Panels allows the website adminstrator (or sometimes the end-user) to manipulate the layout of individual pages, sidebars, and content pieces, as well as easily dictate what content is displayed in the layout."
-msgstr " Das Panels Modul ist der Kern für eine Reihe von Modulen, wozu Panel-Seiten, Panel-Beiträge, Mini-Panels und Panel-Ansichten zählen. Das Panels Modul erlaubt dem Administrator (oder mitunter auch dem Endbenutzer) das Layout von individuellen Seiten, Seitenleisten und Inhaltsteilen anzupassen, sowie einfach zu bestimmen, welche Inhalte in einem Layout dargestellt werden."
+msgstr "Das Panels-Modul ist der Kern für eine Reihe von Modulen, wozu Panel-Seiten, Panel-Beiträge und Mini-Panels zählen. Das Panels-Modul erlaubt dem Website-Administrator (oder mitunter auch dem Endbenutzer) das Layout von individuellen Seiten, Seitenleisten und Inhaltsteilen anzupassen, sowie einfach zu bestimmen, welche Inhalte in einem Layout angezeigt werden."
 
 #: includes/callbacks.inc:50
 msgid "Most Drupal users are familiar with the block to region layout mechanism in which you can assign a block to any region defined in your theme.  Panels takes this concept a massive step forward.  Through the panels interface you can start by creating a layout with any number of columns, headers, and footer, and control the width of those areas."
 msgstr "Die meisten Drupal-Benutzer sind mit dem System von Blöcken und Regionen vertraut, die es erlauben einen Block einer beliebigen Region einer Theme zuzuordnen. Panels bringt dieses Konzept einen großen Schritt voran. Durch die Panels-Benutzeroberfläche kann ein Layout mit einer beliebigen Anzahl von Spalten, Kopfzeilen und Fußzeilen erstellt werden, deren Breite kontrolliert werden kann."
 
 #: includes/callbacks.inc:51
-#, fuzzy
 msgid "After creating your layout, you can assign pieces of content to those areas in an easy drag and drop interface.  Content is not limited to blocks, but can be nodes, views, blocks, or other types of content that extend themselves to panels."
-msgstr "Nachdem ein Layout erstellt wurde, können über eine einfache Drag-und-Drop-Benutzeroberfläche Inhalte zu den Regionen zugeordnet werden. Die Inhalte sind nicht auf Blöcke beschränkt, sondern können auch Beiträge, Ansichten, oder andere Inhaltstypen sein, die sich mit Panels integrieren."
+msgstr "Nachdem ein Layout erstellt wurde, können über eine einfache Drag-und-Drop-Benutzeroberfläche Inhalte zu den Regionen zugeordnet werden. Die Inhalte sind nicht auf Blöcke beschränkt, sondern können auch Beiträge, Ansichten, oder andere Inhaltstypen sein, die sich selbst in Panels integrieren."
 
 #: includes/callbacks.inc:52
 msgid "Panels-pages"
@@ -1120,7 +1118,6 @@ msgid ", is the the primary panels module, you can use this for creating single 
 msgstr " sind die primäre Panels-Komponente, welche zur Erstellung von einzelnen Seitenlayouts verwendet werden können. Dies ersetzt das Standard-Panel, welches in früheren Versionen von Panels existierte. Falls nach einem Upgrade von Panels 1 Panels fehlen sollten, sollte das Panel-Seiten Modul aktiviert werden!"
 
 #: includes/callbacks.inc:53
-#, fuzzy
 msgid "Panels-nodes"
 msgstr "Panel-Beiträge"
 
@@ -1151,7 +1148,7 @@ msgstr "Argument"
 
 #: includes/common-context.inc:24
 msgid "Arguments are parsed from the URL and translated into contexts that may be added to the display via the 'content' tab. These arguments are parsed in the order received, and you may use % in your URL to hold the place of an object; the rest of the arguments will come after the URL. For example, if the URL is node/%/panel and your user visits node/1/panel/foo, the first argument will be 1, and the second argument will be foo."
-msgstr "Argumente werden aus der URL verarbeitet und in Kontexte übersetzt, welche im ‚Inhalt‘-Reiter der Ansicht hinzugefügt werden können. Diese Argumente werden in der übergebenen Reihenfolge verarbeitet, und % kann in der URL verwendet werden, um auf ein Objekt zu referenzieren; der Rest der Argumente kommt nach der URL. Beispiel: Wenn die URL node/%/panel ist und ein Benutzer besucht node/1/panel/foo, dann ist das erste Argument 1 und das zweite ‚foo‘."
+msgstr "Argumente werden aus der URL verarbeitet und in Kontexte umgewandelt, welche im ‚Inhalt‘-Reiter der Ansicht hinzugefügt werden können. Diese Argumente werden in der übergebenen Reihenfolge verarbeitet und in der URL kann % verwendet werden, um auf ein Objekt zu referenzieren; der Rest der Argumente kommt nach der URL. Beispielsweise, wenn die URL node/%/panel ist und ein Benutzer besucht node/1/panel/foo, dann ist das erste Argument 1 und das zweite ‚foo‘."
 
 #: includes/common-context.inc:25
 msgid "Add argument"
@@ -1185,7 +1182,7 @@ msgstr "Kontext"
 
 #: includes/common-context.inc:44
 msgid "Contexts are embedded directly into the panel; you generally must select an object in the panel. For example, you could select node 5, or the term \"animals\" or the user \"administrator\""
-msgstr "Kontexte sind direkt in das Panel eingebettet; ein Objekt wird dem Panel fest zugeordnet. Beispielsweise könnte Beitrag 5, der Begriff „Tiere“ oder der Benutzer „Administrator“ zugeordnet werden."
+msgstr "Kontexte sind direkt in das Panel eingebettet; ein Objekt wird dem Panel fest zugeordnet. Beispielsweise könnte dem Beitrag 5, der Begriff „Tiere“ oder der Benutzer „Administrator“ zugeordnet werden."
 
 #: includes/common-context.inc:45
 msgid "Add context"
@@ -1202,7 +1199,7 @@ msgstr "Erforderlicher Kontext"
 
 #: includes/common-context.inc:54
 msgid "Required contexts are passed in from some external source, such as a containing panel. If a mini panel has required contexts, it can only appear when that context is available, and therefore will not show up as a standard Drupal block."
-msgstr "Erforderliche Kontexte werden durch eine externe Quelle bereitgestellt, wie z.B. einem übergeordneten Panel. Wenn ein Mini-Panel erforderliche Kontexte besitzt, dann kann es nur erscheinen, wenn diese verfügbar sind, oder es wird nicht als Block erscheinen."
+msgstr "Erforderliche Kontexte werden durch eine externe Quelle bereitgestellt, wie z.B. einem übergeordneten Panel. Sollte ein Mini-Panel erforderliche Kontexte besitzen, dann kann es nur erscheinen, wenn diese Kontexte verfügbar sind und deshalb nicht als standardmäßiger Drupal-Block erscheinen."
 
 #: includes/common-context.inc:55
 msgid "Add required context"
@@ -1279,7 +1276,7 @@ msgstr "Ignorieren; Inhalt, der diesen Kontext erfordert, ist nicht verfügbar."
 
 #: includes/common-context.inc:841
 msgid "Display page not found or display nothing at all."
-msgstr ""
+msgstr "Seite nicht gefunden oder garnichts anzeigen."
 
 #: includes/common-context.inc:844
 msgid "If the argument is missing or is not valid, select how this should behave."
@@ -1291,7 +1288,7 @@ msgstr "Titel der verwendet wird, wenn das Argument vorhanden ist. %KEYWORD Erse
 
 #: includes/common-context.inc:940
 msgid "Unable to delete missing item!"
-msgstr ""
+msgstr "Der fehlende Eintrag konnte nicht gelöscht werden!"
 
 #: includes/common.inc:238
 msgid "New @s"
@@ -1311,7 +1308,7 @@ msgstr "Bestimmt das Standardverhalten für neue Inhalte. Falls aktiviert, wird 
 
 #: includes/common.inc:252
 msgid "<p>Click Submit to be presented with a complete list of available content types set to the defaults you selected.</p>"
-msgstr "<p>Absenden klicken, um eine Liste der verfügbaren Inhalte auf Basis der ausgewählten Standardeinstellungen angezeigt zu bekommen.</p>"
+msgstr "<p>Speichern klicken, um eine Liste der verfügbaren Inhalte auf Basis der ausgewählten Standardeinstellungen angezeigt zu bekommen.</p>"
 
 #: includes/common.inc:282
 msgid "Other"
@@ -1403,7 +1400,7 @@ msgstr "Die Änderungen wurden verworfen."
 
 #: includes/display-edit.inc:81
 msgid "Grab the title bar of any pane to drag-and-drop it into another panel. Click the add pane button (!addicon) in any panel to add more content. Click the configure (!configicon) button on any pane to re-configure that pane. Click the cache (!cacheicon) button to configure caching for that pane specifically. Click the show/hide (!showicon/!hideicon) toggle button to show or hide that pane. Panes hidden in this way will be hidden from <em>everyone</em> until the hidden status is toggled off."
-msgstr "Die Titelleiste eines Panel-Inhalts ziehen, um diesen in einer anderen Region zu platzieren. Auf die Panel-Inhalt hinzufügen-Schaltfläche (!addicon) in jeder Region klicken, um Inhalt hinzuzufügen. Auf die Konfigurieren-Schaltfläche (!configicon) eines Panel-Inhalts klicken, um einen Panel-Inhalt zu konfigurieren. Auf die Cache-Schaltfläche (!cacheicon) klicken, um das Caching eines Panel-Inhalts zu konfigurieren. Auf die Anzeigen/Verstecken-Schaltfläche (!showicon/!hideicon) klicken, um einen Panel-Inhalt anzuzeigen oder verstecken. So versteckte Panel-Inhalte sind für <em>niemanden</em> sichtbar bis diese wieder angezeigt werden."
+msgstr "Die Titelleiste eines Ausschnittes festhalten, um dieses per Drag-and-Drop in ein anderes Panel zu verschieben. Auf die „Ausschnitt hinzufügen“-Schaltfläche (!addicon) in einem beliebigen Panel klicken, um weiteren Inhalt hinzuzufügen. Auf die „Konfigurieren“-Schaltfläche (!configicon) eines Ausschnittes klicken, um diesen Ausschnitt neu zu konfigurieren. Auf die „Cache“-Schaltfläche (!cacheicon) klicken, um das Caching speziell für diesen Ausschnitt zu konfigurieren. Auf die „Anzeigen/Verstecken“-Schaltfläche (!showicon/!hideicon) klicken, um einen Ausschnitt anzuzeigen oder zu verstecken. Auf diese Weise versteckte Ausschnitte werden für <em>jedermann</em> unsichtbar sein, bis der „Versteckt“-Status abgeschaltet wird."
 
 #: includes/display-edit.inc:83;83
 msgid "Add content to this panel"
@@ -1411,7 +1408,7 @@ msgstr "Inhalt zu diesem Panel hinzufügen"
 
 #: includes/display-edit.inc:84;84
 msgid "Configure this pane"
-msgstr "Diesen Panel-Inhalt konfigurieren"
+msgstr "Diesen Ausschnitt konfigurieren"
 
 #: includes/display-edit.inc:85;85
 msgid "Control caching"
@@ -1419,11 +1416,11 @@ msgstr "Caching konfigurieren"
 
 #: includes/display-edit.inc:86;86
 msgid "Show this pane"
-msgstr "Diesen Panel-Inhalt anzeigen"
+msgstr "Diesen Ausschnitt anzeigen"
 
 #: includes/display-edit.inc:87;87
 msgid "Hide this pane"
-msgstr "Diesen Panel-Inhalt verstecken"
+msgstr "Diesen Ausschnitt verstecken"
 
 #: includes/display-edit.inc:123
 #: panels_mini/panels_mini.admin.inc:244
@@ -1445,11 +1442,11 @@ msgstr "Cache-Einstellungen"
 
 #: includes/display-edit.inc:194
 msgid "Add a pane to \"@panel\""
-msgstr ""
+msgstr "Ausschnitt zu „@panel“ hinzufügen"
 
 #: includes/display-edit.inc:263
 msgid "Set caching options for \"@pane\""
-msgstr ""
+msgstr "Cachingoptionen für „@panel“ einstellen"
 
 #: includes/display-edit.inc:268
 msgid "Hide \"@pane\""
@@ -1465,7 +1462,7 @@ msgstr "Einstellungen für „@pane“ konfigurieren"
 
 #: includes/display-edit.inc:279
 msgid "Delete pane \"@pane\""
-msgstr "Panel-Inhalt „@pane“ löschen"
+msgstr "Ausschnitt „@pane“ löschen"
 
 #: includes/display-edit.inc:284
 msgid "Missing content type"
@@ -1473,7 +1470,7 @@ msgstr "Fehlender Inhaltstyp"
 
 #: includes/display-edit.inc:285
 msgid "This pane's content type is either missing or has been deleted. This pane will not render."
-msgstr "Der Inhaltstyp dieses Panel-Inhalts fehlt entweder oder wurde entfernt. Der Panel-Inhalt wird nicht angezeigt."
+msgstr "Der Inhaltstyp dieses Ausschnittes fehlt entweder oder wurde entfernt. Der Ausschnitt wird nicht angezeigt."
 
 #: includes/display-edit.inc:311
 msgid "Dynamic content previews have been disabled to improve performance and stability for this editing screen."
@@ -1502,7 +1499,7 @@ msgstr "!subtype_title konfigurieren"
 
 #: includes/display-edit.inc:524;694;733;850
 msgid "Invalid pane id."
-msgstr "Ungültige Panel-Inhalt-ID."
+msgstr "Ungültige Ausschnitts-ID."
 
 #: includes/display-edit.inc:595
 #: panels_page/panels_page.admin.inc:478
@@ -1511,11 +1508,11 @@ msgstr "Zugriff"
 
 #: includes/display-edit.inc:598
 msgid "Only the checked roles will be able to see this pane; if no roles are checked, access will not be restricted."
-msgstr "Nur die aktivierten Rollen können diesen Panel-Inhalt sehen. Sollten keine Rollen aktiviert sein, wird der Zugriff nicht beschränkt."
+msgstr "Nur die aktivierten Rollen können diesen Ausschnitt sehen. Sollten keine Rollen aktiviert sein, wird der Zugriff nicht beschränkt."
 
 #: includes/display-edit.inc:615
 msgid "Add pane"
-msgstr "Panel-Inhalt hinzufügen"
+msgstr "Ausschnitt hinzufügen"
 
 #: includes/display-edit.inc:724
 msgid "Cache method for this display"
@@ -1527,7 +1524,7 @@ msgstr "Cache-Methode für !subtype_title"
 
 #: includes/display-edit.inc:786
 msgid "No caching options are available at this time. Please enable a panels caching module in order to use caching options."
-msgstr "Derzeit stehen keine Caching-Optionen zur Verfügung. Das Panels-Caching Modul muss aktiviert sein, um Caching-Optionen verwenden zu können."
+msgstr "Derzeit stehen keine Caching-Optionen zur Verfügung. Das Panels-Caching Modul muss aktiviert werden, um Caching-Optionen verwenden zu können."
 
 #: includes/display-edit.inc:790
 msgid "No caching"
@@ -1562,7 +1559,7 @@ msgstr "Panel-Titel"
 #: includes/display-layout-settings.inc:86
 #, fuzzy
 msgid "The title of this panel. Your theme will render this text as the main page title users view this display, unless this text is overridden elsewhere."
-msgstr "Der Titel dieses Panels. Die Theme wird diesen Text als Seitentitel anzeigen, wenn ein Benutzer die Seite ansieht. Unter Umständen kann dieser Titel durch andere Optionen übersteuert werden."
+msgstr "Der Titel dieses Panels. Das Theme wird diesen Text als Seitentitel anzeigen, wenn ein Benutzer die Seite ansieht. Unter Umständen kann dieser Titel durch andere Optionen übersteuert werden."
 
 #: includes/display-layout-settings.inc:91
 msgid "Hide title"
@@ -1583,7 +1580,7 @@ msgstr "Panel-Einstellungen"
 
 #: includes/display-layout-settings.inc:120
 msgid "Default panel style"
-msgstr "Standard Panel-Design"
+msgstr "Standardmäßiges Panel-Design"
 
 #: includes/display-layout-settings.inc:152;203
 msgid "Edit style settings"
@@ -1656,7 +1653,7 @@ msgstr "Entfernter/fehlender Inhaltstyp @type"
 
 #: includes/plugins.inc:277
 msgid "Pane style"
-msgstr "Panel-Inhalt-Design"
+msgstr "Ausschnitt-Design"
 
 #: includes/plugins.inc:307
 msgid "You may use %keywords from contexts, as well as %title to contain the original title."
@@ -1699,7 +1696,7 @@ msgstr "Kontext"
 
 #: includes/plugins.inc:1032
 msgid "Multiple contexts are valid for this pane; one must be chosen."
-msgstr "Dieser Panel-Inhalt ist für mehrere Kontexte gültig; einer muss ausgewählt werden."
+msgstr "Dieser Ausschnitt ist für mehrere Kontexte gültig; einer muss ausgewählt werden."
 
 #: layouts/flexible/flexible.inc:9
 msgid "Flexible"
@@ -1736,7 +1733,7 @@ msgstr "Unten"
 
 #: layouts/flexible/flexible.inc:73
 msgid "<p>Here you may determine the number of rows and columns your layout may have. Each row can have its own number of columns, and each column can have its width set independently. When changing the number of rows or columns, click Save to update the form so you can set the widths for new cells properly.</p><p><strong>Note: Removing cells which contain panes will cause those panes to be disappear. Please move any content you wish to keep.</strong></p>"
-msgstr "<p>Hier können die Spalten und Zeilen eines Layouts definiert werden. Jede Zeile kann eine eigene Anzahl von Spalten und jede Spalte kann eine unabhängige Breite haben. Nach Änderung der Spalten- und Zeilenanzahl, Speichern anklicken, um das Formular zu aktualisieren und die Breite für die neuen Zellen zu definieren.</p><p><strong>Wenn Zellen mit Panel-Inhalten entfernt werden, dann erscheinen diese Panel-Inhalte nicht mehr. Bitte Panel-Inhalte vorher entsprechend verschieben.</strong></p>"
+msgstr "<p>Hier können die Spalten und Zeilen eines Layouts definiert werden. Jede Zeile kann eine eigene Anzahl von Spalten und jede Spalte kann eine unabhängige Breite haben. Nach Änderung der Spalten- und Zeilenanzahl, Speichern anklicken, um das Formular zu aktualisieren und die Breite für die neuen Zellen zu definieren.</p><p><strong>Wenn Zellen mit Ausschnitten entfernt werden, dann erscheinen diese Ausschnitte nicht mehr. Jeden beizubehaltende Ausschnitt sollte vorher verschoben werden.</strong></p>"
 
 #: layouts/flexible/flexible.inc:78;190
 msgid "Width unit type"
@@ -2015,6 +2012,7 @@ msgid "Panel mini code"
 msgstr "Mini-Panel-Code"
 
 #: panels_mini/panels_mini.admin.inc:312
+#, fuzzy
 msgid "Cut and paste the results of an exported mini panel here."
 msgstr "Ein exportiertes Mini-Panel hier einfügen."
 
@@ -2059,7 +2057,7 @@ msgstr "Ein eindeutiger Name, der intern zur Identifizierung dieser Panel-Seite 
 
 #: panels_mini/panels_mini.admin.inc:443
 msgid "Mini panel category"
-msgstr "Mini-Panel-Kategorie"
+msgstr "Kategorie des Mini-Panels"
 
 #: panels_mini/panels_mini.admin.inc:444
 msgid "The category that this mini-panel will be grouped into on the Add Content form. Only upper and lower-case alphanumeric characters are allowed. If left blank, defaults to 'Mini panels'."
@@ -2114,7 +2112,7 @@ msgstr "Mini-Panel"
 
 #: panels_mini/panels_mini.module:183
 msgid "Deleted/missing mini panel @name"
-msgstr "Entferntes/fehlendes Mini-Panel @name"
+msgstr "Gelöschtes/fehlendes Mini-Panel @name"
 
 #: panels_mini/panels_mini.module:188
 msgid "Untitled mini panel"
@@ -2179,7 +2177,7 @@ msgstr "Ein Panel-Seiten-Layout in Spalten und Zeilen zerlegt."
 
 #: panels_node/panels_node.module:205
 msgid "The teaser is a piece of text to describe when the panel is listed (such as when promoted to front page); the actual content will only be displayed on the full node view."
-msgstr "Der Anrisstext wird auf Übersichtsseiten verwendet (bspw. wenn der Beitrag auf der Startseite erscheint); der eigentliche Inhalt wird in der vollen Ansicht dargestellt."
+msgstr "Der Anrisstext wird auf Übersichtsseiten verwendet (bspw. wenn der Beitrag auf der Startseite erscheint); der eigentliche Inhalt wird nur in der vollständigen Ansicht angezeigt."
 
 #: panels_node/panels_node.module:220
 msgid "An ID that can be used by CSS to style the panel."
@@ -2225,7 +2223,7 @@ msgstr "Panel-Layout"
 
 #: panels_node/panels_node.module:72
 msgid "Panel layout settings"
-msgstr "Panel-Layout-Einstellungen"
+msgstr "Einstellungen für Panel-Layout"
 
 #: panels_node/panels_node.module:78
 msgid "Panel content"
@@ -2254,7 +2252,7 @@ msgstr "Beitrag von dieser Webseite als Inhalt hinzufügen."
 
 #: panels_node_content/panels_node_content.module:141
 msgid "To use a NID from the URL, you may use %0, %1, ..., %N to get URL arguments. Or use @0, @1, @2, ..., @N to use arguments passed into the panel."
-msgstr "Um eine NID aus der URL zu verwenden, %0, %1, ..., %N für die URL-Argumente verwenden. Oder @0, @1, @2, ..., @N für die Panel-Argumente verwenden."
+msgstr "Um eine Beitrags-ID aus der URL zu verwenden, kann %0, %1, ..., %N für die URL-Argumente verwendet werden. Oder @0, @1, @2, ..., @N für die Panel-Argumente verwenden."
 
 #: panels_node_content/panels_node_content.module:163
 msgid "Check here to show only the node teaser"
@@ -2283,7 +2281,7 @@ msgstr "Entfernter/fehlender Beitrag @nid"
 #: panels_node_content/panels_node_content.module:18
 #: panels_node_content/panels_node_content.info:0
 msgid "Node panes"
-msgstr "Beitrag-Panel-Inhalte"
+msgstr "Beitrags-Ausschnitte"
 
 #: panels_node_content/panels_node_content.module:22
 #, fuzzy
@@ -2390,7 +2388,7 @@ msgstr "Drupal-Blöcke/Regionen deaktivieren"
 
 #: panels_page/panels_page.admin.inc:467
 msgid "Check this to have the panel page disable all regions displayed in the theme."
-msgstr "Aktivieren, um alle Drupal-Regionen in der Theme für diese Panel-Seite zu deaktivieren."
+msgstr "Aktivieren, um alle Drupal-Regionen für diese Panel-Seite im Theme zu deaktivieren."
 
 #: panels_page/panels_page.admin.inc:481
 msgid "Only the checked roles will be able to see this panel in any form; if no roles are checked, access will not be restricted."
@@ -2537,11 +2535,12 @@ msgstr "Panelseite „@s“ importieren"
 
 #: panels_page/panels_page.admin.inc:992
 msgid "Panel page code"
-msgstr "Panel-Seite-Code"
+msgstr "Code der Panel-Seite"
 
+# not literally
 #: panels_page/panels_page.admin.inc:995
 msgid "Cut and paste the results of an exported panel page here."
-msgstr "Exportierten Panel-Seiten-Code hier einfügen."
+msgstr "Den Code einer exportierten Panel-Seite kopieren und hier einfügen."
 
 #: panels_page/panels_page.admin.inc:1025
 msgid "Unable to get a panel page out of that."
@@ -2703,7 +2702,7 @@ msgstr "Erstellt Seiten, welche in Regionen unterteilt sind."
 
 #: panels_simple_cache/panels_simple_cache.module:37
 msgid "Panels simple cache does not have a normal administrative UI, such as panels pages or mini panels. With this module, you are given the option to add caching features to any panel display in panel pages, mini panels, panel nodes or any other displays provided by other modules or plugins. These options are available as an icon on each pane of the edit content pane."
-msgstr "Panels einfacher Cache besitzt keine normale Verwaltungsoberfläche, wie Panel-Seiten oder Mini-Panels. Mit diesem Modul können Caching-Funktionen zu jeglichen Panel-Anzeigen in Panel-Seiten, Mini-Panels, Panel-Beiträgen oder anderen Anzeigen von anderen Modulen und Erweiterungen hinzugefügt werden. Diese Optionen werden als Symbol für jeden Panel-Inhalt auf der Inhaltsbearbeitungsseite bereitgestellt."
+msgstr "Panels einfacher Cache besitzt keine normale Verwaltungsoberfläche, wie Panel-Seiten oder Mini-Panels. Mit diesem Modul können Caching-Funktionen zu jeglichen Panel-Anzeigen in Panel-Seiten, Mini-Panels, Panel-Beiträgen oder anderen Anzeigen von anderen Modulen und Erweiterungen hinzugefügt werden. Diese Optionen werden als Symbol für jeden Panel-Inhalt auf der Inhaltbearbeitungsseite bereitgestellt."
 
 #: panels_simple_cache/panels_simple_cache.module:39
 msgid "This module provides only very simple, time-based caching; it is not at all suitable if your content will change at all per user (and this can mean administrative additions that are just visible to you) as all users will see the same content; it is provided mostly as a reference implementation for other, smarter caching modules."
@@ -2736,7 +2735,7 @@ msgstr "Nichts"
 
 #: panels_simple_cache/panels_simple_cache.module:159
 msgid "If \"arguments\" are selected, this content will be cached per individual argument to the entire display; if \"contexts\" are selected, this content will be cached per unique context in the pane or display; if \"neither\" there will be only one cache for this pane."
-msgstr "Wenn „Argumente“ ausgewählt wurde, wird dieser Inhalt separat für jedes Argument zwischengespeichert; wenn „Kontexte“ ausgewählt wurde, wird dieser Inhalt separat für jeden einzigen Kontext in diesem Panel-Inhalt oder Anzeige zwischengespeichert; wenn „Keine“ ausgewählt wurde, wird der Inhalt nur ein Mal zwischengespeichert."
+msgstr "Wenn „Argumente“ ausgewählt wurde, wird dieser Inhalt separat für jedes Argument zwischengespeichert; wenn „Kontexte“ ausgewählt wurde, wird dieser Inhalt separat für jeden eindeutigen Kontext in dem Ausschnitt oder Anzeige zwischengespeichert; Sollte „Keine“ ausgewählt werden, wird es nur einen Cache für den Ausschnitt geben."
 
 #: panels_simple_cache/panels_simple_cache.module:20
 msgid "Information about Panels simple cache."
@@ -2752,38 +2751,34 @@ msgstr "Panels einfacher Cache"
 
 #: panels_simple_cache/panels_simple_cache.info:0
 msgid "Adds the simple cache as an option when configuring panel panes."
-msgstr "Fügt den einfachen Cache als Konfigurationsoption für Panel-Inhalte hinzu."
+msgstr "Fügt den einfachen Cache als Konfigurationsoption für Panel-Ausschnitte hinzu."
 
 #: panels_views/panels_plugin_display_panel_pane.inc:54
-#, fuzzy
 msgid "Pane settings"
-msgstr "Panel-Einstellungen"
+msgstr "Einstellungen des Auschnitts"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:59
-#, fuzzy
 msgid "Use view name"
-msgstr "Name der Panel-Ansicht"
+msgstr "Name der Ansicht verwenden"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:68
 #, fuzzy
 msgid "Admin title"
-msgstr "„@title“ bearbeiten"
+msgstr "Admin-Titel"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:74
-#, fuzzy
 msgid "Use view description"
-msgstr "Beitragstyp-Beschreibung"
+msgstr "Ansichtenbeschreibung verwenden"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:83
 #, fuzzy
 msgid "Admin desc"
-msgstr "Inhalt verwalten"
+msgstr "Admin-Beschreibung"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:90
 #: panels_views/panels_views.module:347
-#, fuzzy
 msgid "View panes"
-msgstr "Panel-Ansichten"
+msgstr "Ausschnitte anzeigen"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:99
 msgid "Category"
@@ -2806,14 +2801,12 @@ msgid "Use Panel path"
 msgstr "Panel-Pfad verwenden"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:117
-#, fuzzy
 msgid "Argument input"
-msgstr "Argument @count"
+msgstr "Argumenteingabe"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:126;140
-#, fuzzy
 msgid "Allow settings"
-msgstr "Blockeinstellungen"
+msgstr ""
 
 #: panels_views/panels_plugin_display_panel_pane.inc:127
 msgid "All"
@@ -2837,55 +2830,49 @@ msgid "Items per page"
 msgstr "Beträge pro Seite"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:148
-#, fuzzy
 msgid "Pager offset"
-msgstr "Seiteneinstellungen"
+msgstr "Offset für Seitennavigation"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:150
 msgid "More link"
 msgstr "„Mehr“-Link"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:151
-#, fuzzy
 msgid "Path override"
-msgstr "Übersteuert"
+msgstr "Pfadübersteuerung"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:162
-#, fuzzy
 msgid "Administrative title"
-msgstr "Verwaltungsansicht: Argumente eingeben"
+msgstr "Administrativer Titel"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:167
-#, fuzzy
 msgid "This is the title that will appear for this view pane in the add content dialog. If left blank, the view name will be used."
-msgstr "Einen Titel für den Menüpunkt oder Reiter eingeben. Falls nicht gesetzt, wird der Seitentitel verwendet."
+msgstr ""
 
 #: panels_views/panels_plugin_display_panel_pane.inc:172;182
 #, fuzzy
 msgid "Administrative description"
-msgstr "Beitragstyp-Beschreibung"
+msgstr "Administrative-Beschreibung"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:177
 msgid "This is text that will be displayed when the user mouses over the pane in the add content dialog. If blank the view description will be used."
 msgstr ""
 
 #: panels_views/panels_plugin_display_panel_pane.inc:189
-#, fuzzy
 msgid "This is category the pane will appear in on the add content dialog."
-msgstr "Die Kategorie, in welcher diese Panel-Ansicht im Inhalt hinzufügen-Dialog erscheint."
+msgstr "Die Kategorie, in welcher diese Ausschnittsansicht im Inhalt hinzufügen-Dialog erscheint."
 
 #: panels_views/panels_plugin_display_panel_pane.inc:195
 msgid "This is the default weight of the category. Note that if the weight of a category is defined in multiple places, only the first one Panels sees will get that definition, so if the weight does not appear to be working, check other places that the weight might be set."
 msgstr ""
 
 #: panels_views/panels_plugin_display_panel_pane.inc:200
-#, fuzzy
 msgid "Link pane title to view"
-msgstr "Titel mit Ansicht verlinken"
+msgstr "Titel des Auschnittes mit Ansicht verlinken"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:210
 msgid "Inherit path from panel display"
-msgstr ""
+msgstr "Pfad von der Panelanzeige erben"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:216
 msgid "If yes, all links generated by Views, such as more links, summary links, and exposed input links will go to the panels display path, not the view, if the display has a path."
@@ -2921,7 +2908,7 @@ msgstr "Statisch"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:250
 msgid "Input on pane config"
-msgstr "Eingabe in Panel-Inhalt-Einstellungen"
+msgstr "Eingabe in der Ausschnittskonfiguration"
 
 #: panels_views/panels_plugin_display_panel_pane.inc:253
 msgid "@arg source"
@@ -2985,16 +2972,15 @@ msgstr "Die verwendete Bezeichnung, falls dieses Argument für den Benutzer ersc
 
 #: panels_views/panels_views.admin.inc:15
 msgid "Make all views available as panes"
-msgstr ""
+msgstr "Alle Ansichten als Ausschnitte bereitstellen"
 
 #: panels_views/panels_views.admin.inc:16
 msgid "If checked, all views will be made available as content panes to be added to content types. If not checked, only Views that have a 'Panel pane' display will be available as content panes."
 msgstr ""
 
 #: panels_views/panels_views.views.inc:16
-#, fuzzy
 msgid "Panel pane"
-msgstr "Panel-Seiten"
+msgstr "Panelausschnitt"
 
 #: panels_views/panels_views.views.inc:17
 msgid "Is available as pane content for a panel display."
@@ -3079,53 +3065,49 @@ msgstr "URL überschreiben"
 
 #: panels_views/panels_views.module:286
 msgid "If this is set, override the View URL; this can sometimes be useful to set to the panel URL"
-msgstr "Falls aktiviert, wird die URL der Ansicht überschrieben; manchmal kann es sinnvoll sein, die Panel-URL einzusetzen."
+msgstr "Falls aktiviert, wird die URL der Ansicht übersteuert; manchmal kann es sinnvoll sein, die Panel-URL einzusetzen."
 
 #: panels_views/panels_views.module:299;302;613;616
 msgid "Deleted/missing view @view"
 msgstr "Entfernte/fehlende Ansicht @view"
 
 #: panels_views/panels_views.module:532
-#, fuzzy
 msgid "Link title to page"
-msgstr "Den Titel mit dem Beitrag verlinken"
+msgstr "Titel mit Seite verlinken"
 
 #: panels_views/panels_views.module:533
-#, fuzzy
 msgid "If checked, the title will be a link to the page."
-msgstr "Falls aktiviert, verlinkt Titel zur Ansicht."
+msgstr "Sobald aktiviert, wird der Titel ein Link zur Seite."
 
 #: panels_views/panels_views.module:551
-#, fuzzy
 msgid "If checked, any feed icons provided will be displayed."
-msgstr "Falls aktiviert, werden alle von der Ansicht bereitgestellten Feed-Symbole angezeigt."
+msgstr "Sobald aktiviert, werden alle bereitgestellten Feed-Symbol angezeigt."
 
 #: panels_views/panels_views.module:580
 msgid "Num items"
 msgstr "Anzahl Einträge"
 
+# Items may be context sensitive!?
 #: panels_views/panels_views.module:582
 #, fuzzy
 msgid "Select the number of items to display, or 0 to display all results."
 msgstr "Die Anzahl der anzuzeigenden Beiträge auswählen, oder 0 um alle Ergebnisse anzuzeigen."
 
 #: panels_views/panels_views.module:591
-#, fuzzy
 msgid "Enter the number of items to skip; enter 0 to skip no items."
-msgstr "Die Anzahl der anzuzeigenden Beiträge auswählen, oder 0 um alle Ergebnisse anzuzeigen."
+msgstr "Die Anzahl der zu überpringenden Beiträge eingeben, oder 0 um alle Ergebnisse zu überpringen."
 
 #: panels_views/panels_views.module:600
 msgid "Override path"
 msgstr "Pfad überschreiben"
 
 #: panels_views/panels_views.module:602
-#, fuzzy
 msgid "If this is set, override the View URL path; this can sometimes be useful to set to the panel URL."
-msgstr "Falls aktiviert, wird die Ansichten-URL überschrieben; manchmal kann es sinnvoll sein, die Panel-URL einzusetzen."
+msgstr "Sobald aktiviert, wird die URL der Ansicht übersteuert. Manchmal kann es sinnvoll sein, die URL des Panel zu verwenden."
 
 #: panels_views/panels_views.module:28
 msgid "Configure Views to be used as panes within panel displays."
-msgstr "Ansichten konfigurieren, die als Panel-Inhalte für Panel-Anzeigen verwendet werden."
+msgstr "Ansichten konfigurieren, damit diese als Ausschnitte in Panelanzeigen verwendet werden können."
 
 #: panels_views/panels_views.module:0
 msgid "panels_views"
@@ -3133,7 +3115,7 @@ msgstr "panels_views"
 
 #: panels_views/panels_views.info:0
 msgid "Integrates Views as Panel panes (content types)."
-msgstr ""
+msgstr "Integriert Ansichten als Panelauschnitte (Inhaltstypen)."
 
 #: relationships/book_parent.inc:13
 msgid "Book parent"
@@ -3191,11 +3173,11 @@ msgstr "System-Block"
 
 #: styles/block.inc:19
 msgid "Display the pane as a system block; this is more restrictive than the default."
-msgstr "Den Panel-Inhalt als Drupal Block darstellen; dies ist eingeschränkter als die Standard-Darstellung."
+msgstr "Den Ausschnitt als System-Block anzeigen; dies ist eingeschränkter als die standardmäßige Einstellung."
 
 #: styles/default.inc:19
 msgid "The default panel rendering style; displays each pane with a separator."
-msgstr "Die standardmäßige Darstellung für Panel-Inhalte. Zeigt alle Panel-Inhalte mit einem Separator an."
+msgstr "Die standardmäßige Darstellung für Panel-Inhalte. Zeigt alle Ausschnitte mit einem Separator an."
 
 #: styles/list.inc:20
 msgid "List"
@@ -3203,7 +3185,7 @@ msgstr "Alle anzeigen"
 
 #: styles/list.inc:21
 msgid "Presents the panes in the form of an HTML list."
-msgstr "Stellt Panel-Inhalte in Form einer HTML-Aufzählung dar."
+msgstr "Stellt die Ausschnitte in der Form einer HTML-Liste dar."
 
 #: styles/rounded_corners.inc:18
 msgid "Rounded corners"
@@ -3211,7 +3193,7 @@ msgstr "Abgerundete Ecken"
 
 #: styles/rounded_corners.inc:19
 msgid "Presents the panes or panels with a rounded corner box around them"
-msgstr "Stellt Panel-Inhalte oder Regionen in einem Panel mit abgerundeten Ecken dar."
+msgstr "Stellt Ausschnitte oder Panels als Box mit abgerundeten Ecken dar"
 
 #: styles/rounded_corners.inc:97
 msgid "Box around"
@@ -3219,7 +3201,7 @@ msgstr "Umgebender Container"
 
 #: styles/rounded_corners.inc:99
 msgid "Each pane"
-msgstr "Jeder Panel-Inhalt"
+msgstr "Jeder Ausschnitt"
 
 #: styles/rounded_corners.inc:100
 msgid "Each panel"
@@ -3227,7 +3209,7 @@ msgstr "Jedes Panel"
 
 #: styles/rounded_corners.inc:103
 msgid "Choose whether to include the box around each pane (piece of content) or panel (each column or region)"
-msgstr "Legt fest, ob jeder Panel-Inhalt oder jede Region abgerundete Ecken haben soll."
+msgstr "Legt fest, ob jeder Ausschnitt (Inhaltsteil) oder jedes Panel (jede Spalte oder Region) eine Box mit abgerundete Ecken haben soll."
 
 #~ msgid ""
 #~ " expose views so they may be added to panels. Panels will automatically "
