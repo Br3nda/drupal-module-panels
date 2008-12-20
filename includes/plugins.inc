@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.13.2.1 2008/12/16 21:27:55 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.13.2.2 2008/12/20 21:27:22 merlinofchaos Exp $
 
 /**
  * @file
@@ -229,7 +229,6 @@ function panels_ct_pane_config_form($pane, $contexts, $parents, $op, $content_ty
   if ($function = panels_plugin_get_function($content_type, $pane->type, "$op callback")) {
     return $function($pane->subtype, $parents, $pane->configuration);
   }
-  dsm($function);
 }
 
 /**
