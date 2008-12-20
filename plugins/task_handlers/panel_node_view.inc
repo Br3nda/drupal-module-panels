@@ -1,11 +1,12 @@
 <?php
-// $Id: panel_node_view.inc,v 1.2.2.3 2008/12/16 21:27:59 merlinofchaos Exp $
+// $Id: panel_node_view.inc,v 1.2.2.4 2008/12/20 05:38:13 merlinofchaos Exp $
 
 /**
  * Most of our config is handled by panels delegator.inc, but we do have
  * to customize it a little bit to match what we're doing with this task.
  */
 function panels_panel_node_view_delegator_task_handlers() {
+  return;
   panels_load_include('delegator');
   $conf = panels_delegator_get_config();
 
@@ -62,10 +63,6 @@ function panels_panel_node_view_render($handler, $node) {
     }
     drupal_add_css($handler->conf['css_cache']);
   }
-
-  // Since we're not using node_show() we need to emulate what it used to do.
-  // Update the history table, stating that this user viewed this node.
-  node_tag_new($node->nid);
 
   $output = panels_render_display($display);
   if (!empty($handler->conf['no_blocks'])) {
