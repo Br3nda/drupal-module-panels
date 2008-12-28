@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.36.2.6 2008/12/28 00:06:19 sdboyer Exp $
+// $Id: panels_page.module,v 1.36.2.7 2008/12/28 00:13:35 sdboyer Exp $
 
 /**
  * @file panels_page.module
@@ -9,8 +9,6 @@
  * .inc files for various segments of its functionality. These includes are
  * lazy-loaded (some through the menu system, some internally) in order to keep
  * code weight to an absolute minimum.
- *
- * TODO Reduce the number of include loads calls...it's amateurish.
  */
 
 /**
@@ -419,9 +417,9 @@ function theme_panels_page_render_form($form) {
 /**
  * Wrapper for panels_load_include() that specifically targets panels_page
  * include files.
+ *
  * @param string $include
  *   The name of the panels_page include file, without the .inc extension.
- * TODO move me to an inc!
  */
 function panels_page_load_include($include) {
   panels_load_include($include, 'panels_page/panels_page.');
@@ -461,7 +459,9 @@ function panels_page_panels_exportables($op = 'list', $panels = NULL, $name = 'f
 }
 
 /**
- * Sanitize a panel with safe empty values.
+ * Sanitize a panel with safe, empty values.
+ *
+ * Used by various panels_page CRUD-type functions.
  */
 function panels_page_sanitize($page) {
   foreach (array('arguments', 'displays', 'contexts', 'relationships', 'switcher_options') as $id) {
