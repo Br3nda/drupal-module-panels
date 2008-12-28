@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.install,v 1.16 2008/09/03 02:14:07 sdboyer Exp $
+// $Id: panels_page.install,v 1.16.2.1 2008/12/28 02:35:20 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -285,6 +285,23 @@ function panels_page_schema_1() {
     'primary key' => array('path'),
     );
   return $schema;
+}
+
+/**
+ * Strips out any whitespace in the access string.
+ *
+ * The ONLY time this should do anything is via some really weird upgrade paths.
+ * However, it's harmless if the string is already correct (i.e., the value
+ * separator is already ',' instead of the old ', '), so this update function is
+ * included by the "better safe than sorry" mantra.
+ */
+function panels_page_update_6001() {
+  $result = db_query('SELECT pid, access from {panels_page}');
+  while ($row = db_fetch_object($result)) {
+    $row->access = str_replace(' ', '', $row->access);
+    db_query("UPDATE {panels_page} SET access = '%s' WHERE pid = %d", $row->access, $row->pid);
+  }
+  return array();
 }
 
 function panels_page_install() {

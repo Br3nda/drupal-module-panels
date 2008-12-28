@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.read.inc,v 1.11.2.9 2008/10/29 20:23:45 merlinofchaos Exp $
+// $Id: panels_page.read.inc,v 1.11.2.10 2008/12/28 02:35:20 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -30,7 +30,7 @@ function panels_page_load_all($names = array(), $page_size = 0) {
   }
 
   while ($page = db_fetch_object($result)) {
-    $page->access           = ($page->access ? explode(', ', $page->access) : array());
+    $page->access           = ($page->access ? explode(',', $page->access) : array());
     $page->arguments        = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
     $page->displays         = (!empty($page->displays)) ? unserialize($page->displays) : array();
     $page->contexts         = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
@@ -99,7 +99,7 @@ function panels_page_load($id, $load_display = FALSE) {
     $page->type = isset($defaults[$id]) ? t('Overridden') : t('Local');
   }
 
-  $page->access           = ($page->access ? explode(', ', $page->access) : array());
+  $page->access           = ($page->access ? explode(',', $page->access) : array());
   $page->arguments        = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
   $page->displays         = (!empty($page->displays)) ? unserialize($page->displays) : array();
   $page->contexts         = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
@@ -281,7 +281,7 @@ function panels_page_access($id, $account = NULL) {
   if (is_null($access_data)) {
     $result = db_query('SELECT pid, name, access FROM {panels_page}');
     while ($row = db_fetch_object($result)) {
-      $access_data[$row->pid] = explode(', ', $row->access);
+      $access_data[$row->pid] = explode(',', $row->access);
       $access_data[$row->name] = &$access_data[$row->pid];
     }
   }
