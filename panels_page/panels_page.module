@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.36.2.8 2008/12/28 08:44:16 sdboyer Exp $
+// $Id: panels_page.module,v 1.36.2.9 2008/12/28 13:21:16 sdboyer Exp $
 
 /**
  * @file panels_page.module
@@ -136,6 +136,7 @@ function panels_page_admin_load() {
   $first = FALSE;
   $panel_page = panels_page_load($name);
   panels_page_fetch_display($panel_page, $which);
+  panels_page_set_current($panel_page);
   return is_object($panel_page) && !empty($panel_page->pid) ? $panel_page : FALSE;
 }
 
@@ -163,8 +164,51 @@ function panels_page_admin_cache_load($name, $which = '') {
       panels_cache_set('panel_object:panel_page', $name, $panel_page);
     }
   }
-  return is_object($panel_page) && !empty($panel_page->pid) ? $panel_page : FALSE;
+  if (is_object($panel_page) && !empty($panel_page->pid)) {
+    panels_page_set_current($panel_page);
+    return $panel_page;
+  }
+  return FALSE;
 }
+
+/**
+ * Kluges local tasks to basically work like menu links instead of router items.
+ *
+ * ...like they should. This function is headdesking's raison d'etre.
+ */
+function panels_page_concession_to_borked_tabs($name) {
+  static $first = TRUE;
+  if (!user_access('create panel-pages')) {
+    return FALSE;
+  }
+
+  if (!$first || panels_page_climb_stack()) {
+    $panel_page = panels_page_get_current();
+    return $panel_page->name == $name;
+  }
+  $first = FALSE;
+  return TRUE;
+}
+
+/**
+ * Checks to see if theme() is in the current call stack.
+ *
+ * Let there be kluge. Horrible, awful, kitten-mass-murdering KLUGE.
+ *
+ */
+function panels_page_climb_stack() {
+  $backtrace = debug_backtrace();
+  $result = array_filter($backtrace, '_panels_page_climb_stack');
+  return !empty($result);
+}
+
+/**
+ * Kluge's little helper. Kinda like Santa's little helper. Except not.
+ */
+function _panels_page_climb_stack($call) {
+  return $call['function'] == 'theme';
+}
+
 
 /**
  * Check whether the current page request is allowed.

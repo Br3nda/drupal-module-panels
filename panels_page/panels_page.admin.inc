@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20.2.12 2008/12/28 10:24:21 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.13 2008/12/28 13:21:16 sdboyer Exp $
 
 
 /**
@@ -1034,5 +1034,6 @@ function panels_page_edit_alternate($callback, $name, $alternate = '') {
     panels_page_fetch_display($panel_page, $alternate);
     panels_cache_set('panel_object:panel_page', $name, $panel_page);
   }
+  panels_page_set_current($panel_page);
   return $callback($panel_page);
 }

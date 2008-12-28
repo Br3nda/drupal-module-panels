@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.menu.inc,v 1.24.2.7 2008/12/28 08:44:16 sdboyer Exp $
+// $Id: panels_page.menu.inc,v 1.24.2.8 2008/12/28 13:21:16 sdboyer Exp $
 
 /**
  * @file panels_page.menu.inc
@@ -292,6 +292,26 @@ function panels_page_construct_dynamic_menu_link(&$items, $panel_page, $map) {
   // panels_pages per dynamic path, we needn't worry about overwriting here.
   _panels_page_construct_dynamic_menu_link($items, $panel_page, $page_args, $type);
 
+  // FIXME parents are borked
+  _panels_page_construct_parent_menu_item($items, $panel_page, $panel_page->path, $type);
+}
+
+/**
+ * Helper function to create a menu item for a panel.
+ */
+function _panels_page_construct_dynamic_menu_link(&$items, $panel_page, $page_arguments, $type, $weight = 0) {
+  $items['menu items'][$panel_page->path] = array(
+    'title callback'  => 'panels_page_title_handler',
+    'title arguments' => $page_arguments,
+    // FIXME re-include an access callback/handler system; currently we just use the fallback's. Where there is no fallback... =)
+    'page callback'   => 'panels_page_render_handler',
+    'page arguments'  => $page_arguments,
+    'type'            => $type,
+    'weight'          => $weight,
+    'module'          => 'panels_page',
+    'file'            => NULL, // Ensure we don't get the overriddee's file property
+  );
+
   // Add individual tab items for each of the per-display differentiated admin
   // editing areas (layout, layout settings, and content) using a static path,
   // then stack them on top of the normal admin wildcard stack using the
@@ -300,7 +320,8 @@ function panels_page_construct_dynamic_menu_link(&$items, $panel_page, $map) {
     $path = "admin/panels/panel-page/$panel_page->name/edit";
     $admin = array(
       'title' => 'Default',
-      'access arguments' => array('create panel-pages'),
+      'access callback' => 'panels_page_concession_to_borked_tabs',
+      'access arguments' => array($panel_page->name),
       'file' => 'panels_page.admin.inc',
       'page callback' => 'panels_page_edit_alternate',
       'module' => 'panels_page',
@@ -324,26 +345,6 @@ function panels_page_construct_dynamic_menu_link(&$items, $panel_page, $map) {
       ) + $admin;
     }
   }
-
-  // FIXME parents are borked
-  _panels_page_construct_parent_menu_item($items, $panel_page, $panel_page->path, $type);
-}
-
-/**
- * Helper function to create a menu item for a panel.
- */
-function _panels_page_construct_dynamic_menu_link(&$items, $panel_page, $page_arguments, $type, $weight = 0) {
-  $items['menu items'][$panel_page->path] = array(
-    'title callback'  => 'panels_page_title_handler',
-    'title arguments' => $page_arguments,
-    // FIXME re-include an access callback/handler system; currently we just use the fallback's. Where there is no fallback... =)
-    'page callback'   => 'panels_page_render_handler',
-    'page arguments'  => $page_arguments,
-    'type'            => $type,
-    'weight'          => $weight,
-    'module'          => 'panels_page',
-    'file'            => NULL, // Ensure we don't get the overriddee's file property
-  );
 }
 
 /**
