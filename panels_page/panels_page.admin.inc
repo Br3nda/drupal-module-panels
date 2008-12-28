@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.58 2008/12/28 10:18:44 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.59 2008/12/28 10:33:53 sdboyer Exp $
 
 
 /**
@@ -1056,6 +1056,7 @@ function _panels_page_update(&$panel_page) {
     if (!empty($panel_page->export)) {
       $panel_page->displays[$panel_page->export]['did'] = $panel_page->display->did;
       unset($panel_page->displays[$panel_page->export]['display']);
+      $panel_page->current = $panel_page->export;
     }
   }
 
