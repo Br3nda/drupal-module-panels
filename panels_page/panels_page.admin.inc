@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20.2.9 2008/12/28 00:04:57 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.10 2008/12/28 08:09:50 sdboyer Exp $
 
 
 /**
@@ -416,15 +416,16 @@ function panels_page_edit_form_submit($form, &$form_state) {
     else {
       $form_state['redirect'] = "admin/panels/panel-page/$panel_page->name/edit/advanced/next";
     }
+    menu_rebuild();
     return;
   }
   else {
     drupal_set_message(t('Your changes have been saved.'));
     panels_page_load_include('write');
     panels_page_save($panel_page);
+    // The path may have changed - rebuild the menu.
+    menu_rebuild();
   }
-  // The path may have changed - rebuild the menu.
-  menu_rebuild();
 }
 
 /**
@@ -728,6 +729,7 @@ function panels_page_context_form_submit($form, &$form_state) {
   panels_page_load_include('write');
   panels_page_save($panel_page);
   panels_cache_clear('panel_object:panel_page', $panel_page->name);
+  menu_rebuild();
   if ($form_state['next']) {
     $form_state['redirect'] = "admin/panels/panel-page/$panel_page->name/edit/content";
   }

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.menu.inc,v 1.24.2.5 2008/12/28 00:04:57 sdboyer Exp $
+// $Id: panels_page.menu.inc,v 1.24.2.6 2008/12/28 08:09:50 sdboyer Exp $
 
 /**
  * @file panels_page.menu.inc
@@ -268,7 +268,11 @@ function _panels_page_create_menu_structure() {
       if (strpos($panel_page->path, '%') === FALSE) {
         panels_page_construct_static_menu_link($items, $panel_page, $map);
       }
-      else {
+      // Only construct dynamic menu items if at least one argument has been
+      // defined. Kinda hacky, but failure to do this check can result in really
+      // icky, non-user-intuitive inconsistencies if someone creates a panel
+      // page on an override path but doesn't give it an argument right away.
+      elseif (!empty($panel_page->arguments)) {
         panels_page_construct_dynamic_menu_link($items, $panel_page, $map);
       }
     }
