@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20.2.11 2008/12/28 08:44:16 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.12 2008/12/28 10:24:21 sdboyer Exp $
 
 
 /**
@@ -526,7 +526,8 @@ function panels_page_advanced_form(&$form_state, $panel_page, $next) {
     '#maxlength' => 255,
     '#description' => t('Enter the title to use for the menu entry or tab. If blank, the page title will be used.'),
   );
-
+/* !!!NOTE: disabled completely since this is mostly borked at the moment and
+ * isn't super-critical to have working in the consolation release of 2.x
   $form['left']['menu-info']['default-tab'] = array(
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
@@ -572,7 +573,7 @@ function panels_page_advanced_form(&$form_state, $panel_page, $next) {
     '#maxlength' => 255,
     '#description' => t('If the Parent Menu Item is being defined by this panel (if you set the %type_field to either %tab or %menu), you can specify its title here.  If blank, the menu title will be used if that is defined, or the page title if not. <b>DISABLED IN D6 ALPHA</b>', array('%type_field' => t('Parent Menu Item Type'), '%tab' => t('Tab'), '%menu' => t('Normal menu item'))),
   );
-
+*/
   $label = ($next) ? t('Save and proceed') : t('Save');
   $form['submit'] = array(
     '#type' => 'submit',
