@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.36.2.5 2008/12/28 00:04:57 sdboyer Exp $
+// $Id: panels_page.module,v 1.36.2.6 2008/12/28 00:06:19 sdboyer Exp $
 
 /**
  * @file panels_page.module
@@ -376,6 +376,16 @@ function panels_page_prepare_fallback_render(&$load, $map) {
   $load->page_arguments = array_merge(menu_unserialize($router_item['page_arguments'], $map), array_slice($map, $router_item['number_parts']));
   $load->page_callback  = $router_item['page_callback'];
   $load->router_item    = $router_item;
+  // If we did not override the default menu callback, stop here.
+  if ($router_item['page_callback'] != $default_menu['page_callback']) {
+    return $load;
+  }
+  // Fix for lack of the _menu_translate() function.  We crib some of that function here.
+  _menu_check_access($router_item, $map);
+  // For performance, don't localize an item the user can't access.
+  if ($router_item['access']) {
+    _menu_item_localize($router_item, $map);
+  }
   menu_set_item($_GET['q'], $router_item);
   return $load;
 }
