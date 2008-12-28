@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.1.2.57 2008/11/12 00:21:07 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.1.2.58 2008/12/28 10:18:44 sdboyer Exp $
 
 
 /**
@@ -1089,7 +1089,7 @@ function _panels_page_save_value($field, $value) {
     case 'switcher_options':
       return serialize($value);
     case 'access':
-      return implode(',', (array) $value);
+      return implode(', ', (array) $value);
     default:
       return $value;
   }

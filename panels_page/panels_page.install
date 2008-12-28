@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.install,v 1.1.2.3 2008/12/28 02:20:30 sdboyer Exp $
+// $Id: panels_page.install,v 1.1.2.4 2008/12/28 10:18:44 sdboyer Exp $
 
 
 /**
@@ -21,18 +21,19 @@ function panels_page_update_5000() {
  * Strips out any whitespace in the access string.
  *
  * Due to developer oversight, the format of access field string changed from
- * ', ' to ',' in the release version of Panels for D5. This update ensures that
- * the current version of the access field string is in use in the database.
- *
- * Note that failure to apply this update would NOT cause a security hole;
- * rather, it would be a security nuisance, as all panel_pages that use
- * panel-level access control will immediately become inaccessible to almost all
- * users.
+ * ', ' to ',' for several months of the -dev version. Ordinarily, we do not
+ * accommodate changes made in the -dev version in later update functions, as it
+ * both promotes bad habits on the part of module users and tends to create
+ * database inconsistencies. However, in this case, the improper delimiter was
+ * in place for long enough that it merits correction, especially because the
+ * correction can be made non-destructively and transparently for any site that
+ * never used the bad -dev.
  */
 function panels_page_update_5001() {
   $result = db_query('SELECT pid, access from {panels_page}');
   while ($row = db_fetch_object($result)) {
-    $row->access = str_replace(' ', '', $row->access);
+    $access = str_replace(' ', '', $row->access);
+    $row->access = implode(', ', explode(',', $access));
     db_query("UPDATE {panels_page} SET access = '%s' WHERE pid = %d", $row->access, $row->pid);
   }
   return array();

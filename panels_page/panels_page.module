@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.1.2.77 2008/12/28 02:20:30 sdboyer Exp $
+// $Id: panels_page.module,v 1.1.2.78 2008/12/28 10:18:44 sdboyer Exp $
 
 
 /**
@@ -905,7 +905,7 @@ function panels_page_load_all($names = array(), $page_size = 0) {
   }
 
   while ($page = db_fetch_object($result)) {
-    $page->access = ($page->access ? explode(',', $page->access) : array());
+    $page->access = ($page->access ? explode(', ', $page->access) : array());
     $page->arguments = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
     $page->displays = (!empty($page->displays)) ? unserialize($page->displays) : array();
     $page->contexts = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
@@ -965,7 +965,7 @@ function panels_page_load($pid, $load_display = FALSE) {
     return;
   }
 
-  $page->access           = ($page->access ? explode(',', $page->access) : array());
+  $page->access           = ($page->access ? explode(', ', $page->access) : array());
   $page->arguments        = (!empty($page->arguments)) ? unserialize($page->arguments) : array();
   $page->displays         = (!empty($page->displays)) ? unserialize($page->displays) : array();
   $page->contexts         = (!empty($page->contexts)) ? unserialize($page->contexts) : array();
