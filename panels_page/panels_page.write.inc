@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.write.inc,v 1.9.2.4 2008/10/07 23:47:57 sdboyer Exp $
+// $Id: panels_page.write.inc,v 1.9.2.5 2008/12/28 00:04:57 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -107,6 +107,7 @@ function _panels_page_update(&$panel_page) {
     if (!empty($panel_page->export)) {
       $panel_page->displays[$panel_page->export]['did'] = $panel_page->display->did;
       unset($panel_page->displays[$panel_page->export]['display']);
+      $panel_page->current = $panel_page->export;
     }
   }
 

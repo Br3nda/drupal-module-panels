@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20.2.8 2008/11/17 20:46:01 merlinofchaos Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.9 2008/12/28 00:04:57 sdboyer Exp $
 
 
 /**
@@ -745,9 +745,9 @@ function panels_page_edit_layout($panel_page) {
     $panel_page->display = $output;
     panels_page_save_display($panel_page);
 
-    $dest = "admin/panels/panel-page/edit/$panel_page->name/layout";
-    if ($panel_page->display->did != $panel_page->did) {
-      $dest .= '/' . $panel_page->display->did;
+    $dest = "admin/panels/panel-page/$panel_page->name/edit/layout";
+    if ($panel_page->current != 'primary') {
+      $dest .= '/' . $panel_page->current;
     }
     drupal_goto($dest);
   }
@@ -763,8 +763,8 @@ function panels_page_edit_layout_settings($panel_page, $next = NULL) {
   if (empty($next)) {
     $button = t('Save');
     $dest = "admin/panels/panel-page/$panel_page->name/edit/settings";
-    if ($panel_page->display->did != $panel_page->did) {
-      $dest .= '/' . $panel_page->display->did;
+      if ($panel_page->current != 'primary') {
+      $dest .= '/' . $panel_page->current;
     }
   }
   else {
@@ -806,7 +806,7 @@ function panels_page_edit_content($panel_page) {
     // And do the drupal_goto that a submit function ordinarily would have.
     $dest = "admin/panels/panel-page/$panel_page->name/edit/content";
     if ($panel_page->current != 'primary') {
-      $dest .= '/' . $panel_page->display->did;
+      $dest .= '/' . $panel_page->current;
     }
     drupal_goto($dest);
   }
@@ -1023,4 +1023,20 @@ function panels_page_import_form_submit($form, &$form_state) {
   else {
     drupal_set_message(t('Unable to get a panel page out of that.'));
   }
+}
+
+function panels_page_edit_alternate($callback, $name, $alternate = '') {
+  // TODO reorganize this redundant call.
+  panels_page_load_include('read');
+  panels_page_load_include('write');
+  panels_load_include('plugins');
+  if (!empty($_POST)) {
+    $panel_page = panels_cache_get('panel_object:panel_page', $name);
+  }
+  else {
+    $panel_page = panels_page_load($name);
+    panels_page_fetch_display($panel_page, $alternate);
+    panels_cache_set('panel_object:panel_page', $name, $panel_page);
+  }
+  return $callback($panel_page);
 }

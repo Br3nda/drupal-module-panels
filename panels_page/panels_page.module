@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.36.2.4 2008/11/20 23:18:53 sdboyer Exp $
+// $Id: panels_page.module,v 1.36.2.5 2008/12/28 00:04:57 sdboyer Exp $
 
 /**
  * @file panels_page.module
@@ -118,9 +118,15 @@ function panels_page_menu_alter(&$callbacks) {
  * @param string $which
  * @return mixed
  */
-function panels_page_admin_load($name, $which = '') {
+function panels_page_admin_load() {
   panels_page_load_include('write');
   panels_load_include('plugins');
+  $args = func_get_args();
+  $name = array_shift($args);
+  $which = array_shift($args);
+  if (function_exists($which)) {
+    return $which($name, array_shift($args));
+  }
 
   $panel_page = panels_page_load($name);
   panels_page_fetch_display($panel_page, $which);
@@ -140,19 +146,16 @@ function panels_page_admin_load($name, $which = '') {
  * @return mixed
  */
 function panels_page_admin_cache_load($name, $which = '') {
-  panels_page_load_include('write');
-  panels_load_include('plugins');
-
+  static $panel_page;
+  if (empty($panel_page)) {
   if (!empty($_POST)) {
-    // FIXME With the way the menu system currently works, this is likely to be
-    // fired AT LEAST six times per admin page request. BOLLOCKS. Time to
-    // figure out yet another fracking caching method...maybe just right here?
     $panel_page = panels_cache_get('panel_object:panel_page', $name);
   }
   else {
     $panel_page = panels_page_load($name);
     panels_page_fetch_display($panel_page, $which);
     panels_cache_set('panel_object:panel_page', $name, $panel_page);
+  }
   }
   return is_object($panel_page) && !empty($panel_page->pid) ? $panel_page : FALSE;
 }
@@ -361,6 +364,7 @@ function _panels_page_rebuild_menu_map($load_objects, $positions) {
  */
 function panels_page_prepare_fallback_render(&$load, $map) {
   $original_map = arg(NULL, $_GET['q']);
+  $default_menu = menu_get_item($_GET['q']);
   $parts = array_slice($original_map, 0, MENU_MAX_PARTS);
   list($ancestors, $placeholders) = menu_get_ancestors($parts);
   if (!$router_item = db_fetch_array(db_query_range('SELECT * FROM {panels_page_router_store} WHERE path IN ('. implode (',', $placeholders) .') ORDER BY fit DESC', $ancestors, 0, 1))) {
@@ -368,7 +372,6 @@ function panels_page_prepare_fallback_render(&$load, $map) {
   }
   // FIXME calling _menu_translate would result in an incomplete load
   // $map = _menu_translate($router_item, $original_map);
-
   $load->map            = $map;
   $load->page_arguments = array_merge(menu_unserialize($router_item['page_arguments'], $map), array_slice($map, $router_item['number_parts']));
   $load->page_callback  = $router_item['page_callback'];

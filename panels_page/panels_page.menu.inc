@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.menu.inc,v 1.24.2.4 2008/10/24 00:52:58 merlinofchaos Exp $
+// $Id: panels_page.menu.inc,v 1.24.2.5 2008/12/28 00:04:57 sdboyer Exp $
 
 /**
  * @file panels_page.menu.inc
@@ -93,7 +93,7 @@ function panels_page_admin_dynamic_menu_items($items = array(), $path_prefix = N
     'page callback' => 'panels_page_edit_advanced',
     'weight' => -8,
   ) + $admin;
-  $items[$path_prefix . '%panels_page_admin_cache/edit/context'] = array(
+  $items[$path_prefix . '%panels_page_admin/edit/context'] = array(
     'title' => 'Context',
     'page callback' => 'panels_page_edit_context',
     'weight' => -6,
@@ -101,21 +101,36 @@ function panels_page_admin_dynamic_menu_items($items = array(), $path_prefix = N
   $items[$path_prefix . '%panels_page_admin/edit/layout'] = array(
     'title' => 'Layout',
     'page callback' => 'panels_page_edit_layout',
-    'load arguments' => array($loader_arg + 4),
+    'load arguments' => array('panels_page_admin_cache_load', $loader_arg + 3),
     'weight' => -4,
   ) + $admin;
-  $items[$path_prefix . '%panels_page_admin_cache/edit/layout-settings'] = array(
+  $items[$path_prefix . '%panels_page_admin/edit/layout/default'] = array(
+    'title' => 'Default',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -20,
+  );
+  $items[$path_prefix . '%panels_page_admin/edit/layout-settings'] = array(
     'title' => 'Layout settings',
     'page callback' => 'panels_page_edit_layout_settings',
-    'load arguments' => array($loader_arg + 4),
+    'load arguments' => array('panels_page_admin_cache_load', $loader_arg + 3),
     'weight' => -2,
   ) + $admin;
-  $items[$path_prefix . '%panels_page_admin_cache/edit/content'] = array(
+  $items[$path_prefix . '%panels_page_admin/edit/layout-settings/default'] = array(
+    'title' => 'Default',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -20,
+  );
+  $items[$path_prefix . '%panels_page_admin/edit/content'] = array(
     'title' => 'Content',
     'page callback' => 'panels_page_edit_content',
-    'load arguments' => array($loader_arg + 4),
+    'load arguments' => array('panels_page_admin_cache_load', $loader_arg + 3),
     'weight' => 0,
   ) + $admin;
+  $items[$path_prefix . '%panels_page_admin/edit/content/default'] = array(
+    'title' => 'Default',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -20,
+  );
 /*  $items[$path_prefix . '%panels_page_admin/edit/preview'] = array(
     'title' => 'Preview',
     'page callback' => 'panels_page_preview',
@@ -271,6 +286,39 @@ function panels_page_construct_dynamic_menu_link(&$items, $panel_page, $map) {
   // Construct the dynamic menu router item. If/when we get to multiple
   // panels_pages per dynamic path, we needn't worry about overwriting here.
   _panels_page_construct_dynamic_menu_link($items, $panel_page, $page_args, $type);
+
+  // Add individual tab items for each of the per-display differentiated admin
+  // editing areas (layout, layout settings, and content) using a static path,
+  // then stack them on top of the normal admin wildcard stack using the
+  // tab_root and tab_parent menu properties.
+  if (!empty($panel_page->arguments)) {
+    $path = "admin/panels/panel-page/$panel_page->name/edit";
+    $admin = array(
+      'title' => 'Default',
+      'access arguments' => array('create panel-pages'),
+      'file' => 'panels_page.admin.inc',
+      'page callback' => 'panels_page_edit_alternate',
+      'module' => 'panels_page',
+      'tab_root' => 'admin/panels/panel-page/%/edit',
+      'type' => MENU_LOCAL_TASK,
+    );
+    foreach ($panel_page->displays as $id => $display_conf) {
+      $admin['title'] = $display_conf['title'];
+
+      $items['menu items']["$path/layout/$id"] = array(
+        'page arguments' => array('panels_page_edit_layout', 3, 6),
+        'tab_parent' => $admin['tab_root'] . '/layout',
+      ) + $admin;
+      $items['menu items']["$path/layout-settings/$id"] = array(
+        'page arguments' => array('panels_page_edit_layout_settings', 3, 6),
+        'tab_parent' => $admin['tab_root'] . '/layout-settings',
+      ) + $admin;
+      $items['menu items']["$path/content/$id"] = array(
+        'page arguments' => array('panels_page_edit_content', 3, 6),
+        'tab_parent' => $admin['tab_root'] . '/content',
+      ) + $admin;
+    }
+  }
 
   // FIXME parents are borked
   _panels_page_construct_parent_menu_item($items, $panel_page, $panel_page->path, $type);
