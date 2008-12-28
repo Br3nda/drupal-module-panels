@@ -1,5 +1,5 @@
 <?php
-// $Id: uid.inc,v 1.4.2.2 2008/10/22 19:23:13 sdboyer Exp $
+// $Id: uid.inc,v 1.4.2.3 2008/12/28 05:19:05 sdboyer Exp $
 
 
 /**
@@ -19,7 +19,7 @@ function panels_uid_panels_arguments() {
     'displays' => 'panels_uid_displays',
     'choose display' => 'panels_uid_choose_display',
     'native path' => 'user/%user_uid_optional',
-    'load function' => 'user_uid_optional',
+    'load function' => 'user',
   );
   return $args;
 }
@@ -31,6 +31,11 @@ function panels_uid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   // If unset it wants a generic, unfilled context.
   if ($empty) {
     return panels_context_create_empty('user');
+  }
+
+  // Simulate the %user_uid_optional case. Hackity hackity hack!
+  if (is_null($arg) && $_GET['q'] == 'user') {
+    $arg = $GLOBALS['user']->uid;
   }
 
   // FIXME: The code designed to handle a numeric id for loading is probably
