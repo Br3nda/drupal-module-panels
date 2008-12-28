@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.install,v 1.16.2.1 2008/12/28 02:35:20 sdboyer Exp $
+// $Id: panels_page.install,v 1.16.2.2 2008/12/28 10:20:22 sdboyer Exp $
 
 /**
  * Install the panels tables
@@ -288,17 +288,19 @@ function panels_page_schema_1() {
 }
 
 /**
- * Strips out any whitespace in the access string.
+ * Ensures the presence of appropriate whitespace in access strings.
  *
- * The ONLY time this should do anything is via some really weird upgrade paths.
- * However, it's harmless if the string is already correct (i.e., the value
- * separator is already ',' instead of the old ', '), so this update function is
- * included by the "better safe than sorry" mantra.
+ * Due to some developer oversight, the delimiter used in {panels_page}.access
+ * was changed from ', ' to ',' in earlier versions of the Panels 2.x branch.
+ * This function makes absolutely sure that any such malformed entries are
+ * properly formed, but does not harm any entries that were already properly
+ * delimited.
  */
 function panels_page_update_6001() {
   $result = db_query('SELECT pid, access from {panels_page}');
   while ($row = db_fetch_object($result)) {
-    $row->access = str_replace(' ', '', $row->access);
+    $access = str_replace(' ', '', $row->access);
+    $row->access = implode(', ', explode(',', $access));
     db_query("UPDATE {panels_page} SET access = '%s' WHERE pid = %d", $row->access, $row->pid);
   }
   return array();

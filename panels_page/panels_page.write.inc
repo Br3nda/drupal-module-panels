@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.write.inc,v 1.9.2.5 2008/12/28 00:04:57 sdboyer Exp $
+// $Id: panels_page.write.inc,v 1.9.2.6 2008/12/28 10:20:22 sdboyer Exp $
 
 /**
  * @file panels_page.write.inc
@@ -139,7 +139,7 @@ function _panels_page_save_value($info, $value) {
     case 'serialize':
       return serialize($value);
     case 'implode':
-      return implode(',', (array) $value);
+      return implode(', ', (array) $value);
     default:
       return $value;
   }
