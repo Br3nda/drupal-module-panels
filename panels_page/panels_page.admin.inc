@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20.2.10 2008/12/28 08:09:50 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.11 2008/12/28 08:44:16 sdboyer Exp $
 
 
 /**
@@ -628,13 +628,6 @@ function panels_page_export_page(&$form_state, $panel_page) {
  */
 function panels_page_edit_context($panel_page, $next = NULL) {
   drupal_set_title(check_plain(panels_page_get_title($panel_page)));
-  if (!empty($_POST)) {
-    $panel_page = panels_cache_get('panel_object:panel_page', $panel_page->name);
-  }
-  else {
-    panels_cache_set('panel_object:panel_page', $panel_page->name, $panel_page);
-  }
-
   // drupal_set_title(check_plain(panels_page_get_title($panel_page)));
   return drupal_get_form('panels_page_context_form', $panel_page, $next);
 }

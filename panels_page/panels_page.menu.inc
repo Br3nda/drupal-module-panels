@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.menu.inc,v 1.24.2.6 2008/12/28 08:09:50 sdboyer Exp $
+// $Id: panels_page.menu.inc,v 1.24.2.7 2008/12/28 08:44:16 sdboyer Exp $
 
 /**
  * @file panels_page.menu.inc
@@ -96,6 +96,7 @@ function panels_page_admin_dynamic_menu_items($items = array(), $path_prefix = N
   $items[$path_prefix . '%panels_page_admin/edit/context'] = array(
     'title' => 'Context',
     'page callback' => 'panels_page_edit_context',
+    'load arguments' => array('panels_page_admin_cache_load'),
     'weight' => -6,
   ) + $admin;
   $items[$path_prefix . '%panels_page_admin/edit/layout'] = array(

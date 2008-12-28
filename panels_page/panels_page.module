@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.36.2.7 2008/12/28 00:13:35 sdboyer Exp $
+// $Id: panels_page.module,v 1.36.2.8 2008/12/28 08:44:16 sdboyer Exp $
 
 /**
  * @file panels_page.module
@@ -117,15 +117,23 @@ function panels_page_menu_alter(&$callbacks) {
  * @return mixed
  */
 function panels_page_admin_load() {
+  // Lets us tell if this is the first time through the function. Fugly hack to
+  // do it this way, but this gets called numerous times by theme(), which makes
+  // it the only way to avoid generating superfluous object cache items due to
+  // later indirect calls to this function made by access checking within
+  // theme(). They entries get get cleared later, but it's still icky, so we
+  // head it off here.
+  static $first = TRUE;
   panels_page_load_include('write');
   panels_load_include('plugins');
   $args = func_get_args();
   $name = array_shift($args);
   $which = array_shift($args);
-  if (function_exists($which)) {
+  if (function_exists($which) && $first) {
     return $which($name, array_shift($args));
   }
 
+  $first = FALSE;
   $panel_page = panels_page_load($name);
   panels_page_fetch_display($panel_page, $which);
   return is_object($panel_page) && !empty($panel_page->pid) ? $panel_page : FALSE;
@@ -146,14 +154,14 @@ function panels_page_admin_load() {
 function panels_page_admin_cache_load($name, $which = '') {
   static $panel_page;
   if (empty($panel_page)) {
-  if (!empty($_POST)) {
-    $panel_page = panels_cache_get('panel_object:panel_page', $name);
-  }
-  else {
-    $panel_page = panels_page_load($name);
-    panels_page_fetch_display($panel_page, $which);
-    panels_cache_set('panel_object:panel_page', $name, $panel_page);
-  }
+    if (!empty($_POST)) {
+      $panel_page = panels_cache_get('panel_object:panel_page', $name);
+    }
+    else {
+      $panel_page = panels_page_load($name);
+      panels_page_fetch_display($panel_page, $which);
+      panels_cache_set('panel_object:panel_page', $name, $panel_page);
+    }
   }
   return is_object($panel_page) && !empty($panel_page->pid) ? $panel_page : FALSE;
 }
