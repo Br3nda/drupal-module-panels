@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.module,v 1.36.2.9 2008/12/28 13:21:16 sdboyer Exp $
+// $Id: panels_page.module,v 1.36.2.10 2008/12/29 04:09:38 sdboyer Exp $
 
 /**
  * @file panels_page.module
@@ -225,8 +225,7 @@ function panels_page_access_handler() {
   panels_page_load_include('read');
   $args = func_get_args();
   $name = array_shift($args);
-  $access = panels_page_access($name);
-  return !empty($access);
+  return (bool) panels_page_access($name);
 }
 
 /**
@@ -241,7 +240,7 @@ function panels_page_access_handler() {
  */
 function panels_page_render_handler() {
   $args = func_get_args();
-  // FIXME all of these are wrapped in if statements b/c of the 404/500 possibility
+  // FIXME all of these are wrapped in if statements b/c of the 403/404 possibility
   if ($loader_data = panels_page_master_loader($args)) {
     return call_user_func_array($loader_data->page_callback, $loader_data->page_arguments);
   }
