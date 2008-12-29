@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_page.admin.inc,v 1.20.2.13 2008/12/28 13:21:16 sdboyer Exp $
+// $Id: panels_page.admin.inc,v 1.20.2.14 2008/12/29 04:10:03 sdboyer Exp $
 
 
 /**
@@ -518,14 +518,14 @@ function panels_page_advanced_form(&$form_state, $panel_page, $next) {
     '#description' => t('If this is a menu tab, select the weight; lower numbers will be further to the left.'),
   );
 
-  $form['left']['menu-info']['menu_title'] = array(
+/*  $form['left']['menu-info']['menu_title'] = array(
     '#type' => 'textfield',
     '#title' => t('Menu Title'),
     '#default_value' => $panel_page->menu_title,
     '#size' => 35,
     '#maxlength' => 255,
     '#description' => t('Enter the title to use for the menu entry or tab. If blank, the page title will be used.'),
-  );
+  );*/
 /* !!!NOTE: disabled completely since this is mostly borked at the moment and
  * isn't super-critical to have working in the consolation release of 2.x
   $form['left']['menu-info']['default-tab'] = array(
@@ -607,6 +607,7 @@ function panels_page_advanced_form_submit($form, &$form_state) {
   if ($form_state['next']) {
     $form_state['redirect'] = "admin/panels/panel-page/$panel_page->name/edit/context/next";
   }
+  menu_rebuild();
   drupal_set_message(t('Your changes have been saved.'));
 }
 
