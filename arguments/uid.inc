@@ -1,5 +1,5 @@
 <?php
-// $Id: uid.inc,v 1.4.2.3 2008/12/28 05:19:05 sdboyer Exp $
+// $Id: uid.inc,v 1.4.2.4 2008/12/29 04:07:26 sdboyer Exp $
 
 
 /**
@@ -31,11 +31,6 @@ function panels_uid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   // If unset it wants a generic, unfilled context.
   if ($empty) {
     return panels_context_create_empty('user');
-  }
-
-  // Simulate the %user_uid_optional case. Hackity hackity hack!
-  if (is_null($arg) && $_GET['q'] == 'user') {
-    $arg = $GLOBALS['user']->uid;
   }
 
   // FIXME: The code designed to handle a numeric id for loading is probably
