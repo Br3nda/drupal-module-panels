@@ -1,5 +1,6 @@
-; $Id: panels.info,v 1.2 2006/10/27 16:36:18 merlinofchaos Exp $
+; $Id: panels.info,v 1.5.4.1 2008/12/30 18:24:01 merlinofchaos Exp $
 name = Panels
-description = Create pages that are divided into areas of the page.
-version = 1.1
-
+description = Core Panels display functions; provides no external UI, at least one other module (such as Panel pages) should be enabled.
+core = 6.x
+package = "Panels"
+dependencies[] = views ctools
