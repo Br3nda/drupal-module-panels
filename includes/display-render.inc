@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.1 2009/01/12 22:04:04 merlinofchaos Exp $
+// $Id: display-render.inc,v 1.5.2.2 2009/01/15 20:21:59 merlinofchaos Exp $
 
 /**
  * @file
@@ -304,11 +304,6 @@ function panels_render_panel($display, $panel, $panes) {
 
   return theme($style['render panel'], $display, $owner_id, $panes, $style_settings, $panel);
 }
-
-/**
- * @file panels.theme.inc
- * Core theme functions for Panels.
- */
 
 /**
  * Render a panel pane like a block.
