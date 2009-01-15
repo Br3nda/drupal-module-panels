@@ -1,5 +1,5 @@
 <?php
-// $Id: sample_plugin_ct.inc,v 1.2.4.1 2008/12/16 21:27:55 merlinofchaos Exp $
+// $Id: sample_plugin_ct.inc,v 1.2.4.2 2009/01/15 23:42:35 merlinofchaos Exp $
 
 /**
 @file
@@ -277,7 +277,7 @@ function panels_admin_content_types_SAMPLE_CT() {
       // The name of the icon file to be used for this subtype.
       'icon' => 'icon_node.png',
       // The server path to the directory where the above icon is located.
-      'path' => panels_get_path('content_types/node'),
+      'path' => panels_get_path('plugins/content_types/node'),
       // The 'description' appears as a tooltip when the user hovers their
       // mouse pointer over the icon.
       'description' => t('Descriptive text for the SAMPLE CONTENT TYPE, to be used in the tooltip.'),

@@ -1,5 +1,5 @@
 <?php
-// $Id: node_book_nav.inc,v 1.1.2.1 2008/12/16 21:27:57 merlinofchaos Exp $
+// $Id: node_book_nav.inc,v 1.1.2.2 2009/01/15 23:42:35 merlinofchaos Exp $
 
 
 /**
@@ -44,7 +44,7 @@ function panels_admin_content_types_node_book_nav() {
     'node_type' => array(
       'title' => t('Book navigation'),
       'icon' => 'icon_node.png',
-      'path' => panels_get_path('content_types/node'),
+      'path' => panels_get_path('plugins/content_types/node'),
       'description' => t('A list of files attached to the node.'),
       'required context' => new ctools_context_required(t('Node'), 'node'),
       'category' => array(t('Node context'), -9),

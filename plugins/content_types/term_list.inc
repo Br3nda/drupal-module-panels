@@ -1,5 +1,5 @@
 <?php
-// $Id: term_list.inc,v 1.1.2.1 2008/12/16 21:27:57 merlinofchaos Exp $
+// $Id: term_list.inc,v 1.1.2.2 2009/01/15 23:42:35 merlinofchaos Exp $
 
 
 /**
@@ -76,7 +76,7 @@ function panels_admin_content_types_term_list() {
     'description' => array(
       'title' => t('List of related terms'),
       'icon' => 'icon_node.png',
-      'path' => panels_get_path('content_types/node'),
+      'path' => panels_get_path('plugins/content_types/node'),
       'description' => t('Terms related to an existing term; may be child, siblings or top level.'),
       'required context' => new ctools_context_required(t('Term'), 'term'),
       'category' => array(t('Term context'), -9),

@@ -1,5 +1,5 @@
 <?php
-// $Id: user_profile.inc,v 1.1.2.1 2008/12/16 21:27:57 merlinofchaos Exp $
+// $Id: user_profile.inc,v 1.1.2.2 2009/01/15 23:42:35 merlinofchaos Exp $
 
 
 /**
@@ -59,7 +59,7 @@ function panels_admin_content_types_user_profile() {
     'description' => array(
       'title' => t('User profile'),
       'icon' => 'icon_user.png',
-      'path' => panels_get_path('content_types/user'),
+      'path' => panels_get_path('plugins/content_types/user'),
       'description' => t('The profile of a user.'),
       'required context' => new ctools_context_required(t('User'), 'user'),
       'category' => array(t('User context'), -9),

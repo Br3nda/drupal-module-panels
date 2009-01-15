@@ -1,4 +1,4 @@
-/* $Id: panels_admin.css,v 1.3.4.3 2008/12/16 21:27:55 merlinofchaos Exp $ */
+/* $Id: panels_admin.css,v 1.3.4.4 2009/01/15 23:42:34 merlinofchaos Exp $ */
 
 .layout-link {
   float: left; 
@@ -140,4 +140,14 @@ tr.changed td span.star {
 td select {
   margin: 0;
   padding: 0;
+}
+
+.panels-style-settings,
+.panels-style-settings-box,
+#panels-style-setting {
+  float: left;
+}
+
+.panels-style-settings-box .form-item {
+  margin: 0 1em 0 0;
 }

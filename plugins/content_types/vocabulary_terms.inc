@@ -1,5 +1,5 @@
 <?php
-// $Id: vocabulary_terms.inc,v 1.1.2.1 2008/12/16 21:27:57 merlinofchaos Exp $
+// $Id: vocabulary_terms.inc,v 1.1.2.2 2009/01/15 23:42:35 merlinofchaos Exp $
 
 
 /**
@@ -72,7 +72,7 @@ function panels_admin_content_types_vocabulary_terms() {
     'description' => array(
       'title' => t('Vocabulary terms'),
       'icon' => 'icon_node.png',
-      'path' => panels_get_path('content_types/node'),
+      'path' => panels_get_path('plugins/content_types/node'),
       'description' => t('All the terms in a vocabulary.'),
       'required context' => new ctools_context_required(t('Vocabulary'), 'vocabulary'),
       'category' => array(t('Vocabulary context'), -9),
