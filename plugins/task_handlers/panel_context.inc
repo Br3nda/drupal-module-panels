@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.3 2008/12/30 18:24:01 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.4 2009/01/15 23:47:39 merlinofchaos Exp $
 
 /**
  * @file
@@ -389,7 +389,7 @@ function panels_panel_context_edit_move(&$form, &$form_state) {
  * Proxy the layout settings form.
  */
 function panels_panel_context_edit_layout_settings(&$form, &$form_state) {
-  panels_load_include('ajax');
+  ctools_include('ajax');
   panels_load_include('display-layout-settings');
   panels_load_include('plugins');
 
@@ -420,7 +420,7 @@ function panels_panel_context_edit_layout_settings(&$form, &$form_state) {
  * to the task handler.
  */
 function panels_panel_context_edit_content(&$form, &$form_state) {
-  panels_load_include('ajax');
+  ctools_include('ajax');
   panels_load_include('plugins');
   panels_load_include('common');
   ctools_include('context');
