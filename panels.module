@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.6 2009/01/15 23:47:39 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.7 2009/01/16 21:47:37 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -917,4 +917,13 @@ function panels_ctools_plugin_directory($module, $plugin) {
   if ($module == 'delegator' || $module == 'panels') {
     return 'plugins/' . $plugin;
   }
+}
+
+/**
+ * Inform CTools that the layout plugin can be loaded from themes.
+ */
+function panels_ctools_plugin_layouts() {
+  return array(
+    'load themes' => TRUE,
+  );
 }

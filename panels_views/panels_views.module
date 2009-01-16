@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.5.2.1 2008/12/16 21:27:57 merlinofchaos Exp $
+// $Id: panels_views.module,v 1.5.2.2 2009/01/16 21:47:38 merlinofchaos Exp $
 
 /**
  * @file panels_views.module
@@ -147,7 +147,7 @@ function panels_views_all_views_render($subtype, $conf, $panel_args, $contexts) 
 
   $block = new stdClass();
   $block->module = 'views';
-  $block->delta  = $view->name . $display;
+  $block->delta  = $view->name .'-'.  $display;
   $block->subject = $view->get_title();
 
   if (!empty($conf['link_to_view'])) {
