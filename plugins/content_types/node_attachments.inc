@@ -1,5 +1,5 @@
 <?php
-// $Id: node_attachments.inc,v 1.1.2.2 2009/01/15 23:42:35 merlinofchaos Exp $
+// $Id: node_attachments.inc,v 1.1.2.3 2009/01/21 01:22:05 merlinofchaos Exp $
 
 
 /**
@@ -26,7 +26,9 @@ function panels_content_node_attachments($subtype, $conf, $panel_args, $context)
 
   $block->subject = t('Attached files');
   if ($node) {
-    $block->content = theme('upload_attachments', $node->files);
+    if (!empty($node->files)) {
+      $block->content = theme('upload_attachments', $node->files);
+    }
     $block->delta = $node->nid;
   }
   else {

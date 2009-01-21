@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.2.1 2008/12/16 21:27:59 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.2.2 2009/01/21 01:22:05 merlinofchaos Exp $
 
 /**
  * @file styles/block.inc
@@ -34,6 +34,8 @@ function theme_panels_block_style_render_pane($content, $pane, $display) {
   if (!empty($content->title)) {
     $content->subject = $content->title;
   }
+
+  $content->region = $pane->panel;
   return theme('block', $content);
 }
 
