@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.8 2009/01/29 00:16:00 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.9 2009/01/29 22:49:46 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -167,6 +167,16 @@ function panels_menu() {
     'file' => 'includes/callbacks.inc',
     'description' => 'Administer items related to the Panels module.',
   );
+
+  if (!module_exists('delegator')) {
+    $items['admin/panels/panel-page'] = array(
+      'title' => 'Panel pages',
+      'access arguments' => array('access administration pages'),
+      'page callback' => 'panels_admin_panel_page',
+      'file' => 'includes/callbacks.inc',
+      'description' => 'A note to let you know where panel pages administration moved to.',
+    );
+  }
 
   return $items;
 }
