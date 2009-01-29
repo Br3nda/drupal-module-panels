@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.7 2009/01/16 21:47:37 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.8 2009/01/29 00:16:00 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -465,7 +465,7 @@ class panels_display {
         $id[] = substr($pid, 4);
       }
     }
-    $next_id = end($id);
+    $next_id = max($id);
     return ++$next_id;
   }
 }

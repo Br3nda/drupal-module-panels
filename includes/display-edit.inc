@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.4 2009/01/15 23:42:35 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.5 2009/01/29 00:16:00 merlinofchaos Exp $
 
 /*
  * @file display-edit.inc
@@ -211,7 +211,7 @@ function theme_panels_edit_display_form($form) {
     );
 
     $content[$panel_id] = theme('panels_panel_dnd', $content[$panel_id], $panel_id, $title, $panel_buttons);
-   }
+  }
 
   $output .= drupal_render($form);
   panels_load_include('display-render');

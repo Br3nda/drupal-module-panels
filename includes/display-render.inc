@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.2 2009/01/15 20:21:59 merlinofchaos Exp $
+// $Id: display-render.inc,v 1.5.2.3 2009/01/29 00:16:00 merlinofchaos Exp $
 
 /**
  * @file
@@ -184,7 +184,7 @@ function panels_render_pane_content(&$display, &$pane) {
   // Override the title if configured to
   if (!empty($pane->configuration['override_title'])) {
     // Give previous title as an available substitution here.
-    $keywords['%title'] = $content->title;
+    $keywords['%title'] = empty($content->title) ? '' : $content->title;
     $content->title = $pane->configuration['override_title_text'];
   }
 
