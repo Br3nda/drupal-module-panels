@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.6 2009/01/29 00:16:00 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.7 2009/01/29 22:01:24 merlinofchaos Exp $
 
 /**
  * @file
@@ -128,14 +128,17 @@ function panels_panel_context_render($handler, $base_contexts) {
     drupal_add_css($handler->conf['css_cache']);
   }
 
-  $output = panels_render_display($display);
-  if (!empty($handler->conf['no_blocks'])) {
-    print theme('page', $output, FALSE);
-    // We return TRUE to let it know we handled this but have already
-    // handled the output rendering ourselves.
-    return TRUE;
+  $info = array(
+    'content' => panels_render_display($display),
+    'no_blocks' => !empty($handler->conf['no_blocks']),
+  );
+
+  if (!empty($display->title)) {
+    $substitutions = ctools_context_get_keywords($contexts);
+    $info['title'] = filter_xss_admin(strtr($display->title, $substitutions));
   }
-  return $output;
+
+  return $info;
 }
 
 /**
