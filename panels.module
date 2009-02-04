@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.10 2009/02/04 00:26:22 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.11 2009/02/04 00:31:24 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -747,21 +747,6 @@ function panels_export_display($display, $prefix = '') {
       }
       $output .= "$prefix  " . '$display->panels[\'' . $pane->panel . '\'][' . $region_counters[$pane->panel]++ .'] = \'' . $pane->pid . "';\n";
     }
-  }
-  return $output;
-}
-
-function panels_var_export($object, $prefix = '') {
-  if (is_array($object) && empty($object)) {
-    $output = 'array()';
-  }
-  else {
-    // Remove extra space to match Drupal coding standards.
-    $output = str_replace('array (', 'array(', var_export($object, TRUE));
-  }
-
-  if ($prefix) {
-    $output = str_replace("\n", "\n$prefix", $output);
   }
   return $output;
 }
