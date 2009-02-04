@@ -1,38 +1,164 @@
 <?php
-// $Id: panels.install,v 1.1 2006/07/22 04:36:09 merlinofchaos Exp $
+// $Id: panels.install,v 1.4.2.1 2009/02/04 00:26:22 merlinofchaos Exp $
 
 /**
- * Install the panels tables
+ * Implementation of hook_schema().
  */
-function panels_install() {
-  switch ($GLOBALS['dbtype']) {
-    case 'pgsql':
-    case 'mysql':
-    case 'mysqli':
-    default:
-      db_query(<<<EOT
-        create table {panels_info} (
-          did int(10) not null default 0 primary key,
-          title varchar(128),
-          access varchar(128),
-          path varchar(128),
-          css_id varchar(128),
-          layout varchar(32)
-        )
-EOT
-      );
-      db_query(<<<EOT
-        create table {panels_area} (
-          did int(10) not null default 0,
-          area varchar(32),
-          type varchar(32),
-          configuration longtext,
-          position int(5),
-          key (did)
-        );
-EOT
-  );
-
-  }
+function panels_schema() {
+  // This should always point to our 'current' schema. This makes it relatively easy
+  // to keep a record of schema as we make changes to it.
+  return panels_schema_1();
 }
 
+/**
+ * Schema version 1 for Panels in D6.
+ */
+function panels_schema_1() {
+  $schema = array();
+
+  $schema['panels_display'] = array(
+    'export' => array(
+      'object' => 'panels_display',
+      'can disable' => FALSE,
+      'identifier' => 'display',
+    ),
+    'fields' => array(
+      'did' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'no export' => TRUE,
+      ),
+      'layout' => array(
+        'type' => 'varchar',
+        'length' => '32',
+        'default' => '',
+      ),
+      'layout_settings' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+      'panel_settings' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+      'cache' => array(
+        'type' => 'text',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+      'title' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'default' => '',
+      ),
+      'hide_title' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('did'),
+  );
+
+  $schema['panels_pane'] = array(
+    'export' => array(
+      'can disable' => FALSE,
+      'identifier' => 'pane',
+    ),
+    'fields' => array(
+      'pid' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'did' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'panel' => array(
+        'type' => 'varchar',
+        'length' => '32',
+        'default' => '',
+      ),
+      'type' => array(
+        'type' => 'varchar',
+        'length' => '32',
+        'default' => '',
+      ),
+      'subtype' => array(
+        'type' => 'varchar',
+        'length' => '64',
+        'default' => '',
+      ),
+      'shown' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'default' => 1,
+      ),
+      'access' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+      'visibility' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+      'configuration' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+      'cache' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+      'position' => array(
+        'type' => 'int',
+        'size' => 'small',
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('pid'),
+    'indexes' => array(
+      'did_idx' => array('did')
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function panels_install() {
+  db_query("UPDATE {system} SET weight = 10 WHERE name = 'panels'");
+  drupal_set_message(st('Please keep in mind that this is an Alpha release of Panels for Drupal 6, and is NOT intended for use on production sites.'));
+  drupal_set_message(st('Additionally, the upgrade path from Drupal 5 has NOT been resolved, and should not be attempted.'));
+  drupal_set_message(st('Bug reports are encouraged, especially when they come with patches! The <a href="@link">Panels project page</a> has details on filing issues.', array('@link' => 'http://drupal.org/project/panels')));
+  drupal_install_schema('panels');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function panels_uninstall() {
+  drupal_uninstall_schema('panels');
+}
+
+function panels_update_6003() {
+  // Update size of pane 'access' field.
+  // update contents of pane 'access' field.
+  // Remove panels_object_cache table
+  // update pid and did to be serial
+}
