@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.13.2.2 2008/12/20 21:27:22 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.13.2.3 2009/02/05 01:57:16 merlinofchaos Exp $
 
 /**
  * @file
@@ -325,6 +325,7 @@ function panels_get_available_content_types($contexts = NULL, $has_content = FAL
   $content_types = panels_get_content_types();
   $available = array();
 
+  ctools_include('context');
   foreach ($content_types as $id => $type) {
     foreach (panels_ct_get_types($type) as $cid => $cinfo) {
       // exclude items that require content if we're saying we don't
@@ -335,7 +336,6 @@ function panels_get_available_content_types($contexts = NULL, $has_content = FAL
 
       // Check to see if the content type can be used in this context.
       if (!empty($cinfo['required context'])) {
-        ctools_include('context');
         if (!ctools_context_filter($contexts, $cinfo['required context'])) {
           continue;
         }

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.11 2009/02/04 00:31:24 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.12 2009/02/05 01:57:16 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -103,6 +103,13 @@ function panels_theme() {
     }
 
   }
+
+  // On behalf of our own rounded corners style which wants its own theme:
+  $theme['panels_rounded_corners_box'] = array(
+    'arguments' => array('content' => NULL),
+    'path' => panels_get_path('plugins/styles/corners'),
+    'template' => 'panels-rounded-corners-box',
+  );
 
   return $theme;
 }

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.4.2.1 2009/02/04 00:26:22 merlinofchaos Exp $
+// $Id: panels.install,v 1.4.2.2 2009/02/05 01:57:16 merlinofchaos Exp $
 
 /**
  * Implementation of hook_schema().
@@ -156,9 +156,11 @@ function panels_uninstall() {
   drupal_uninstall_schema('panels');
 }
 
+/*
 function panels_update_6003() {
   // Update size of pane 'access' field.
   // update contents of pane 'access' field.
   // Remove panels_object_cache table
   // update pid and did to be serial
 }
+*/
