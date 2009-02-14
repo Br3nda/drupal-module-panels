@@ -1,5 +1,5 @@
 <?php
-// $Id: node_content.inc,v 1.1.2.2 2009/01/15 23:42:35 merlinofchaos Exp $
+// $Id: node_content.inc,v 1.1.2.3 2009/02/14 19:59:37 sun Exp $
 
 
 /**
@@ -82,6 +82,11 @@ function panels_content_node_content($subtype, $conf, $panel_args, $context) {
 }
 
 function panels_admin_node_content($node, $conf) {
+  // The build mode identifies the target for which the node is built.
+  if (!isset($node->build_mode)) {
+    $node->build_mode = NODE_BUILD_NORMAL;
+  }
+
   // Remove the delimiter (if any) that separates the teaser from the body.
   $node->body = str_replace('<!--break-->', '', $node->body);
 
