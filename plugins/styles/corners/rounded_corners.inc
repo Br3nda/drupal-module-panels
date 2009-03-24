@@ -1,5 +1,5 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.1 2009/02/05 01:57:17 merlinofchaos Exp $
+// $Id: rounded_corners.inc,v 1.1.2.2 2009/03/24 18:32:20 merlinofchaos Exp $
 
 /**
  * @file styles/rounded_corners.inc
@@ -20,6 +20,13 @@ function panels_rounded_corners_panels_styles() {
       'render panel' => 'panels_rounded_corners_style_render_panel',
       'render pane' => 'panels_rounded_corners_style_render_pane',
       'settings form' => 'panels_rounded_corners_style_settings_form',
+      'hook theme' => array(
+        'panels_rounded_corners_box' => array(
+          'arguments' => array('content' => NULL),
+          'path' => panels_get_path('plugins/styles/corners'),
+          'template' => 'panels-rounded-corners-box',
+        ),
+      ),
     ),
   );
 }
