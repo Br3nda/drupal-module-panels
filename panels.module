@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.13 2009/03/24 18:32:20 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.14 2009/03/25 02:27:38 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -211,6 +211,7 @@ function panels_menu() {
     );
   }
 
+  panels_load_include('plugins');
   $layouts = panels_get_layouts();
   foreach ($layouts as $name => $data) {
     if (!empty($data['hook menu'])) {
