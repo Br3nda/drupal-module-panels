@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.3 2009/03/24 18:32:19 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.4 2009/03/26 16:02:51 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -230,9 +230,14 @@ function theme_panels_flexible($id, $content, $settings, $display) {
   $renderer->css_id = $id;
   $renderer->did = $display->did;
   $renderer->id_str = $id ? 'id="' . $id . '"' : '';
+  $renderer->admin = FALSE;
 
   $css = panels_flexible_render_css($renderer);
 /*
+ * TODO: We can't uncomment this code and use it until delegator starts
+ * storing displays in the database. There are other problems that can
+ * happen because of its overuse of the 'new' display ID anyway, so this
+ * is just another reminder.
   ctools_include('css');
   // Generate an id based upon rows + columns:
   $css_id = 'flexible:' . $display->did . ':';
