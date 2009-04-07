@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_page.inc,v 1.1.2.2 2009/04/06 22:30:09 merlinofchaos Exp $
+// $Id: panel_page.inc,v 1.1.2.3 2009/04/07 16:47:57 merlinofchaos Exp $
 
 /**
  * @file
@@ -43,7 +43,7 @@ function panels_panel_page_delegator_tasks() {
       'operations' => array(
         array(
           'title' => t('Import'),
-          'href' => 'admin/build/pages/panel-page/import',
+          'href' => 'admin/build/pages/import',
         ),
         array(
           'title' => t('Add panel   page'),
