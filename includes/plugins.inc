@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.13.2.9 2009/04/20 22:27:56 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.13.2.10 2009/04/20 22:31:26 merlinofchaos Exp $
 
 /**
  * @file
@@ -61,7 +61,7 @@ function panels_get_pane_content($display, $pane, $keywords, $args = array(), $c
     $content = $cache->content;
   }
   else {
-    $content = ctools_content_render($pane->type, $pane->subtype, $pane->configuration, $args, $context, $incoming_content);
+    $content = ctools_content_render($pane->type, $pane->subtype, $pane->configuration, $keywords, $args, $context, $incoming_content);
     foreach (module_implements('panels_pane_content_alter') as $module) {
       $function = $module . '_panels_pane_content_alter';
       $function($content, $pane, $args, $context);
