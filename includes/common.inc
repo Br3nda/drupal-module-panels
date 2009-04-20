@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.10.2.4 2009/04/18 02:01:56 merlinofchaos Exp $
+// $Id: common.inc,v 1.10.2.5 2009/04/20 20:07:51 merlinofchaos Exp $
 
 
 /**
@@ -226,6 +226,7 @@ class panels_allowed_layouts {
  */
 function panels_common_settings(&$form_state, $module_name = 'panels_common') {
   panels_load_include('plugins');
+  ctools_include('content');
   $content_types = panels_get_content_types();
   $default_types = variable_get($module_name . '_default', NULL);
   if (!isset($default_types)) {
