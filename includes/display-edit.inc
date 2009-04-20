@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.9 2009/04/18 02:01:56 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.10 2009/04/20 22:18:49 merlinofchaos Exp $
 
 /*
  * @file display-edit.inc
@@ -150,7 +150,7 @@ function panels_edit_display_form(&$form_state) {
   drupal_add_css(panels_get_path('css/panels_admin.css'));
 
   $css = array();
-  $js = array();
+  $js = array(drupal_get_path('module', 'ctools') . '/js/dependent.js' => TRUE);
   foreach ($form_state['content_types'] as $type_name => $subtypes) {
     if (is_array($subtypes)) {
       foreach ($subtypes as $subtype) {
