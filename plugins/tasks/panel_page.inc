@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_page.inc,v 1.1.2.4 2009/04/18 02:01:57 merlinofchaos Exp $
+// $Id: panel_page.inc,v 1.1.2.5 2009/04/22 22:31:54 merlinofchaos Exp $
 
 /**
  * @file
@@ -46,7 +46,7 @@ function panels_panel_page_delegator_tasks() {
           'href' => 'admin/build/pages/import',
         ),
         array(
-          'title' => t('Add panel   page'),
+          'title' => t('Add panel page'),
           'href' => 'admin/build/pages/panel-page/add',
         ),
       ),
@@ -62,8 +62,16 @@ function panels_panel_page_delegator_tasks() {
       'page callback' => 'panels_panel_page_execute',
       // context only items
       'handler type' => 'context',
-      'get arguments' => 'panels_panel_page_get_arguments',
-      'get context placeholders' => 'panels_panel_page_get_contexts',
+      'get arguments' => array(
+        'file' => 'page.inc',
+        'path' => drupal_get_path('module', 'delegator') . '/plugins/tasks',
+        'function' => 'delegator_page_get_arguments',
+      ),
+      'get context placeholders' => array(
+        'file' => 'page.inc',
+        'path' => drupal_get_path('module', 'delegator') . '/plugins/tasks',
+        'function' => 'delegator_page_get_contexts',
+      ),
     ),
   );
 }

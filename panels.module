@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.18 2009/04/20 23:52:05 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.19 2009/04/22 22:31:54 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -173,14 +173,9 @@ function panels_menu() {
   $items['panels/ajax/access-add'] = array(
     'page callback' => 'panels_ajax_add_access_test',
   ) + $base;
-
-/*
-  // For panel settings on the edit layout settings page
-  $items['panels/ajax/style-settings'] = array(
-    'page callback' => 'panels_ajax_style_settings',
-    'file' => 'includes/display-layout-settings.inc',
+  $items['panels/ajax/preview'] = array(
+    'page callback' => 'panels_ajax_preview',
   ) + $base;
-*/
 
   // Provide a nice location for a panels admin panel.
   $items['admin/panels'] = array(
