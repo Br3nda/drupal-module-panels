@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_page.inc,v 1.1.2.5 2009/04/22 22:31:54 merlinofchaos Exp $
+// $Id: panel_page.inc,v 1.1.2.6 2009/04/28 20:38:22 merlinofchaos Exp $
 
 /**
  * @file
@@ -185,15 +185,20 @@ function panels_panel_page_edit_form_info() {
 function panels_panel_page_execute($page) {
   // Turn the contexts into a properly keyed array.
   $contexts = array();
-  foreach (func_get_args() as $arg) {
+  $args = array();
+  foreach (func_get_args() as $count => $arg) {
     if (is_object($arg) && get_class($arg) == 'ctools_context') {
       $contexts[$arg->id] = $arg;
+      $args[] = $arg->original_argument;
+    }
+    else if ($count) {
+      $args[] = $arg;
     }
   }
 
   // Delegate to the panel context handler.
   if ($function = ctools_plugin_load_function('delegator', 'task_handlers', 'panel_context', 'render')) {
-    $info = $function($page, $contexts, FALSE);
+    $info = $function($page, $contexts, $args, FALSE);
     if (isset($info['title'])) {
       drupal_set_title($info['title']);
     }

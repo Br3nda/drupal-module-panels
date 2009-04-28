@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.15 2009/04/20 23:52:05 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.16 2009/04/28 20:38:22 merlinofchaos Exp $
 
 /**
  * @file
@@ -128,7 +128,7 @@ function &panels_panel_context_get_display(&$handler) {
  * We must first check to ensure the node is of a type we're allowed
  * to render. If not, decline to render it by returning NULL.
  */
-function panels_panel_context_render($handler, $base_contexts, $test = TRUE) {
+function panels_panel_context_render($handler, $base_contexts, $args, $test = TRUE) {
   // Go through arguments and see if they match.
   ctools_include('context');
   ctools_include('context-task-handler');
@@ -144,6 +144,7 @@ function panels_panel_context_render($handler, $base_contexts, $test = TRUE) {
   $display = panels_panel_context_get_display($handler);
 
   $display->context = $contexts;
+  $display->args = $args;
   $display->css_id = $handler->conf['css_id'];
 
   // Check to see if there is any CSS.
