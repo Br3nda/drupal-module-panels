@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.7 2009/04/20 22:18:49 merlinofchaos Exp $
+// $Id: display-render.inc,v 1.5.2.8 2009/04/29 03:19:07 merlinofchaos Exp $
 
 /**
  * @file
@@ -129,13 +129,8 @@ function panels_render_layout_admin($layout, $content, $display) {
  * the display theme function.
  */
 function panels_render_panes(&$display) {
-  // Safety check.
-  if (empty($display->content)) {
-    return array();
-  }
   ctools_include('content');
 
-  // @todo: Pre-render keywords. What happened to this code?
   $keywords = array();
 
   // First, render all the panes into little boxes. We do this here because
@@ -144,9 +139,8 @@ function panels_render_panes(&$display) {
   $panes = array();
   $later = array();
 
-  foreach ($display->content as $pid => $pane) {
-    $pane->shown = isset($pane->shown) ? $pane->shown : TRUE;
-    // TODO Really ought to design a method for creating a quick-access set of content_type (and other plugin) data to help optimize render performance
+  foreach ((array) $display->content as $pid => $pane) {
+    $pane->shown = !empty($pane->shown); // guarantee this field exists.
     // If the user can't see this pane, do not render it.
     if (!$pane->shown || !panels_pane_access($pane, $display)) {
       continue;

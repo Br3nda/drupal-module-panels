@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.5.2.8 2009/04/20 23:52:05 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.5.2.9 2009/04/29 03:19:10 merlinofchaos Exp $
 
 /**
  * @file panels_mini.module
@@ -32,6 +32,10 @@ function panels_mini_menu() {
  * Expose qualifying mini panels to Drupal's block system.
  */
 function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
+  if (!module_exists('ctools')) {
+    return array();
+  }
+
   if ($op == 'list') {
     $blocks = array();
 

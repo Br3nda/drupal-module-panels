@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.20 2009/04/28 20:38:21 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.21 2009/04/29 03:19:04 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -535,6 +535,7 @@ class panels_display {
  *   The sanitized display object.
  */
 function panels_sanitize_display(&$display) {
+  return;
   if (!isset($display->args)) {
     $display->args = array();
   }
