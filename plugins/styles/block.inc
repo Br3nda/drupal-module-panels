@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.2.2 2009/01/21 01:22:05 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.2.3 2009/04/29 21:13:27 merlinofchaos Exp $
 
 /**
  * @file styles/block.inc
@@ -36,6 +36,12 @@ function theme_panels_block_style_render_pane($content, $pane, $display) {
   }
 
   $content->region = $pane->panel;
+  if (!isset($content->module)) {
+    $content->module = $content->type;
+  }
+  if (!isset($content->delta)) {
+    $content->delta = $content->subtype;
+  }
   return theme('block', $content);
 }
 
