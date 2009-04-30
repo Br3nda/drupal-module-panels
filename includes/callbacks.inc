@@ -1,5 +1,5 @@
 <?php
-// $Id: callbacks.inc,v 1.2.4.4 2009/04/30 17:37:26 merlinofchaos Exp $
+// $Id: callbacks.inc,v 1.2.4.5 2009/04/30 20:09:57 merlinofchaos Exp $
 /**
  * @file callbacks.inc
  * Minor menu callbacks for Panels helpers.
@@ -97,3 +97,10 @@ function panels_admin_settings_page() {
   return system_settings_form($form);
 }
 
+/**
+ * Settings for panel contexts created by the delegator.
+ */
+function panels_admin_panel_context_page() {
+  panels_load_include('common');
+  return drupal_get_form('panels_common_settings', 'panels_page');
+}
