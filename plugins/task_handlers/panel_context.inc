@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.19 2009/04/30 21:24:13 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.20 2009/04/30 23:59:55 merlinofchaos Exp $
 
 /**
  * @file
@@ -159,7 +159,7 @@ function panels_panel_context_render($handler, $base_contexts, $args, $test = TR
 
   // With an argument, this actually sets the display.
   panels_get_current_page_display($display);
-  
+
   $info = array(
     'content' => panels_render_display($display),
     'no_blocks' => !empty($handler->conf['no_blocks']),
