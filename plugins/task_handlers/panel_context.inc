@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.17 2009/04/30 20:09:57 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.18 2009/04/30 21:05:29 merlinofchaos Exp $
 
 /**
  * @file
@@ -156,6 +156,9 @@ function panels_panel_context_render($handler, $base_contexts, $args, $test = TR
     drupal_add_css($handler->conf['css_cache']);
   }
 
+  // With an argument, this actually sets the display.
+  panels_get_current_page_display($display);
+  
   $info = array(
     'content' => panels_render_display($display),
     'no_blocks' => !empty($handler->conf['no_blocks']),
