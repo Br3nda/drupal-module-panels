@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.23 2009/04/30 20:09:57 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.24 2009/04/30 20:41:45 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -225,6 +225,7 @@ function panels_menu() {
     'title' => 'General',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('panels_admin_settings_page'),
+    'access arguments' => array('administer delegator'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
   ) + $admin_base;
