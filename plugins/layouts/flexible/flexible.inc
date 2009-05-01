@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.10 2009/04/30 23:59:55 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.11 2009/05/01 00:44:45 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -1304,6 +1304,7 @@ function panels_ajax_flexible_edit_resize($did) {
   }
 
   $settings = &$cache->display->layout_settings;
+  panels_flexible_convert_settings($settings);
 
   $settings['items'][$_POST['left']]['width'] = $_POST['left_width'];
   $settings['items'][$_POST['right']]['width'] = $_POST['right_width'];
