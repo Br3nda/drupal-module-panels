@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.4.4.2 2009/04/22 22:31:54 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.4.4.3 2009/05/01 00:29:10 merlinofchaos Exp $
 /**
  * @file display_editor.js 
  *
@@ -490,7 +490,7 @@ Drupal.behaviors.PanelsDisplayEditor = function(context) {
     .addClass('panels-preview-processed')
     .click(function() {
       if (!$('#panels-preview').size()) {
-        $('#panels-panel-context-edit-content').after('<div id="panels-preview"></div>');
+        $('#panels-dnd-main').parents('form').after('<div id="panels-preview"></div>');
       }
 
       $('#panels-preview').html(Drupal.theme('CToolsModalThrobber'));
