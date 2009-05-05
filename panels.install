@@ -1,5 +1,20 @@
 <?php
-// $Id: panels.install,v 1.4.2.8 2009/04/29 21:13:27 merlinofchaos Exp $
+// $Id: panels.install,v 1.4.2.9 2009/05/05 22:14:29 merlinofchaos Exp $
+
+/**
+ * Test requirements for installation and running.
+ */
+function panels_requirements($phase) {
+  $requirements = array();
+  if (!module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
+     $requirements['panels_ctools'] = array(
+       'title' => $t('Panels required Chaos Tool Suite (CTools) API Version'),
+       'value' => PANELS_REQUIRED_CTOOLS_API,
+       'severity' => REQUIREMENT_ERROR,
+     );
+  }
+  return $requirements;
+}
 
 /**
  * Implementation of hook_schema().
