@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.5.2.7 2009/05/07 20:27:46 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.5.2.8 2009/05/11 04:39:36 merlinofchaos Exp $
 
 
 /**
@@ -125,7 +125,7 @@ function panels_node_add() {
 
   // If no layout selected, present a list of choices.
   foreach ($layouts as $id => $layout) {
-    $output .= panels_print_layout_link($id, $layout, 'node/add/panel/' . $id);
+    $output .= panels_print_layout_link($id, $layout, 'node/add/panel/' . $id, array('query' => $_GET));
   }
   return $output;
 }
@@ -140,7 +140,9 @@ function panels_node_form(&$node, &$param) {
     // and if that doesn't work present them with a list to pick from.
     $panel_layout = isset($node->panel_layout) ? $node->panel_layout : arg(3);
     if (empty($panel_layout)) {
-      return drupal_goto('node/add/panel/choose-layout');
+      $opts = $_GET;
+      unset($opts['q']);
+      return drupal_goto('node/add/panel/choose-layout', $opts);
     }
 
     panels_load_include('plugins');
