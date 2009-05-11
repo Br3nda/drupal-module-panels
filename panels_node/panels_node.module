@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.5.2.8 2009/05/11 04:39:36 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.5.2.9 2009/05/11 04:45:22 merlinofchaos Exp $
 
 
 /**
@@ -263,6 +263,9 @@ function panels_node_view($node, $teaser = FALSE, $page = FALSE) {
   if ($teaser) {
     // Do the standard view for teaser.
     $node = node_prepare($node, $teaser);
+    // Because our teasier is never the same as our content, *always* provide
+    // the read more flag.
+    $node->readmore = TRUE;
   }
   else {
     $display = panels_load_display($node->panels_node['did']);
