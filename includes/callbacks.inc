@@ -1,5 +1,5 @@
 <?php
-// $Id: callbacks.inc,v 1.2.4.6 2009/05/11 15:53:13 merlinofchaos Exp $
+// $Id: callbacks.inc,v 1.2.4.7 2009/05/11 22:48:16 merlinofchaos Exp $
 /**
  * @file callbacks.inc
  * Minor menu callbacks for Panels helpers.
@@ -26,7 +26,7 @@ function template_preprocess_panels_dashboard(&$vars) {
   }
   else {
     $vars['new_panel_page'] = '<b>' . t('Panel page') . '</b><br /><em>' . t('You must activate the delegator module for this functionality.') . '</em>';
-    $vars['new_panel_custom'] = '<b>' . t('Advanced Panel page') . '</b><br /><em>' . t('You must activate the delegator module for this functionality.') . '</em>';
+    $vars['new_panel_custom'] = '<b>' . t('Advanced panel page') . '</b><br /><em>' . t('You must activate the delegator module for this functionality.') . '</em>';
     $vars['new_panel_override'] = '<em>' . t('You must activate the delegator module for this functionality.') . '</em>';
   }
 
