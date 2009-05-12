@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_page.inc,v 1.1.2.9 2009/05/12 00:48:38 merlinofchaos Exp $
+// $Id: panel_page.inc,v 1.1.2.10 2009/05/12 01:02:24 merlinofchaos Exp $
 
 /**
  * @file
@@ -350,7 +350,7 @@ function panels_page_save_page(&$page, $update) {
 
   // Delete any previous CSS cache file.
   ctools_include('css');
-  ctools_css_clear('panel_context:' . $handler->name);
+  ctools_css_clear('panel_context:' . $page->name);
 
   if (isset($page->conf['temp_layout'])) {
     unset($page->conf['temp_layout']);
