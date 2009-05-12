@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.21 2009/05/07 20:19:36 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.22 2009/05/12 00:48:38 merlinofchaos Exp $
 
 /**
  * @file
@@ -140,6 +140,10 @@ function panels_panel_context_render($handler, $base_contexts, $args, $test = TR
     return;
   }
 
+  if (isset($handler->handler)) {
+    ctools_context_handler_pre_render($handler, $contexts, $args);
+  }
+  
   // Load the display
   $display = panels_panel_context_get_display($handler);
 

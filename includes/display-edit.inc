@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.13 2009/04/30 20:09:57 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.14 2009/05/12 00:48:38 merlinofchaos Exp $
 
 /*
  * @file display-edit.inc
@@ -142,7 +142,7 @@ function panels_edit_display_form(&$form_state) {
             if (file_exists($file)) {
               $js[$file] = TRUE;
             }
-            else if (file(exists($subtype['path'] . '/' . $file))) {
+            else if (file_exists($subtype['path'] . '/' . $file)) {
               $js[$subtype['path'] . '/' . $file] = TRUE;
             }
           }
@@ -152,7 +152,7 @@ function panels_edit_display_form(&$form_state) {
             if (file_exists($file)) {
               $css[$file] = TRUE;
             }
-            else if (file(exists($subtype['path'] . '/' . $file))) {
+            else if (file_exists($subtype['path'] . '/' . $file)) {
               $css[$subtype['path'] . '/' . $file] = TRUE;
             }
           }
