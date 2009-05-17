@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.5.2.10 2009/05/05 22:14:29 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.5.2.11 2009/05/17 17:40:19 merlinofchaos Exp $
 
 /**
  * @file panels_mini.module
@@ -20,7 +20,7 @@ function panels_mini_perm() {
  */
 function panels_mini_menu() {
   // Safety: go away if CTools is not at an appropriate version.
-  if (!module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
+  if (!defined('PANELS_REQUIRED_CTOOLS_API') || !module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
     return array();
   }
   require_once drupal_get_path('module', 'panels_mini') . '/panels_mini.admin.inc';
@@ -37,7 +37,7 @@ function panels_mini_menu() {
  */
 function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
   // Safety: go away if CTools is not at an appropriate version.
-  if (!module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
+  if (!defined('PANELS_REQUIRED_CTOOLS_API') || !module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
     return array();
   }
 

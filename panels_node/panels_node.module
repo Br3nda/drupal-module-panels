@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.5.2.9 2009/05/11 04:45:22 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.5.2.10 2009/05/17 17:40:19 merlinofchaos Exp $
 
 
 /**
@@ -25,7 +25,7 @@ function panels_node_perm() {
  */
 function panels_node_menu() {
   // Safety: go away if CTools is not at an appropriate version.
-  if (!module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
+  if (!defined('PANELS_REQUIRED_CTOOLS_API') || !module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
     return array();
   }
 
@@ -84,7 +84,7 @@ function panels_node_edit_node($node) {
  */
 function panels_node_node_info() {
   // Safety: go away if CTools is not at an appropriate version.
-  if (!module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
+  if (!defined('PANELS_REQUIRED_CTOOLS_API') || !module_invoke('ctools', 'api_version', PANELS_REQUIRED_CTOOLS_API)) {
     return array();
   }
 
