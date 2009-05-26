@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views.module,v 1.1.2.33 2008/07/29 10:45:43 sdboyer Exp $
+// $Id: panels_views.module,v 1.1.2.34 2009/05/26 04:50:34 sdboyer Exp $
 
 
 /**
@@ -782,7 +782,10 @@ function panels_views_render($conf, $panel_args, &$contexts) {
           break;
 
         case 'panel':
-          $args[] = $panel_args[$data['panel']];
+          // Only fill $args if a panel arg was passed in that belongs there
+          if (array_key_exists($data['panel'], $panel_args)) {
+            $args[] = $panel_args[$data['panel']];
+          }
           break;
 
         case 'user':
