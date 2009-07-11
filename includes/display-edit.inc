@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.15 2009/05/19 23:52:08 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.16 2009/07/11 16:49:12 merlinofchaos Exp $
 
 /*
  * @file display-edit.inc
@@ -44,6 +44,7 @@ function _panels_edit($display, $destination, $content_types, $title = FALSE) {
     'content_types' => $cache->content_types,
     're_render' => FALSE,
     'no_redirect' => TRUE,
+    'display_title' => !empty($cache->display_title),
   );
 
   $output = ctools_build_form('panels_edit_display_form', $form_state);
@@ -168,6 +169,8 @@ function panels_edit_display_form(&$form_state) {
     drupal_add_css($file);
   }
 
+  $form += panels_edit_display_settings_form($form_state);
+
   // Build up the preview portion of the form, if necessary.
   if (empty($form_state['no preview'])) {
     $form['preview'] = array('#tree' => TRUE);
@@ -190,11 +193,13 @@ function panels_edit_display_form(&$form_state) {
  */
 function panels_edit_display_get_links(&$display) {
   $links = array();
+/*
   $links[] = array(
     'title' => t('General settings'),
     'href' => 'panels/ajax/display-settings/' . $display->did,
     'attributes' => array('class' => 'ctools-use-modal'),
   );
+*/
 
   $panel_settings = $display->panel_settings;
   $style = panels_get_style((!empty($panel_settings['style'])) ? $panel_settings['style'] : 'default');
@@ -346,6 +351,8 @@ function panels_edit_display_form_submit($form, &$form_state) {
       }
     }
   }
+
+  panels_edit_display_settings_form_submit($form, $form_state);
 }
 
 /**
@@ -603,13 +610,13 @@ function panels_edit_display_settings_form(&$form_state) {
     $form['layout_settings'] = $layout['settings form']($display, $layout, $display->layout_settings);
   }
   $form['layout_settings']['#tree'] = TRUE;
-
+/*
   $form['save'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
     '#return_here' => TRUE,
   );
-
+*/
   return $form;
 }
 
