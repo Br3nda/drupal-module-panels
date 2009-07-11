@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.24 2009/07/10 00:09:11 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.25 2009/07/11 15:02:54 merlinofchaos Exp $
 
 /**
  * @file
@@ -588,8 +588,7 @@ function panels_panel_context_edit_move(&$form, &$form_state) {
   $form['buttons']['previous']['#next'] = 'layout';
   $form['buttons']['next']['#next'] = 'content';
 
-  $form_state['form_info']['return path'] = 'admin/build/pages/nojs/operation/' 
-    . $form_state['task_name'] . '/handlers/' . $form_state['handler_id'] . '/content';
+  $form_state['form_info']['return path'] = page_manager_edit_url($page->task_name, array('handlers', $form_state['handler_id'], 'content'));
 }
 
 /**
