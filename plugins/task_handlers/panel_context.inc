@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.28 2009/07/11 20:10:41 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.29 2009/07/11 20:22:25 merlinofchaos Exp $
 
 /**
  * @file
@@ -637,8 +637,10 @@ function panels_panel_context_edit_content(&$form, &$form_state) {
   // Make sure the theme will work since our form id is different.
   $form['#theme'] = 'panels_edit_display_form';
 
-  $form['buttons']['preview'] = $form['buttons']['return'];
-  $form['buttons']['preview']['#value'] = t('Update and preview');
+  if (!isset($form_state['type']) || $form_state['type'] != 'add') {
+    $form['buttons']['preview'] = $form['buttons']['return'];
+    $form['buttons']['preview']['#value'] = t('Update and preview');
+  }
 }
 
 function panels_panel_context_edit_content_submit(&$form, &$form_state) {
