@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.31 2009/07/09 01:08:56 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.32 2009/07/11 20:00:35 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -7,7 +7,7 @@
  * Core functionality for the Panels engine.
  */
 
-define('PANELS_REQUIRED_CTOOLS_API', '1.0.1');
+define('PANELS_REQUIRED_CTOOLS_API', '1.1.0');
 
 /**
  * Returns the API version of Panels. This didn't exist in 1.
