@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.admin.inc,v 1.6.2.5 2009/04/30 20:09:58 merlinofchaos Exp $
+// $Id: panels_mini.admin.inc,v 1.6.2.6 2009/07/12 11:51:41 sdboyer Exp $
 
 /**
  * @file
