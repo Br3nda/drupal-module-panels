@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.33 2009/07/13 17:35:49 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.34 2009/07/13 17:38:19 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -297,7 +297,7 @@ function panels_perm() {
     'administer pane visibility',
     'administer pane access',
     'administer advanced pane settings',
-    'use panels caching features'
+    'use panels caching features',
     'use panels dashboard',
   );
 }
