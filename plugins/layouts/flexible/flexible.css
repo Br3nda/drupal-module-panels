@@ -1,4 +1,4 @@
-/* $Id: flexible.css,v 1.1.2.3 2009/03/26 17:06:47 merlinofchaos Exp $ */
+/* $Id: flexible.css,v 1.1.2.4 2009/07/13 21:06:58 merlinofchaos Exp $ */
 
 .panel-flexible { 
 /*  overflow: hidden;  */
@@ -27,7 +27,7 @@
   float: left; 
   padding: 0;
   /* margin: 1px 0 .5em 0; */
-  overflow: hidden;
+/*  overflow: hidden; */
 }
 
 .panels-flexible-row {

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.admin.inc,v 1.6.2.6 2009/07/12 11:51:41 sdboyer Exp $
+// $Id: panels_mini.admin.inc,v 1.6.2.7 2009/07/13 21:06:57 merlinofchaos Exp $
 
 /**
  * @file
@@ -278,7 +278,7 @@ function panels_mini_edit_export(&$form_state, $panel_mini) {
  * Page callback to import a mini panel from PHP code.
  */
 function panels_mini_import_mini() {
-  if ($_POST['form_id'] == 'panels_mini_edit_form') {
+  if (isset($_POST['form_id']) && $_POST['form_id'] == 'panels_mini_edit_form') {
     $panel_mini = unserialize($_SESSION['pm_import']);
     drupal_set_title(t('Import panel mini "@s"', array('@s' => $panel_mini->title)));
     return drupal_get_form('panels_mini_edit_form', $panel_mini);
@@ -318,6 +318,7 @@ function panels_mini_import_form_submit($form, &$form_state) {
 
   if (isset($mini)) {
     drupal_set_title(t('Import mini panel "@s"', array('@s' => $mini->title)));
+    $mini->pid = 'new';
     // As $mini contains non-stdClass objects,
     // it needs to be serialized before being stored in the session variable.
     $_SESSION['pm_import'] = serialize($mini);
