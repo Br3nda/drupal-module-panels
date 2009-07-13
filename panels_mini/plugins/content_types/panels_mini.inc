@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.inc,v 1.1.2.3 2009/07/12 11:51:41 sdboyer Exp $
+// $Id: panels_mini.inc,v 1.1.2.4 2009/07/13 19:51:23 merlinofchaos Exp $
 
 /**
  * @file
@@ -55,8 +55,12 @@ function panels_mini_panels_mini_content_type_content_types($plugin) {
  * Render a mini panel called from a panels display.
  */
 function panels_mini_panels_mini_content_type_render($subtype, $conf, $panel_args, &$contexts) {
+  static $viewing = array();
   $mini = panels_mini_load($subtype);
   if (!$mini) {
+    return FALSE;
+  }
+  if (!empty($viewing[$mini->name])) {
     return FALSE;
   }
 
@@ -67,6 +71,7 @@ function panels_mini_panels_mini_content_type_render($subtype, $conf, $panel_arg
   if (empty($mini) || !empty($mini->disabled)) {
     return;
   }
+  $viewing[$mini->name] = TRUE;
 
   $mini->display->args = $panel_args;
   $mini->display->css_id = panels_mini_get_id($subtype);
@@ -79,6 +84,8 @@ function panels_mini_panels_mini_content_type_render($subtype, $conf, $panel_arg
   $block->delta   = $subtype;
   $block->title = filter_xss_admin($mini->title);
   $block->content = panels_render_display($mini->display);
+
+  unset($viewing[$mini->name]);
   return $block;
 }
 

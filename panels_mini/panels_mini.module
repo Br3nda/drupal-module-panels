@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.5.2.12 2009/07/12 11:51:41 sdboyer Exp $
+// $Id: panels_mini.module,v 1.5.2.13 2009/07/13 19:51:23 merlinofchaos Exp $
 
 /**
  * @file panels_mini.module
@@ -56,6 +56,13 @@ function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
     return $blocks;
   }
   elseif ($op == 'view') {
+    // static recursion protection.
+    static $viewing = array();
+    if (!empty($viewing[$delta])) {
+      return;
+    }
+
+    $viewing[$delta] = TRUE;
     $panel_mini = panels_mini_load($delta);
     ctools_include('context');
     $panel_mini->context = $panel_mini->display->context = ctools_context_load_contexts($panel_mini);
@@ -74,6 +81,8 @@ function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
       'subject' => $title,
       'content' => panels_render_display($panel_mini->display),
     );
+
+    unset($viewing[$delta]);
     return $block;
   }
 }
