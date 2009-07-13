@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.8 2009/04/29 03:19:07 merlinofchaos Exp $
+// $Id: display-render.inc,v 1.5.2.9 2009/07/13 20:40:55 merlinofchaos Exp $
 
 /**
  * @file
@@ -246,7 +246,7 @@ function panels_get_panel_style_and_settings($panel_settings, $panel) {
     return array(panels_get_style('default'), array());
   }
 
-  if (empty($panel_settings[$panel]['style'])) {
+  if (empty($panel_settings[$panel]['style']) || $panel_settings[$panel]['style'] == -1) {
     if (empty($panel_settings['style'])) {
       return array(panels_get_style('default'), array());
     }
