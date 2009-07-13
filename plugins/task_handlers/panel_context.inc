@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.29 2009/07/11 20:22:25 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.30 2009/07/13 20:27:14 merlinofchaos Exp $
 
 /**
  * @file
@@ -594,7 +594,7 @@ function panels_panel_context_edit_move(&$form, &$form_state) {
   $form['buttons']['previous']['#next'] = 'layout';
   $form['buttons']['next']['#next'] = 'content';
 
-  $form_state['form_info']['return path'] = page_manager_edit_url($page->task_name, array('handlers', $form_state['handler_id'], 'content'));
+  $form_state['form_info']['return path'] = page_manager_edit_url($form_state['page']->task_name, array('handlers', $form_state['handler_id'], 'content'));
 }
 
 /**

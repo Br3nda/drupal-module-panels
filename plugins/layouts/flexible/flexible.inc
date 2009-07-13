@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.12 2009/05/20 20:20:37 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.13 2009/07/13 20:27:14 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -342,7 +342,7 @@ function panels_flexible_render_items($renderer, $list, $owner_id) {
 
     // If all items are fixed then we have a special splitter on the right to
     // control the overall width.
-    if ($max == $position && $location == 'left') {
+    if (!empty($renderer->admin) && $max == $position && $location == 'left') {
       $groups[$location] .= panels_flexible_render_splitter($renderer, $id, NULL);
     }
     $prev = $id;
