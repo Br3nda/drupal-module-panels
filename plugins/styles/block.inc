@@ -1,9 +1,9 @@
 <?php
-// $Id: block.inc,v 1.1.2.4 2009/05/02 00:56:16 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.2.5 2009/07/14 18:41:04 merlinofchaos Exp $
 
 /**
- * @file styles/block.inc
- * Definition of the 'default' panel style.
+ * @file
+ * Definition of the 'naked' panel style.
  */
 
 // ---------------------------------------------------------------------------
@@ -14,11 +14,9 @@
  */
 function panels_block_panels_styles() {
   return array(
-    'block' => array(
-      'title' => t('System block'),
-      'description' => t('Display the pane as a system block; this is more restrictive than the default.'),
-      'render pane' => 'panels_block_style_render_pane',
-    ),
+    'title' => t('System block'),
+    'description' => t('Display the pane as a system block; this is more restrictive than the default.'),
+    'render pane' => 'panels_block_style_render_pane',
   );
 }
 

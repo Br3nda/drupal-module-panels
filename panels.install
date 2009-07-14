@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.4.2.18 2009/07/12 11:51:41 sdboyer Exp $
+// $Id: panels.install,v 1.4.2.19 2009/07/14 18:41:04 merlinofchaos Exp $
 
 /**
  * Test requirements for installation and running.
@@ -1201,4 +1201,15 @@ function panels_update_6303() {
   }
 
   return $ret;
+}
+
+/**
+ * Ensure that users are informed about the page manager module.
+ */
+function panels_update_6304() {
+  if (!module_exists('page_manager')) {
+    drupal_set_message(t('The delegator module has been replaced by the Page Manager module. You should enable the page manager module to ensure that any panel pages you have will not be lost.'));
+  }
+
+  return array();
 }
