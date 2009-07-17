@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.5.2.10 2009/05/17 17:40:19 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.5.2.11 2009/07/17 23:40:44 merlinofchaos Exp $
 
 
 /**
@@ -174,6 +174,7 @@ function panels_node_form(&$node, &$param) {
       '#description' => t('The teaser is a piece of text to describe when the panel is listed (such as when promoted to front page); the actual content will only be displayed on the full node view.'),
       '#default_value' => $node->body,
     );
+    $form['format'] = filter_form($node->format); // Now we can set the format! 
   }
 
 //  drupal_set_message('<pre>' . check_plain(var_export($node, true)) . '</pre>');
