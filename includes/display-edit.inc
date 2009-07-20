@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.18 2009/07/20 13:58:22 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.19 2009/07/20 16:48:43 merlinofchaos Exp $
 
 /*
  * @file
@@ -616,14 +616,30 @@ function panels_edit_display_settings_form(&$form_state) {
       '#type' => 'textfield',
       '#default_value' => $display->title,
       '#title' => t('Title'),
-      '#description' => t('The title of this panel. @TODO: List possible keyword substitutions here.'),
+      '#description' => t('The title of this panel. You may use substitutions in this title.'),
       '#process' => array('ctools_process_dependency'),
       '#dependency' => array('edit-display-title-hide-title' => array(0)),
     );
 
-    if (isset($title) && is_string($title)) {
-      $form['display_title']['title']['#description'] .= " " . t("If you leave this field blank, then the default title, '@title', will be used instead.", array('@title' => $title));
+    $form['display_title']['contexts'] = array(
+      '#title' => t('Substitutions'),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    $rows = array();
+    foreach ($display->context as $context) {
+      foreach (ctools_context_get_converters('%' . check_plain($context->keyword) . ':', $context) as $keyword => $title) {
+        $rows[] = array(
+          check_plain($keyword),
+          t('@identifier: @title', array('@title' => $title, '@identifier' => $context->identifier)),
+        );
+      }
     }
+
+    $header = array(t('Keyword'), t('Value'));
+    $form['display_title']['contexts']['context'] = array('#value' => theme('table', $header, $rows));
   }
 
   // TODO doc the ability to do this as part of the API
