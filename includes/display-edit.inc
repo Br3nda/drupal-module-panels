@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.17 2009/07/14 23:30:24 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.18 2009/07/20 13:58:22 merlinofchaos Exp $
 
 /*
  * @file
@@ -27,10 +27,6 @@ function panels_edit_cache_get($cache_key) {
  * display editor.
  */
 function panels_edit_cache_set($cache) {
-  if (!is_object($cache)) {
-    dsm(debug_backtrace());
-  }
-
   $cache_key = $cache->display->cache_key;
   if (strpos($cache_key, ':') !== FALSE) {
     list($module, $argument) = explode(':', $cache_key, 2);
@@ -63,12 +59,13 @@ function _panels_edit($display, $destination, $content_types, $title = FALSE) {
       $content_types = ctools_content_get_available_types();
     }
 
+    $display->cache_key = $did;
     panels_cache_clear('display', $did);
     $cache = new stdClass();
     $cache->display = $display;
     $cache->content_types = $content_types;
     $cache->display_title = $title;
-    panels_edit_cache_set($did, $cache);
+    panels_edit_cache_set($cache);
   }
 
   ctools_include('form');
