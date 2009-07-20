@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.19 2009/07/20 16:48:43 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.20 2009/07/20 17:13:15 merlinofchaos Exp $
 
 /*
  * @file
@@ -924,7 +924,6 @@ function panels_ajax_add_pane_config_finish(&$form_state) {
 function panels_ajax_edit_pane_config_finish(&$form_state) {
   $cache = &$form_state['cache'];
   $pane = &$form_state['pane'];
-  $cache_key = $form_state['cache_key'];
   panels_edit_cache_set($cache);
 
   $form_state['commands'][] = ctools_ajax_command_replace("#panel-pane-$pane->pid", panels_show_pane($cache->display, $pane, TRUE));
