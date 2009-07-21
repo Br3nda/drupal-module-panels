@@ -1,5 +1,5 @@
 <?php
-// $Id: callbacks.inc,v 1.2.4.8 2009/07/10 03:03:36 merlinofchaos Exp $
+// $Id: callbacks.inc,v 1.2.4.9 2009/07/21 18:28:13 merlinofchaos Exp $
 /**
  * @file callbacks.inc
  * Minor menu callbacks for Panels helpers.
@@ -45,7 +45,7 @@ function template_preprocess_panels_dashboard(&$vars) {
   if (module_exists('page_manager')) {
     module_load_include('inc', 'page_manager', 'page_manager.admin');
     $tasks = page_manager_get_tasks_by_type('page');
-    $pages = array();
+    $pages = array('operations' => array());
 
     page_manager_get_pages($tasks, $pages);
     $count = 0;
