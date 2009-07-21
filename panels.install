@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.4.2.20 2009/07/21 19:33:38 merlinofchaos Exp $
+// $Id: panels.install,v 1.4.2.21 2009/07/21 19:48:48 merlinofchaos Exp $
 
 /**
  * Test requirements for installation and running.
@@ -1142,11 +1142,14 @@ function _panels_update_create_handler($page, $p, $origin, $info, $arguments, $w
     $handler->conf['did'] = $info['did'];
   }
   else {
-    $display_code = panels_export_display(panels_load_display($p->did));
-    eval($display_code);
+    $d = panels_load_display($p->did);
+    if ($d) {
+      $display_code = panels_export_display($d);
+      eval($display_code);
 
-    $handler->conf['did'] = 'new';
-    $handler->conf['display'] = $display;
+      $handler->conf['did'] = 'new';
+      $handler->conf['display'] = $display;
+    }
   }
   $handler->conf['title'] = !empty($info['title']) ? $info['title'] : '';
   $handler->conf['contexts'] = unserialize($p->contexts);
