@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.20 2009/07/20 17:13:15 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.21 2009/07/21 01:21:21 merlinofchaos Exp $
 
 /*
  * @file
@@ -1874,7 +1874,7 @@ function theme_panels_pane_dnd($block, $id, $label, $left_buttons = NULL, $butto
 // @DND
 function theme_panels_pane_collapsible($block) {
   $output = '';
-  $output .= '<h2 class="title">' . $block->title . '</h2>';
-  $output .= '<div class="content">' . filter_xss_admin($block->content) . '</div>';
+  $output .= '<div class="pane-title">' . $block->title . '</div>';
+  $output .= '<div class="pane-content">' . filter_xss_admin($block->content) . '</div>';
   return $output;
 }

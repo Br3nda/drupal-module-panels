@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.9 2009/07/13 20:40:55 merlinofchaos Exp $
+// $Id: display-render.inc,v 1.5.2.10 2009/07/21 01:21:21 merlinofchaos Exp $
 
 /**
  * @file
@@ -323,14 +323,14 @@ function theme_panels_pane($content, $pane, $display) {
       $output .= "<div class=\"admin-links panel-hide\">" . theme('links', $content->admin_links) . "</div>\n";
     }
     if (!empty($content->title)) {
-      $output .= "<h2 class=\"title\">$content->title</h2>\n";
+      $output .= "<h2 class=\"pane-title\">$content->title</h2>\n";
     }
 
     if (!empty($content->feeds)) {
       $output .= "<div class=\"feed\">" . implode(' ', $content->feeds) . "</div>\n";
     }
 
-    $output .= "<div class=\"content\">$content->content</div>\n";
+    $output .= "<div class=\"pane-content\">$content->content</div>\n";
 
     if (!empty($content->links)) {
       $output .= "<div class=\"links\">" . theme('links', $content->links) . "</div>\n";
