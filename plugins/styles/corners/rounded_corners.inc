@@ -1,5 +1,5 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.6 2009/06/13 19:10:30 merlinofchaos Exp $
+// $Id: rounded_corners.inc,v 1.1.2.7 2009/07/21 21:23:24 merlinofchaos Exp $
 
 /**
  * @file styles/rounded_corners.inc
@@ -110,7 +110,7 @@ function panels_rounded_corners_style_settings_form($style_settings) {
       'panel' => t('Each region'),
     ),
     '#default_value' => (isset($style_settings['corner_location'])) ? $style_settings['corner_location'] : 'ul',
-    '#description' => t('Choose whether to include the box around each pane (piece of content) or panel (each column or region)'),
+    '#description' => t('Choose whether to include the box around each pane (piece of content) or region (each column or region)'),
   );
 
   return $form;
