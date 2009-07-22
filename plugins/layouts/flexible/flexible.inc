@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.14 2009/07/22 00:15:50 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.15 2009/07/22 18:44:57 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -231,7 +231,7 @@ function theme_panels_flexible($id, $content, $settings, $display) {
   $renderer->content = $content;
   $renderer->css_id = $id;
   $renderer->did = $display->did;
-  $renderer->cache_key = $display->cache_key;
+//  $renderer->cache_key = $display->cache_key;
   $renderer->id_str = $id ? 'id="' . $id . '"' : '';
   $renderer->admin = FALSE;
 
