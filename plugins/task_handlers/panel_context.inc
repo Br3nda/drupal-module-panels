@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.33 2009/07/17 23:28:10 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.34 2009/07/22 04:01:50 merlinofchaos Exp $
 
 /**
  * @file
@@ -651,7 +651,7 @@ function panels_panel_context_edit_content(&$form, &$form_state) {
   // Make sure the theme will work since our form id is different.
   $form['#theme'] = 'panels_edit_display_form';
 
-  if (!isset($form_state['type']) || $form_state['type'] != 'add' && !empty($form_state['handler_id'])) {
+  if (!isset($form_state['type']) || $form_state['type'] != 'add' && !empty($form_state['handler_id']) && !empty($form['buttons'])) {
     $form['buttons']['preview'] = $form['buttons']['return'];
     $form['buttons']['preview']['#value'] = t('Update and preview');
   }
@@ -732,7 +732,9 @@ function panels_panel_context_edit_preview(&$form, &$form_state) {
     $display = panels_panel_context_get_display($form_state['handler']);
     $display->context = $contexts;
     $output = panels_render_display($display);
-    unset($form['buttons']);
+    if (isset($form['buttons'])) {
+      unset($form['buttons']);
+    }
   }
   else {
     $form['preview']['#tree'] = TRUE;
