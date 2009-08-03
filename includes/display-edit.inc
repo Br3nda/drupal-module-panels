@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.23 2009/07/25 20:09:05 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.24 2009/08/03 21:38:50 merlinofchaos Exp $
 
 /*
  * @file
@@ -1402,6 +1402,7 @@ function panels_ajax_style_settings($type, $cache, $pid = '') {
       break;
 
     case 'pane':
+      ctools_include('content');
       $pane = &$cache->display->content[$pid];
       $conf = &$pane->style['settings'];
       $subtype = ctools_content_get_subtype($pane->type, $pane->subtype);
