@@ -1,5 +1,5 @@
 <?php
-// $Id: panels-dashboard.tpl.php,v 1.1.2.2 2009/07/10 03:03:36 merlinofchaos Exp $
+// $Id: panels-dashboard.tpl.php,v 1.1.2.3 2009/08/03 21:05:33 merlinofchaos Exp $
 /**
  * @file views-view.tpl.php
  * Main view template
@@ -10,7 +10,7 @@
  */
 ?>
 <div class="dashboard-left">
-  <h3 class="dashboard-title">Create new...</h3>
+  <h3 class="dashboard-title"><?php print t('Create new') . '...'; ?></h3>
   <div class="dashboard-entry clear-block">
     <div class="dashboard-text">
       <div class="dashboard-link">
@@ -44,7 +44,7 @@
     </div>
   </div>
 
-  <h3 class="dashboard-title">Manage mini panels...</h3>
+  <h3 class="dashboard-title"><?php print t('Manage mini panels') . '...'; ?></h3>
   <div class="dashboard-minis">
     <?php print $minis; ?>
     <div class="links">
@@ -55,7 +55,7 @@
 </div>
 
 <div class="dashboard-right">
-  <h3 class="dashboard-title">Manage pages...</h3>
+  <h3 class="dashboard-title"><?php print t('Manage pages') . '...'; ?></h3>
   <div class="dashboard-pages">
     <?php print $pages; ?>
     <div class="links">
