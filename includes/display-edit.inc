@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.25 2009/08/06 00:20:00 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.26 2009/08/06 00:37:58 merlinofchaos Exp $
 
 /*
  * @file
@@ -721,6 +721,7 @@ function panels_add_content($cache, $panel_id, $key) {
       $content_type = ctools_get_content_type($type_name);
       foreach ($subtypes as $subtype_name => $subtype_info) {
         $title = filter_xss_admin($subtype_info['title']);
+        $description = isset($subtype_info['description']) ? $subtype_info['description'] : $title;
 
         $icon = ctools_content_admin_icon($subtype_info);
 
