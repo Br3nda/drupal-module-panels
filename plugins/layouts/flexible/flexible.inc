@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.15 2009/07/22 18:44:57 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.16 2009/08/06 01:18:11 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -655,7 +655,7 @@ function panels_flexible_get_css_group(&$css, $renderer, $list, $owner_id, $type
         $renderer->scale[$id] = $scale;
       }
     }
-    
+
     // If there is any total remaining, we need to offset the splitter
     // by this much too.
     if ($left_total) {
@@ -1131,11 +1131,11 @@ function panels_flexible_add_item_form_submit(&$form, &$form_state) {
 
   if ($item['type'] == 'region') {
     // derive the region key from the title
-    $key = drupal_strtolower($item['title']);
+    $key = preg_replace("/[^a-z0-9]/", '_', drupal_strtolower($item['title']));
     while (isset($settings['items'][$key])) {
       $key .= '_';
     }
-    $form_state['key'] = $key = preg_replace("/[^a-z0-9]/", '_', $key);
+    $form_state['key'] = $key;
   }
   else {
     $form_state['key'] = $key = max(array_keys($settings['items'])) + 1;
