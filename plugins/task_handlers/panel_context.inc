@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.36 2009/08/05 23:45:56 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.37 2009/08/06 00:20:00 merlinofchaos Exp $
 
 /**
  * @file
@@ -476,7 +476,7 @@ function panels_panel_context_admin_summary($handler, $task, $subtask, $page, $s
 
   $output .= '<div class="clear-block">';
   if ($show_title) {
-  $output .= '<div class="handler-title">';
+  $output .= '<div class="handler-title clear-block">';
     $output .= '<div class="actions handler-actions">' . $rendered_operations['actions'] . '</div>';
     $output .= '<span class="title-label">' . $title . '</span>';
   }
