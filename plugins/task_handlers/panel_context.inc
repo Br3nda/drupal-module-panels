@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.37 2009/08/06 00:20:00 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.38 2009/08/19 01:11:44 merlinofchaos Exp $
 
 /**
  * @file
@@ -67,7 +67,7 @@ function panels_panel_context_page_manager_task_handlers() {
       ),
       'layout' => array(
         'title' => t('Layout'),
-        'description' => t('Add content items and change their location with a drag and drop interface.'),
+        'description' => t('Change the layout of this panel.'),
         // No AJAX so we get our CSS loaded.
         'ajax' => FALSE,
         'form' => array(
