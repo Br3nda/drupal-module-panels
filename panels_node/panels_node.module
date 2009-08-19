@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.5.2.13 2009/07/21 21:34:16 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.5.2.14 2009/08/19 17:16:09 merlinofchaos Exp $
 
 
 /**
@@ -308,7 +308,7 @@ function panels_node_edit_layout($node) {
   ctools_include('context');
   $display = panels_load_display($node->panels_node['did']);
   $display->context = panels_node_get_context($node);
-  return panels_edit_layout($display, t('Save'), "node/$node->nid/panel_layout");
+  return panels_edit_layout($display, t('Save'), "node/$node->nid/panel_layout", 'panels_node');
 }
 
 /**
