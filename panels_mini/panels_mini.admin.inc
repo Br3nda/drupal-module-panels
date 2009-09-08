@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.admin.inc,v 1.6.2.8 2009/08/03 22:08:42 merlinofchaos Exp $
+// $Id: panels_mini.admin.inc,v 1.6.2.9 2009/09/08 16:23:48 merlinofchaos Exp $
 
 /**
  * @file
@@ -146,6 +146,7 @@ function panels_mini_list_page() {
     t('Layout'),
     t('Operations'),
   );
+  $ts = tablesort_init($header);
 
   // Load all mini panels and their displays.
   $panel_minis = panels_mini_load_all();
@@ -182,7 +183,6 @@ function panels_mini_list_page() {
     $item[] = check_plain($layouts[$panel_mini->display->layout]['title']);
     $item[] = implode(' | ', $ops);
     $items[] = $item;
-    $ts = tablesort_init($header);
     switch ($ts['sql']) {
       case 'title':
         $sorts[] = $item[0];
@@ -211,8 +211,7 @@ function panels_mini_list_page() {
     $i[] = $items[$id];
   }
 
-  $output = theme('table', $header, $i);
-  return $output;
+  return theme('table', $header, $i);
 }
 
 /**
