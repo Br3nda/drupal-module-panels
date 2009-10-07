@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.4.4.6 2009/10/05 22:40:35 merlinofchaos Exp $
+// $Id: display_editor.js,v 1.4.4.7 2009/10/07 22:20:29 merlinofchaos Exp $
 /**
  * @file display_editor.js
  *
@@ -476,13 +476,32 @@
 
     $('#panels-live-preview-button:not(.panels-preview-processed)')
       .addClass('panels-preview-processed')
-      .click(function() {
+      .click(function () {
         if (!$('#panels-preview').size()) {
           $('#panels-dnd-main').parents('form').after('<div id="panels-preview"></div>');
         }
 
         $('#panels-preview').html(Drupal.theme('CToolsModalThrobber'));
       });
+
+    var setTitleClass = function () {
+      if ($('#edit-display-title-hide-title').val() == 2) {
+        $('#panels-dnd-main').removeClass('panels-set-title-hide');
+      }
+      else {
+        $('#panels-dnd-main').addClass('panels-set-title-hide');
+      }
+    }
+
+    // The panes have an option to set the display title, but only if
+    // a select is set to the proper value. This sets a class on the
+    // main edit div so that the option to set the display title
+    // is hidden if that is not selected, and visible if it is.
+    $('#edit-display-title-hide-title:not(.panels-title-processed)')
+      .addClass('panels-title-processed')
+      .change(setTitleClass);
+
+    setTitleClass();
   };
 
   /**
