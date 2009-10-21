@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.5.2.16 2009/10/07 22:20:29 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.5.2.17 2009/10/21 20:51:49 merlinofchaos Exp $
 
 /**
  * @file panels_mini.module
@@ -71,10 +71,10 @@ function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
     $block = array();
 
     $block['content'] = panels_render_display($panel_mini->display);
-    $block['title'] = panels_display_get_title($panel_mini->display);
+    $block['subject'] = panels_display_get_title($panel_mini->display);
     // If NULL, fall back to this title:
-    if (!isset($block['title'])) {
-      $block['title'] = $panel_mini->title;
+    if (!isset($block['subject'])) {
+      $block['subject'] = $panel_mini->title;
     }
 
     unset($viewing[$delta]);
