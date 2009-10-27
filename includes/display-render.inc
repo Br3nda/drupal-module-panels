@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.13 2009/10/27 22:56:38 merlinofchaos Exp $
+// $Id: display-render.inc,v 1.5.2.14 2009/10/27 23:23:34 merlinofchaos Exp $
 
 /**
  * @file
@@ -244,7 +244,7 @@ function panels_render_pane($content, $pane, &$display) {
     }
   }
 
-  if (!empty($content->content) {
+  if (!empty($content->content)) {
     // fallback
     return theme('panels_pane', $content, $pane, $display);
   }
