@@ -1,5 +1,5 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.7 2009/07/21 21:23:24 merlinofchaos Exp $
+// $Id: rounded_corners.inc,v 1.1.2.8 2009/10/27 22:56:39 merlinofchaos Exp $
 
 /**
  * @file styles/rounded_corners.inc
@@ -86,11 +86,11 @@ function panels_add_rounded_corners_css($display, $where) {
  * Render callback for a single pane.
  */
 function theme_panels_rounded_corners_style_render_pane($content, $pane, $display) {
-  $output = theme('panels_pane', $content, $pane, $display);
-
-  if (!$output) {
+  if (empty($content->content) {
     return;
   }
+
+  $output = theme('panels_pane', $content, $pane, $display);
 
   // Just stick a box around the standard theme_panels_pane.
   $output = theme('panels_rounded_corners_box', $output);
