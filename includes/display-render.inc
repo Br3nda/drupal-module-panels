@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.14 2009/10/27 23:23:34 merlinofchaos Exp $
+// $Id: display-render.inc,v 1.5.2.15 2009/10/28 16:55:34 merlinofchaos Exp $
 
 /**
  * @file
@@ -227,7 +227,7 @@ function panels_render_pane($content, $pane, &$display) {
       $display->stored_pane_title = $content->original_title;
     }
     else {
-      $display->stored_pane_title = $content->title;
+      $display->stored_pane_title = !empty($content->title) ? $content->title : '';
     }
   }
 
