@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.13.2.12 2009/10/14 20:00:40 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.13.2.13 2009/11/10 18:08:50 sdboyer Exp $
 
 /**
  * @file
@@ -48,7 +48,7 @@ function panels_get_panels($layout, $display) {
 function panels_get_pane_content($display, $pane, $keywords, $args = array(), $context = NULL, $incoming_content = '') {
   ctools_include('context');
   if (!$context) {
-    $context = new ctools_context;
+    $context = array(new ctools_context);
   }
 
   if (!$incoming_content === '') {
