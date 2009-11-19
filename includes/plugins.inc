@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.13.2.13 2009/11/10 18:08:50 sdboyer Exp $
+// $Id: plugins.inc,v 1.13.2.14 2009/11/19 17:41:44 merlinofchaos Exp $
 
 /**
  * @file
@@ -70,6 +70,7 @@ function panels_get_pane_content($display, $pane, $keywords, $args = array(), $c
       $cache = new panels_cache_object();
       $cache->set_content($content);
       panels_set_cached_content($cache, $display, $args, $context, $pane);
+      $content->content = $cache->content;
     }
   }
 
