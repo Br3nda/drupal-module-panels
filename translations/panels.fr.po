@@ -1,4 +1,4 @@
-# $Id: panels.fr.po,v 1.1.2.1 2010/01/12 23:55:27 merlinofchaos Exp $
+# $Id: panels.fr.po,v 1.1.2.1 2010/01/12 23:56:15 merlinofchaos Exp $
 #
 # LANGUAGE translation of Drupal (general)
 msgid ""
