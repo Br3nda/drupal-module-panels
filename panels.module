@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.46 2010/01/12 22:35:30 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.47 2010/01/12 23:15:54 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -1052,7 +1052,7 @@ function template_preprocess_panels_pane($vars) {
   $vars['feeds'] = !empty($content->feeds) ? implode(' ', $content->feeds) : '';
   $vars['content'] = !empty($content->content) ? $content->content : '';
 
-  $vars['links'] = !empty($content->links) ? implode(' ', $content->links) : '';
+  $vars['links'] = !empty($content->links) ? theme('links', $content->links) : '';
   $vars['more'] = '';
   if (!empty($content->more)) {
     if (empty($content->more['title'])) {
