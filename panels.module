@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.47 2010/01/12 23:15:54 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.48 2010/01/12 23:44:56 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -1030,6 +1030,19 @@ function template_preprocess_panels_pane($vars) {
   // basic classes
   $vars['classes'] = 'panel-pane';
   $vars['id'] = '';
+
+  // Add some usable classes based on type/subtype
+  ctools_include('cleanstring');
+  $type_class = $content->type ? 'pane-'. ctools_cleanstring($content->type, array('lower case' => TRUE)) : '';
+  $subtype_class = $content->subtype ? 'pane-'. ctools_cleanstring($content->subtype, array('lower case' => TRUE)) : '';
+
+  // Sometimes type and subtype are the same. Avoid redudant classes.
+  if ($type_class != $subtype_class) { 
+    $vars['classes'] .= " $type_class $subtype_class";
+  }
+  else { 
+    $vars['classes'] .= " $type_class";
+  }
 
   // Add id and custom class if sent in.
   if (!empty($content->content)) {
