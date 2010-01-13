@@ -1,38 +1,26 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.9 2009/10/28 00:44:23 merlinofchaos Exp $
+// $Id: rounded_corners.inc,v 1.1.2.10 2010/01/13 06:25:15 merlinofchaos Exp $
 
 /**
- * @file styles/rounded_corners.inc
+ * @file
  * Definition of the 'rounded_corners' panel style.
  */
 
-// ---------------------------------------------------------------------------
-// Panels hooks.
-
-/**
- * Implementation of hook_panels_style_info().
- */
-function panels_rounded_corners_panels_styles() {
-  return array(
-    'rounded_corners' => array(
-      'title' => t('Rounded corners'),
-      'description' => t('Presents the panes or panels with a rounded corner box around them'),
-      'render panel' => 'panels_rounded_corners_style_render_panel',
-      'render pane' => 'panels_rounded_corners_style_render_pane',
-      'settings form' => 'panels_rounded_corners_style_settings_form',
-      'hook theme' => array(
-        'panels_rounded_corners_box' => array(
-          'arguments' => array('content' => NULL),
-          'path' => panels_get_path('plugins/styles/corners'),
-          'template' => 'panels-rounded-corners-box',
-        ),
-      ),
+// Plugin definition
+$plugin = array(
+  'title' => t('Rounded corners'),
+  'description' => t('Presents the panes or panels with a rounded corner box around them'),
+  'render panel' => 'panels_rounded_corners_style_render_panel',
+  'render pane' => 'panels_rounded_corners_style_render_pane',
+  'settings form' => 'panels_rounded_corners_style_settings_form',
+  'hook theme' => array(
+    'panels_rounded_corners_box' => array(
+      'arguments' => array('content' => NULL),
+      'path' => panels_get_path('plugins/styles/corners'),
+      'template' => 'panels-rounded-corners-box',
     ),
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Panels style plugin callbacks.
+  ),
+);
 
 /**
  * Render callback.
