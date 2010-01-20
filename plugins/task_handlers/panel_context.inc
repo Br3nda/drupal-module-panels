@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.41 2010/01/13 06:25:15 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.42 2010/01/20 17:13:14 sdboyer Exp $
 
 /**
  * @file
@@ -35,6 +35,7 @@ $plugin = array(
     'criteria' => array(
       'title' => t('Selection rules'),
       'description' => t('Control the criteria used to decide whether or not this variant is used.'),
+      'ajax' => FALSE,
       'form' => array(
         'order' => array(
           'form' => t('Selection rules'),
