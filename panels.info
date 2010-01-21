@@ -1,6 +1,6 @@
-; $Id: panels.info,v 1.5 2008/07/24 00:55:33 merlinofchaos Exp $
+; $Id: panels.info,v 1.6 2010/01/21 07:11:40 sdboyer Exp $
 name = Panels
-description = Core Panels display functions; provides no external UI, at least one other module (such as Panel pages) should be enabled.
+description = Core Panels display functions; provides no external UI, at least one other Panels module should be enabled.
 core = 6.x
 package = "Panels"
-dependencies[] = views
+dependencies[] = ctools
