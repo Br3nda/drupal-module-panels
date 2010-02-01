@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.42 2010/01/20 17:13:14 sdboyer Exp $
+// $Id: panel_context.inc,v 1.1.2.43 2010/02/01 22:36:31 merlinofchaos Exp $
 
 /**
  * @file
@@ -50,6 +50,7 @@ $plugin = array(
     ),
     'context' => array(
       'title' => t('Contexts'),
+      'ajax' => FALSE,
       'description' => t('Add additional context objects to this variant that can be used by the content.'),
       'form' => array(
         'order' => array(
