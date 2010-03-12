@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.15 2009/10/28 16:55:34 merlinofchaos Exp $
+// $Id: display-render.inc,v 1.5.2.16 2010/03/12 06:50:19 sdboyer Exp $
 
 /**
  * @file
@@ -21,9 +21,6 @@ function _panels_render_display(&$display) {
   if (!$layout) {
     return NULL;
   }
-
-  // TODO: This may not be necessary now. Check this.
-  panels_sanitize_display($display);
 
   $output = '';
 
