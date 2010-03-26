@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.32 2010/02/17 01:09:46 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.33 2010/03/26 10:37:03 sdboyer Exp $
 
 /*
  * @file
@@ -922,7 +922,7 @@ function panels_add_content($cache, $panel_id, $key) {
 }
 
 /**
- * AJAX entry point for to configure a pane that has just been added.
+ * AJAX entry point for configuring a pane that has just been added.
  */
 function panels_ajax_add_pane_config($cache, $panel_id = NULL, $type_name = NULL, $subtype_name = NULL, $step = NULL) {
   ctools_include('content');
@@ -966,7 +966,7 @@ function panels_ajax_add_pane_config($cache, $panel_id = NULL, $type_name = NULL
 }
 
 /**
- * AJAX entry point for to configure a pane that has just been added.
+ * AJAX entry point for configuring a pane that already existed.
  */
 function panels_ajax_configure_pane($cache, $pid = NULL, $step = NULL) {
   ctools_include('content');
