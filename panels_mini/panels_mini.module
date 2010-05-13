@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.5.2.18 2010/05/13 00:57:58 sdboyer Exp $
+// $Id: panels_mini.module,v 1.5.2.19 2010/05/13 06:19:08 sdboyer Exp $
 
 /**
  * @file panels_mini.module
@@ -49,6 +49,7 @@ function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
       if (empty($mini->disabled) && empty($mini->requiredcontext)) {
         $blocks[$panel_mini->name] = array(
           'info' => t('Mini panel: "@title"', array('@title' => $panel_mini->title)),
+          'cache' => BLOCK_NO_CACHE,
         );
       }
     }
