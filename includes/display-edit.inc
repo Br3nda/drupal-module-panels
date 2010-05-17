@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.33 2010/03/26 10:37:03 sdboyer Exp $
+// $Id: display-edit.inc,v 1.7.2.34 2010/05/17 17:50:15 sdboyer Exp $
 
 /*
  * @file
@@ -1642,7 +1642,7 @@ function panels_edit_style_settings_form(&$form_state) {
 function panels_edit_style_settings_form_validate($form, &$form_state) {
   $name = $form_state['type'] == 'pane' ? 'pane settings form validate' : 'settings form validate';
   if ($function = panels_plugin_get_function('style', $form_state['style'], $name)) {
-    $function($form, $form_state['values']['settings']);
+    $function($form, $form_state['values']['settings'], $form_state);
   }
 }
 
@@ -1652,7 +1652,7 @@ function panels_edit_style_settings_form_validate($form, &$form_state) {
 function panels_edit_style_settings_form_submit($form, &$form_state) {
   $name = $form_state['type'] == 'pane' ? 'pane settings form submit' : 'settings form submit';
   if ($function = panels_plugin_get_function('style', $form_state['style'], $name)) {
-    $function($form_state['values']['settings']);
+    $function($form, $form_state['values']['settings'], $form_state);
   }
 
   $form_state['conf'] = $form_state['values']['settings'];
