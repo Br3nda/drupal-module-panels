@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.5.2.19 2010/05/13 06:19:08 sdboyer Exp $
+// $Id: panels_mini.module,v 1.5.2.20 2010/05/17 20:12:30 sdboyer Exp $
 
 /**
  * @file panels_mini.module
@@ -85,6 +85,13 @@ function panels_mini_block($op = 'list', $delta = 0, $edit = array()) {
 
     unset($viewing[$delta]);
     return $block;
+  }
+  elseif ($op = 'configure') {
+    return array(
+      'admin-shortcut' => array(
+        '#value' => l(t('Manage this mini-panel'), 'admin/build/panel-mini/' . $delta . '/edit-general')
+      ),
+    );
   }
 }
 
