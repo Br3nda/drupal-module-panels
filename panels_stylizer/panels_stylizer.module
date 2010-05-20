@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_stylizer.module,v 1.1.2.1 2010/02/17 01:09:46 merlinofchaos Exp $
+// $Id: panels_stylizer.module,v 1.1.2.2 2010/05/20 01:49:14 sdboyer Exp $
 
 /**
  * @file
@@ -58,6 +58,8 @@ function panels_stylizer_menu() {
     'title' => 'Import',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('panels_stylizer_import_style_page'),
+    'access callback' => 'ctools_access_multiperm',
+    'access arguments' => array('administer panels styles', 'use PHP for block visibility'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 0,
   ) + $stylizer_base;
