@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.57 2010/05/20 09:05:37 sdboyer Exp $
+// $Id: panels.module,v 1.28.2.58 2010/05/25 02:33:25 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -275,6 +275,20 @@ function panels_init() {
 
   drupal_add_css(panels_get_path('css/panels.css'));
   drupal_add_js(panels_get_path('js/panels.js'));
+}
+
+/**
+ * Load a panels include file.
+ *
+ * @deprecated This function is deprecated and should no longer be used.
+ * Instead, use ctools_include().
+ */
+function panels_load_include($include, $path = 'includes/') {
+  static $loaded = array();
+  if (empty($loaded["$path$include.inc"])) {
+    require_once './' . panels_get_path("$path$include.inc");
+    $loaded["$path$include.inc"] = TRUE;
+  }
 }
 
 /**
