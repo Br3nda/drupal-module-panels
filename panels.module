@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.58 2010/05/25 02:33:25 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.59 2010/05/27 19:43:36 sdboyer Exp $
 
 /**
  * @file panels.module
@@ -280,8 +280,8 @@ function panels_init() {
 /**
  * Load a panels include file.
  *
- * @deprecated This function is deprecated and should no longer be used.
- * Instead, use ctools_include().
+ * @deprecated This function is deprecated and should no longer be used. It will
+ * be removed in the next major version of Panels. Use ctools_include() instead.
  */
 function panels_load_include($include, $path = 'includes/') {
   static $loaded = array();
