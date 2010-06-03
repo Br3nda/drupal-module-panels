@@ -1,7 +1,8 @@
-; $Id: panels_stylizer.info,v 1.1.2.1 2010/02/17 01:09:46 merlinofchaos Exp $
+; $Id: panels_stylizer.info,v 1.1.2.2 2010/06/03 16:20:12 merlinofchaos Exp $
 name = Panels stylizer
 description = Create custom styles for Panel panes and regions
 core = 6.x
+package = Panels
 dependencies[] = ctools
 dependencies[] = panels
 dependencies[] = color
