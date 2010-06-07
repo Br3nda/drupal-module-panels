@@ -1,4 +1,4 @@
-// $Id: panels_ipe.js,v 1.1.2.11 2010/06/07 20:08:49 sdboyer Exp $
+// $Id: panels_ipe.js,v 1.1.2.12 2010/06/07 20:09:04 sdboyer Exp $
 
 (function($) {
   Drupal.PanelsIPE = {
@@ -69,17 +69,21 @@
       .addClass('panels-ipe-startedit-processed')
       .click(function() {
         var $this = $(this);
-        var cache_key = $this.attr('id').split('panels-ipe-startedit-')[1];
+        var cache_key = $this.parent().attr('id').split('panels-ipe-control-')[1];
         // TODO _really_ need to reuse ctools ajax code here
         var url = '/panels_ipe/ajax/edit/' + cache_key;
         $.ajax({
           type: "POST",
           url: url,
-          // data: {'ctools_changed': $(this).val(), 'js': 1, 'ctools_ajax': 1 },
           global: true,
           success: function(data) {
-            $this.replaceWith(data);
-            $this.data(cache_key, new DrupalPanelsIPE(cache_key));            
+            $this.parent().fadeOut('normal', function() {
+              $this.hide();
+              $this.parent().append(data);
+              $this.parent().show('normal', function() {
+                $this.parent().data(cache_key, new DrupalPanelsIPE(cache_key));
+              });
+            });
           },
           error: function(xhr) {
             Drupal.CTools.AJAX.handleErrors(xhr, url);
