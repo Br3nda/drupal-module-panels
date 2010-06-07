@@ -1,5 +1,5 @@
 <?php
-// $Id: stylizer.inc,v 1.1.2.3 2010/06/07 20:24:57 sdboyer Exp $
+// $Id: stylizer.inc,v 1.1.2.4 2010/06/07 20:25:10 sdboyer Exp $
 
 /**
  * @file
@@ -14,7 +14,7 @@ $plugin = array(
   'render pane' => 'panels_stylizer_stylizer_style_render_pane',
   'pane settings form' => 'panels_stylizer_stylizer_style_pane_settings_form',
 
-  'render panel' => 'panels_stylizer_stylizer_style_render_region',
+  'render region' => 'panels_stylizer_stylizer_style_render_region',
   'settings form' => 'panels_stylizer_stylizer_style_region_settings_form',
 
 //  'settings validate' => 'panels_stylizer_stylizer_style_settings_validate',
