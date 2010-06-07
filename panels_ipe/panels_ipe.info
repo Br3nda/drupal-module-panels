@@ -1,0 +1,6 @@
+; $Id: panels_ipe.info,v 1.1.2.1 2010/06/07 20:03:49 sdboyer Exp $
+name = Panels In-Place Editor
+description = Provide a UI for managing some Panels directly on the frontend, instead of having to use the backend.
+package = "Panels"
+dependencies[] = panels
+core = 6.x
