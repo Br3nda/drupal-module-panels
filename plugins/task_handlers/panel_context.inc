@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.52 2010/06/07 20:26:20 sdboyer Exp $
+// $Id: panel_context.inc,v 1.1.2.53 2010/06/07 20:26:29 sdboyer Exp $
 
 /**
  * @file
@@ -136,6 +136,7 @@ $plugin = array(
 
   'required forms' => array(
     'choose' => t('Choose layout'),
+    'settings' => t('Panel settings'),
     'content' => t('Panel content'),
   ),
 
