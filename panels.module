@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.74 2010/06/07 20:23:57 sdboyer Exp $
+// $Id: panels.module,v 1.28.2.75 2010/06/07 20:24:12 sdboyer Exp $
 
 /**
  * @file panels.module
@@ -564,8 +564,8 @@ class panels_display {
       $renderer = is_string($renderer) ? $renderer : $this->renderer;
       $renderer_class = ctools_plugin_load_class('panels', 'display_renderers', $renderer, 'handler');
       $renderer = new $renderer_class();
+      $renderer->build($this);
     }
-    $renderer->build($this, $layout);
 
     $output = '';
     // Let modules act just prior to render.
