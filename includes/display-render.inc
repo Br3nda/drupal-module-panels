@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.17 2010/03/16 17:58:33 sdboyer Exp $
+// $Id: display-render.inc,v 1.5.2.18 2010/06/07 19:59:17 sdboyer Exp $
 
 /**
  * @file
@@ -195,6 +195,9 @@ function panels_render_pane_content(&$display, &$pane, $keywords) {
  *   The $pane information from the display
  * $display
  *   The display.
+ *
+ * TODO refactor the render pipeline so that style plugins need not call this
+ * in panel region styling
  */
 function panels_render_pane($content, $pane, &$display) {
   if ($display->hide_title == PANELS_TITLE_PANE && !empty($display->title_pane) && $display->title_pane == $pane->pid) {

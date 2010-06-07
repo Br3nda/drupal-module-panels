@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.13.2.16 2010/03/13 20:11:46 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.13.2.17 2010/06/07 19:59:17 sdboyer Exp $
 
 /**
  * @file
@@ -386,6 +386,30 @@ function panels_get_cache($cache) {
 function panels_get_caches() {
   ctools_include('plugins');
   return ctools_get_plugins('panels', 'cache');
+}
+
+/**
+ * Fetch metadata on a specific display renderer plugin.
+ *
+ * @return
+ *   An array of arrays with information about the requested panels display
+ *   renderer.
+ */
+function panels_get_display_renderer($dr) {
+  ctools_include('plugins');
+  return ctools_get_plugins('panels', 'display_renderers', $dr);
+}
+
+/**
+ * Fetch metadata for all display renderer plugins.
+ *
+ * @return
+ *   An array of arrays with information about all available panels display
+ *   renderer.
+ */
+function panels_get_display_renderers() {
+  ctools_include('plugins');
+  return ctools_get_plugins('panels', 'display_renderers');
 }
 
 /**
