@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.64 2010/06/07 20:00:25 sdboyer Exp $
+// $Id: panels.module,v 1.28.2.65 2010/06/07 20:01:32 sdboyer Exp $
 
 /**
  * @file panels.module
@@ -533,6 +533,17 @@ class panels_display {
     }
   }
 
+  /**
+   * Render this panels display.
+   *
+   * After checking to ensure the designated layout plugin is valid, a
+   * display renderer object is spawned and runs its rendering logic.
+   *
+   * @param mixed $renderer
+   *    An instanciated display renderer object, the name of a display renderer
+   *    plugin to be fetched. Defaults to NULL. When NULL, the predesignated
+   *    display renderer will be used.
+   */
   function render($renderer = NULL) {
     $layout = panels_get_layout($this->layout);
     if (!$layout) {
@@ -909,7 +920,7 @@ function panels_print_layout($id, $content) {
  * then operate as a theme function of the form.
  */
 function theme_panels_render_display_form($form) {
-  $form['#children'] = _panels_render_display($form['#display']);
+  $form['#children'] = $form['#display']->render();
   drupal_render($form);
   return theme('form', $form);
 }
