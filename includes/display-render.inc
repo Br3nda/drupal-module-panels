@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.22 2010/06/07 20:02:08 sdboyer Exp $
+// $Id: display-render.inc,v 1.5.2.23 2010/06/07 20:02:44 sdboyer Exp $
 
 /**
  * @file
@@ -101,37 +101,6 @@ function panels_get_panel_style_and_settings($panel_settings, $panel) {
   }
 
   return array($style, $style_settings);
-}
-
-/**
- * Render a panel, by storing the content of each pane in an appropriate array
- * and then passing through to the theme function that will render the panel
- * in the configured panel style.
- *
- * @param $display
- *   A display object.
- * @param $panel
- *   The ID of the panel being rendered
- * @param $panes
- *   An array of panes that are assigned to the panel that's being rendered.
- *
- * @return
- *   The rendered HTML for a panel.
- * @render
- */
-function panels_render_panel($display, $panel, $panes) {
-  list($style, $style_settings) = panels_get_panel_style_and_settings($display->panel_settings, $panel);
-
-  // Retrieve the pid (can be a panel page id, a mini panel id, etc.), this
-  // might be used (or even necessary) for some panel display styles.
-  // TODO: Got to fix this to use panel page name instead of pid, since pid is
-  // no longer guaranteed. This needs an API to be able to set the final id.
-  $owner_id = 0;
-  if (isset($display->owner) && is_object($display->owner) && isset($display->owner->id)) {
-    $owner_id = $display->owner->id;
-  }
-
-  return theme($style['render panel'], $display, $owner_id, $panes, $style_settings, $panel);
 }
 
 /**
