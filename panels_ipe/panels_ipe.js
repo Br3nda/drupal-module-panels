@@ -1,4 +1,4 @@
-// $Id: panels_ipe.js,v 1.1.2.20 2010/06/07 20:20:30 sdboyer Exp $
+// $Id: panels_ipe.js,v 1.1.2.21 2010/06/07 20:21:00 sdboyer Exp $
 
 (function($) {
   // A ready function should be sufficient for this, at least for now
@@ -46,6 +46,7 @@
 
   Drupal.behaviors.PanelsIPE = function(context) {
     Drupal.PanelsIPE.addPaneMarker(context);
+    Drupal.PanelsIPE.bindClickDelete(context);
   };
 
   /**
