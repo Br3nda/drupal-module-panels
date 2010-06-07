@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.71 2010/06/07 20:21:46 sdboyer Exp $
+// $Id: panels.module,v 1.28.2.72 2010/06/07 20:22:13 sdboyer Exp $
 
 /**
  * @file panels.module
@@ -1016,26 +1016,6 @@ function panels_ctools_plugin_styles() {
     'load themes' => TRUE,
     'use hooks' => TRUE,
   );
-}
-
-function panels_panels_display_renderers() {
-  // TODO will it automagically figure out the path?
-  $path = drupal_get_path('module', 'panels') . '/plugins/display_renderers';
-  $common = array(
-    'path' => $path,
-    'parent' => 'panels_renderer_standard',
-  );
-
-  $plugins = array();
-  $plugins['panels_renderer_standard'] = array(
-    'handler' => array(
-      'path' => $path,
-      'file' => 'panels_renderer_standard.inc',
-      'class' => 'panels_renderer_standard',
-    ),
-  );
-
-  return $plugins;
 }
 
 /**
