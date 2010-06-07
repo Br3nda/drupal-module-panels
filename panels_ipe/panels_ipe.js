@@ -1,4 +1,4 @@
-// $Id: panels_ipe.js,v 1.1.2.23 2010/06/07 20:21:11 sdboyer Exp $
+// $Id: panels_ipe.js,v 1.1.2.24 2010/06/07 20:21:17 sdboyer Exp $
 
 (function($) {
   // A ready function should be sufficient for this, at least for now
@@ -15,7 +15,7 @@
         .addClass('pane-delete-processed')
         .click(function() {
           if (confirm('Remove this pane?')) {
-            $(this).parents('div.panels-ipe-pane').fadeOut(1000, function() {
+            $(this).parents('div.panels-ipe-portlet-wrapper').fadeOut(1000, function() {
               $(this).empty().remove();
             });
           }
