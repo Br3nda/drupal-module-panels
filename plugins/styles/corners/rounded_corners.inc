@@ -1,5 +1,5 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.12 2010/06/07 20:25:10 sdboyer Exp $
+// $Id: rounded_corners.inc,v 1.1.2.13 2010/06/07 20:25:49 sdboyer Exp $
 
 /**
  * @file
@@ -39,7 +39,7 @@ function theme_panels_rounded_corners_style_render_region($display, $region_id, 
     if ($pane_output) {
       // Add the separator if we've already displayed a pane.
       if ($print_separator) {
-        $output .= '<div class="region-separator">&nbsp;</div>';
+        $output .= '<div class="panel-region-separator">&nbsp;</div>';
       }
 
       if ($where == 'pane') {
@@ -183,7 +183,7 @@ $idstr div.admin-links {
   margin-left: -12px;
 }
 
-$idstr .region-separator {
+$idstr .panel-region-separator {
   background: url($url/shadow-b.png) repeat-x 0 center;
   font-size: 1px;
   height: 30px;
