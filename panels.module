@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.68 2010/06/07 20:03:28 sdboyer Exp $
+// $Id: panels.module,v 1.28.2.69 2010/06/07 20:06:16 sdboyer Exp $
 
 /**
  * @file panels.module
@@ -561,7 +561,8 @@ class panels_display {
     }
 
     if (!is_object($renderer)) {
-      $renderer_class = ctools_plugin_load_class('panels', 'display_renderers', $this->renderer, 'handler');
+      $renderer = is_string($renderer) ? $renderer : $this->renderer;
+      $renderer_class = ctools_plugin_load_class('panels', 'display_renderers', $renderer, 'handler');
       $renderer = new $renderer_class();
     }
     $renderer->build($this, $layout);
