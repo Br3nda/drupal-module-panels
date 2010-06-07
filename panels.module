@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.72 2010/06/07 20:22:13 sdboyer Exp $
+// $Id: panels.module,v 1.28.2.73 2010/06/07 20:23:19 sdboyer Exp $
 
 /**
  * @file panels.module
@@ -880,7 +880,7 @@ function panels_export_display($display, $prefix = '') {
  * an empty string to indicate no content.
  * @ingroup hook_invocations
  */
-function panels_render_display(&$display) {
+function panels_render_display(&$display, $renderer = NULL) {
   ctools_include('display-render', 'panels');
   ctools_include('plugins', 'panels');
   ctools_include('context');
