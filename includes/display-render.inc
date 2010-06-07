@@ -1,5 +1,5 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.21 2010/06/07 20:01:59 sdboyer Exp $
+// $Id: display-render.inc,v 1.5.2.22 2010/06/07 20:02:08 sdboyer Exp $
 
 /**
  * @file
@@ -30,26 +30,6 @@ function panels_render_layout_admin($layout, $content, $display) {
 
   $theme = isset($layout['admin theme']) ? $layout['admin theme'] : $layout['theme'];
   return theme($theme, isset($display->css_id) ? $display->css_id : '', $content, $display->layout_settings, $display);
-}
-
-/**
- * Render a single pane, identifying its context, and put it into
- * the $panes array.
- */
-function panels_render_pane_content(&$display, &$pane, $keywords) {
-  $content = panels_get_pane_content($display, $pane, $keywords, $display->args, $display->context, $display->incoming_content);
-
-  // Pass long the css_id that is usually available.
-  if (!empty($pane->css['css_id'])) {
-    $content->css_id = $pane->css['css_id'];
-  }
-
-  // Pass long the css_class that is usually available.
-  if (!empty($pane->css['css_class'])) {
-    $content->css_class = $pane->css['css_class'];
-  }
-
-  return $content;
 }
 
 /**
