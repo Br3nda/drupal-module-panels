@@ -1,49 +1,11 @@
 <?php
-// $Id: display-render.inc,v 1.5.2.19 2010/06/07 20:01:32 sdboyer Exp $
+// $Id: display-render.inc,v 1.5.2.20 2010/06/07 20:01:47 sdboyer Exp $
 
 /**
  * @file
  *
  * Contains Panels display rendering functions.
  */
-
-/**
- * Given a full layout structure and a content array, render a panel display.
- * @render
- */
-function panels_render_layout($layout, $content, $css_id = NULL, $settings = array(), $display = NULL) {
-  if (!empty($layout['css'])) {
-    if (file_exists(path_to_theme() . '/' . $layout['css'])) {
-      drupal_add_css(path_to_theme() . '/' . $layout['css']);
-    }
-    else {
-      drupal_add_css($layout['path'] . '/' . $layout['css']);
-    }
-  }
-  // This now comes after the CSS is added, because panels-within-panels must
-  // have their CSS added in the right order; inner content before outer content.
-
-  // If $content is an object, it's a $display and we have to render its panes.
-  if (is_object($content)) {
-    $display = $content;
-    if (empty($display->cache['method'])) {
-      $content = panels_render_panes($display);
-    }
-    else {
-      $cache = panels_get_cached_content($display, $display->args, $display->context);
-      if ($cache === FALSE) {
-        $cache = new panels_cache_object();
-        $cache->set_content(panels_render_panes($display));
-        panels_set_cached_content($cache, $display, $display->args, $display->context);
-      }
-      $content = $cache->content;
-    }
-  }
-
-  $output = theme($layout['theme'], check_plain($css_id), $content, $settings, $display);
-
-  return $output;
-}
 
 /**
  * Render the administrative layout of a display.
