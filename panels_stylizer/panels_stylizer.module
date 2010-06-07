@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_stylizer.module,v 1.1.2.2 2010/05/20 01:49:14 sdboyer Exp $
+// $Id: panels_stylizer.module,v 1.1.2.3 2010/06/07 20:24:57 sdboyer Exp $
 
 /**
  * @file
@@ -132,6 +132,23 @@ function panels_stylizer_perm() {
   return array(
     'administer panels styles',
   );
+}
+
+/**
+ * Implementation of hook_ctools_plugin_api().
+ *
+ * Inform CTools that panels_stylizer's style plugins are up-to-date.
+ *
+ * @param string $owner
+ *   The system name of the module owning the API about which information is
+ *   being requested.
+ * @param string $api
+ *   The name of the API about which information is being requested.
+ */
+function panels_stylizer_ctools_plugin_api($owner, $api) {
+  if ($owner == 'panels' && $api = 'styles') {
+    return array('version' => 2.0);
+  }
 }
 
 /**
