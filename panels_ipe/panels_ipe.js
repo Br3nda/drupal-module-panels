@@ -1,4 +1,4 @@
-// $Id: panels_ipe.js,v 1.1.2.9 2010/06/07 20:08:03 sdboyer Exp $
+// $Id: panels_ipe.js,v 1.1.2.10 2010/06/07 20:08:35 sdboyer Exp $
 
 (function($) {
   Drupal.PanelsIPE = {
@@ -33,7 +33,7 @@
 
       // Add a class so that the direct parent container of the panes can be
       // more easily identified
-      // $('div.panels-ipe-pane').parent().addClass('panels-ipe-region-innermost'); WHWHHAHSH
+      // $('div.panels-ipe-pane').parent().addClass('panels-ipe-region-innermost');
 
       /**
        * See http://jqueryui.com/demos/sortable/ for details on the configuration
