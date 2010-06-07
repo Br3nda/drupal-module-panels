@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.63 2010/06/07 20:00:15 sdboyer Exp $
+// $Id: panels.module,v 1.28.2.64 2010/06/07 20:00:25 sdboyer Exp $
 
 /**
  * @file panels.module
@@ -533,19 +533,20 @@ class panels_display {
     }
   }
 
-  function render() {
+  function render($renderer = NULL) {
     $layout = panels_get_layout($this->layout);
     if (!$layout) {
       return NULL;
     }
 
+    if (!is_object($renderer)) {
+      $renderer_class = empty($renderer) ? $this->renderer : $renderer;
+      ctools_get_plugins('panels', 'display_renderers', $renderer_class);
+      $renderer = new $this->renderer();
+    }
+    $renderer->build($this, $layout);
+
     $output = '';
-
-    ctools_get_plugins('panels', 'display_renderers', $this->renderer);
-    // $renderer_class = ctools_plugin_load_class('panels', 'display_renderers', $this->renderer, $this->renderer);
-
-    $renderer = new $this->renderer($this, $layout);
-
     // Let modules act just prior to render.
     foreach (module_implements('panels_pre_render') as $module) {
       $function = $module . '_panels_pre_render';
