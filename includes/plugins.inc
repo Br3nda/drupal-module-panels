@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.13.2.18 2010/06/07 20:02:22 sdboyer Exp $
+// $Id: plugins.inc,v 1.13.2.19 2010/06/18 20:46:40 merlinofchaos Exp $
 
 /**
  * @file
@@ -21,9 +21,18 @@ function panels_pane_access($pane, $display) {
 }
 
 /**
- * Get a list of panels available in the layout.
+ * Get a list of panel regions available in the layout.
+ *
+ * DEPRECATED. Use panels_get_regions instead.
  */
 function panels_get_panels($layout, $display) {
+  return panels_get_regions($layout, $display);
+}
+
+/**
+ * Get a list of panels available in the layout.
+ */
+function panels_get_regions($layout, $display) {
   if (!empty($layout['panels function']) && function_exists($layout['panels function'])) {
     return $layout['panels function']($display, $display->layout_settings);
   }
