@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.admin.inc,v 1.6.2.12 2010/05/20 09:05:37 sdboyer Exp $
+// $Id: panels_mini.admin.inc,v 1.6.2.13 2010/06/22 15:54:24 merlinofchaos Exp $
 
 /**
  * @file
@@ -343,10 +343,7 @@ function panels_mini_add_page($layout = NULL) {
   $output = '';
 
   if ($layout === NULL) {
-    foreach ($layouts as $id => $layout) {
-      $output .= panels_print_layout_link($id, $layout, $_GET['q'] .'/'. $id);
-    }
-    return $output;
+    return panels_common_print_layout_links($layouts, $_GET['q']);
   }
 
   if (!$layouts[$layout]) {
