@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.13.2.20 2010/06/22 15:54:24 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.13.2.21 2010/06/23 18:58:20 merlinofchaos Exp $
 
 /**
  * @file
@@ -338,7 +338,7 @@ function panels_get_layouts() {
     // Go through each and see if there are 'sub' layouts we need to get.
     foreach ($plugins as $name => $plugin) {
       if (!empty($plugin['sublayouts callback']) && function_exists($plugin['sublayouts callback'])) {
-        $layouts = array_merge($plugin['sublayouts callback']($plugin, $name));
+        $layouts = array_merge($plugin['sublayouts callback']($plugin, $name), $layouts);
       }
       else {
         $layouts[$name] = $plugin;
