@@ -1,5 +1,5 @@
 <?php
-// $Id: display-layout.inc,v 1.4.2.6 2010/06/22 15:54:24 merlinofchaos Exp $
+// $Id: display-layout.inc,v 1.4.2.7 2010/07/03 01:24:55 merlinofchaos Exp $
 
 /**
  * @file
@@ -96,7 +96,7 @@ function panels_choose_layout(&$form_state) {
     }
   }
 
-  drupal_add_js(panels_get_path('js/layout.js'));
+  ctools_add_js('layout', 'panels');
 
   $form['categories'] = array(
     '#title' => t('Category'),

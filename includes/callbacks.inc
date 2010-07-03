@@ -1,5 +1,5 @@
 <?php
-// $Id: callbacks.inc,v 1.2.4.11 2010/05/20 09:05:37 sdboyer Exp $
+// $Id: callbacks.inc,v 1.2.4.12 2010/07/03 01:24:55 merlinofchaos Exp $
 /**
  * @file callbacks.inc
  * Minor menu callbacks for Panels helpers.
@@ -13,8 +13,8 @@ function panels_admin_page() {
 }
 
 function template_preprocess_panels_dashboard(&$vars) {
-  drupal_add_css(panels_get_path('css/panels-dashboard.css'));
-  $vars['image_path'] = url(panels_get_path('images'));
+  ctools_add_css('panels-dashboard', 'panels');
+  $vars['image_path'] = ctools_image_path('', 'panels');
 
   $vars['panel_page_description'] = t('Panel pages can be used as landing pages. They have a URL path, accept arguments and can have menu entries.');
   $vars['panel_override_description'] = t('Customize an already existing page within your site.');

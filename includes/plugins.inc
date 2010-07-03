@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.13.2.21 2010/06/23 18:58:20 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.13.2.22 2010/07/03 01:24:55 merlinofchaos Exp $
 
 /**
  * @file
@@ -429,9 +429,9 @@ function panels_get_caches() {
  *   An array of arrays with information about the requested panels display
  *   renderer.
  */
-function panels_get_display_renderer($dr) {
+function panels_get_display_renderer($renderer) {
   ctools_include('plugins');
-  return ctools_get_plugins('panels', 'display_renderers', $dr);
+  return ctools_get_plugins('panels', 'display_renderers', $renderer);
 }
 
 /**
@@ -444,6 +444,25 @@ function panels_get_display_renderer($dr) {
 function panels_get_display_renderers() {
   ctools_include('plugins');
   return ctools_get_plugins('panels', 'display_renderers');
+}
+
+/**
+ * Get and initialize the class to handle rendering a display.
+ *
+ * @return
+ *   Either the lister class or FALSE if one could not be had.
+ */
+function panels_get_renderer_handler($plugin, &$display) {
+  if (is_string($plugin)) {
+    $plugin = panels_get_display_renderer($plugin);
+  }
+
+  $class = ctools_plugin_get_class($plugin, 'handler');
+  if ($class) {
+    $renderer = new $class();
+    $renderer->init($plugin, $display);
+    return $renderer;
+  }
 }
 
 /**

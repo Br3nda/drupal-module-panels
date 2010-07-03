@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.10.2.10 2010/06/22 15:54:24 merlinofchaos Exp $
+// $Id: common.inc,v 1.10.2.11 2010/07/03 01:24:55 merlinofchaos Exp $
 
 
 /**
@@ -312,7 +312,7 @@ function panels_common_settings(&$form_state, $module_name = 'panels_common') {
     '#value' => t('Save'),
   );
 
-  drupal_add_css(panels_get_path('css/panels_page.css'));
+  ctools_add_css('panels_page', 'panels');
   return $form;
 }
 
@@ -390,7 +390,7 @@ function panels_common_allowed_layouts_form(&$form, &$form_state, $module_name) 
 
   $form_state['allowed_layouts'] = &$allowed_layouts;
 
-  drupal_add_js(panels_get_path('js/layout.js'));
+  ctools_add_js('layout', 'panels');
   $form['layouts'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Select allowed layouts'),
