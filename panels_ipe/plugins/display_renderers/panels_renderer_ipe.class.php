@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_ipe.class.php,v 1.1.2.11 2010/07/03 01:24:55 merlinofchaos Exp $
+// $Id: panels_renderer_ipe.class.php,v 1.1.2.12 2010/07/05 20:22:41 sdboyer Exp $
 
 /**
  * Renderer class for all In-Place Editor (IPE) behavior.
@@ -67,7 +67,8 @@ class panels_renderer_ipe extends panels_renderer_editor {
   }
 
   /**
-   * Add an 'empty' pane placeholder above all the normal panes, and
+   * Add an 'empty' pane placeholder above all the normal panes.
+   *
    * @param $region_id
    * @param $panes
    */

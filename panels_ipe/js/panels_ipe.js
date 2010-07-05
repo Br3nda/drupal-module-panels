@@ -1,6 +1,6 @@
-// $Id: panels_ipe.js,v 1.1.2.1 2010/07/03 01:24:55 merlinofchaos Exp $
+// $Id: panels_ipe.js,v 1.1.2.2 2010/07/05 20:22:41 sdboyer Exp $
 
-// Ensure the $ alias is owned by jQuery
+// Ensure the $ alias is owned by jQuery.
 (function($) {
 
 Drupal.PanelsIPE = {
