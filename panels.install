@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.4.2.32 2010/06/22 23:42:22 merlinofchaos Exp $
+// $Id: panels.install,v 1.4.2.33 2010/07/05 22:41:13 sdboyer Exp $
 
 /**
  * Test requirements for installation and running.
@@ -59,6 +59,19 @@ function panels_requirements_runtime() {
   }
   else {
     $description = $t("Panels is operating in Legacy mode due to the following issues:\n");
+
+    // Add the reasons why Panels is acting in legacy mode.
+    $list = array();
+    foreach ($state as $values) {
+      $modules = array();
+      foreach ($values['modules'] as $module => $type) {
+        $modules[] = array('data' => check_plain($module) . ' - ' . $type);
+      }
+
+      $list[] = array('data' => $values['explanation'] ."\n" . theme('item_list', $modules));
+    }
+
+    $description .= theme('item_list', $list);
 
     $requirements['panels_legacy'] = array(
       'title' => $t('Panels operating in Legacy mode'),
