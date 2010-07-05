@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_ipe.class.php,v 1.1.2.12 2010/07/05 20:22:41 sdboyer Exp $
+// $Id: panels_renderer_ipe.class.php,v 1.1.2.13 2010/07/05 21:55:35 sdboyer Exp $
 
 /**
  * Renderer class for all In-Place Editor (IPE) behavior.
@@ -85,8 +85,8 @@ class panels_renderer_ipe extends panels_renderer_editor {
     $output = parent::render_region($region_id, $panes);
     $output = theme('panels_ipe_region_wrapper', $output, $region_id, $this->display);
     $classes = 'panels-ipe-region';
-
-    return "<div id='panels-ipe-regionid-$region_id' class='panels-ipe-region'>" . $output . "</div>";
+    $region_id = ctools_cleanstring($region_id);
+    return "<div id='panels-ipe-regionid-$region_id' class='panels-ipe-region'>$output</div>";
   }
 
   /**
@@ -156,8 +156,8 @@ class panels_renderer_ipe extends panels_renderer_editor {
     else {
       $pane = $this->display->content[$pid];
     }
-
-    $this->commands[] = ctools_ajax_command_append("#panels-ipe-regionid-$pane->panel div.panels-ipe-sort-container", $this->render_pane($pane));
+    $region_id = ctools_cleanstring($pane->panel);
+    $this->commands[] = ctools_ajax_command_append("#panels-ipe-regionid-$region_id div.panels-ipe-sort-container", $this->render_pane($pane));
 //    $this->commands[] = ctools_ajax_command_changed("#panel-pane-$pane->pid", "div.grabber span.text");
   }
 }
