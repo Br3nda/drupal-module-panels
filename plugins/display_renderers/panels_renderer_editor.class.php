@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_editor.class.php,v 1.1.2.1 2010/07/03 01:24:56 merlinofchaos Exp $
+// $Id: panels_renderer_editor.class.php,v 1.1.2.2 2010/07/05 16:28:54 merlinofchaos Exp $
 
 /**
  * @file
@@ -116,7 +116,7 @@ class panels_renderer_editor extends panels_renderer_standard {
       $title = t('Deleted/missing content type @type', array('@type' => $pane->type));
     }
 
-    $buttons = $this->get_pane_links($pane);
+    $buttons = $this->get_pane_links($pane, $content_type);
 
     // Render administrative buttons for the pane.
 
@@ -289,7 +289,7 @@ class panels_renderer_editor extends panels_renderer_standard {
   /**
    * Render the links to display when editing a pane.
    */
-  function get_pane_links($pane) {
+  function get_pane_links($pane, $content_type) {
     $links = array();
 
     if (!empty($pane->shown)) {
