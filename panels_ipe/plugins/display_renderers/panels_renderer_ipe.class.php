@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_ipe.class.php,v 1.1.2.16 2010/07/07 23:23:37 merlinofchaos Exp $
+// $Id: panels_renderer_ipe.class.php,v 1.1.2.17 2010/07/07 23:53:50 merlinofchaos Exp $
 
 /**
  * Renderer class for all In-Place Editor (IPE) behavior.
@@ -153,6 +153,7 @@ class panels_renderer_ipe extends panels_renderer_editor {
       'command' => 'endIPE',
       'key' => $this->clean_key,
       'data' => $output,
+      'output' => $this->render(),
     );
   }
 
