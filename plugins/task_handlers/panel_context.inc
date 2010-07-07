@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.56 2010/07/06 23:59:00 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.57 2010/07/07 23:23:37 merlinofchaos Exp $
 
 /**
  * @file
@@ -261,6 +261,9 @@ function panels_panel_context_render($handler, $base_contexts, $args, $test = TR
   $display->context = $contexts;
   $display->args = $args;
   $display->css_id = $handler->conf['css_id'];
+  $task_name = page_manager_make_task_name($handler->task, $handler->subtask);
+
+  $display->cache_key = 'panel_context:' . $task_name . ':' . $handler->name;
 
   // Check to see if there is any CSS.
   if (!empty($handler->conf['css'])) {
