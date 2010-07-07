@@ -1,4 +1,4 @@
-// $Id: panels_ipe.js,v 1.1.2.3 2010/07/05 22:37:39 sdboyer Exp $
+// $Id: panels_ipe.js,v 1.1.2.4 2010/07/07 19:34:51 merlinofchaos Exp $
 
 // Ensure the $ alias is owned by jQuery.
 (function($) {
@@ -13,6 +13,7 @@ Drupal.PanelsIPE = {
           $(this).parents('div.panels-ipe-portlet-wrapper').fadeOut(1000, function() {
             $(this).empty().remove();
           });
+          $(this).parents('div.panels-ipe-display-container').addClass('changed');
         }
         return false;
       });
@@ -152,6 +153,10 @@ function DrupalPanelsIPE(cache_key, cfg) {
   };
 
   this.cancelEditing = function() {
+    if ($('#panels-ipe-display-' + ipe.key).hasClass('changed')) {
+      this.changed = true;
+    }
+
     if (!this.changed || confirm(Drupal.t('This will discard all unsaved changes. Are you sure?'))) {
       window.location.reload(); // trigger a page refresh.
       // $('div.panels-ipe-region', ipe.topParent).sortable('destroy');
