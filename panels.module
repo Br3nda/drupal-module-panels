@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.91 2010/07/08 00:42:30 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.92 2010/07/08 23:59:36 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -622,7 +622,8 @@ function panels_new_pane($type, $subtype, $set_defaults = FALSE) {
   $pane->subtype = $subtype;
   if ($set_defaults) {
     $content_type = ctools_get_content_type($type);
-    $pane->configuration = ctools_content_get_defaults($content_type, $subtype);
+    $content_subtype = ctools_content_get_subtype($content_type, $subtype);
+    $pane->configuration = ctools_content_get_defaults($content_type, $content_subtype);
   }
 
   return $pane;
