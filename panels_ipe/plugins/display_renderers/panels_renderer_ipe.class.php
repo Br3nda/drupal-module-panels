@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_ipe.class.php,v 1.1.2.17 2010/07/07 23:53:50 merlinofchaos Exp $
+// $Id: panels_renderer_ipe.class.php,v 1.1.2.18 2010/07/08 00:42:30 merlinofchaos Exp $
 
 /**
  * Renderer class for all In-Place Editor (IPE) behavior.
@@ -141,11 +141,11 @@ class panels_renderer_ipe extends panels_renderer_editor {
 
     // no output == submit
     if (!empty($form_state['clicked_button']['#save-display'])) {
-      // saved
+      // Saved. Save the cache.
       panels_edit_cache_save($this->cache);
     }
     else {
-      // canceled
+      // Cancelled. Clear the cache.
       panels_edit_cache_clear($this->cache);
     }
 
@@ -153,7 +153,6 @@ class panels_renderer_ipe extends panels_renderer_editor {
       'command' => 'endIPE',
       'key' => $this->clean_key,
       'data' => $output,
-      'output' => $this->render(),
     );
   }
 
