@@ -1,4 +1,4 @@
-// $Id: panels_ipe.js,v 1.1.2.11 2010/07/12 04:02:58 sdboyer Exp $
+// $Id: panels_ipe.js,v 1.1.2.12 2010/07/12 08:49:00 sdboyer Exp $
 
 // Ensure the $ alias is owned by jQuery.
 (function($) {
@@ -79,7 +79,7 @@ function DrupalPanelsIPE(cache_key, cfg) {
   this.initButton = $('div.panels-ipe-startedit', this.control);
   this.cfg = cfg;
   this.changed = false;
-  this.sortable_options = $.extend({
+  this.sortableOptions = $.extend({
     revert: 200,
     dropOnEmpty: true, // default
     opacity: 0.75, // opacity of sortable while sorting
@@ -92,7 +92,7 @@ function DrupalPanelsIPE(cache_key, cfg) {
     update: this.setChanged,
     scroll: true
     // containment: ipe.topParent,
-  }, cfg.sortable_options || {});
+  }, cfg.sortableOptions || {});
 
   this.initEditing = function(formdata) {
     ipe.topParent = $('div#panels-ipe-display-' + cache_key);
