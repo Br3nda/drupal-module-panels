@@ -1,4 +1,4 @@
-// $Id: panels_ipe.js,v 1.1.2.9 2010/07/08 00:53:44 merlinofchaos Exp $
+// $Id: panels_ipe.js,v 1.1.2.10 2010/07/12 04:00:03 sdboyer Exp $
 
 // Ensure the $ alias is owned by jQuery.
 (function($) {
@@ -64,10 +64,12 @@ Drupal.CTools.AJAX.commands.endIPE = function(data) {
 /**
  * Base object (class) definition for the Panels In-Place Editor.
  *
- *  A new instance of this object is instanciated whenever an IPE is
- *  initiated, and destroyed when editing is concluded (successfully or not).
+ * A new instance of this object is instanciated for every unique IPE on a given
+ * page.
  *
- * @param {string} cache_key
+ * Note that this form is provisional, and we hope to replace it with a more
+ * flexible, loosely-coupled model that utilizes separate controllers for the
+ * discrete IPE elements. This will result in greater IPE flexibility.
  */
 function DrupalPanelsIPE(cache_key, cfg) {
   var ipe = this;
