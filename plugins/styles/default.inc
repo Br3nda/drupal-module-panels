@@ -1,5 +1,5 @@
 <?php
-// $Id: default.inc,v 1.1.2.7 2010/06/07 20:25:49 sdboyer Exp $
+// $Id: default.inc,v 1.1.2.8 2010/07/13 23:55:58 merlinofchaos Exp $
 
 /**
  * @file
@@ -11,6 +11,7 @@ $plugin = array(
   'title' => t('No style'),
   'description' => t('The default panel rendering style; displays each pane with a separator.'),
   'render region' => 'panels_default_style_render_region',
+  'weight' => -15,
 );
 
 /**

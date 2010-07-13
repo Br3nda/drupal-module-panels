@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.2.6 2010/01/13 06:25:15 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.2.7 2010/07/13 23:55:58 merlinofchaos Exp $
 
 /**
  * @file
@@ -11,6 +11,7 @@ $plugin = array(
   'title' => t('System block'),
   'description' => t('Display the pane as a system block; this is more restrictive than the default.'),
   'render pane' => 'panels_block_style_render_pane',
+  'weight' => -10,
 );
 
 /**

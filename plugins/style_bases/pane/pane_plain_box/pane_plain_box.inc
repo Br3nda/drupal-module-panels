@@ -1,5 +1,5 @@
 <?php
-// $Id: pane_plain_box.inc,v 1.1.2.1 2010/02/17 01:09:46 merlinofchaos Exp $
+// $Id: pane_plain_box.inc,v 1.1.2.1 2010/07/13 23:55:58 merlinofchaos Exp $
 
 /**
  * @file
@@ -48,7 +48,7 @@ $plugin = array(
 
   // This just uses theme_panels_pane because all we need is the class.
 //  'theme' => 'pane_plain_box',
-  'preview' => 'panels_stylizer_pane_preview',
+//  'preview' => 'panels_stylizer_pane_preview',
 
   'settings form' => 'panels_pane_plain_box_style_settings',
   'settings form submit' => 'panels_pane_plain_box_style_settings_submit',

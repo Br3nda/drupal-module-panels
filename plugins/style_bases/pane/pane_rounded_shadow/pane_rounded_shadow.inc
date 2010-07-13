@@ -1,5 +1,5 @@
 <?php
-// $Id: pane_rounded_shadow.inc,v 1.1.2.1 2010/02/17 01:09:46 merlinofchaos Exp $
+// $Id: pane_rounded_shadow.inc,v 1.1.2.1 2010/07/13 23:55:58 merlinofchaos Exp $
 
 /**
  * @file
@@ -52,7 +52,7 @@ $plugin = array(
 
   'theme' => 'pane_rounded_shadow',
   'build' => 'panels_rounded_shadow_style_base_build',
-  'preview' => 'panels_stylizer_pane_preview',
+//  'preview' => 'panels_stylizer_pane_preview',
 
   'settings form' => 'panels_pane_rounded_shadow_style_settings',
   'settings form submit' => 'panels_pane_rounded_shadow_style_settings_submit',
