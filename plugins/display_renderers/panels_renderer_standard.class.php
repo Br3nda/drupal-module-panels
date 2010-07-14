@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_standard.class.php,v 1.1.2.18 2010/07/13 23:55:58 merlinofchaos Exp $
+// $Id: panels_renderer_standard.class.php,v 1.1.2.19 2010/07/14 01:58:42 merlinofchaos Exp $
 
 /**
  * The standard render pipeline for a Panels display object.
@@ -185,11 +185,13 @@ class panels_renderer_standard {
 
     // Prepare the list of panes to be rendered
     foreach ($panes as $pid => $pane) {
-      // TODO remove in 7.x and ensure the upgrade path weeds out any stragglers; it's been long enough
-      $pane->shown = !empty($pane->shown); // guarantee this field exists.
-      // If this pane is not visible to the user, skip out and do the next one
-      if (!$pane->shown || !panels_pane_access($pane, $this->display)) {
-        continue;
+      if (empty($this->admin)) {
+        // TODO remove in 7.x and ensure the upgrade path weeds out any stragglers; it's been long enough
+        $pane->shown = !empty($pane->shown); // guarantee this field exists.
+        // If this pane is not visible to the user, skip out and do the next one
+        if (!$pane->shown || !panels_pane_access($pane, $this->display)) {
+          continue;
+        }
       }
 
       $ct_plugin_def = ctools_get_content_type($pane->type);

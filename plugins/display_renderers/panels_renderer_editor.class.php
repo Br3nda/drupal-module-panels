@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_editor.class.php,v 1.1.2.3 2010/07/13 23:55:58 merlinofchaos Exp $
+// $Id: panels_renderer_editor.class.php,v 1.1.2.4 2010/07/14 01:58:42 merlinofchaos Exp $
 
 /**
  * @file
@@ -14,7 +14,6 @@ class panels_renderer_editor extends panels_renderer_standard {
    */
   var $commands = array();
   var $admin = TRUE;
-
   // -------------------------------------------------------------------------
   // Display edit rendering.
 

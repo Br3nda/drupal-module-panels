@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.93 2010/07/13 23:55:57 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.94 2010/07/14 01:58:42 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -282,6 +282,16 @@ function panels_ctools_plugin_layouts() {
     'load themes' => TRUE,
     'use hooks' => TRUE,
     'process' => 'panels_layout_process',
+  );
+}
+
+/**
+ * Ensure a layout has a minimal set of data.
+ */
+function panels_layout_process(&$plugin) {
+  $plugin += array(
+    'category' => t('Miscellaneous'),
+    'description' => '',
   );
 }
 
@@ -1484,7 +1494,7 @@ function panels_print_layout($id, $content) {
 /**
  * Get a list of panel regions available in the layout.
  *
- * DEPRECATED. Use panels_get_regions instead.
+ * @deprecated Use panels_get_regions instead.
  */
 function panels_get_panels($layout, $display) {
   return panels_get_regions($layout, $display);

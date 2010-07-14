@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.13.2.24 2010/07/13 23:55:57 merlinofchaos Exp $
+// $Id: plugins.inc,v 1.13.2.25 2010/07/14 01:58:42 merlinofchaos Exp $
 
 /**
  * @file
@@ -251,16 +251,6 @@ class panels_cache_object {
 function panels_get_pane_title(&$pane, $context = array(), $incoming_content = NULL) {
   ctools_include('content');
   return ctools_content_admin_title($pane->type, $pane->subtype, $pane->configuration, $context);
-}
-
-/**
- * Ensure a layout has a minimal set of data.
- */
-function panels_layout_process(&$plugin) {
-  $plugin += array(
-    'category' => t('Miscellaneous'),
-    'description' => '',
-  );
 }
 
 /**
