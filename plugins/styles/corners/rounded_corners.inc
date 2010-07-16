@@ -1,5 +1,5 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.13 2010/06/07 20:25:49 sdboyer Exp $
+// $Id: rounded_corners.inc,v 1.1.2.14 2010/07/16 01:14:44 merlinofchaos Exp $
 
 /**
  * @file
@@ -119,7 +119,7 @@ function panels_rounded_corners_css($display) {
     $filename = ctools_css_store($css_id, _panels_rounded_corners_css($idstr), FALSE);
   }
 
-  drupal_add_css($filename, 'module', 'all', FALSE);
+  ctools_css_add_css($filename, 'module', 'all', FALSE);
 }
 
 /**
