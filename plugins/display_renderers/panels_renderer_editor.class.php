@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_editor.class.php,v 1.1.2.5 2010/07/14 23:31:59 merlinofchaos Exp $
+// $Id: panels_renderer_editor.class.php,v 1.1.2.6 2010/07/20 20:42:56 merlinofchaos Exp $
 
 /**
  * @file
@@ -1770,7 +1770,7 @@ function panels_edit_configure_access_settings_form(&$form_state) {
     '#type' => 'radios',
     '#options' => array(
       'and' => t('All criteria must pass.'),
-      'or' => t('Only one criteria must pass.'),
+      'or' => t('Only one criterion must pass.'),
     ),
     '#default_value' => isset($pane->access['logic']) ? $pane->access['logic'] : 'and',
   );
