@@ -1,4 +1,4 @@
-/* $Id: panels_dnd.css,v 1.3.2.13 2010/07/03 01:24:55 merlinofchaos Exp $ */
+/* $Id: panels_dnd.css,v 1.3.2.14 2010/07/20 21:24:46 merlinofchaos Exp $ */
 
 #panels-dnd-main {
   margin: 0.5em 0;
@@ -100,7 +100,7 @@ div.panels-set-title-hide .panel-pane-is-title {
   background: #f8f8f8;
 }
 
-.panel-portlet .content {
+.panel-portlet .pane-content {
   margin: .5em 0 .5em 0;
   padding: 0 .25em 0 .25em;
   display: none; /* initially hidden */
