@@ -1,5 +1,5 @@
 <?php
-// $Id: display-edit.inc,v 1.7.2.39 2010/07/07 23:23:37 merlinofchaos Exp $
+// $Id: display-edit.inc,v 1.7.2.40 2010/07/20 20:26:18 merlinofchaos Exp $
 
 /*
  * @file
@@ -36,7 +36,7 @@ function _panels_edit($display, $destination, $content_types, $title = FALSE) {
 
   $output = $renderer->edit();
   if (is_object($output) && $destination) {
-    return drupal_goto($destination);
+    return panels_goto($destination);
   }
   return $output;
 }

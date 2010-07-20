@@ -1,5 +1,5 @@
 <?php
-// $Id: display-layout.inc,v 1.4.2.7 2010/07/03 01:24:55 merlinofchaos Exp $
+// $Id: display-layout.inc,v 1.4.2.8 2010/07/20 20:26:18 merlinofchaos Exp $
 
 /**
  * @file
@@ -59,7 +59,7 @@ function _panels_edit_layout($display, $finish, $destination, $allowed_layouts) 
       }
 
       if ($destination) {
-        return drupal_goto($destination);
+        return panels_goto($destination);
       }
       return $change_form_state['display'];
     }
