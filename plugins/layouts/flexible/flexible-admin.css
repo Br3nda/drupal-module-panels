@@ -1,4 +1,4 @@
-/* $Id: flexible-admin.css,v 1.1.2.7 2010/06/23 04:17:42 merlinofchaos Exp $ */
+/* $Id: flexible-admin.css,v 1.1.2.8 2010/07/20 21:00:28 merlinofchaos Exp $ */
 
 #panels-dnd-main .panel-flexible-edit-layout div.panels-display .pane-add-link,
 .panel-flexible-edit-layout .panel-pane {
@@ -73,6 +73,7 @@
   position: absolute;
   z-index: 1000;
   background: white;
+  color: black;
   border: 1px solid black;
   width: 60px;
   height: 2em;
