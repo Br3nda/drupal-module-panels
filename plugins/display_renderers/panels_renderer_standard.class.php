@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_standard.class.php,v 1.1.2.19 2010/07/14 01:58:42 merlinofchaos Exp $
+// $Id: panels_renderer_standard.class.php,v 1.1.2.20 2010/07/20 19:01:14 merlinofchaos Exp $
 
 /**
  * The standard render pipeline for a Panels display object.
@@ -136,6 +136,10 @@ class panels_renderer_standard {
     $this->plugins['layout'] = $layout;
     if (!isset($layout['panels'])) {
       $this->plugins['layout']['panels'] = panels_get_regions($layout, $display);
+    }
+
+    if (empty($this->plugins['layout'])) {
+      watchdog('panels', "Layout: @layout couldn't been found, maybe the theme is disabled.", array('@layout' => $display->layout));
     }
   }
 
