@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.1.2.7 2010/07/13 23:55:58 merlinofchaos Exp $
+// $Id: block.inc,v 1.1.2.8 2010/07/20 19:20:47 merlinofchaos Exp $
 
 /**
  * @file
@@ -36,6 +36,9 @@ function theme_panels_block_style_render_pane($content, $pane, $display) {
     $content->delta = $content->subtype;
   }
 
+  // If using per pane classes, $block->css_class will need to be added in your
+  // preprocess or template, along with any other Panels specific field you
+  // might want to utilize.
   return theme('block', $content);
 }
 
