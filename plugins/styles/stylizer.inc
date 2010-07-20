@@ -1,5 +1,5 @@
 <?php
-// $Id: stylizer.inc,v 1.1.2.1 2010/07/13 23:55:58 merlinofchaos Exp $
+// $Id: stylizer.inc,v 1.1.2.2 2010/07/20 00:51:31 merlinofchaos Exp $
 
 /**
  * @file
@@ -41,6 +41,16 @@ function panels_stylizer_merge_plugin($plugin, $style) {
   $plugin['description'] = check_plain($style->admin_description);
   $plugin['style'] = $style;
   $plugin['weight'] = 0;
+
+  ctools_include('stylizer');
+  $base = ctools_get_style_base($style->settings['style_base']);
+  if ($base['type'] == 'pane') {
+    unset($plugin['render region']);
+  }
+  else {
+    unset($plugin['render pane']);
+  }
+
   unset($plugin['settings form']);
   unset($plugin['pane settings form']);
   return $plugin;
