@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.admin.inc,v 1.6.2.14 2010/07/03 01:24:56 merlinofchaos Exp $
+// $Id: panels_mini.admin.inc,v 1.6.2.15 2010/07/20 18:54:59 merlinofchaos Exp $
 
 /**
  * @file
@@ -360,7 +360,7 @@ function panels_mini_add_page($layout = NULL) {
   $panel_mini->category = '';
 
   drupal_set_title(t('Add mini panel'));
-  return panels_mini_edit($panel_mini);
+  return drupal_get_form('panels_mini_edit_form', $panel_mini);
 }
 
 /**
