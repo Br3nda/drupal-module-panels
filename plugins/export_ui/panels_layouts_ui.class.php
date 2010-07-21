@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_layouts_ui.class.php,v 1.1.2.5 2010/07/15 06:06:37 merlinofchaos Exp $
+// $Id: panels_layouts_ui.class.php,v 1.1.2.6 2010/07/21 00:18:37 merlinofchaos Exp $
 
 class panels_layouts_ui extends ctools_export_ui {
   var $lipsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam egestas congue nibh, vel dictum ante posuere vitae. Cras gravida massa tempor metus eleifend sed elementum tortor scelerisque. Vivamus egestas, tortor quis luctus tristique, sem velit adipiscing risus, et tempus enim felis in massa. Morbi viverra, nisl quis rhoncus imperdiet, turpis massa vestibulum turpis, egestas faucibus nibh metus vel nunc. In hac habitasse platea dictumst. Nunc sit amet nisi quis ipsum tincidunt semper. Donec ac urna enim, et placerat arcu. Morbi eu laoreet justo. Nullam nec velit eu neque mattis pulvinar sed non libero. Sed sed vulputate erat. Fusce sit amet dui nibh.";
@@ -29,6 +29,7 @@ class panels_layouts_ui extends ctools_export_ui {
   }
 
   function edit_form(&$form, &$form_state) {
+    ctools_include('plugins', 'panels');
     // If the plugin is not set, then it should be provided as an argument:
     if (!isset($form_state['item']->plugin)) {
       $form_state['item']->plugin = $form_state['function args'][2];
@@ -101,6 +102,9 @@ class panels_layouts_ui extends ctools_export_ui {
     $form_state['cache_key'] = $cache_key;
     $form_state['content_types'] = $cache->content_types;
     $form_state['display_title'] = FALSE;
+
+    $form_state['renderer'] = panels_get_renderer_handler('editor', $cache->display);
+    $form_state['renderer']->cache = &$cache;
 
     $form = array_merge($form, panels_edit_display_form($form_state));
     // Make sure the theme will work since our form id is different.

@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.27 2010/07/20 21:08:28 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.28 2010/07/21 00:18:37 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -640,7 +640,7 @@ function panels_flexible_render_item_links($renderer, $id, $item) {
       $settings = t('Row settings');
     }
     if (empty($item['children'])) {
-      if ($item != 'canvas') {
+      if ($id != 'canvas') {
         $remove = t('Remove row');
       }
       $add = $item['contains'] == 'region' ? t('Add region') : t('Add column');
