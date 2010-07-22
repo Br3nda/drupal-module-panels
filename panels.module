@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.96 2010/07/20 20:30:49 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.97 2010/07/22 22:03:23 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -60,6 +60,12 @@ function panels_theme() {
     'file' => '../includes/callbacks.inc',
     'template' => 'panels-dashboard',
   );
+
+
+  // We don't need layout and style themes in maintenance mode.
+  if (defined('MAINTENANCE_MODE')) {
+    return $theme;
+  }
 
   // Register layout and style themes on behalf of all of these items.
   ctools_include('plugins', 'panels');
