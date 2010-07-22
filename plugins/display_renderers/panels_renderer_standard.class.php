@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_standard.class.php,v 1.1.2.21 2010/07/21 21:03:48 merlinofchaos Exp $
+// $Id: panels_renderer_standard.class.php,v 1.1.2.22 2010/07/22 21:50:37 merlinofchaos Exp $
 
 /**
  * The standard render pipeline for a Panels display object.
@@ -223,7 +223,7 @@ class panels_renderer_standard {
     // Initialize defaults to be used for regions without their own explicit
     // settings. Use display settings if they exist, else hardcoded defaults
     $default = array(
-      'style' => !empty($settings['style']) ? $settings['style'] : panels_get_style('default'),
+      'style' => panels_get_style(!empty($settings['style']) ? $settings['style'] : 'default'),
       'style settings' => isset($settings['style_settings']['default']) ? $settings['style_settings']['default'] : array(),
     );
 
