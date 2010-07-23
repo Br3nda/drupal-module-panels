@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_layouts_ui.class.php,v 1.1.2.7 2010/07/21 15:33:03 merlinofchaos Exp $
+// $Id: panels_layouts_ui.class.php,v 1.1.2.8 2010/07/23 21:49:03 merlinofchaos Exp $
 
 class panels_layouts_ui extends ctools_export_ui {
   var $lipsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam egestas congue nibh, vel dictum ante posuere vitae. Cras gravida massa tempor metus eleifend sed elementum tortor scelerisque. Vivamus egestas, tortor quis luctus tristique, sem velit adipiscing risus, et tempus enim felis in massa. Morbi viverra, nisl quis rhoncus imperdiet, turpis massa vestibulum turpis, egestas faucibus nibh metus vel nunc. In hac habitasse platea dictumst. Nunc sit amet nisi quis ipsum tincidunt semper. Donec ac urna enim, et placerat arcu. Morbi eu laoreet justo. Nullam nec velit eu neque mattis pulvinar sed non libero. Sed sed vulputate erat. Fusce sit amet dui nibh.";
@@ -134,7 +134,7 @@ class panels_layouts_ui extends ctools_export_ui {
 
     $categories = $plugins = array('all' => t('- All -'));
     foreach ($this->items as $item) {
-      $categories[$item->category] = $item->category;
+      $categories[$item->category] = $item->category ? $item->category : t('Miscellaneous');
     }
 
     $form['top row']['category'] = array(
@@ -194,7 +194,7 @@ class panels_layouts_ui extends ctools_export_ui {
         $this->sorts[$item->name] = $item->name;
         break;
       case 'category':
-        $this->sorts[$item->name] = $item->category . $item->admin_title;
+        $this->sorts[$item->name] = ($item->category ? $item->category : t('Miscellaneous')) . $item->admin_title;
         break;
       case 'plugin':
         $this->sorts[$item->name] = $item->plugin;
@@ -205,12 +205,13 @@ class panels_layouts_ui extends ctools_export_ui {
     }
 
     $type = !empty($this->builders[$item->plugin]) ? $this->builders[$item->plugin]['title'] : t('Broken/missing plugin');
+    $category = $item->category ? check_plain($item->category) : t('Miscellaneous');
     $this->rows[$item->name] = array(
       'data' => array(
         array('data' => check_plain($type), 'class' => 'ctools-export-ui-type'),
         array('data' => check_plain($item->name), 'class' => 'ctools-export-ui-name'),
         array('data' => check_plain($item->admin_title), 'class' => 'ctools-export-ui-title'),
-        array('data' => check_plain($item->category), 'class' => 'ctools-export-ui-category'),
+        array('data' => $category, 'class' => 'ctools-export-ui-category'),
         array('data' => theme('links', $operations), 'class' => 'ctools-export-ui-operations'),
       ),
       'title' => check_plain($item->admin_description),

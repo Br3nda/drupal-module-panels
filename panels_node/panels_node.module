@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_node.module,v 1.5.2.23 2010/07/22 22:20:52 merlinofchaos Exp $
+// $Id: panels_node.module,v 1.5.2.24 2010/07/23 21:49:03 merlinofchaos Exp $
 
 
 /**
@@ -390,4 +390,17 @@ function panels_node_export_node_alter(&$node, $original_node, $method) {
     $export = panels_export_display($display);
     $node->export_display = $export;
   }
+}
+
+/**
+ * Implementation of hook_panels_dashboard_blocks().
+ *
+ * Adds panel nodes information to the Panels dashboard.
+ */
+function panels_node_panels_dashboard_blocks(&$vars) {
+  $vars['links']['panels_node'] = array(
+    'title' => l(t('Panel node'), 'node/add/panel'),
+    'description' => t('Panel nodes are node content and appear in your searches, but are more limited than panel pages.'),
+    'weight' => -1,
+  );
 }
