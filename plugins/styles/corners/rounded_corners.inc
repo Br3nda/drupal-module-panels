@@ -1,5 +1,5 @@
 <?php
-// $Id: rounded_corners.inc,v 1.1.2.15 2010/07/20 20:06:19 merlinofchaos Exp $
+// $Id: rounded_corners.inc,v 1.1.2.16 2010/07/23 22:47:18 merlinofchaos Exp $
 
 /**
  * @file
@@ -110,7 +110,7 @@ function panels_rounded_corners_style_settings_form($style_settings) {
  *   A Panels display object.
  */
 function panels_rounded_corners_css($display) {
-  $idstr = empty($display->css_id) ? '.rounded-corner' : "#$display->css_id";
+  $idstr = empty($display->css_id) ? '.rounded-corner' : "#$display->css_id .rounded-corner";
   $css_id = 'rounded-corner:' . $idstr;
 
   ctools_include('css');
