@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.28 2010/07/21 00:18:37 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.29 2010/07/25 18:59:12 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -23,8 +23,8 @@ $plugin = array(
   'builder' => TRUE,
   'builder tab title' => 'Add flexible layout', // menu so translated elsewhere
 
-  'sublayout callback' => 'panels_flexible_get_sublayout',
-  'sublayouts callback' => 'panels_flexible_get_sublayouts',
+  'get child' => 'panels_flexible_get_sublayout',
+  'get children' => 'panels_flexible_get_sublayouts',
 
   // Define ajax callbacks
   'ajax' => array(

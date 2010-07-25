@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.98 2010/07/23 21:49:03 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.99 2010/07/25 18:59:12 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -308,6 +308,7 @@ function panels_ctools_plugin_layouts() {
     'load themes' => TRUE,
     'use hooks' => TRUE,
     'process' => 'panels_layout_process',
+    'child plugins' => TRUE,
   );
 }
 
@@ -329,6 +330,7 @@ function panels_ctools_plugin_styles() {
     'load themes' => TRUE,
     'use hooks' => TRUE,
     'process' => 'panels_plugin_styles_process',
+    'child plugins' => TRUE,
   );
 }
 
