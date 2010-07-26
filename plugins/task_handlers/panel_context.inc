@@ -1,5 +1,5 @@
 <?php
-// $Id: panel_context.inc,v 1.1.2.58 2010/07/16 01:14:44 merlinofchaos Exp $
+// $Id: panel_context.inc,v 1.1.2.59 2010/07/26 19:44:29 merlinofchaos Exp $
 
 /**
  * @file
@@ -795,6 +795,7 @@ function panels_panel_context_edit_preview(&$form, &$form_state) {
   if (empty($form['preview'])) {
     $display = panels_panel_context_get_display($form_state['handler']);
     $display->context = $contexts;
+    $display->skip_cache = TRUE;
     $output = panels_render_display($display);
     if (isset($form['buttons'])) {
       unset($form['buttons']);

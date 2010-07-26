@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_standard.class.php,v 1.1.2.22 2010/07/22 21:50:37 merlinofchaos Exp $
+// $Id: panels_renderer_standard.class.php,v 1.1.2.23 2010/07/26 19:44:29 merlinofchaos Exp $
 
 /**
  * The standard render pipeline for a Panels display object.
@@ -272,7 +272,7 @@ class panels_renderer_standard {
     // Attach out-of-band data first.
     $this->add_meta();
 
-    if (empty($this->display->cache['method'])) {
+    if (empty($this->display->cache['method']) || !empty($this->display->skip_cache)) {
       return $this->render_layout();
     }
     else {
@@ -405,7 +405,7 @@ class panels_renderer_standard {
     }
 
     $content = FALSE;
-    $caching = !empty($pane->cache['method']) ? TRUE : FALSE;
+    $caching = !empty($pane->cache['method']) && empty($this->display->skip_cache);
     if ($caching && ($cache = panels_get_cached_content($this->display, $this->display->args, $this->display->context, $pane))) {
       $content = $cache->content;
     }
