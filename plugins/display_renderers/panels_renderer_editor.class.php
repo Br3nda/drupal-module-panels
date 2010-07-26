@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_editor.class.php,v 1.1.2.7 2010/07/23 21:49:03 merlinofchaos Exp $
+// $Id: panels_renderer_editor.class.php,v 1.1.2.8 2010/07/26 17:21:20 merlinofchaos Exp $
 
 /**
  * @file
@@ -1006,6 +1006,10 @@ class panels_renderer_editor extends panels_renderer_standard {
     $style = panels_get_style($form_state['style']);
     $function = panels_plugin_get_function('styles', $style, ($type == 'pane') ? 'pane settings form' : 'settings form');
     if (!$function) {
+      if (isset($this->cache->style)) {
+        unset($this->cache->style);
+      }
+
       // If there's no settings form, just change the style and exit.
       switch($type) {
         case 'display':

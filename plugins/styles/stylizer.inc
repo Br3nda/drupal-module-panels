@@ -1,5 +1,5 @@
 <?php
-// $Id: stylizer.inc,v 1.1.2.3 2010/07/25 18:59:13 merlinofchaos Exp $
+// $Id: stylizer.inc,v 1.1.2.4 2010/07/26 17:21:20 merlinofchaos Exp $
 
 /**
  * @file
@@ -157,7 +157,7 @@ function theme_panels_stylizer_stylizer_style_render_pane($content, $pane, $disp
  */
 function panels_stylizer_stylizer_style_settings_form($style_settings, $display, $pid, $type, $form_state) {
   // Just redirect this to the custom style settings ajax.
-  panels_stylizer_pane_add_style($form_state['renderer'], array(), $style_settings, $type, $pid, 'settings');
+  panels_stylizer_pane_add_style($form_state['renderer'], array(), $style_settings, $type, $pid);
   ctools_ajax_render($form_state['renderer']->commands);
 }
 
