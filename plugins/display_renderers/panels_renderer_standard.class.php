@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_standard.class.php,v 1.1.2.23 2010/07/26 19:44:29 merlinofchaos Exp $
+// $Id: panels_renderer_standard.class.php,v 1.1.2.24 2010/07/26 21:24:22 merlinofchaos Exp $
 
 /**
  * The standard render pipeline for a Panels display object.
@@ -353,7 +353,7 @@ class panels_renderer_standard {
    * @param object $pane
    *  The $pane information from the display
    */
-  function render_pane($pane) {
+  function render_pane(&$pane) {
     $content = $this->render_pane_content($pane);
     if ($this->display->hide_title == PANELS_TITLE_PANE && !empty($this->display->title_pane) && $this->display->title_pane == $pane->pid) {
 
@@ -396,7 +396,7 @@ class panels_renderer_standard {
    * @param stdClass $pane
    *  A Panels pane object, as loaded from the database.
    */
-  function render_pane_content($pane) { // TODO remove this method by collapsing it into $this->render_panes()
+  function render_pane_content(&$pane) { // TODO remove this method by collapsing it into $this->render_panes()
     ctools_include('context');
     // TODO finally safe to remove this check?
     if (!is_array($this->display->context)) {
