@@ -1,5 +1,5 @@
 <?php
-// $Id: stylizer.inc,v 1.1.2.4 2010/07/26 17:21:20 merlinofchaos Exp $
+// $Id: stylizer.inc,v 1.1.2.5 2010/07/29 22:59:09 merlinofchaos Exp $
 
 /**
  * @file
@@ -243,7 +243,7 @@ function panels_stylizer_pane_add_style(&$renderer, $plugin, &$conf, $type, $pid
  * preconfigured style.
  */
 function panels_stylizer_edit_pane_style_form(&$form, &$form_state) {
-  if (!user_access('administer panels styles')) {
+  if (!user_access('administer panels styles') || !module_exists('stylizer')) {
     return;
   }
   ctools_include('dependent');
