@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.5.2.24 2010/07/23 21:49:03 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.5.2.25 2010/07/29 20:02:26 merlinofchaos Exp $
 
 /**
  * @file panels_mini.module
@@ -269,6 +269,10 @@ function panels_mini_panels_cache_get($key) {
   ctools_include('common', 'panels');
   list($handler, $item) = _panels_mini_panels_cache_get($key);
 
+  if (isset($item->mini_panels_display_cache)) {
+    return $item->mini_panels_display_cache;
+  }
+
   $cache = new stdClass();
   $cache->display = $item->display;
   $cache->display->context = ctools_context_load_contexts($item);
@@ -287,7 +291,7 @@ function panels_mini_panels_cache_get($key) {
  */
 function panels_mini_panels_cache_set($key, $cache) {
   list($handler, $item) = _panels_mini_panels_cache_get($key);
-  $item->display = $cache->display;
+  $item->mini_panels_display_cache = $cache;
   $handler->edit_cache_set_key($item, $key);
 }
 

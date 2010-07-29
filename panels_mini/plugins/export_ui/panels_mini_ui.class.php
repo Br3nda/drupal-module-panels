@@ -1,7 +1,12 @@
 <?php
-// $Id: panels_mini_ui.class.php,v 1.1.2.3 2010/07/23 22:47:18 merlinofchaos Exp $
+// $Id: panels_mini_ui.class.php,v 1.1.2.4 2010/07/29 20:02:26 merlinofchaos Exp $
 
 class panels_mini_ui extends ctools_export_ui {
+  function init($plugin) {
+    parent::init($plugin);
+    ctools_include('context');
+  }
+
   function list_form(&$form, &$form_state) {
     ctools_include('plugins', 'panels');
     $this->layouts = panels_get_layouts();
@@ -282,6 +287,6 @@ class panels_mini_ui extends ctools_export_ui {
 
   function edit_form_content_submit(&$form, &$form_state) {
     panels_edit_display_form_submit($form, $form_state);
+    $form_state['item']->display = $form_state['display'];
   }
-
 }
