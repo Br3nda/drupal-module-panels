@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.30 2010/07/26 22:38:35 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.31 2010/08/01 06:09:35 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -1467,6 +1467,8 @@ function panels_flexible_add_item_form_submit(&$form, &$form_state) {
   $parent = &$form_state['parent'];
   $location = &$form_state['location'];
   $settings = &$form_state['settings'];
+
+  $item['class'] = $form_state['values']['class'];
 
   if ($item['type'] == 'region') {
     $item['title'] = $form_state['values']['title'];
