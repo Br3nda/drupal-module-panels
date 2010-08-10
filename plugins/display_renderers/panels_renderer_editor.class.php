@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_editor.class.php,v 1.1.2.9 2010/07/26 23:08:21 merlinofchaos Exp $
+// $Id: panels_renderer_editor.class.php,v 1.1.2.10 2010/08/10 23:25:19 merlinofchaos Exp $
 
 /**
  * @file
@@ -314,7 +314,8 @@ class panels_renderer_editor extends panels_renderer_standard {
     }
 
     $subtype = ctools_content_get_subtype($content_type, $pane->subtype);
-    if (!empty($content_type['edit form']) || !empty($subtype['edit form'])) {
+
+    if (ctools_content_editable($content_type, $subtype, $pane->configuration)) {
       $links[] = array(
         'title' => isset($content_type['edit text']) ? $content_type['edit text'] : t('Settings'),
         'href' => $this->get_url('edit-pane', $pane->pid),
