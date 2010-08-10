@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.31 2010/08/01 06:09:35 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.32 2010/08/10 19:29:42 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -48,6 +48,8 @@ function panels_flexible_merge_plugin($plugin, $layout) {
   $plugin['title'] = check_plain($layout->admin_title);
   $plugin['description'] = check_plain($layout->admin_description);
   $plugin['layout'] = $layout;
+  $plugin['builder'] = FALSE;
+  $plugin['builder tab title'] = NULL;
   return $plugin;
 }
 
