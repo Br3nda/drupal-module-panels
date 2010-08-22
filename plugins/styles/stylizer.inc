@@ -1,5 +1,5 @@
 <?php
-// $Id: stylizer.inc,v 1.1.2.5 2010/07/29 22:59:09 merlinofchaos Exp $
+// $Id: stylizer.inc,v 1.1.2.6 2010/08/22 00:42:52 merlinofchaos Exp $
 
 /**
  * @file
@@ -138,9 +138,12 @@ function theme_panels_stylizer_stylizer_style_render_pane($content, $pane, $disp
     $plugin = ctools_get_style_base($settings['style_base']);
 
     if (empty($content->css_class)) {
-      $content->css_class = '';
+      $content->css_class = ctools_stylizer_get_css_class($plugin, $settings);
     }
-    $content->css_class .= ctools_stylizer_get_css_class($plugin, $settings);
+    else {
+      $content->css_class .= ' ' . ctools_stylizer_get_css_class($plugin, $settings);
+    }
+
     ctools_stylizer_add_css($plugin, $settings);
 
     if (isset($plugin['theme'])) {
