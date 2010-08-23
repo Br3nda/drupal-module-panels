@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.32 2010/08/10 19:29:42 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.33 2010/08/23 21:02:56 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -356,7 +356,14 @@ function theme_panels_flexible($id, $content, $settings, $display, $layout, $han
     if (!$filename) {
       $filename = ctools_css_store($renderer->css_cache_name, $css, FALSE);
     }
-    ctools_css_add_css($filename, 'module', 'all', FALSE);
+
+    // Give the CSS to the renderer to put where it wants.
+    if ($handler) {
+      $handler->add_css($filename, 'module', 'all', FALSE);
+    }
+    else {
+      ctools_css_add_css($filename, 'module', 'all', FALSE);
+    }
   }
   else {
     // If the id is 'new' we can't reliably cache the CSS in the filesystem
