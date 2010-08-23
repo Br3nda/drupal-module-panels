@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.module,v 1.28.2.103 2010/08/23 21:02:56 merlinofchaos Exp $
+// $Id: panels.module,v 1.28.2.104 2010/08/23 22:44:16 merlinofchaos Exp $
 
 /**
  * @file panels.module
@@ -358,6 +358,16 @@ function panels_ctools_plugin_api($owner, $api) {
       'path' => drupal_get_path('module', 'panels') . '/includes',
     );
   }
+}
+
+/**
+ * Implementation of hook_views_api().
+ */
+function panels_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'panels') . '/plugins/views',
+  );
 }
 
 /**
@@ -1526,6 +1536,8 @@ function panels_print_layout($layout, $content, $meta = 'standard') {
 
   // Get our simple renderer
   $renderer = panels_get_renderer_handler('simple', $display);
+  $renderer->meta_location = $meta;
+
   return $renderer->render();
 }
 
