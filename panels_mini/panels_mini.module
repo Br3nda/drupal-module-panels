@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_mini.module,v 1.5.2.27 2010/08/21 20:46:36 merlinofchaos Exp $
+// $Id: panels_mini.module,v 1.5.2.28 2010/08/24 16:38:36 merlinofchaos Exp $
 
 /**
  * @file panels_mini.module
@@ -366,7 +366,7 @@ function panels_mini_panels_dashboard_blocks(&$vars) {
 
   foreach ($panel_minis as $panel_mini) {
     $rows[] = array(
-      check_plain($panel_mini->title),
+      check_plain($panel_mini->admin_title),
       array(
         'data' => l(t('Edit'), "admin/build/mini-panels/list/$panel_mini->name/edit"),
         'class' => 'links',
