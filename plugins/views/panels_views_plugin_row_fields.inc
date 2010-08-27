@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_views_plugin_row_fields.inc,v 1.1.2.1 2010/08/23 22:44:16 merlinofchaos Exp $
+// $Id: panels_views_plugin_row_fields.inc,v 1.1.2.2 2010/08/27 23:46:45 merlinofchaos Exp $
 /**
  * @file
  * Contains the base row style plugin.
