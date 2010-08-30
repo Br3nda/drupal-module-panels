@@ -1,5 +1,5 @@
 <?php
-// $Id: node_override.inc,v 1.1.2.1 2010/08/30 22:08:57 merlinofchaos Exp $
+// $Id: node_override.inc,v 1.1.2.2 2010/08/30 22:32:55 merlinofchaos Exp $
 
 /**
  * @file
@@ -14,7 +14,6 @@
 $plugin = array(
   'title' => t('Node template'),
   'page title' => t('Node template wizard'),
-  'shortcut' => t('Override a node page (wizard)'),
   'description' => t('The node page wizard can help you override the node page for a type of node.'),
 
   'type' => 'panels',
