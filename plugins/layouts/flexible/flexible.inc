@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.34 2010/09/02 19:52:01 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.35 2010/09/02 23:54:14 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -1748,6 +1748,7 @@ function panels_flexible_reuse_form_validate(&$form, &$form_state) {
     form_error($form['name'], t('You must choose a machine name.'));
   }
 
+  ctools_include('export');
   $test = ctools_export_crud_load('panels_layout', $form_state['values']['name']);
   if ($test) {
     form_error($form['name'], t('That name is used by another layout: @layout', array('@layout' => $test->admin_title)));
