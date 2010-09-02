@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.1.2.33 2010/08/23 21:02:56 merlinofchaos Exp $
+// $Id: flexible.inc,v 1.1.2.34 2010/09/02 19:52:01 merlinofchaos Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -870,7 +870,7 @@ function panels_flexible_get_css_group(&$css, $renderer, $list, $owner_id, $type
     // by this much too.
     if ($left_total) {
       if ($renderer->admin || count($middle)) {
-        $css["$owner_id-left"]['margin-left'] = '-' . $left_total . 'px';
+        $css["$owner_id-middle"]['margin-left'] = $left_total . 'px';
         // IE hack
         $css["* html $owner_id-left"]['left'] = $left_total . "px";
       }
@@ -881,12 +881,11 @@ function panels_flexible_get_css_group(&$css, $renderer, $list, $owner_id, $type
       }
     }
     // Add this even if it's 0 so we can handle removals.
-    $css["$owner_id-inside"]['padding-left'] = $left_total . 'px';
+    $css["$owner_id-inside"]['padding-left'] = '0px';
     if ($right_total) {
-      $css["$owner_id-right"]['margin-right'] = '-' . $right_total . 'px';
+      $css["$owner_id-middle"]['margin-right'] = $right_total . 'px';
     }
-    $css["$owner_id-inside"]['padding-right'] = $right_total . 'px';
-
+    $css["$owner_id-inside"]['padding-right'] = '0px';
   }
 
   // If the canvas has a fixed width set, and this is the canvas, fix the
