@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_25_50_25.inc,v 1.2 2010/01/21 07:11:42 sdboyer Exp $
+// $Id: threecol_25_50_25.inc,v 1.3 2010/09/07 09:42:12 sdboyer Exp $
 
 /**
  * implementation of hook_panels_layouts
@@ -7,6 +7,7 @@
 // Plugin definition
 $plugin = array(
   'title' => t('Three column 25/50/25'),
+  'category' => t('Columns: 3'),
   'icon' => 'threecol_25_50_25.png',
   'theme' => 'panels_threecol_25_50_25',
   'theme arguments' => array('id', 'content'),

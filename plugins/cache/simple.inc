@@ -1,5 +1,5 @@
 <?php
-// $Id: simple.inc,v 1.2 2010/01/21 07:11:42 sdboyer Exp $
+// $Id: simple.inc,v 1.3 2010/09/07 09:42:11 sdboyer Exp $
 
 /**
  * @file
@@ -99,6 +99,10 @@ function panels_simple_cache_get_id($conf, $display, $args, $contexts, $pane) {
           $id .= ':' . $context->argument;
         }
       }
+  }
+  if (module_exists('locale')) {
+    global $language;
+    $id .= ':' . $language->language;
   }
   return $id;
 }

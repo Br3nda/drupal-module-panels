@@ -1,4 +1,4 @@
-// $Id: display_editor.js,v 1.5 2010/01/21 07:11:41 sdboyer Exp $
+// $Id: display_editor.js,v 1.6 2010/09/07 09:42:11 sdboyer Exp $
 /**
  * @file display_editor.js
  *
@@ -411,9 +411,9 @@
       }
       draggable.timeCount = draggable.timeCount + 1;
       var left = $(window).scrollLeft();
-      var right = left + $(window).innerWidth();
+      var right = left + $(window).width();
       var top = $(window).scrollTop();
-      var bottom = top + $(window).innerHeight();
+      var bottom = top + $(window).height();
 
       if (draggable.mousePos.x < left + scrollBuffer && left > 0) {
         window.scrollTo(left - scrollDistance, top);
@@ -453,7 +453,7 @@
     // Show javascript only items.
     $('span#panels-js-only').css('display', 'inline');
 
-    $('div.panel-pane:not(.panel-portlet)', context)
+    $('#panels-dnd-main div.panel-pane:not(.panel-portlet)')
       .addClass('panel-portlet')
       .each(Drupal.Panels.bindPortlet);
 

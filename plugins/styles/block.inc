@@ -1,5 +1,5 @@
 <?php
-// $Id: block.inc,v 1.2 2010/01/21 07:11:42 sdboyer Exp $
+// $Id: block.inc,v 1.3 2010/09/07 09:42:12 sdboyer Exp $
 
 /**
  * @file
@@ -11,6 +11,7 @@ $plugin = array(
   'title' => t('System block'),
   'description' => t('Display the pane as a system block; this is more restrictive than the default.'),
   'render pane' => 'panels_block_style_render_pane',
+  'weight' => -10,
 );
 
 /**
@@ -35,6 +36,9 @@ function theme_panels_block_style_render_pane($content, $pane, $display) {
     $content->delta = $content->subtype;
   }
 
+  // If using per pane classes, $block->css_class will need to be added in your
+  // preprocess or template, along with any other Panels specific field you
+  // might want to utilize.
   return theme('block', $content);
 }
 
