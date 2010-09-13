@@ -1,4 +1,4 @@
-// $Id: panels_ipe.js,v 1.2 2010/09/07 09:42:11 sdboyer Exp $
+// $Id: panels_ipe.js,v 1.3 2010/09/13 18:25:09 sdboyer Exp $
 
 // Ensure the $ alias is owned by jQuery.
 (function($) {
@@ -162,7 +162,7 @@ function DrupalPanelsIPE(cache_key, cfg) {
 
     // Re-hide all the IPE meta-elements
     $('div.panels-ipe-on').hide('fast');
-    ipe.initButton.css('position', 'normal');
+    ipe.initButton.css('position', 'static');
     ipe.topParent.removeClass('panels-ipe-editing');
   };
 
