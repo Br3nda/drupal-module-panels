@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_renderer_standard.class.php,v 1.2 2010/09/07 09:42:12 sdboyer Exp $
+// $Id: panels_renderer_standard.class.php,v 1.3 2010/09/13 18:24:40 sdboyer Exp $
 
 /**
  * The standard render pipeline for a Panels display object.
@@ -401,6 +401,18 @@ class panels_renderer_standard {
     }
   }
 
+  /**
+   * Add CSS information to the renderer.
+   *
+   * To facilitate previews over Views, CSS can now be added in a manner
+   * that does not necessarily mean just using drupal_add_css. Therefore,
+   * during the panel rendering process, this method can be used to add
+   * css and make certain that ti gets to the proper location.
+   *
+   * The arguments should exactly match drupal_add_css().
+   *
+   * @see drupal_add_css
+   */
   function add_css($filename, $type = 'module', $media = 'all', $preprocess = TRUE) {
     $path = file_create_path($filename);
     switch ($this->meta_location) {
