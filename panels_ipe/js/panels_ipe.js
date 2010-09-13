@@ -1,4 +1,4 @@
-// $Id: panels_ipe.js,v 1.3 2010/09/13 18:25:09 sdboyer Exp $
+// $Id: panels_ipe.js,v 1.4 2010/09/13 18:27:35 sdboyer Exp $
 
 // Ensure the $ alias is owned by jQuery.
 (function($) {
@@ -164,6 +164,7 @@ function DrupalPanelsIPE(cache_key, cfg) {
     $('div.panels-ipe-on').hide('fast');
     ipe.initButton.css('position', 'static');
     ipe.topParent.removeClass('panels-ipe-editing');
+   $('div.panels-ipe-sort-container', ipe.topParent).sortable("destroy");
   };
 
   this.saveEditing = function() {
