@@ -1,5 +1,5 @@
 <?php
-// $Id: node_override.inc,v 1.2 2010/09/07 09:42:12 sdboyer Exp $
+// $Id: node_override.inc,v 1.3 2010/10/11 22:56:01 sdboyer Exp $
 
 /**
  * @file
@@ -60,7 +60,7 @@ function panels_node_override_start($form_info, $step, &$form_state) {
   $form_state['page'] = page_manager_get_page_cache('node_view');
   if (!empty($form_state['page']->locked)) {
     $account  = user_load($form_state['page']->locked->uid);
-    $name     = theme('username', $account);
+    $name     = theme('username', array('account' => $account));
     $lock_age = format_interval(time() - $form_state['page']->locked->updated);
     $break    = url(page_manager_edit_url($form_state['page']->task_name, array('actions', 'break-lock')));
 
@@ -71,7 +71,7 @@ function panels_node_override_start($form_info, $step, &$form_state) {
 /**
  * First page of our page creator wizard.
  */
-function panels_node_override_basic(&$form, &$form_state) {
+function panels_node_override_basic($form, &$form_state) {
   $types = node_get_types();
   $form_state['types'] = $types;
 
@@ -98,7 +98,7 @@ function panels_node_override_basic(&$form, &$form_state) {
     $form['already_done'] = array(
       '#type' => 'item',
       '#title' => t('Existing node templates'),
-      '#value' => theme('item_list', $items),
+      '#value' => theme('item_list', array('items' => $items)),
     );
   }
 
@@ -118,6 +118,8 @@ function panels_node_override_basic(&$form, &$form_state) {
 
   ctools_include('page-wizard', 'panels');
   panels_page_wizard_add_layout($form, $form_state);
+
+  return $form;
 }
 
 /**
@@ -257,9 +259,11 @@ function panels_node_override_basic_submit(&$form, &$form_state) {
  * Second page of our wizard. This one provides a layout and lets the
  * user add content.
  */
-function panels_node_override_content(&$form, &$form_state) {
+function panels_node_override_content($form, &$form_state) {
   ctools_include('page-wizard', 'panels');
   panels_page_wizard_add_content($form, $form_state);
+
+  return $form;
 }
 
 /**

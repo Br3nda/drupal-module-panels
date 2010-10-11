@@ -1,5 +1,5 @@
 <?php
-// $Id: region-rounded-shadow.tpl.php,v 1.2 2010/09/07 09:42:12 sdboyer Exp $
+// $Id: region-rounded-shadow.tpl.php,v 1.3 2010/10/11 22:56:02 sdboyer Exp $
 /**
  * @file
  *
@@ -9,7 +9,7 @@
  * - $classes: The classes that must be applied to the top divs.
  */
 ?>
-<div class="rounded-shadow <?php print $classes ?>">
+<div class="rounded-shadow <?php print $class ?>">
   <div class="rounded-shadow-background">
     <div class="rounded-shadow-wrap-corner">
       <div class="rounded-shadow-top-edge">
@@ -17,7 +17,7 @@
         <div class="rounded-shadow-right"></div>
       </div>
       <div class="rounded-shadow-left-edge">
-        <div class="rounded-shadow-right-edge clear-block">
+        <div class="rounded-shadow-right-edge clearfix">
           <?php print $content; ?>
         </div>
       </div>

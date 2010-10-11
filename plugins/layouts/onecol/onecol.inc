@@ -1,5 +1,5 @@
 <?php
-// $Id: onecol.inc,v 1.3 2010/09/07 09:42:12 sdboyer Exp $
+// $Id: onecol.inc,v 1.4 2010/10/11 22:56:01 sdboyer Exp $
 
 /**
  * implementation of hook_panels_layouts()
@@ -11,5 +11,5 @@ $plugin = array(
   'icon' => 'onecol.png',
   'theme' => 'panels_onecol',
   'css' => 'onecol.css',
-  'panels' => array('middle' => t('Middle column')),
+  'regions' => array('middle' => t('Middle column')),
 );

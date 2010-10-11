@@ -1,5 +1,5 @@
 <?php
-// $Id: twocol_bricks.inc,v 1.3 2010/09/07 09:42:12 sdboyer Exp $
+// $Id: twocol_bricks.inc,v 1.4 2010/10/11 22:56:02 sdboyer Exp $
 
 /**
  * @file
@@ -13,7 +13,7 @@ $plugin = array(
   'icon' => 'twocol_bricks.png',
   'theme' => 'panels_twocol_bricks',
   'css' => 'twocol_bricks.css',
-  'panels' => array(
+  'regions' => array(
     'top' => t('Top'),
     'left_above' => t('Left above'),
     'right_above' => t('Right above'),

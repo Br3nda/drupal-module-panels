@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_33_34_33_stacked.inc,v 1.2 2010/01/21 07:11:42 sdboyer Exp $
+// $Id: threecol_33_34_33_stacked.inc,v 1.3 2010/10/11 22:56:02 sdboyer Exp $
 
 
 /**
@@ -11,7 +11,7 @@ function panels_threecol_33_34_33_stacked_panels_layouts() {
     'icon' => 'threecol_33_34_33_stacked.png',
     'theme' => 'panels_threecol_33_34_33_stacked',
     'css' => 'threecol_33_34_33_stacked.css',
-    'panels' => array(
+    'regions' => array(
       'top' => t('Top'),
       'left' => t('Left side'),
       'middle' => t('Middle column'),

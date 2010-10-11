@@ -1,7 +1,8 @@
-; $Id: panels_node.info,v 1.3 2008/08/04 20:04:11 merlinofchaos Exp $
+; $Id: panels_node.info,v 1.4 2010/10/11 22:56:02 sdboyer Exp $
 name = Panel nodes
 description = Create nodes that are divided into areas with selectable content.
 package = "Panels"
 dependencies[] = panels
-core = 6.x
-
+configure = admin/structure/panels
+core = 7.x
+files[] = panels_node.module

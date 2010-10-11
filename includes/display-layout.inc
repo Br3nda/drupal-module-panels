@@ -1,5 +1,5 @@
 <?php
-// $Id: display-layout.inc,v 1.6 2010/09/07 09:42:11 sdboyer Exp $
+// $Id: display-layout.inc,v 1.7 2010/10/11 22:56:00 sdboyer Exp $
 
 /**
  * @file
@@ -16,7 +16,6 @@
  */
 function _panels_edit_layout($display, $finish, $destination, $allowed_layouts) {
   ctools_include('common', 'panels');
-  ctools_include('form');
 
   $form_state = array(
     'display' => &$display,
@@ -33,8 +32,8 @@ function _panels_edit_layout($display, $finish, $destination, $allowed_layouts) 
 
   // Examine $_POST to see which form they're currently using.
   if (empty($_POST) || empty($_POST['form_id']) || $_POST['form_id'] != 'panels_change_layout') {
-    $output = ctools_build_form('panels_choose_layout', $form_state);
-    if (empty($output)) {
+    $output = drupal_build_form('panels_choose_layout', $form_state);
+    if (!empty($form_state['executed'])) {
       // upon submission go to next form.
       $change_form_state['layout'] = $_SESSION['layout'][$display->did] = $form_state['layout'];
       $change_form = TRUE;
@@ -46,8 +45,8 @@ function _panels_edit_layout($display, $finish, $destination, $allowed_layouts) 
   }
 
   if ($change_form) {
-    $output = ctools_build_form('panels_change_layout', $change_form_state);
-    if (empty($output)) {
+    $output = drupal_build_form('panels_change_layout', $change_form_state);
+    if (!empty($change_form_state['executed'])) {
       if (isset($change_form_state['back'])) {
         unset($_POST);
         return _panels_edit_layout($display, $finish, $destination, $allowed_layouts);
@@ -72,7 +71,7 @@ function _panels_edit_layout($display, $finish, $destination, $allowed_layouts) 
  *
  * @ingroup forms
  */
-function panels_choose_layout(&$form_state) {
+function panels_choose_layout($form, &$form_state) {
   $display = &$form_state['display'];
   ctools_include('common', 'panels');
   ctools_include('cleanstring');
@@ -106,7 +105,7 @@ function panels_choose_layout(&$form_state) {
   );
 
   $form['layout'] = array(
-    '#prefix' => '<div class="panels-choose-layout panels-layouts-checkboxes clear-block">',
+    '#prefix' => '<div class="panels-choose-layout panels-layouts-checkboxes clearfix">',
     '#suffix' => '</div>',
   );
 
@@ -122,7 +121,7 @@ function panels_choose_layout(&$form_state) {
     );
 
     $form['layout'][$category] = array(
-      '#prefix' => '<div id="panels-layout-category-' . $category . '-wrapper"><div id="panels-layout-category-' . $category . '" class="form-checkboxes clear-block"><div class="panels-layouts-category">' . $categories[$category] . '</div>',
+      '#prefix' => '<div id="panels-layout-category-' . $category . '-wrapper"><div id="panels-layout-category-' . $category . '" class="form-checkboxes clearfix"><div class="panels-layouts-category">' . $categories[$category] . '</div>',
       '#suffix' => '</div></div>',
     );
 
@@ -133,7 +132,7 @@ function panels_choose_layout(&$form_state) {
         '#type' => 'radio',
         '#title' => $choice,
         '#parents' => array('layout'),
-        '#id' => form_clean_id('edit-layout-' . $key),
+        '#id' => drupal_clean_css_identifier('edit-layout-' . $key),
         '#return_value' => check_plain($key),
         '#default_value' => in_array($display->layout, array_keys($layouts)) ? $display->layout : NULL,
       );
@@ -173,17 +172,11 @@ function panels_choose_layout_submit($form, &$form_state) {
  * @ingroup forms
  *
  * @param array $form
- *  A structured FAPI $form array.
- * @param object $display instanceof panels_display \n
- *  The panels_display object that was modified on the preceding display layout
- *  editing form.
- * @param string $new_layout_id
- *  A string containing the name of the layout the display is to be converted to.
- *  These strings correspond exactly to the filenames of the *.inc files in panels/layouts.
- *  So, if the new layout that's been selected is the 'Two Column bricks' layout, then
- *  $new_layout_id will be 'twocol_bricks', corresponding to panels/layouts/twocol_bricks.inc.
+ *   A structured FAPI $form array.
+ * @param &$form_state
+ *   The Drupal $form_state
  */
-function panels_change_layout(&$form_state) {
+function panels_change_layout($form, &$form_state) {
   $display = &$form_state['display'];
 
   $new_layout = panels_get_layout($form_state['layout']);
@@ -196,24 +189,19 @@ function panels_change_layout(&$form_state) {
   $old_layout = panels_get_layout($display->layout);
 
   $form['container'] = array(
-    '#prefix' => '<div class="change-layout-display">',
+    '#prefix' => '<div class="change-layout-display clearfix">',
     '#suffix' => '</div>',
   );
 
   $form['container']['old_layout'] = array(
-    '#value' => panels_print_layout_icon($display->layout, $old_layout, check_plain($old_layout['title'])),
+    '#markup' => panels_print_layout_icon($display->layout, $old_layout, check_plain($old_layout['title'])),
   );
 
   $form['container']['right_arrow'] = array(
-    '#value' => theme('image', drupal_get_path('module', 'panels') . '/images/go-right.png'),
+    '#markup' => theme('image', array('path' => drupal_get_path('module', 'panels') . '/images/go-right.png')),
   );
   $form['container']['new_layout'] = array(
-    '#value' => panels_print_layout_icon($form_state['layout'], $new_layout, check_plain($new_layout['title'])),
-  );
-
-  $form['container-clearer'] = array(
-    // TODO: FIx this ot use clear-block instead
-    '#value' => '<div style="clear: both;"></div>',
+    '#markup' => panels_print_layout_icon($form_state['layout'], $new_layout, check_plain($new_layout['title'])),
   );
 
   $form['old'] = array(
@@ -226,7 +214,7 @@ function panels_change_layout(&$form_state) {
   if (empty($display->panels)) {
     $form['old'] = array(
       '#prefix' => '<div>',
-      '#value' => t('There is no content in the panel display. If there were content, you would be given an opportunity to select where in the new layout the old content would be placed. Select "Save" or "Continue" to proceed. This change will not be processed if you do not continue.'),
+      '#markup' => t('There is no content in the panel display. If there were content, you would be given an opportunity to select where in the new layout the old content would be placed. Select "Save" or "Continue" to proceed. This change will not be processed if you do not continue.'),
       '#suffix' => '</div>',
     );
   }

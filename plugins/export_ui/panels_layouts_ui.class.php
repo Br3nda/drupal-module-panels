@@ -1,5 +1,5 @@
 <?php
-// $Id: panels_layouts_ui.class.php,v 1.2 2010/09/07 09:42:12 sdboyer Exp $
+// $Id: panels_layouts_ui.class.php,v 1.3 2010/10/11 22:56:02 sdboyer Exp $
 
 class panels_layouts_ui extends ctools_export_ui {
   var $lipsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam egestas congue nibh, vel dictum ante posuere vitae. Cras gravida massa tempor metus eleifend sed elementum tortor scelerisque. Vivamus egestas, tortor quis luctus tristique, sem velit adipiscing risus, et tempus enim felis in massa. Morbi viverra, nisl quis rhoncus imperdiet, turpis massa vestibulum turpis, egestas faucibus nibh metus vel nunc. In hac habitasse platea dictumst. Nunc sit amet nisi quis ipsum tincidunt semper. Donec ac urna enim, et placerat arcu. Morbi eu laoreet justo. Nullam nec velit eu neque mattis pulvinar sed non libero. Sed sed vulputate erat. Fusce sit amet dui nibh.";
@@ -12,7 +12,7 @@ class panels_layouts_ui extends ctools_export_ui {
     }
 
     // Change the item to a tab on the Panels page.
-    $this->plugin['menu']['items']['list callback']['type'] = MENU_LOCAL_TASK;
+    $this->plugin['menu']['items']['list callback']['type'] = MENU_LOCAL_ACTION;
 
     // Establish a base for adding plugins
     $base = $this->plugin['menu']['items']['add'];
@@ -208,24 +208,24 @@ class panels_layouts_ui extends ctools_export_ui {
     $category = $item->category ? check_plain($item->category) : t('Miscellaneous');
     $this->rows[$item->name] = array(
       'data' => array(
-        array('data' => check_plain($type), 'class' => 'ctools-export-ui-type'),
-        array('data' => check_plain($item->name), 'class' => 'ctools-export-ui-name'),
-        array('data' => check_plain($item->admin_title), 'class' => 'ctools-export-ui-title'),
-        array('data' => $category, 'class' => 'ctools-export-ui-category'),
-        array('data' => theme('links', $operations), 'class' => 'ctools-export-ui-operations'),
+        array('data' => check_plain($type), 'class' => array('ctools-export-ui-type')),
+        array('data' => check_plain($item->name), 'class' => array('ctools-export-ui-name')),
+        array('data' => check_plain($item->admin_title), 'class' => array('ctools-export-ui-title')),
+        array('data' => $category, 'class' => array('ctools-export-ui-category')),
+        array('data' => theme('links', array('links' => $operations)), 'class' => array('ctools-export-ui-operations')),
       ),
       'title' => check_plain($item->admin_description),
-      'class' => !empty($item->disabled) ? 'ctools-export-ui-disabled' : 'ctools-export-ui-enabled',
+      'class' => array(!empty($item->disabled) ? 'ctools-export-ui-disabled' : 'ctools-export-ui-enabled'),
     );
   }
 
   function list_table_header() {
     return array(
-      array('data' => t('Type'), 'class' => 'ctools-export-ui-type'),
-      array('data' => t('Name'), 'class' => 'ctools-export-ui-name'),
-      array('data' => t('Title'), 'class' => 'ctools-export-ui-title'),
-      array('data' => t('Category'), 'class' => 'ctools-export-ui-category'),
-      array('data' => t('Operations'), 'class' => 'ctools-export-ui-operations'),
+      array('data' => t('Type'), 'class' => array('ctools-export-ui-type')),
+      array('data' => t('Name'), 'class' => array('ctools-export-ui-name')),
+      array('data' => t('Title'), 'class' => array('ctools-export-ui-title')),
+      array('data' => t('Category'), 'class' => array('ctools-export-ui-category')),
+      array('data' => t('Operations'), 'class' => array('ctools-export-ui-operations')),
     );
   }
 }

@@ -1,33 +1,35 @@
 <?php
-// $Id: stylizer.inc,v 1.2 2010/09/07 09:42:12 sdboyer Exp $
+// $Id: stylizer.inc,v 1.3 2010/10/11 22:56:01 sdboyer Exp $
 
 /**
  * @file
  * Definition of the 'stylizer' panel style.
  */
 
-// Plugin definition
-$plugin = array(
-  'title' => t('Custom style'),
-  'weight' => -10,
-  'description' => t('Allows choice of a stylizer style'),
+if (module_exists('stylizer')) {
+  // Plugin definition
+  $plugin = array(
+    'title' => t('Custom style'),
+    'weight' => -10,
+    'description' => t('Allows choice of a stylizer style'),
 
-  'render pane' => 'panels_stylizer_stylizer_style_render_pane',
-  'pane settings form' => 'panels_stylizer_stylizer_style_settings_form',
+    'render pane' => 'panels_stylizer_stylizer_style_render_pane',
+    'pane settings form' => 'panels_stylizer_stylizer_style_settings_form',
 
-  'render region' => 'panels_stylizer_stylizer_style_render_region',
-  'settings form' => 'panels_stylizer_stylizer_style_settings_form',
+    'render region' => 'panels_stylizer_stylizer_style_render_region',
+    'settings form' => 'panels_stylizer_stylizer_style_settings_form',
 
-  // We offer substyles so provide callbacks to do so.
-  'get child' => 'panels_stylizer_get_substyle',
-  'get children' => 'panels_stylizer_get_substyles',
+    // We offer substyles so provide callbacks to do so.
+    'get child' => 'panels_stylizer_get_substyle',
+    'get children' => 'panels_stylizer_get_substyles',
 
-  // Set up an AJAX callback for the style
-  'ajax' => array(
-    'custom' => 'panels_stylizer_pane_add_style',
-  ),
-//  'settings validate' => 'panels_stylizer_stylizer_style_settings_validate',
-);
+    // Set up an AJAX callback for the style
+    'ajax' => array(
+      'custom' => 'panels_stylizer_pane_add_style',
+    ),
+  //  'settings validate' => 'panels_stylizer_stylizer_style_settings_validate',
+  );
+}
 
 /**
  * Merge the main stylizer plugin with a style to create a sub plugin.
@@ -105,7 +107,13 @@ function _panels_stylizer_get_style($plugin, $style_settings) {
 /**
  * Region render theme.
  */
-function theme_panels_stylizer_stylizer_style_render_region($display, $owner_id, $panes, $style_settings, $region_id, $plugin) {
+function theme_panels_stylizer_stylizer_style_render_region($vars) {
+  $display = $vars['display'];
+  $panes = $vars['panes'];
+  $style_settings = $vars['settings'];
+  $region_id = $vars['region_id'];
+  $plugin = $vars['style'];
+
   $output = '';
 
   foreach ($panes as $pane_id => $pane_output) {
@@ -119,7 +127,7 @@ function theme_panels_stylizer_stylizer_style_render_region($display, $owner_id,
     $plugin = ctools_get_style_base($settings['style_base']);
     ctools_stylizer_add_css($plugin, $settings);
 
-    return theme($plugin['theme'], $settings, ctools_stylizer_get_css_class($plugin, $settings), $output);
+    return theme($plugin['theme'], array('settings' => $settings, 'class' => ctools_stylizer_get_css_class($plugin, $settings), 'content' => $output));
   }
   else {
     // if the style is gone, just display the output.
@@ -130,8 +138,13 @@ function theme_panels_stylizer_stylizer_style_render_region($display, $owner_id,
 /**
  * Pane render theme
  */
-function theme_panels_stylizer_stylizer_style_render_pane($content, $pane, $display, $plugin) {
-  $settings = _panels_stylizer_get_style($plugin, $pane->style['settings']);
+function theme_panels_stylizer_stylizer_style_render_pane($vars) {
+  $content = $vars['content'];
+  $pane = $vars['pane'];
+  $display = $vars['display'];
+  $plugin = $vars['style'];
+
+  $settings = _panels_stylizer_get_style($plugin, $vars['settings']);
 
   if ($settings) {
     ctools_include('stylizer');
@@ -147,12 +160,12 @@ function theme_panels_stylizer_stylizer_style_render_pane($content, $pane, $disp
     ctools_stylizer_add_css($plugin, $settings);
 
     if (isset($plugin['theme'])) {
-      return theme($plugin['theme'], $settings, $content, $pane, $display);
+      return theme($plugin['theme'], array('settings' => $settings, 'content' => $content, 'pane' => $pane, 'display' => $display));
     }
   }
 
   // if the style is gone or has no theme of its own, just display the output.
-  return theme('panels_pane', $content, $pane, $display);
+  return theme('panels_pane', array('content' => $content, 'pane' => $pane, 'display' => $display));
 }
 
 /**

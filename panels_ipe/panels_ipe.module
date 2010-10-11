@@ -36,19 +36,19 @@ function panels_ipe_ctools_plugin_api($owner, $api) {
 function panels_ipe_theme() {
   return array(
     'panels_ipe_pane_wrapper' => array(
-      'arguments' => array('output' => NULL, 'pane' => NULL, 'display' => NULL),
+      'variables' => array('output' => NULL, 'pane' => NULL, 'display' => NULL, 'renderer' => NULL),
     ),
     'panels_ipe_region_wrapper' => array(
-      'arguments' => array('output' => NULL, 'region_id' => NULL, 'display' => NULL, 'renderer' => NULL),
+      'variables' => array('output' => NULL, 'region_id' => NULL, 'display' => NULL, 'renderer' => NULL),
     ),
     'panels_ipe_add_pane_button' => array(
-      'arguments' => array('region_id' => NULL, 'display' => NULL, 'renderer' => NULL),
+      'variables' => array('region_id' => NULL, 'display' => NULL, 'renderer' => NULL),
     ),
     'panels_ipe_placeholder_pane' => array(
-      'arguments' => array('region_id' => NULL, 'region_title' => NULL),
+      'variables' => array('region_id' => NULL, 'region_title' => NULL),
     ),
     'panels_ipe_dnd_form_container' => array(
-      'arguments' => array('link' => NULL, 'cache_key' => NULL, 'display' => NULL),
+      'variables' => array('link' => NULL, 'cache_key' => NULL, 'display' => NULL),
     ),
   );
 }
@@ -60,14 +60,22 @@ function panels_ipe_theme() {
  * @param string $region_id
  * @param string $region_title
  */
-function theme_panels_ipe_placeholder_pane($region_id, $region_title) {
+function theme_panels_ipe_placeholder_pane($vars) {
+  $region_id = $vars['region_id'];
+  $region_title = $vars['region_title'];
+
   $output = '<div class="panels-ipe-placeholder-content">';
   $output .= "<h3>$region_title</h3>";
   $output .= '</div>';
   return $output;
 }
 
-function theme_panels_ipe_pane_wrapper($output, $pane, $display, $renderer) {
+function theme_panels_ipe_pane_wrapper($vars) {
+  $output = $vars['output'];
+  $pane = $vars['pane'];
+  $display = $vars['display'];
+  $renderer = $vars['renderer'];
+
   $content_type = ctools_get_content_type($pane->type);
   $subtype = ctools_content_get_subtype($content_type, $pane->subtype);
   $links = array();
@@ -94,23 +102,27 @@ function theme_panels_ipe_pane_wrapper($output, $pane, $display, $renderer) {
     ),
   );
 
-  $attr = array(
+  $attributes = array(
     'class' => 'panels-ipe-linkbar',
   );
 
-  $links = theme('links', $links, $attr);
+  $links = theme('links', array('links' => $links, 'attributes' => $attributes));
   $links .= '<div class="panels-ipe-draghandle">&nbsp;</div>';
-  $handlebar = '<div class="panels-ipe-handlebar-wrapper panels-ipe-on clear-block">' . $links . '</div>';
+  $handlebar = '<div class="panels-ipe-handlebar-wrapper panels-ipe-on clearfix">' . $links . '</div>';
   return $handlebar . $output;
 }
 
-function theme_panels_ipe_region_wrapper($output, $region_id, $display) {
-  return $output;
+function theme_panels_ipe_region_wrapper($vars) {
+  return $vars['output'];
 }
 
-function theme_panels_ipe_add_pane_button($region_id, $display, $renderer) {
-  $attr = array('class' => 'ctools-use-modal');
-  $link = l(t('Add new pane'), $renderer->get_url('select-content', $region_id), array('attributes' => $attr));
+function theme_panels_ipe_add_pane_button($vars) {
+  $region_id = $vars['region_id'];
+  $display = $vars['display'];
+  $renderer = $vars['renderer'];
+
+  $attributes = array('class' => 'ctools-use-modal');
+  $link = l(t('Add new pane'), $renderer->get_url('select-content', $region_id), array('attributes' => $attributes));
   return '<div class="panels-ipe-newblock panels-ipe-on panels-ipe-portlet-static">' . $link . '</div>';
 }
 
@@ -129,19 +141,22 @@ function panels_ipe_get_cache_key($key = NULL) {
  *
  * @param unknown_type $main
  */
-function panels_ipe_footer($main = 0) {
+function panels_ipe_page_alter(&$page) {
   $key = panels_ipe_get_cache_key();
   if (!isset($key)) {
     return;
   }
 
   // TODO should be moved into the IPE plugin - WAAAY too hardcoded right now
-  $output = "<div id='panels-ipe-control-container' class='clear-block'>";
+  $output = "<div id='panels-ipe-control-container' class='clearfix'>";
   $output .= "<div id='panels-ipe-control-$key' class='panels-ipe-control'>";
   $output .= "<div class='panels-ipe-startedit panels-ipe-pseudobutton panels-ipe-off'>";
   $output .= "<span>" . t('Customize this page') . "</span>";
   $output .= "</div>";
-  $output .= "<div class='panels-ipe-form-container panels-ipe-on clear-block'</div>";
+  $output .= "<div class='panels-ipe-form-container panels-ipe-on clearfix'</div>";
   $output .= "</div></div>";
-  return $output;
+
+  $page['page_bottom']['panels_ipe'] = array(
+    '#markup' => $output,
+  );
 }

@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_25_50_25.inc,v 1.3 2010/09/07 09:42:12 sdboyer Exp $
+// $Id: threecol_25_50_25.inc,v 1.4 2010/10/11 22:56:02 sdboyer Exp $
 
 /**
  * implementation of hook_panels_layouts
@@ -12,7 +12,7 @@ $plugin = array(
   'theme' => 'panels_threecol_25_50_25',
   'theme arguments' => array('id', 'content'),
   'css' => 'threecol_25_50_25.css',
-  'panels' => array(
+  'regions' => array(
     'left' => t('Left side'),
     'middle' => t('Middle column'),
     'right' => t('Right side')

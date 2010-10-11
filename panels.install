@@ -1,5 +1,5 @@
 <?php
-// $Id: panels.install,v 1.6 2010/09/07 09:42:11 sdboyer Exp $
+// $Id: panels.install,v 1.7 2010/10/11 22:56:01 sdboyer Exp $
 
 /**
  * Test requirements for installation and running.
@@ -69,10 +69,10 @@ function panels_requirements_runtime() {
         $modules[] = array('data' => check_plain($module) . ' - ' . $type);
       }
 
-      $list[] = array('data' => $values['explanation'] ."\n" . theme('item_list', $modules));
+      $list[] = array('data' => $values['explanation'] ."\n" . theme('item_list', array('items' => $modules)));
     }
 
-    $description .= theme('item_list', $list);
+    $description .= theme('item_list', array('items' => $list));
 
     $requirements['panels_legacy'] = array(
       'title' => $t('Panels operating in Legacy mode'),
@@ -381,20 +381,6 @@ function panels_schema_1() {
   );
 
   return $schema;
-}
-
-/**
- * Implementation of hook_install().
- */
-function panels_install() {
-  drupal_install_schema('panels');
-}
-
-/**
- * Implementation of hook_uninstall().
- */
-function panels_uninstall() {
-  drupal_uninstall_schema('panels');
 }
 
 function panels_update_1000() {

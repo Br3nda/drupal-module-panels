@@ -1,5 +1,5 @@
 <?php
-// $Id: plugins.inc,v 1.15 2010/09/07 09:42:11 sdboyer Exp $
+// $Id: plugins.inc,v 1.16 2010/10/11 22:56:01 sdboyer Exp $
 
 /**
  * @file
@@ -24,12 +24,14 @@ function panels_pane_access($pane, $display) {
  * Get a list of panels available in the layout.
  */
 function panels_get_regions($layout, $display) {
-  if (!empty($layout['panels function']) && function_exists($layout['panels function'])) {
-    return $layout['panels function']($display, $display->layout_settings, $layout);
+  if ($function = ctools_plugin_get_function($layout, 'regions function')) {
+    return $function($display, $display->layout_settings, $layout);
   }
-  if (!empty($layout['panels'])) {
-    return $layout['panels'];
+
+  if (!empty($layout['regions'])) {
+    return $layout['regions'];
   }
+
   return array();
 }
 
@@ -245,6 +247,8 @@ class panels_cache_object {
 /**
  * Get the title of a pane.
  *
+ * @deprecated @todo this function should be removed.
+ *
  * @param $pane
  *   The $pane object.
  */
@@ -388,7 +392,7 @@ function panels_get_renderer_handler($plugin, &$display) {
     $plugin = panels_get_display_renderer($plugin);
   }
 
-  $class = ctools_plugin_get_class($plugin, 'handler');
+  $class = ctools_plugin_get_class($plugin, 'renderer');
   if ($class) {
     $renderer = new $class();
     $renderer->init($plugin, $display);
@@ -402,11 +406,6 @@ function panels_get_renderer_handler($plugin, &$display) {
  * Choose a renderer for a display based on a render pipeline setting.
  */
 function panels_get_renderer($pipeline_name, &$display) {
-  // If operating in legacy mode, only the legacy renderer is available:
-  if (variable_get('panels_legacy_rendering_mode', TRUE)) {
-    return panels_get_renderer_handler('legacy', $display);
-  }
-
   // Load the pipeline
   ctools_include('export');
   $pipeline = ctools_export_crud_load('panels_renderer_pipeline', $pipeline_name);
@@ -464,11 +463,6 @@ function _panels_renderer_pipeline_sort($a, $b) {
  * sorting. Descriptions are left in.
  */
 function panels_get_renderer_pipelines($sort = TRUE) {
-  // If operating in legacy mode, only the legacy renderer is available:
-  if (variable_get('panels_legacy_rendering_mode', TRUE)) {
-    return array();
-  }
-
   ctools_include('export');
   $pipelines = ctools_export_crud_load_all('panels_renderer_pipeline');
   if ($sort) {
@@ -492,6 +486,8 @@ function panels_get_renderer_pipelines($sort = TRUE) {
  * @return
  *   The actual name of the function to call, or NULL if the function
  *   does not exist.
+ *
+ * @deprecated All calls to this function should be removed.
  */
 function panels_plugin_get_function($plugin, $which, $function_name) {
   ctools_include('plugins');
@@ -501,10 +497,4 @@ function panels_plugin_get_function($plugin, $which, $function_name) {
   else {
     return ctools_plugin_load_function('panels', $plugin, $which, $function_name);
   }
-
 }
-
-// @todo these are DEPRECATED and can probably be removed.
-// These are placeholders to prevent crashes from the former plugins
-class panels_required_context { function filter() { } };
-class panels_optional_context extends panels_required_context {};

@@ -1,5 +1,5 @@
 <?php
-// $Id: panels-rounded-corners-box.tpl.php,v 1.2 2010/01/21 07:11:43 sdboyer Exp $
+// $Id: panels-rounded-corners-box.tpl.php,v 1.3 2010/10/11 22:56:02 sdboyer Exp $
 /**
  * @file
  *
@@ -12,7 +12,7 @@
   <div class="wrap-corner">
     <div class="t-edge"><div class="l"></div><div class="r"></div></div>
     <div class="l-edge">
-      <div class="r-edge clear-block">
+      <div class="r-edge clearfix">
         <?php print $content; ?>
       </div>
     </div>

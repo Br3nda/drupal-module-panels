@@ -1,5 +1,5 @@
 <?php
-// $Id: flexible.inc,v 1.3 2010/09/07 09:42:12 sdboyer Exp $
+// $Id: flexible.inc,v 1.4 2010/10/11 22:56:00 sdboyer Exp $
 
 /**
  * Implementation of hook_panels_layouts()
@@ -16,7 +16,7 @@ $plugin = array(
   'settings form' => 'panels_flexible_settings_form',
   'settings submit' => 'panels_flexible_settings_submit',
   'settings validate' => 'panels_flexible_settings_validate',
-  'panels function' => 'panels_flexible_panels',
+  'regions function' => 'panels_flexible_panels',
   'hook menu' => 'panels_flexible_menu',
 
   // Reuisable layout Builder specific directives
@@ -270,11 +270,11 @@ function panels_flexible_panels($display, $settings, $layout) {
  *
  * @todo Convert the functions to methods and make this properly OO.
  */
-function panels_flexible_create_renderer($admin, $id, $content, $settings, &$display, $layout, $handler) {
+function panels_flexible_create_renderer($admin, $css_id, $content, $settings, &$display, $layout, $handler) {
   $renderer = new stdClass;
   $renderer->settings = $settings;
   $renderer->content = $content;
-  $renderer->css_id = $id;
+  $renderer->css_id = $css_id;
   $renderer->did = &$display->did;
   if ($admin) {
     // always scale in admin mode.
@@ -283,7 +283,7 @@ function panels_flexible_create_renderer($admin, $id, $content, $settings, &$dis
   else {
     $renderer->scale_base = !empty($settings['items']['canvas']['no_scale']) ? 100.0 : 99.0;
   }
-  $renderer->id_str = $id ? 'id="' . $id . '"' : '';
+  $renderer->id_str = $css_id ? 'id="' . $css_id . '"' : '';
   $renderer->admin = $admin;
   $renderer->handler = $handler;
 
@@ -340,10 +340,17 @@ function panels_flexible_create_renderer($admin, $id, $content, $settings, &$dis
 /**
  * Draw the flexible layout.
  */
-function theme_panels_flexible($id, $content, $settings, $display, $layout, $handler) {
+function theme_panels_flexible($vars) {
+  $css_id = $vars['css_id'];
+  $content = $vars['content'];
+  $settings = $vars['settings'];
+  $display = $vars['display'];
+  $layout = $vars['layout'];
+  $handler = $vars['renderer'];
+
   panels_flexible_convert_settings($settings, $layout);
 
-  $renderer = panels_flexible_create_renderer(FALSE, $id, $content, $settings, $display, $layout, $handler);
+  $renderer = panels_flexible_create_renderer(FALSE, $css_id, $content, $settings, $display, $layout, $handler);
 
   // CSS must be generated because it reports back left/middle/right
   // positions.
@@ -362,7 +369,7 @@ function theme_panels_flexible($id, $content, $settings, $display, $layout, $han
       $handler->add_css($filename, 'module', 'all', FALSE);
     }
     else {
-      ctools_css_add_css($filename, 'module', 'all', FALSE);
+      drupal_add_css($filename);
     }
   }
   else {
@@ -370,14 +377,14 @@ function theme_panels_flexible($id, $content, $settings, $display, $layout, $han
     // because the display does not truly exist, so we'll stick it in the
     // head tag. We also do this if we've been told we're in the layout
     // editor so that it always gets fresh CSS.
-    drupal_set_html_head("<style type=\"text/css\">\n$css</style>\n");
+    drupal_add_css($css, 'inline');
   }
 
   // Also store the CSS on the display in case the live preview or something
   // needs it
   $display->add_css = $css;
 
-  $output = "<div class=\"panel-flexible " . $renderer->base['canvas'] . " clear-block\" $renderer->id_str>\n";
+  $output = "<div class=\"panel-flexible " . $renderer->base['canvas'] . " clearfix\" $renderer->id_str>\n";
   $output .= "<div class=\"panel-flexible-inside " . $renderer->base['canvas'] . "-inside\">\n";
 
   $output .= panels_flexible_render_items($renderer, $settings['items']['canvas']['children'], $renderer->base['canvas']);
@@ -391,33 +398,40 @@ function theme_panels_flexible($id, $content, $settings, $display, $layout, $han
 /**
  * Draw the flexible layout.
  */
-function theme_panels_flexible_admin($id, $content, $settings, $display, $layout, $handler) {
+function theme_panels_flexible_admin($vars) {
+  $css_id = $vars['css_id'];
+  $content = $vars['content'];
+  $settings = $vars['settings'];
+  $display = $vars['display'];
+  $layout = $vars['layout'];
+  $handler = $vars['renderer'];
+
   // We never draw stored flexible layouts in admin mode; they must be edited
   // from the stored layout UI at that point.
   if (!empty($layout['layout'])) {
-    return theme_panels_flexible($id, $content, $settings, $display, $layout, $handler);
+    return theme_panels_flexible(array('css_id' => $css_id, 'content' => $content, 'settings' => $settings, 'display' => $display, 'layout' => $layout, 'renderer' => $handler));
   }
 
   panels_flexible_convert_settings($settings, $layout);
-  $renderer = panels_flexible_create_renderer(TRUE, $id, $content, $settings, $display, $layout, $handler);
+  $renderer = panels_flexible_create_renderer(TRUE, $css_id, $content, $settings, $display, $layout, $handler);
 
   $css = panels_flexible_render_css($renderer);
 
   // For the administrative view, add CSS directly to head.
-  drupal_set_html_head("<style type=\"text/css\">\n$css</style>\n");
+  drupal_add_css($css, 'inline');
 
   if (empty($display->editing_layout)) {
-    $output = '<input type="submit" id="panels-flexible-toggle-layout" value ="' .
+    $output = '<input type="submit" id="panels-flexible-toggle-layout" class="form-submit" value ="' .
       t('Show layout designer') . '">';
     if (user_access('administer panels layouts')) {
       $output .= '<input type="hidden" class="panels-flexible-reuse-layout-url" value="' . url($handler->get_url('layout', 'reuse'), array('absolute' => TRUE)) . '">';
-      $output .= '<input type="submit" id="panels-flexible-reuse-layout" class="ctools-use-modal" value ="' .
+      $output .= '<input type="submit" id="panels-flexible-reuse-layout" class="form-submit ctools-use-modal" value ="' .
         t('Reuse layout') . '">';
     }
-    $output .= "<div class=\"panel-flexible " . $renderer->base['canvas'] . " clear-block panel-flexible-admin panel-flexible-no-edit-layout\" $renderer->id_str>\n";
+    $output .= "<div class=\"panel-flexible " . $renderer->base['canvas'] . " clearfix panel-flexible-admin panel-flexible-no-edit-layout\" $renderer->id_str>\n";
   }
   else {
-    $output = "<div class=\"panel-flexible " . $renderer->base['canvas'] . " clear-block panel-flexible-admin panel-flexible-edit-layout\" $renderer->id_str>\n";
+    $output = "<div class=\"panel-flexible " . $renderer->base['canvas'] . " clearfix panel-flexible-admin panel-flexible-edit-layout\" $renderer->id_str>\n";
   }
   $output .= "<div class=\"panel-flexible-inside " . $renderer->base['canvas'] . "-inside \">\n";
 
@@ -526,7 +540,7 @@ function panels_flexible_render_item($renderer, $item, $content, $id, $position,
     $output .= ' ' . $base . '-last';
   }
   if ($clear) {
-    $output .= ' clear-block';
+    $output .= ' clearfix';
   }
 
   if (isset($item['class'])) {
@@ -547,7 +561,7 @@ function panels_flexible_render_item($renderer, $item, $content, $id, $position,
     $output .= ' ' . $base . '-inside-last';
   }
   if ($clear) {
-    $output .= ' clear-block';
+    $output .= ' clearfix';
   }
 
   $output .= "\">\n";
@@ -676,33 +690,32 @@ function panels_flexible_render_item_links($renderer, $id, $item) {
     $links[] = array(
       'title' => $settings,
       'href' => $renderer->handler->get_url('layout', 'settings', $id),
-      'attributes' => array('class' => 'ctools-use-modal'),
+      'attributes' => array('class' => array('ctools-use-modal')),
     );
   }
   if ($add) {
     $links[] = array(
       'title' => $add,
       'href' => $renderer->handler->get_url('layout', 'add', $id),
-      'attributes' => array('class' => 'ctools-use-modal'),
+      'attributes' => array('class' => array('ctools-use-modal')),
     );
   }
   if (isset($add2)) {
     $links[] = array(
       'title' => $add2,
       'href' => $renderer->handler->get_url('layout', 'add', $id, 'right'),
-      'attributes' => array('class' => 'ctools-use-modal'),
+      'attributes' => array('class' => array('ctools-use-modal')),
     );
   }
   if ($remove) {
     $links[] = array(
       'title' => $remove,
       'href' => $renderer->handler->get_url('layout', 'remove', $id),
-      'attributes' => array('class' => 'ctools-use-ajax'),
+      'attributes' => array('class' => array('use-ajax')),
     );
   }
 
-  return theme('ctools_dropdown', $title, $links, FALSE,
-      'flexible-layout-only flexible-links flexible-title flexible-links-' . $id);
+  return theme('ctools_dropdown', array('title' => $title, 'links' => $links, 'class' => 'flexible-layout-only flexible-links flexible-title flexible-links-' . $id));
 }
 /**
  * Provide CSS for a flexible layout.
@@ -972,7 +985,7 @@ function panels_ajax_flexible_edit_settings($handler, $id) {
   );
 
   $output = ctools_modal_form_wrapper('panels_flexible_config_item_form', $form_state);
-  if (empty($output)) {
+  if (!empty($form_state['executed'])) {
     // If the width type changed then other nearby items will have
     // to have their widths adjusted.
     panels_edit_cache_set($handler->cache);
@@ -984,12 +997,12 @@ function panels_ajax_flexible_edit_settings($handler, $id) {
     // If the item is a region, replace the title.
     $class = $renderer->base[$item['type']] . '-' . $id;
     if ($item['type'] == 'region') {
-      $output[] = ctools_ajax_command_replace(".$class h2.label",
+      $output[] = ajax_command_replace(".$class h2.label",
         '<h2 class="label">' . check_plain($item['title']) . '</h2>');
     }
 
     // Rerender our links in case something changed.
-    $output[] = ctools_ajax_command_replace('.flexible-links-' . $id,
+    $output[] = ajax_command_replace('.flexible-links-' . $id,
       panels_flexible_render_item_links($renderer, $id, $item));
 
     // If editing the canvas, reset the CSS width
@@ -1015,7 +1028,7 @@ function panels_ajax_flexible_edit_settings($handler, $id) {
         $css['.' . $renderer->base['canvas']] = array('width' => 'auto');
       }
       foreach ($css as $selector => $data) {
-        $output[] = ctools_ajax_command_css($selector, $data);
+        $output[] = ajax_command_css($selector, $data);
       }
     }
 
@@ -1031,7 +1044,7 @@ function panels_ajax_flexible_edit_settings($handler, $id) {
  * @param <type> $form_state
  * @return <type>
  */
-function panels_flexible_config_item_form(&$form_state) {
+function panels_flexible_config_item_form($form, &$form_state) {
   $display = &$form_state['display'];
   $item = &$form_state['item'];
   $siblings = &$form_state['siblings'];
@@ -1271,7 +1284,7 @@ function panels_ajax_flexible_edit_add($handler, $id, $location = 'left') {
   );
 
   $output = ctools_modal_form_wrapper('panels_flexible_add_item_form', $form_state);
-  if (empty($output)) {
+  if (!empty($form_state['executed'])) {
     // If the width type changed then other nearby items will have
     // to have their widths adjusted.
     panels_edit_cache_set($handler->cache);
@@ -1283,13 +1296,13 @@ function panels_ajax_flexible_edit_add($handler, $id, $location = 'left') {
 
     $content = '';
     if ($item['type'] == 'region') {
-      $handler->plugins['layout']['panels'][$form_state['key']] = $item['title'];
+      $handler->plugins['layout']['regions'][$form_state['key']] = $item['title'];
 
       $content = $handler->render_region($form_state['key'], array());
 
       // Manually add the hidden field that our region uses to store pane info.
       $content .= '<input type="hidden" name="panel[pane][' .
-        $form_state['key'] . ']" id="edit-panel-pane-' . $form_state['key'] . '" value="" />';
+        $form_state['key'] . ']" value="" />';
 
     }
     else {
@@ -1321,36 +1334,36 @@ function panels_ajax_flexible_edit_add($handler, $id, $location = 'left') {
       case 'left':
         if ($location == 'left') {
           $item_output .= panels_flexible_render_splitter($renderer, $form_state['key'], $form_state['sibling']);
-          $output[] = ctools_ajax_command_prepend('#panels-dnd-main .' . $parent_class . '-left', $item_output);
+          $output[] = ajax_command_prepend('#panels-dnd-main .' . $parent_class . '-left', $item_output);
         }
         else if ($location == 'right') {
           // If we are adding to the right side of the left box, there is
           // a splitter that we have to remove; then we add our box normally,
           // and then add a new splitter for just our guy.
-          $output[] = ctools_ajax_command_remove('panels-flexible-splitter-for-' . $renderer->base[$item['type']] . '-' . $form_state['key']);
+          $output[] = ajax_command_remove('panels-flexible-splitter-for-' . $renderer->base[$item['type']] . '-' . $form_state['key']);
           $item_output = panels_flexible_render_splitter($renderer, $form_state['sibling'], $form_state['key']) .  $item_output;
           $item_output .= panels_flexible_render_splitter($renderer, $form_state['key'], NULL);
-          $output[] = ctools_ajax_command_append('#panels-dnd-main .' . $parent_class . '-left', $item_output);
+          $output[] = ajax_command_append('#panels-dnd-main .' . $parent_class . '-left', $item_output);
         }
         break;
       case 'right':
         if (!empty($form_state['sibling'])) {
           $item_output = panels_flexible_render_splitter($renderer, $form_state['sibling'], $form_state['key']) .  $item_output;
         }
-        $output[] = ctools_ajax_command_append('#panels-dnd-main .' . $parent_class . '-right', $item_output);
+        $output[] = ajax_command_append('#panels-dnd-main .' . $parent_class . '-right', $item_output);
         break;
       case 'middle':
         if ($location == 'left') {
           if (!empty($form_state['sibling'])) {
             $item_output .= panels_flexible_render_splitter($renderer, $form_state['key'], $form_state['sibling']);
           }
-          $output[] = ctools_ajax_command_prepend('#panels-dnd-main .' . $parent_class . '-middle', $item_output);
+          $output[] = ajax_command_prepend('#panels-dnd-main .' . $parent_class . '-middle', $item_output);
         }
         else {
           if (!empty($form_state['sibling'])) {
             $item_output = panels_flexible_render_splitter($renderer, $form_state['sibling'], $form_state['key']) .  $item_output;
           }
-          $output[] = ctools_ajax_command_append('#panels-dnd-main .' . $parent_class . '-middle', $item_output);
+          $output[] = ajax_command_append('#panels-dnd-main .' . $parent_class . '-middle', $item_output);
         }
         break;
 
@@ -1361,14 +1374,14 @@ function panels_ajax_flexible_edit_add($handler, $id, $location = 'left') {
 
     if (!empty($form_state['sibling'])) {
       $sibling_width = '#panels-dnd-main .' . $renderer->base[$item['type']] . '-' . $form_state['sibling'] . '-width';
-      $output[] = ctools_ajax_command_html($sibling_width, $settings['items'][$form_state['sibling']]['width']);
+      $output[] = ajax_command_html($sibling_width, $settings['items'][$form_state['sibling']]['width']);
     }
     foreach ($css as $selector => $data) {
-      $output[] = ctools_ajax_command_css($selector, $data);
+      $output[] = ajax_command_css($selector, $data);
     }
 
     // Rerender our parent item links:
-    $output[] = ctools_ajax_command_replace('.flexible-links-' . $id,
+    $output[] = ajax_command_replace('.flexible-links-' . $id,
       panels_flexible_render_item_links($renderer, $id, $parent));
 
     $output[] = array(
@@ -1387,7 +1400,7 @@ function panels_ajax_flexible_edit_add($handler, $id, $location = 'left') {
  * @param <type> $form_state
  * @return <type>
  */
-function panels_flexible_add_item_form(&$form_state) {
+function panels_flexible_add_item_form($form, &$form_state) {
   $display = &$form_state['display'];
   $item = &$form_state['item'];
   $parent = &$form_state['parent'];
@@ -1542,7 +1555,7 @@ function panels_ajax_flexible_edit_remove($handler, $id) {
   panels_flexible_convert_settings($settings, $handler->plugins['layout']);
 
   if (empty($settings['items'][$id])) {
-    ctools_ajax_render_error(t('Invalid item id.'));
+    ajax_render_error(t('Invalid item id.'));
   }
 
   $item = &$settings['items'][$id];
@@ -1591,7 +1604,7 @@ function panels_ajax_flexible_edit_remove($handler, $id) {
   $class = $renderer->base[$item['type']] . '-' . $id;
   $output = array();
 
-  $output[] = ctools_ajax_command_remove('#panels-dnd-main .' . $class);
+  $output[] = ajax_command_remove('#panels-dnd-main .' . $class);
 
   // Regenerate the CSS for siblings.
   if (!empty($siblings)) {
@@ -1600,28 +1613,28 @@ function panels_ajax_flexible_edit_remove($handler, $id) {
     $css = array();
     panels_flexible_get_css_group($css, $renderer, $siblings, $parent_class, $item['type'], $item['parent']);
     foreach ($css as $selector => $data) {
-      $output[] = ctools_ajax_command_css($selector, $data);
+      $output[] = ajax_command_css($selector, $data);
     }
   }
 
   // There are potentially two splitters linked to this item to be removed.
   if (!empty($prev)) {
-    $output[] = ctools_ajax_command_remove('.flexible-splitter-for-' . $renderer->base[$item['type']] . '-' . $prev);
+    $output[] = ajax_command_remove('.flexible-splitter-for-' . $renderer->base[$item['type']] . '-' . $prev);
   }
 
   // Try to remove the 'next' one even if there isn't a $next.
-  $output[] = ctools_ajax_command_remove('.flexible-splitter-for-' . $renderer->base[$item['type']] . '-' . $id);
+  $output[] = ajax_command_remove('.flexible-splitter-for-' . $renderer->base[$item['type']] . '-' . $id);
 
   if (!empty($prev) && !empty($next)) {
     // Add a new splitter that links $prev and $next:
     $splitter = panels_flexible_render_splitter($renderer, $prev, $next);
     $prev_class = '#panels-dnd-main .' . $renderer->base[$item['type']] . '-' . $prev;
-    $output[] = ctools_ajax_command_after($prev_class, $splitter);
+    $output[] = ajax_command_after($prev_class, $splitter);
     // Send our fix height command.
     $output[] = array('command' => 'flexible_fix_height');
   }
   // Rerender our parent item links:
-  $output[] = ctools_ajax_command_replace('.flexible-links-' . $item['parent'],
+  $output[] = ajax_command_replace('.flexible-links-' . $item['parent'],
     panels_flexible_render_item_links($renderer, $item['parent'], $settings['items'][$item['parent']]));
 
   $output[] = array(
@@ -1698,11 +1711,11 @@ function panels_ajax_flexible_edit_reuse($handler) {
   $handler->commands = $output;
 }
 
-function panels_flexible_reuse_form(&$form_state) {
+function panels_flexible_reuse_form($form, &$form_state) {
   $form['markup'] = array(
     '#prefix' => '<div class="description">',
     '#suffix' => '</div>',
-    '#value' => t('If you save this layout for reuse it will appear in the list of reusable layouts at admin/build/panels/layouts, and you will need to go there to edit it. This layout will then become an option for all future panels you make.'),
+    '#value' => t('If you save this layout for reuse it will appear in the list of reusable layouts at admin/structure/panels/layouts, and you will need to go there to edit it. This layout will then become an option for all future panels you make.'),
   );
 
   $form['admin_title'] = array(

@@ -1,5 +1,5 @@
 <?php
-// $Id: threecol_33_34_33.inc,v 1.3 2010/09/07 09:42:12 sdboyer Exp $
+// $Id: threecol_33_34_33.inc,v 1.4 2010/10/11 22:56:02 sdboyer Exp $
 
 // Plugin definition
 $plugin = array(
@@ -8,7 +8,7 @@ $plugin = array(
   'icon' => 'threecol_33_34_33.png',
   'theme' => 'panels_threecol_33_34_33',
   'css' => 'threecol_33_34_33.css',
-  'panels' => array(
+  'regions' => array(
     'left' => t('Left side'),
     'middle' => t('Middle column'),
     'right' => t('Right side')

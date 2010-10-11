@@ -1,5 +1,5 @@
 <?php
-// $Id: panels-twocol.tpl.php,v 1.2 2010/01/21 07:11:42 sdboyer Exp $
+// $Id: panels-twocol.tpl.php,v 1.3 2010/10/11 22:56:01 sdboyer Exp $
 /**
  * @file
  * Template for a 2 column panel layout.
@@ -15,7 +15,7 @@
  *   - $content['right']: Content in the right column.
  */
 ?>
-<div class="panel-display panel-2col clear-block" <?php if (!empty($css_id)) { print "id=\"$css_id\""; } ?>>
+<div class="panel-display panel-2col clearfix" <?php if (!empty($css_id)) { print "id=\"$css_id\""; } ?>>
   <div class="panel-panel panel-col-first">
     <div class="inside"><?php print $content['left']; ?></div>
   </div>

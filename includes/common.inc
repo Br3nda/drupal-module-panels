@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.12 2010/09/07 09:42:11 sdboyer Exp $
+// $Id: common.inc,v 1.13 2010/10/11 22:56:01 sdboyer Exp $
 
 
 /**
@@ -224,7 +224,7 @@ class panels_allowed_layouts {
  * A common settings page for Panels modules, because this code is relevant to
  * any modules that don't already have special requirements.
  */
-function panels_common_settings(&$form_state, $module_name = 'panels_common') {
+function panels_common_settings($form, &$form_state, $module_name = 'panels_common') {
   ctools_include('plugins', 'panels');
   ctools_include('content');
   $content_types = ctools_get_content_types();
@@ -281,7 +281,7 @@ function panels_common_settings(&$form_state, $module_name = 'panels_common') {
 
     $form['content_types'] = array(
       '#tree' => TRUE,
-      '#prefix' => '<div class="clear-block">',
+      '#prefix' => '<div class="clearfix">',
       '#suffix' => '</div>',
     );
     // cheat a bit
@@ -398,7 +398,7 @@ function panels_common_allowed_layouts_form(&$form, &$form_state, $module_name) 
     '#options' => $options,
     '#description' => t('Check the boxes for all layouts you want to allow users choose from when picking a layout. You must allow at least one layout.'),
     '#default_value' => array_keys(array_filter($allowed_layouts->allowed_layout_settings)),
-    '#prefix' => '<div class="clear-block panels-layouts-checkboxes">',
+    '#prefix' => '<div class="clearfix panels-layouts-checkboxes">',
     '#suffix' => '</div>',
     '#checkall' => TRUE,
   );
@@ -480,7 +480,9 @@ function panels_common_get_allowed_layouts($module_name) {
  * Create a visible list of content in a display.
  * Note that the contexts must be pre-loaded.
  */
-function theme_panels_common_content_list($display) {
+function theme_panels_common_content_list($vars) {
+  $display = $vars['display'];
+
   $layout = panels_get_layout($display->layout);
   $content = '<dl class="content-list">';
   foreach (panels_get_regions($layout, $display) as $panel_id => $title) {
@@ -540,7 +542,7 @@ function panels_common_print_layout_links($layouts, $base_path, $link_options = 
 
   $output .= drupal_render($form);
 
-  $output .= '<div class="panels-choose-layout panels-layouts-checkboxes clear-block">';
+  $output .= '<div class="panels-choose-layout panels-layouts-checkboxes clearfix">';
 
   // We're doing these dependencies completely manualy, which is unusual, but
   // the process code only supports doing them in a form.
@@ -555,7 +557,7 @@ function panels_common_print_layout_links($layouts, $base_path, $link_options = 
     );
 
     $output .= '<div id="panels-layout-category-' . $category . '-wrapper">';
-    $output .= '<div id="panels-layout-category-' . $category . '" class="form-checkboxes clear-block">';
+    $output .= '<div id="panels-layout-category-' . $category . '" class="form-checkboxes clearfix">';
     $output .= '<div class="panels-layouts-category">' . $categories[$category] . '</div>';
 
     foreach ($links as $key => $link) {
